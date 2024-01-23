@@ -1,16 +1,46 @@
 <mat-toolbar color="primary">
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <span>{{ appname}}</span>
-    <span class="example-spacer"></span>
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="menu"
+    class="example-icon"
+    aria-label="Example icon-button with menu icon"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>{{ appname }}</span>
+  <span class="example-spacer"></span>
 
-    @if((isAuthenticated | async)) {
-        {{username | titlecase}}
-        <button (click)="logout()" mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
-            <mat-icon>logout</mat-icon>
-          </button>
-    }
-  </mat-toolbar>
+  @if((isAuthenticated | async)) {
+  {{ username | titlecase }}
+  <button
+    (click)="logout()"
+    mat-icon-button
+    class="example-icon"
+    aria-label="Example icon-button with share icon"
+  >
+    <mat-icon>logout</mat-icon>
+  </button>
+  }
+</mat-toolbar>
+
+<mat-menu #menu="matMenu">
+  <button [routerLink]="['/info']" mat-menu-item>
+    <mat-icon>info</mat-icon>
+    <span>Info</span>
+  </button>
+  @if((isAuthenticated | async) && isAdmin) {
+  <button [routerLink]="['/manage']" mat-menu-item>
+    <mat-icon>manage</mat-icon>
+    <span>Manage</span>
+  </button>
+  } 
+  
+  @if((isAuthenticated | async)) {
+  <button (click)="logout()" mat-menu-item>
+    <mat-icon>logout</mat-icon>
+    <span>Logout</span>
+  </button>
+  }
+</mat-menu>
 
 <router-outlet></router-outlet>

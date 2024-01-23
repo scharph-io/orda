@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import {MatMenu, MatMenuModule} from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,6 +17,8 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatButtonModule,
     CommonModule,
+    MatMenuModule,
+    RouterModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -25,6 +28,7 @@ export class AppComponent {
 
   constructor(private auth: AuthService, private router: Router) {}
 
+
   logout() {
     this.auth.logout();
     this.router.navigate(['login']);
@@ -32,6 +36,10 @@ export class AppComponent {
 
   get isAuthenticated() {
     return this.auth.authState$;
+  }
+
+  get isAdmin() {
+    return this.auth.isAdmin();
   }
 
   get username() {
