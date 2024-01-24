@@ -444,6 +444,13 @@ export class OrderViewComponent {
           },
         ],
       },
+      {
+        id: 3,
+        name: 'Cigarettes',
+        articles: [
+          {name: 'Marlboro', price: 5.0},{name:"ABC", price: 6.5}
+        ],
+      },
     ];
   }
 }
