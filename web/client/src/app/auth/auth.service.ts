@@ -24,7 +24,7 @@ const ACCESS_TOKEN_KEY = 'access_token';
   providedIn: 'root',
 })
 export class AuthService {
-  endpoint: string = 'http://10.0.0.20:8080/api';
+  endpoint: string = 'http://10.0.0.154:8080/api';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
   authState$ = new BehaviorSubject(false);

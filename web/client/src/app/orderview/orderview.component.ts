@@ -3,6 +3,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { OrderGridComponent } from './ordergrid/ordergrid.component';
 import { ArticleGroup } from './article';
+import { Subject } from 'rxjs';
+import { CartService } from './cart/cart.service';
+import { CartComponent } from './cart/cart.component';
 
 /**
  * @title Tab group with aligned labels
@@ -13,12 +16,11 @@ import { ArticleGroup } from './article';
   styleUrls: ['orderview.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTabsModule, CommonModule, OrderGridComponent],
+  imports: [MatTabsModule, CommonModule, OrderGridComponent, CartComponent],
 })
 export class OrderViewComponent {
 
   articleGroups = this.getArticleGroups();
-  constructor() {}
 
   getArticleGroups(): ArticleGroup[]{
     return [
