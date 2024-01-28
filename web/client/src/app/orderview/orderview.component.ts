@@ -3,9 +3,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { OrderGridComponent } from './ordergrid/ordergrid.component';
 import { ArticleGroup } from './article';
-import { Subject } from 'rxjs';
-import { CartService } from './cart/cart.service';
 import { CartComponent } from './cart/cart.component';
+import { CartStore } from './cart/cart.store';
 
 /**
  * @title Tab group with aligned labels
@@ -17,6 +16,7 @@ import { CartComponent } from './cart/cart.component';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatTabsModule, CommonModule, OrderGridComponent, CartComponent],
+  providers: [CartStore],
 })
 export class OrderViewComponent {
 

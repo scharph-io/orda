@@ -9,7 +9,7 @@ import {
   LayoutModule,
 } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
-import { CartService } from '../cart/cart.service';
+import { CartStore } from '../cart/cart.store';
 
 /**
  * @title Tab group with aligned labels
@@ -18,7 +18,6 @@ import { CartService } from '../cart/cart.service';
   selector: 'orda-ordergrid',
   standalone: true,
   imports: [MatGridListModule, CommonModule, ScrollingModule, LayoutModule],
-  providers: [CartService],
   template: `
     <div class="container">
       <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
@@ -55,7 +54,7 @@ export class OrderGridComponent {
 
   protected gridCols = 4;
 
-  constructor(breakpointObserver: BreakpointObserver,private cart: CartService) {
+  constructor(breakpointObserver: BreakpointObserver,private cart: CartStore) {
     breakpointObserver
       .observe([
         Breakpoints.XSmall,
@@ -87,7 +86,6 @@ export class OrderGridComponent {
   }
 
   addArticle(article: Article) {
-    console.log('addArticle', article);
-    this.cart.addArticle({articleName: article.name, price: article.price});
+    this.cart.addItem({articleName: article.name, price: article.price, amount: 1});
   }
 }
