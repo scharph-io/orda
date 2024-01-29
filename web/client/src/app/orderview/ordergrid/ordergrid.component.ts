@@ -22,7 +22,7 @@ import { CartStore } from '../cart/cart.store';
     <div class="container">
       <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
         @for (article of group?.articles; track article) {
-        <mat-grid-tile (click)="addArticle(article)">{{ article.name }} <br> {{article.price | currency : 'EUR'}}</mat-grid-tile>
+        <mat-grid-tile (click)="addArticle(article)">{{ article.name }}({{article.desc}}) <br> {{article.price | currency : 'EUR'}}</mat-grid-tile>
         }
       </mat-grid-list>
     </div>
@@ -86,6 +86,6 @@ export class OrderGridComponent {
   }
 
   addArticle(article: Article) {
-    this.cart.addItem({articleName: article.name, price: article.price, quantity: 1});
+    this.cart.addItem({articleName: article.name, price: article.price, quantity: 1, desc: article.desc});
   }
 }

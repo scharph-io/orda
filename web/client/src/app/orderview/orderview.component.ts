@@ -30,7 +30,8 @@ export class OrderViewComponent {
         articles: [
           {
             name: 'Coffee',
-            price: 2.5,
+            price: 6.5,
+            desc: "Nespresso"
           },
           {
             name: 'Tea',
