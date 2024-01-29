@@ -86,6 +86,6 @@ export class OrderGridComponent {
   }
 
   addArticle(article: Article) {
-    this.cart.addItem({articleName: article.name, price: article.price, amount: 1});
+    this.cart.addItem({articleName: article.name, price: article.price, quantity: 1});
   }
 }

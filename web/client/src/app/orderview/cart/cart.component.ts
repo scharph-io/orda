@@ -1,8 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { AsyncPipe, CurrencyPipe, JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CartItem } from './cart.store';
 import { CartStore } from './cart.store';
+import { CartItemComponent } from './cart-item/cart-item.component';
+import { CartHeaderComponent } from './cart-header/cart-header.component';
+import { CartActionsComponent } from './cart-actions/cart-actions.component';
 
 /**
  * @title Tab group with aligned labels
@@ -11,49 +14,46 @@ import { CartStore } from './cart.store';
   selector: 'orda-cart',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [
+    JsonPipe,
+    AsyncPipe,
+    CurrencyPipe,
+    CartItemComponent,
+    CartHeaderComponent,
+    CartActionsComponent,
+  ],
   template: `
     <div class="container">
       <div class="row">
         <div class="col-12">
           <h1>Cart</h1>
-          <!-- {{ total$ | async | currency : 'EUR' }} -->
-          @for (item of items$ | async; track $index) {
-            <div class="row">
-              <div class="col-3">
-                {{ item.articleName }}
-              </div>
-              <div class="col-2">
-                {{ item.amount}}
-              </div>
-              <div class="col-2">
-                {{ item.price | currency : 'EUR' }}
-              </div>
-            </div>
-          }
-          <button (click)="clearCart()">Clear</button>
-          {{ total$ | async | currency : 'EUR' }}
+          <orda-cart-header [total]="(total$ | async) ?? 0"></orda-cart-header>
+          <orda-cart-actions
+            [items]="(items$ | async) ?? []"
+          ></orda-cart-actions>
+          <div class="cart-container">
+            @for (item of items$ | async; track $index) {
+            <orda-cart-item [item]="item"></orda-cart-item>
+            }
+          </div>
         </div>
       </div>
     </div>
   `,
+  styles: [`
+    .cart-container {
+      background-color: #f5f5f5;
+    }
+  `]
 })
 export class CartComponent {
   constructor(private cart: CartStore) {}
 
-    get items$(): Observable<CartItem[]> {
-        return this.cart.items$;
-    }
+  get items$(): Observable<CartItem[]> {
+    return this.cart.items$;
+  }
 
-    get total$(): Observable<number> {
-        return this.cart.total$;
-    }
-
-    removeItem(item: CartItem): void {
-        this.cart.removeItem(item);
-    }
-
-    clearCart(): void {
-        this.cart.clear();
-    }
+  get total$(): Observable<number> {
+    return this.cart.total$;
+  }
 }
