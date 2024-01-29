@@ -6,7 +6,7 @@
 
 - install Go compiler https://go.dev/dl/
 - ensure go is in PATH with `go version`
-- starte backend with `make run-local` or `go run cmd/server/main.go`
+- start backend with `make run-local` or `go run cmd/server/main.go`
 
 ### Frontend
 
