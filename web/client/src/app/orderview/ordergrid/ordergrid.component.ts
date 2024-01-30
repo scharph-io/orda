@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe, NgStyle } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { Article, ArticleGroup } from '../article';
@@ -17,12 +17,23 @@ import { CartStore } from '../cart/cart.store';
 @Component({
   selector: 'orda-ordergrid',
   standalone: true,
-  imports: [MatGridListModule, CommonModule, ScrollingModule, LayoutModule],
+  imports: [
+    MatGridListModule,
+    ScrollingModule,
+    LayoutModule,
+    NgStyle,
+    CurrencyPipe,
+  ],
   template: `
     <div class="container">
       <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
         @for (article of group?.articles; track article) {
-        <mat-grid-tile (click)="addArticle(article)">{{ article.name }}({{article.desc}}) <br> {{article.price | currency : 'EUR'}}</mat-grid-tile>
+        <mat-grid-tile
+          [style.backgroundColor]="article.color"
+          (click)="addArticle(article)"
+          >{{ article.name }}({{ article.desc }}) <br />
+          {{ article.price | currency : 'EUR' }}</mat-grid-tile
+        >
         }
       </mat-grid-list>
     </div>
@@ -41,9 +52,9 @@ import { CartStore } from '../cart/cart.store';
         display: none;
       }
 
-      mat-grid-tile {
-        background: lightblue;
-      }
+      // mat-grid-tile {
+      //   background: lightblue;
+      // }
     `,
   ],
 })
@@ -54,7 +65,7 @@ export class OrderGridComponent {
 
   protected gridCols = 4;
 
-  constructor(breakpointObserver: BreakpointObserver,private cart: CartStore) {
+  constructor(breakpointObserver: BreakpointObserver, private cart: CartStore) {
     breakpointObserver
       .observe([
         Breakpoints.XSmall,
@@ -86,6 +97,12 @@ export class OrderGridComponent {
   }
 
   addArticle(article: Article) {
-    this.cart.addItem({articleName: article.name, price: article.price, quantity: 1, desc: article.desc});
+    this.cart.addItem({
+      uuid: article.uuid,
+      name: article.name,
+      price: article.price,
+      quantity: 1,
+      desc: article.desc,
+    });
   }
 }

@@ -3,6 +3,14 @@ import { CartItem, CartStore } from '../cart.store';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MAT_DIALOG_DATA,
+  MatDialogTitle,
+  MatDialogContent,
+} from '@angular/material/dialog';
+import { CheckoutDialogComponent } from './cart-checkout-dialog.component';
 
 @Component({
   selector: 'orda-cart-actions',
@@ -10,15 +18,20 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatButtonModule, MatIconModule],
   template: `
     <div class="container">
-    @if (items().length > 0) {
+      @if (items().length > 0) {
       <button mat-icon-button color="warn" (click)="clearCart()">
-        <mat-icon>remove_shopping_cart</mat-icon>
+        <mat-icon>delete_forever</mat-icon>
       </button>
-    }
-      <button mat-flat-button color="primary" [disabled]="disableCheckout()">
+      }
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="disableCheckout()"
+        (click)="openCheckoutDialog()"
+      >
+        <mat-icon>shopping_cart_checkout</mat-icon>
         Checkout
       </button>
-
     </div>
   `,
   styles: `
@@ -39,6 +52,7 @@ import { MatButtonModule } from '@angular/material/button';
 export class CartActionsComponent {
   items = input.required<CartItem[]>();
   cart = inject(CartStore);
+  dialog = inject(MatDialog);
 
   clearCart(): void {
     this.cart.clear();
@@ -46,5 +60,21 @@ export class CartActionsComponent {
 
   disableCheckout(): boolean {
     return this.items().length === 0;
+  }
+
+  openCheckoutDialog() {
+    const dialogRef = this.dialog.open(CheckoutDialogComponent, {
+      data: this.items(),
+      width: '20rem',
+      height: '15rem',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed');
+
+      if (result && (result.clear as boolean)) {
+        this.clearCart();
+      }
+    });
   }
 }

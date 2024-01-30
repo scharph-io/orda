@@ -10,6 +10,12 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/scharph/orda/web/client"
+)
+
+var (
+	git  string
+	date string
 )
 
 // jwtCustomClaims are custom claims extending default ones.
@@ -73,6 +79,10 @@ func restricted(c echo.Context) error {
 }
 
 func main() {
+
+	fmt.Println("buildDate: ", date)
+	fmt.Println("gitCommit: ", git)
+
 	e := echo.New()
 
 	e.Use(middleware.CORS())
@@ -85,7 +95,7 @@ func main() {
 	e.POST("/api/auth", login)
 
 	// Unauthenticated route
-	e.GET("/", accessible)
+	e.GET("/access", accessible)
 
 	// Restricted group
 	r := e.Group("/restricted")
@@ -99,6 +109,10 @@ func main() {
 	}
 	r.Use(echojwt.WithConfig(config))
 	r.GET("", restricted)
+
+	var contentHandler = echo.WrapHandler(http.FileServer(http.FS(&client.Assets)))
+	var contentRewrite = middleware.Rewrite(map[string]string{"/*": "/dist/client/browser/$1"})
+	e.GET("/*", contentHandler, contentRewrite)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

@@ -1,22 +1,28 @@
-import { Component, Input, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { CartItem, CartStore } from '../cart.store';
 import { CurrencyPipe, JsonPipe } from '@angular/common';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'orda-cart-item',
   standalone: true,
-  imports: [JsonPipe, CurrencyPipe],
+  imports: [JsonPipe, CurrencyPipe, MatButtonModule, MatIconModule],
   template: `
     <div [class]="containerClass()">
-      <div class="title">{{ item().articleName }}</div>
+      <div class="title">{{ item().name }}</div>
       @if (item().desc) {
-        <div class="desc">{{item().desc}}</div>
+      <div class="desc">{{ item().desc }}</div>
       }
       <div class="quantity">{{ item().quantity }}</div>
       <div class="sum">
         {{ item().price * item().quantity | currency : 'EUR' }}
       </div>
-      <div class="rm"><button (click)="removeItem(item())">-</button></div>
+      <div class="rm">
+        <mat-icon (click)="removeItem(item())" [style]="{ color: 'grey' }"
+          >delete</mat-icon
+        >
+      </div>
     </div>
   `,
   styles: `
@@ -56,14 +62,14 @@ import { CurrencyPipe, JsonPipe } from '@angular/common';
   .quantity {
     grid-area: quantity;
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
   }
 
   .sum {
     grid-area: sum;
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
   }
 
@@ -80,9 +86,9 @@ export class CartItemComponent {
 
   containerClass = computed(() => {
     if (this.item().desc) {
-      return "container-with-desc";
+      return 'container-with-desc';
     } else {
-      return "container";
+      return 'container';
     }
   });
 

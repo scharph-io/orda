@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, map } from "rxjs";
 
 export interface CartItem {
-    articleName: string;
+    uuid: string;
+    name: string;
     desc?: string;
     quantity: number;
     price: number;
@@ -19,8 +20,8 @@ export class CartStore {
     );
 
     addItem(item: CartItem): void {
-        if (this._items.getValue().find(a => a.articleName === item.articleName)) {
-            this._items.next(this._items.getValue().map(a => a.articleName === item.articleName ? {...a, quantity: a.quantity + 1} : a));
+        if (this._items.getValue().find(a => a.uuid === item.uuid)) {
+            this._items.next(this._items.getValue().map(a => a.uuid === item.uuid ? {...a, quantity: a.quantity + 1} : a));
         } else {
             this._items.next([...this._items.getValue(), item]);
         }
@@ -28,9 +29,9 @@ export class CartStore {
 
     removeItem(item: CartItem): void {
         if(item.quantity > 1) {
-            this._items.next(this._items.getValue().map(a => a.articleName === item.articleName ? {...a, quantity: a.quantity - 1} : a));
+            this._items.next(this._items.getValue().map(a => a.uuid === item.uuid ? {...a, quantity: a.quantity - 1} : a));
         } else {
-            this._items.next(this._items.getValue().filter(a => a.articleName !== item.articleName));
+            this._items.next(this._items.getValue().filter(a => a.uuid !== item.uuid));
         }
     }
 

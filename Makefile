@@ -1,11 +1,27 @@
-project_name = orda
-image_name = orda-server:latest
+PROJECT=orda
+IMAGE=orda-server:latest
+
+BINARY_NAME=$(PROJECT)
+
+MAIN= cmd/server/main.go
+
+SHA := $(shell test -d .git && git rev-parse --short HEAD)
+DIRTY := $(shell test -d .git && git diff --quiet || echo 'dirty')
+BUILD_DATE := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
+LD_FLAGS := -X main.date=$(BUILD_DATE) -X main.git=$(SHA)-$(DIRTY)
+BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 
 help: ## This help dialog.
 	@grep -F -h "##" $(MAKEFILE_LIST) | grep -F -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 run-local: ## Run the app locally
 	go run cmd/server/main.go
+
+build-local:
+	GOOS=linux 	GOARCH=amd64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME} 			$(MAIN)
+	GOOS=linux 	GOARCH=arm64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm64 	$(MAIN)
+	GOOS=linux 	GOARCH=arm 		go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm 		$(MAIN)
+	GOOS=darwin GOARCH=amd64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin 	$(MAIN)
 
 run-web: ## Run the app locally
 	npm run start --prefix web/app
