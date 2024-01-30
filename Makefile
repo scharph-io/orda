@@ -17,7 +17,10 @@ help: ## This help dialog.
 run-local: ## Run the app locally
 	go run cmd/server/main.go
 
-build-local:
+build-ui:
+	npm --prefix web/client install && npm --prefix web/client run build
+
+build-local: build-ui
 	GOOS=linux 	GOARCH=amd64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME} 			$(MAIN)
 	GOOS=linux 	GOARCH=arm64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm64 	$(MAIN)
 	GOOS=linux 	GOARCH=arm 		go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm 		$(MAIN)
