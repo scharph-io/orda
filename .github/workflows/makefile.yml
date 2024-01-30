@@ -8,9 +8,13 @@ on:
 
 jobs:
   # This workflow contains multiple jobs
-  build_test:
+  build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
     strategy:
       matrix:
         node-version: [18.x]
@@ -28,7 +32,7 @@ jobs:
         with:
           go-version: '1.21'
       # install applicaion dependencies
-      - name: Install dependencies
+      - name: Build
         run: make build-local 
       - name: Create Release
         id: create_release
