@@ -3,7 +3,7 @@ name: Makefile CI
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 jobs:
   # This workflow contains multiple jobs
@@ -33,14 +33,12 @@ jobs:
       # install applicaion dependencies
       - name: Build
         run: make build-local 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/orda*
+          file_glob: true
+          asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: true
 
