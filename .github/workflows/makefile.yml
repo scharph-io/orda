@@ -2,9 +2,8 @@ name: Makefile CI
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    tags:
+      - '*'
 
 jobs:
   # This workflow contains multiple jobs
@@ -24,7 +23,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Set up Go
@@ -40,8 +39,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: latest
-          release_name: Release latest
-          draft: true
+          tag: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
           prerelease: true
 
