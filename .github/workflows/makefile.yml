@@ -29,6 +29,6 @@ jobs:
           go-version: '1.21'
       # install applicaion dependencies
       - name: Install dependencies
-        run: build-local 
+        run: make build-local 
       # build and test the apps     
 
