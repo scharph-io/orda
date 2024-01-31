@@ -1,7 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
-  MatDialog,
   MAT_DIALOG_DATA,
   MatDialogRef,
   MatDialogTitle,
@@ -16,12 +15,8 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-
-interface CheckoutDialogData {
-  items: CartItem[];
-  total: number;
-  not_charged: boolean;
-}
+import { CheckoutData, CheckoutService } from '../../services/articles.service';
+import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
 @Component({
   selector: 'orda-checkout-dialog',
@@ -29,7 +24,7 @@ interface CheckoutDialogData {
   imports: [
     MatDialogTitle,
     MatDialogContent,
-    CurrencyPipe,
+    OrdaCurrencyPipe,
     FormsModule,
     MatSlideToggleModule,
     MatIconModule,
@@ -44,14 +39,20 @@ interface CheckoutDialogData {
   template: `
     <h1 mat-dialog-title>Summary</h1>
     <div mat-dialog-content>
-      Total: {{ checkoutData.total | currency : 'EUR' }}
+      Total: {{ checkoutData.total | ordaCurrency : 'EUR' }}
       <mat-slide-toggle [(ngModel)]="checkoutData.not_charged"
         >Special</mat-slide-toggle
       >
     </div>
     <div mat-dialog-actions>
       <button mat-button [mat-dialog-close]="{ clear: false }">Cancel</button>
-      <button mat-button color="warn" [mat-dialog-close]="{ clear: true }" cdkFocusInitial>
+      <button
+        mat-button
+        color="warn"
+        [mat-dialog-close]="{ clear: true }"
+        cdkFocusInitial
+        (click)="submit()"
+      >
         <mat-icon>shopping_cart_checkout</mat-icon>
         @if(checkoutData.not_charged) {Als Sponsor} @else {Bar}
       </button>
@@ -59,11 +60,13 @@ interface CheckoutDialogData {
   `,
 })
 export class CheckoutDialogComponent {
-  checkoutData: CheckoutDialogData = {
+  checkoutData: CheckoutData = {
     items: [],
     total: 0,
     not_charged: false,
   };
+
+  checkout = inject(CheckoutService);
 
   constructor(
     public dialogRef: MatDialogRef<CheckoutDialogComponent>,
@@ -78,5 +81,8 @@ export class CheckoutDialogComponent {
 
   submit(): void {
     console.log(this.checkoutData);
+    this.checkout.checkout(this.checkoutData).subscribe((res) => {
+      console.log(res);
+    });
   }
 }

@@ -5,6 +5,7 @@ import { OrderGridComponent } from './ordergrid/ordergrid.component';
 import { ArticleGroup, createFakeArticles } from './article';
 import { CartComponent } from './cart/cart.component';
 import { CartStore } from './cart/cart.store';
+import { CheckoutService } from './services/articles.service';
 
 /**
  * @title Tab group with aligned labels
@@ -16,7 +17,7 @@ import { CartStore } from './cart/cart.store';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatTabsModule, CommonModule, OrderGridComponent, CartComponent],
-  providers: [CartStore],
+  providers: [CartStore, CheckoutService],
 })
 export class OrderViewComponent {
   articleGroups = this.getArticleGroups();

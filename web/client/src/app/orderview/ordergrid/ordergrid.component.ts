@@ -10,6 +10,7 @@ import {
 } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
+import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 
 /**
  * @title Tab group with aligned labels
@@ -22,7 +23,7 @@ import { CartStore } from '../cart/cart.store';
     ScrollingModule,
     LayoutModule,
     NgStyle,
-    CurrencyPipe,
+    OrdaCurrencyPipe
   ],
   template: `
     <div class="container">
@@ -32,7 +33,7 @@ import { CartStore } from '../cart/cart.store';
           [style.backgroundColor]="article.color"
           (click)="addArticle(article)"
           >{{ article.name }}({{ article.desc }}) <br />
-          {{ article.price | currency : 'EUR' }}</mat-grid-tile
+          {{ article.price | ordaCurrency }}</mat-grid-tile
         >
         }
       </mat-grid-list>
@@ -51,10 +52,6 @@ import { CartStore } from '../cart/cart.store';
       .container::-webkit-scrollbar {
         display: none;
       }
-
-      // mat-grid-tile {
-      //   background: lightblue;
-      // }
     `,
   ],
 })

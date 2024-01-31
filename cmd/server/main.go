@@ -26,6 +26,20 @@ type jwtCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
+type Item struct {
+	UUID  string `json:"uuid"`
+	Name  string `json:"name"`
+	Desc  string `json:"desc"`
+	Price int32  `json:"price"`
+	Qty   int    `json:"quantity"`
+}
+
+type CheckoutData struct {
+	Items      []Item `json:"items"`
+	Total      int32  `json:"total"`
+	NotCharged bool   `json:"not_charged"`
+}
+
 func login(c echo.Context) error {
 	username := c.FormValue("username")
 	password := c.FormValue("password")
@@ -78,6 +92,20 @@ func restricted(c echo.Context) error {
 	return c.JSON(http.StatusOK, "Welcome "+name+"!"+" You are admin: "+strconv.FormatBool(claims.Admin))
 }
 
+func handlePost(c echo.Context) error {
+
+	u := new(CheckoutData)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+
+	fmt.Println("CheckoutData: ", u)
+	fmt.Printf("Successfully checked out %d items\nTotal %d\n", len(u.Items), u.Total)
+
+	return c.JSON(http.StatusCreated, echo.Map{"success": true})
+	// return c.JSON(http.StatusOK, "Welcome "+name+"!"+" You are admin: "+strconv.FormatBool(claims.Admin))
+}
+
 func main() {
 
 	fmt.Println("buildDate: ", date)
@@ -109,6 +137,7 @@ func main() {
 	}
 	r.Use(echojwt.WithConfig(config))
 	r.GET("", restricted)
+	r.POST("", handlePost)
 
 	var contentHandler = echo.WrapHandler(http.FileServer(http.FS(&client.Assets)))
 	var contentRewrite = middleware.Rewrite(map[string]string{"/*": "/dist/client/browser/$1"})

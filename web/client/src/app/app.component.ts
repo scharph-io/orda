@@ -6,7 +6,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatMenu, MatMenuModule} from '@angular/material/menu';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { OrdaCurrencyPipe } from './shared/currency.pipe';
 
 @Component({
   selector: 'orda-root',
@@ -18,7 +19,7 @@ import { CommonModule } from '@angular/common';
     MatButtonModule,
     CommonModule,
     MatMenuModule,
-    RouterModule
+    RouterModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

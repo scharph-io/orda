@@ -3,11 +3,12 @@ import { CartItem, CartStore } from '../cart.store';
 import { CurrencyPipe, JsonPipe } from '@angular/common';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
 @Component({
   selector: 'orda-cart-item',
   standalone: true,
-  imports: [JsonPipe, CurrencyPipe, MatButtonModule, MatIconModule],
+  imports: [OrdaCurrencyPipe, MatButtonModule, MatIconModule],
   template: `
     <div [class]="containerClass()">
       <div class="title">{{ item().name }}</div>
@@ -16,7 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
       }
       <div class="quantity">{{ item().quantity }}</div>
       <div class="sum">
-        {{ item().price * item().quantity | currency : 'EUR' }}
+        {{ (item().price * item().quantity) | ordaCurrency : 'EUR' }}
       </div>
       <div class="rm">
         <mat-icon (click)="removeItem(item())" [style]="{ color: 'grey' }"

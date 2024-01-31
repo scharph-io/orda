@@ -24,7 +24,7 @@ export function createFakeArticles(items: number = 20, minMaxPrice:number = 10, 
     data.push({
       name: `Product ${i + 1}`,
       desc: `desc ${i + 1}`,
-      price: randomIntFromInterval(minMaxPrice-(minMaxPrice*factor), minMaxPrice+(minMaxPrice*factor)) / 10,
+      price: (randomIntFromInterval(minMaxPrice-(minMaxPrice*factor), minMaxPrice+(minMaxPrice*factor)) / 10) * 100,
       uuid: uuidv4(),
       color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
     });
