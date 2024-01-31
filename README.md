@@ -13,3 +13,7 @@
 - install NodeJS@20
 - switch to `web/app/` and run npm install
 - run `npm start`
+
+
+### Alternative
+  - Use a release [https://github.com/scharph/orda/releases](Releases)
