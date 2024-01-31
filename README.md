@@ -15,5 +15,7 @@
 - run `npm start`
 
 
-### Alternative
-  - Use a release [Releases](https://github.com/scharph/orda/releases)
+### Use a release
+- Download asset [Releases](https://github.com/scharph/orda/releases)
+- ensure executable `chmod +x BINARY`
+- run with `./BINARY`
