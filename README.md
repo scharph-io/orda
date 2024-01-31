@@ -16,4 +16,4 @@
 
 
 ### Alternative
-  - Use a release [Releases]([Releases](https://github.com/scharph/orda/releases)https://github.com/scharph/orda/releases)
+  - Use a release [Releases](https://github.com/scharph/orda/releases)
