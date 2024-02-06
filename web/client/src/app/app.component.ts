@@ -26,7 +26,7 @@ import { MatDividerModule } from '@angular/material/divider';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  appname = 'client';
+  appname = 'orda client';
 
   constructor(
     private auth: AuthService,

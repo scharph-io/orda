@@ -53,7 +53,6 @@ export class LoginComponent {
   }
 
   login() {
-    console.log(this.credentials.value);
     if (
       this.credentials.controls.username.value &&
       this.credentials.controls.password.value
@@ -61,7 +60,7 @@ export class LoginComponent {
       this.authService.auth(
         this.credentials.controls.username.value,
         this.credentials.controls.password.value,
-      );
+      )
     }
 
     // console.log(username, password);
@@ -70,4 +69,7 @@ export class LoginComponent {
   logout() {
     this.authService.logout();
   }
+
+  
+
 }
