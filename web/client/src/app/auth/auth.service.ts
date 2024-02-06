@@ -29,7 +29,10 @@ export class AuthService {
 
   authState$ = new BehaviorSubject(false);
 
-  constructor(private http: HttpClient, public router: Router) {
+  constructor(
+    private http: HttpClient,
+    public router: Router,
+  ) {
     this.authState$.next(this.authenticated);
   }
   // Sign-in
@@ -51,7 +54,7 @@ export class AuthService {
   }
 
   get authenticated(): boolean {
-    return localStorage.getItem(ACCESS_TOKEN_KEY) != null;
+    return localStorage.getItem(ACCESS_TOKEN_KEY) != null && !this.isExpired();
   }
 
   logout() {

@@ -39,7 +39,7 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
   template: `
     <h1 mat-dialog-title>Summary</h1>
     <div mat-dialog-content>
-      Total: {{ checkoutData.total | ordaCurrency : 'EUR' }}
+      Total: {{ checkoutData.total | ordaCurrency: 'EUR' }}
       <mat-slide-toggle [(ngModel)]="checkoutData.not_charged"
         >Special</mat-slide-toggle
       >
@@ -54,7 +54,11 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
         (click)="submit()"
       >
         <mat-icon>shopping_cart_checkout</mat-icon>
-        @if(checkoutData.not_charged) {Als Sponsor} @else {Bar}
+        @if (checkoutData.not_charged) {
+          Als Sponsor
+        } @else {
+          Bar
+        }
       </button>
     </div>
   `,
@@ -70,12 +74,12 @@ export class CheckoutDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<CheckoutDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: CartItem[]
+    @Inject(MAT_DIALOG_DATA) public data: CartItem[],
   ) {
     this.checkoutData.items = this.data;
     this.checkoutData.total = this.data.reduce(
       (a, b) => a + b.price * b.quantity,
-      0
+      0,
     );
   }
 

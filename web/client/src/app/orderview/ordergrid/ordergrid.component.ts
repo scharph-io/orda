@@ -23,18 +23,18 @@ import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
     ScrollingModule,
     LayoutModule,
     NgStyle,
-    OrdaCurrencyPipe
+    OrdaCurrencyPipe,
   ],
   template: `
     <div class="container">
       <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
         @for (article of group?.articles; track article) {
-        <mat-grid-tile
-          [style.backgroundColor]="article.color"
-          (click)="addArticle(article)"
-          >{{ article.name }}({{ article.desc }}) <br />
-          {{ article.price | ordaCurrency }}</mat-grid-tile
-        >
+          <mat-grid-tile
+            [style.backgroundColor]="article.color"
+            (click)="addArticle(article)"
+            >{{ article.name }}({{ article.desc }}) <br />
+            {{ article.price | ordaCurrency }}</mat-grid-tile
+          >
         }
       </mat-grid-list>
     </div>
@@ -62,7 +62,10 @@ export class OrderGridComponent {
 
   protected gridCols = 4;
 
-  constructor(breakpointObserver: BreakpointObserver, private cart: CartStore) {
+  constructor(
+    breakpointObserver: BreakpointObserver,
+    private cart: CartStore,
+  ) {
     breakpointObserver
       .observe([
         Breakpoints.XSmall,

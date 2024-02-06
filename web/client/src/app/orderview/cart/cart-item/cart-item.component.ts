@@ -13,11 +13,11 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
     <div [class]="containerClass()">
       <div class="title">{{ item().name }}</div>
       @if (item().desc) {
-      <div class="desc">{{ item().desc }}</div>
+        <div class="desc">{{ item().desc }}</div>
       }
       <div class="quantity">{{ item().quantity }}</div>
       <div class="sum">
-        {{ (item().price * item().quantity) | ordaCurrency : 'EUR' }}
+        {{ item().price * item().quantity | ordaCurrency: 'EUR' }}
       </div>
       <div class="rm">
         <mat-icon (click)="removeItem(item())" [style]="{ color: 'grey' }"
@@ -27,60 +27,60 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
     </div>
   `,
   styles: `
+    .container {
+      display: grid;
+      gap: 0px 0.25em;
+      grid-auto-flow: row;
+      grid-template: 'title quantity sum rm' 1fr / 2fr 1fr 1fr 0.3fr;
+      height: 2em;
+    }
 
-  .container {
-    display: grid;
-    gap: 0px 0.25em;
-    grid-auto-flow: row;
-    grid-template:
-      "title quantity sum rm" 1fr / 2fr 1fr 1fr 0.3fr;
-    height: 2em;
-  }
+    .container-with-desc {
+      display: grid;
+      gap: 0px 0.25em;
+      grid-auto-flow: row;
+      grid-template:
+        'title quantity sum rm' 1fr
+        'desc quantity sum rm' 1fr / 2fr 1fr 1fr 0.3fr;
+      height: 3em;
+    }
 
-  .container-with-desc {
-    display: grid;
-    gap: 0px 0.25em;
-    grid-auto-flow: row;
-    grid-template:
-      "title quantity sum rm" 1fr
-      "desc quantity sum rm" 1fr / 2fr 1fr 1fr 0.3fr;
-    height: 3em;
-  }
+    .title {
+      grid-area: title;
+      display: flex;
+      align-items: center;
+    }
 
-  .title {
-    grid-area: title;
-    display: flex;
-    align-items: center;
-  }
+    .title-with-desc {
+      grid-area: title;
+      border-color: red;
+    }
 
-  .title-with-desc {
-    grid-area: title;
-    border-color: red;
-  }
+    .desc {
+      grid-area: desc;
+    }
 
-  .desc { grid-area: desc; }
+    .quantity {
+      grid-area: quantity;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+    }
 
-  .quantity {
-    grid-area: quantity;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
+    .sum {
+      grid-area: sum;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+    }
 
-  .sum {
-    grid-area: sum;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-  }
-
-  .rm {
-    grid-area: rm;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-`,
+    .rm {
+      grid-area: rm;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `,
 })
 export class CartItemComponent {
   item = input.required<CartItem>();

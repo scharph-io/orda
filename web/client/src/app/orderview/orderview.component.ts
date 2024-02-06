@@ -6,6 +6,7 @@ import { ArticleGroup, createFakeArticles } from './article';
 import { CartComponent } from './cart/cart.component';
 import { CartStore } from './cart/cart.store';
 import { CheckoutService } from './services/articles.service';
+import { MatIconModule } from '@angular/material/icon';
 
 /**
  * @title Tab group with aligned labels
@@ -16,7 +17,13 @@ import { CheckoutService } from './services/articles.service';
   styleUrls: ['orderview.component.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTabsModule, CommonModule, OrderGridComponent, CartComponent],
+  imports: [
+    MatTabsModule,
+    MatIconModule,
+    CommonModule,
+    OrderGridComponent,
+    CartComponent,
+  ],
   providers: [CartStore, CheckoutService],
 })
 export class OrderViewComponent {

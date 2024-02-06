@@ -10,36 +10,55 @@
   <span>{{ appname }}</span>
   <span class="example-spacer"></span>
 
-  @if((isAuthenticated | async)) {
-  {{ username | titlecase }}
-  <button
-    (click)="logout()"
-    mat-icon-button
-    class="example-icon"
-    aria-label="Example icon-button with share icon"
-  >
-    <mat-icon>logout</mat-icon>
-  </button>
+  @if (isAuthenticated | async) {
+    {{ username | titlecase }}
+    <button
+      (click)="logout()"
+      mat-icon-button
+      class="example-icon"
+      aria-label="Example icon-button with share icon"
+    >
+      <mat-icon>logout</mat-icon>
+    </button>
   }
 </mat-toolbar>
 
 <mat-menu #menu="matMenu">
+  @if (isAuthenticated | async) {
+    <button [routerLink]="['/']" mat-menu-item>
+      <mat-icon>store</mat-icon>
+      <span>Store</span>
+    </button>
+    <button [routerLink]="['/history']" mat-menu-item>
+      <mat-icon>history</mat-icon>
+      <span>History</span>
+    </button>
+  }
+
+  @if ((isAuthenticated | async) && isAdmin) {
+    <button [routerLink]="['/manage']" mat-menu-item>
+      <mat-icon>manage</mat-icon>
+      <span>Manage</span>
+    </button>
+  }
+
   <button [routerLink]="['/info']" mat-menu-item>
     <mat-icon>info</mat-icon>
     <span>Info</span>
   </button>
-  @if((isAuthenticated | async) && isAdmin) {
-  <button [routerLink]="['/manage']" mat-menu-item>
-    <mat-icon>manage</mat-icon>
-    <span>Manage</span>
-  </button>
-  } 
-  
-  @if((isAuthenticated | async)) {
-  <button (click)="logout()" mat-menu-item>
-    <mat-icon>logout</mat-icon>
-    <span>Logout</span>
-  </button>
+
+  <mat-divider></mat-divider>
+
+  @if (isAuthenticated | async) {
+    <button (click)="logout()" mat-menu-item>
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  } @else {
+    <button [routerLink]="['/login']" mat-menu-item>
+      <mat-icon>login</mat-icon>
+      <span>Login</span>
+    </button>
   }
 </mat-menu>
 

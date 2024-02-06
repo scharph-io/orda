@@ -6,9 +6,16 @@
       dynamicHeight="false"
     >
       @for (group of articleGroups; track group) {
-        <mat-tab [label]="group.name"><orda-ordergrid [group]="group"></orda-ordergrid></mat-tab>
+        <mat-tab [label]="group.name"
+          ><orda-ordergrid [group]="group"></orda-ordergrid
+        ></mat-tab>
       }
 
+      <!-- <mat-tab
+        ><ng-template mat-tab-label>
+          <mat-icon class="example-tab-icon">settings</mat-icon>
+        </ng-template></mat-tab
+      > -->
     </mat-tab-group>
   </div>
   <div class="order">

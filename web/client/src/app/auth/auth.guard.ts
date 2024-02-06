@@ -1,6 +1,5 @@
 import { inject } from '@angular/core';
 import {
-
   CanActivateFn,
   Router,
   ActivatedRouteSnapshot,
@@ -11,7 +10,7 @@ import { AuthService } from './auth.service';
 
 export const AuthGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
+  state: RouterStateSnapshot,
 ) => {
   if (inject(AuthService).authenticated) {
     return true;

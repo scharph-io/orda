@@ -20,10 +20,9 @@ export const appConfig: ApplicationConfig = {
             return localStorage.getItem('access_token');
           },
           allowedDomains: ['localhost:8080'],
-          disallowedRoutes: ['localhost:8080/api/auth']
-          
+          disallowedRoutes: ['localhost:8080/api/auth'],
         },
-      })
+      }),
     ),
     provideHttpClient(withInterceptorsFromDi()),
   ],

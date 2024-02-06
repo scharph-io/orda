@@ -7,9 +7,7 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
   standalone: true,
   imports: [OrdaCurrencyPipe],
   template: `
-    <div class="container">
-      Total: {{ total() | ordaCurrency : 'EUR' }}
-    </div>
+    <div class="container">Total: {{ total() | ordaCurrency: 'EUR' }}</div>
   `,
   styles: `
     .container {

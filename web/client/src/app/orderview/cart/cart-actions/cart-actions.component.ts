@@ -19,9 +19,9 @@ import { CheckoutDialogComponent } from './cart-checkout-dialog.component';
   template: `
     <div class="container">
       @if (items().length > 0) {
-      <button mat-icon-button color="warn" (click)="clearCart()">
-        <mat-icon>delete_forever</mat-icon>
-      </button>
+        <button mat-icon-button color="warn" (click)="clearCart()">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
       }
       <button
         mat-flat-button
@@ -45,7 +45,7 @@ import { CheckoutDialogComponent } from './cart-checkout-dialog.component';
     }
 
     mat-icon button {
-      font-size: 0.7em
+      font-size: 0.7em;
     }
   `,
 })

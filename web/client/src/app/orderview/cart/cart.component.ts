@@ -33,18 +33,20 @@ import { CartActionsComponent } from './cart-actions/cart-actions.component';
           ></orda-cart-actions>
           <div class="cart-container">
             @for (item of items$ | async; track $index) {
-            <orda-cart-item [item]="item"></orda-cart-item>
+              <orda-cart-item [item]="item"></orda-cart-item>
             }
           </div>
         </div>
       </div>
     </div>
   `,
-  styles: [`
-    .cart-container {
-      background-color: #f5f5f5;
-    }
-  `]
+  styles: [
+    `
+      .cart-container {
+        background-color: #f5f5f5;
+      }
+    `,
+  ],
 })
 export class CartComponent {
   constructor(private cart: CartStore) {}

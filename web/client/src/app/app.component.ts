@@ -5,9 +5,9 @@ import { AuthService } from './auth/auth.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import {MatMenu, MatMenuModule} from '@angular/material/menu';
-import { CommonModule, CurrencyPipe } from '@angular/common';
-import { OrdaCurrencyPipe } from './shared/currency.pipe';
+import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'orda-root',
@@ -20,6 +20,7 @@ import { OrdaCurrencyPipe } from './shared/currency.pipe';
     CommonModule,
     MatMenuModule,
     RouterModule,
+    MatDividerModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -27,8 +28,10 @@ import { OrdaCurrencyPipe } from './shared/currency.pipe';
 export class AppComponent {
   appname = 'client';
 
-  constructor(private auth: AuthService, private router: Router) {}
-
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+  ) {}
 
   logout() {
     this.auth.logout();

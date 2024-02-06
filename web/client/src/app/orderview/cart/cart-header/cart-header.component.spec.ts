@@ -8,10 +8,9 @@ describe('CartHeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CartHeaderComponent]
-    })
-    .compileComponents();
-    
+      imports: [CartHeaderComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(CartHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

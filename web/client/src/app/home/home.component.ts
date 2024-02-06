@@ -9,7 +9,6 @@ import { AuthService } from '../auth/auth.service';
 import { DataService } from '../auth/data.service';
 import { OrderViewComponent } from '../orderview/orderview.component';
 
-
 @Component({
   selector: 'orda-home',
   standalone: true,
@@ -21,7 +20,7 @@ import { OrderViewComponent } from '../orderview/orderview.component';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    OrderViewComponent
+    OrderViewComponent,
   ],
   providers: [DataService],
   templateUrl: './home.component.html',
@@ -44,7 +43,6 @@ export class HomeComponent {
   get isExpired() {
     return this.authservice.isExpired();
   }
-
 
   getArticleGroups() {
     return [
@@ -110,7 +108,6 @@ export class HomeComponent {
           },
         ],
       },
-
-    ]
+    ];
   }
 }
