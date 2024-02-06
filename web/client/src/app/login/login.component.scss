@@ -1,0 +1,38 @@
+.layout-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 64px);
+    width: 100%;
+    background-color: #f5f5f5;
+}
+
+.login-container {  display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 0.5fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "username"
+      "password"
+      "login";
+  }
+  
+  .password {
+    justify-self: center;
+    align-self: center;
+    grid-area: password;
+  }
+  
+  .username {
+    justify-self: center;
+    align-self: center;
+    grid-area: username;
+  }
+  
+  .login {
+    justify-self: center;
+    align-self: center;
+    grid-area: login;
+  }
+  

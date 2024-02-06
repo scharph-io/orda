@@ -1,37 +1,47 @@
-<form>
-  <mat-form-field appearance="fill">
-    <mat-label>Username</mat-label>
-    <input
-      matInput
-      [formControl]="credentials.controls.username"
-      placeholder="Enter your username"
-    />
-  </mat-form-field>
+<div class="layout-container">
+  <form>
+    <div class="login-container">
+      <div class="username">
+        <mat-form-field appearance="fill" [style.width.px]="250">
+          <mat-label>Username</mat-label>
+          <input
+            matInput
+            [formControl]="credentials.controls.username"
+            placeholder="Enter your username"
+          />
+        </mat-form-field>
+      </div>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Password</mat-label>
-    <input
-      matInput
-      [formControl]="credentials.controls.password"
-      [type]="hide ? 'password' : 'text'"
-    />
-    <button
-      mat-icon-button
-      matSuffix
-      (click)="hide = !hide"
-      [attr.aria-label]="'Hide password'"
-      [attr.aria-pressed]="hide"
-    >
-      <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
-    </button>
-  </mat-form-field>
-</form>
+      <div class="password">
+        <mat-form-field appearance="fill" [style.width.px]="250">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [formControl]="credentials.controls.password"
+            [type]="hide ? 'password' : 'text'"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="hide = !hide"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hide"
+          >
+            <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
 
-<button
-  mat-raised-button
-  color="primary"
-  [disabled]="credentials.invalid"
-  (click)="login()"
->
-  Login
-</button>
+      <div class="login">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="credentials.invalid"
+          (click)="login()"
+        >
+          Login
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
