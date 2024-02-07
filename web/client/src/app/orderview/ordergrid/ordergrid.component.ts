@@ -76,7 +76,7 @@ export class OrderGridComponent {
       ])
       .pipe(takeUntil(this.destroyed))
       .subscribe((result) => {
-        console.log(JSON.stringify(result.breakpoints));
+        // console.log(JSON.stringify(result.breakpoints));
         if (result.breakpoints[Breakpoints.XSmall]) {
           this.gridCols = 2;
         } else if (result.breakpoints[Breakpoints.Small]) {

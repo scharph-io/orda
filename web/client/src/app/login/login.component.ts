@@ -65,7 +65,6 @@ export class LoginComponent {
       this.credentials.controls.username.value &&
       this.credentials.controls.password.value
     ) {
-
       this.authService
         .auth(
           this.credentials.controls.username.value,

@@ -42,9 +42,7 @@ export class AuthService {
     formData.append('password', password);
     return this.http
       .post<Claims>(`${this.endpoint}/auth`, formData)
-      .pipe(
-        catchError(this.handleError)
-      )
+      .pipe(catchError(this.handleError));
   }
 
   forwardToHome() {
@@ -93,9 +91,16 @@ export class AuthService {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong.
       console.error(
-        `Backend returned code ${error.status}, body was: `, error.error);
+        `Backend returned code ${error.status}, body was: `,
+        error.error,
+      );
     }
     // Return an observable with a user-facing error message.
-    return throwError(() => new Error(`There was an error, please try again later ${error.status === 0 ? '': `ERR${error.status}`}`));
+    return throwError(
+      () =>
+        new Error(
+          `There was an error, please try again later ${error.status === 0 ? '' : `ERR${error.status}`}`,
+        ),
+    );
   }
 }
