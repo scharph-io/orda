@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	git  string
-	date string
+	version string
+	date    string
 )
 
 // jwtCustomClaims are custom claims extending default ones.
@@ -109,7 +109,7 @@ func handlePost(c echo.Context) error {
 func main() {
 
 	fmt.Println("buildDate: ", date)
-	fmt.Println("gitCommit: ", git)
+	fmt.Println("version: ", version)
 
 	e := echo.New()
 

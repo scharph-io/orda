@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { VERSION } from '../../core/version';
 
 @Component({
   selector: 'orda-info',
   template: `
     <div class="container">
       <h2>Orda Client</h2>
-      <p>Version: 0.0.1-alpha</p>
+      <p>Version: {{VERSION}}</p>
       <p>Track your orders</p>
     </div>
   `,
@@ -18,5 +19,5 @@ import { Component } from '@angular/core';
   ],
 })
 export class InfoComponent {
-  constructor() {}
+  VERSION = VERSION;
 }

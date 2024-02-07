@@ -5,17 +5,38 @@ BINARY_NAME=$(PROJECT)
 
 MAIN= cmd/server/main.go
 
-SHA := $(shell test -d .git && git rev-parse --short HEAD)
-DIRTY := $(shell test -d .git && git diff --quiet || echo 'dirty')
+TAG_COMMIT := $(shell git rev-list --abbrev-commit --tags --max-count=1)
+TAG := $(shell git describe --abbrev=0 --tags ${TAG_COMMIT} 2>/dev/null || true)
+COMMIT := $(shell git rev-parse --short HEAD)
+DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
+VERSION := $(TAG:v%=%)
+ifneq ($(COMMIT), $(TAG_COMMIT))
+	VERSION := $(VERSION)-next-$(COMMIT)-$(DATE)
+endif
+ifeq ($(VERSION),)
+	VERSION := $(COMMIT)-$(DATA)
+endif
+ifneq ($(shell git status --porcelain),)
+	VERSION := $(VERSION)-dirty
+endif
+
 BUILD_DATE := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
-LD_FLAGS := -X main.date=$(BUILD_DATE) -X main.git=$(SHA)-$(DIRTY)
+LD_FLAGS := -X main.date=$(BUILD_DATE) -X main.version=$(VERSION)
 BUILD_ARGS := -ldflags='$(LD_FLAGS)'
+
+
+PACKAGE_JSON=web/client/package.json
+
+.PHONY: build-local
 
 help: ## This help dialog.
 	@grep -F -h "##" $(MAKEFILE_LIST) | grep -F -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 run-local: ## Run the app locally
 	go run cmd/server/main.go
+
+pre-build-ui:
+	cat $(PACKAGE_JSON) | jq --arg version "$(VERSION)" '.version |= $$version' | tee $(PACKAGE_JSON) > /dev/null
 
 build-ui:
 	npm --prefix web/client install && npm --prefix web/client run build
@@ -25,6 +46,8 @@ build-local: build-ui
 	GOOS=linux 	GOARCH=arm64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm64 	$(MAIN)
 	GOOS=linux 	GOARCH=arm 		go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm 		$(MAIN)
 	GOOS=darwin GOARCH=amd64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin 	$(MAIN)
+
+ci-build: pre-build-ui build-ui build-local 
 
 run-web: ## Run the app locally
 	npm run start --prefix web/app
