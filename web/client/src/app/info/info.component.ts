@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
+  selector: 'orda-info',
   template: `
     <div class="container">
       <h2>Orda Client</h2>

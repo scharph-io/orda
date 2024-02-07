@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
+  selector: 'orda-history',
   template: `
     <div class="container">
       <h1>History</h1>
