@@ -8,13 +8,11 @@
 
 .login-container {
   display: grid;
-  gap: 0.2em;
-  grid-auto-flow: row;
   grid-template:
-    "username" 0.8fr
-    "password" 0.8fr
-    "alert" 0.2fr
-    "login" 0.7fr/1fr;
+    "username" 1fr
+    "password" 1fr
+    "login" 0.7fr
+    "alert" 0.8fr / 1fr;
 }
 
 .password {
@@ -36,8 +34,10 @@
 }
 
 .alert {
-  align-self: center; 
   grid-area: alert;
   margin: 0 1rem;
+  font-size: 0.8em;
   color: red;
 }
+
+

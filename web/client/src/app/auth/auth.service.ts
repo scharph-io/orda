@@ -11,7 +11,7 @@ import {
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-interface Claims {
+export interface Claims {
   name: string;
   token: string;
   admin: boolean;
@@ -42,11 +42,18 @@ export class AuthService {
     formData.append('password', password);
     return this.http
       .post<Claims>(`${this.endpoint}/auth`, formData)
-      .subscribe((res: Claims) => {
-        localStorage.setItem(ACCESS_TOKEN_KEY, res.token);
-        this.authState$.next(true);
-        this.router.navigate(['home']);
-      });
+      .pipe(
+        catchError(this.handleError)
+      )
+  }
+
+  forwardToHome() {
+    this.authState$.next(true);
+    this.router.navigate(['home']);
+  }
+
+  setToken(token: string) {
+    localStorage.setItem(ACCESS_TOKEN_KEY, token);
   }
 
   getToken() {
@@ -76,5 +83,19 @@ export class AuthService {
 
   isExpired(): boolean {
     return jwtDecode<Claims>(this.getToken()).exp < Date.now() / 1000;
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    if (error.status === 0) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong.
+      console.error(
+        `Backend returned code ${error.status}, body was: `, error.error);
+    }
+    // Return an observable with a user-facing error message.
+    return throwError(() => new Error(`There was an error, please try again later ${error.status === 0 ? '': `ERR${error.status}`}`));
   }
 }

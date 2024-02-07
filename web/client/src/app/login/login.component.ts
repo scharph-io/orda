@@ -13,8 +13,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { AuthService } from '../auth/auth.service';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { AuthService, Claims } from '../auth/auth.service';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'orda-login',
@@ -27,18 +27,26 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
+    JsonPipe,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   hide = true;
+  error = '';
 
   constructor(private authService: AuthService) {}
 
   credentials = new FormGroup({
-    username: new FormControl('admin', [Validators.required]),
-    password: new FormControl('secret', [Validators.required]),
+    username: new FormControl('admin', [
+      Validators.required,
+      Validators.minLength(4),
+    ]),
+    password: new FormControl('secret', [
+      Validators.required,
+      Validators.minLength(5),
+    ]),
   });
 
   getErrorMessage() {
@@ -57,10 +65,21 @@ export class LoginComponent {
       this.credentials.controls.username.value &&
       this.credentials.controls.password.value
     ) {
-      this.authService.auth(
-        this.credentials.controls.username.value,
-        this.credentials.controls.password.value,
-      )
+
+      this.authService
+        .auth(
+          this.credentials.controls.username.value,
+          this.credentials.controls.password.value,
+        )
+        .subscribe({
+          next: (res: Claims) => {
+            this.authService.setToken(res.token);
+            this.authService.forwardToHome();
+          },
+          error: (err) => {
+            this.error = err;
+          },
+        });
     }
 
     // console.log(username, password);
@@ -69,7 +88,4 @@ export class LoginComponent {
   logout() {
     this.authService.logout();
   }
-
-  
-
 }
