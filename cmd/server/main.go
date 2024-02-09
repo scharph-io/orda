@@ -37,7 +37,8 @@ type Item struct {
 type CheckoutData struct {
 	Items      []Item `json:"items"`
 	Total      int32  `json:"total"`
-	NotCharged bool   `json:"not_charged"`
+	AccountType uint8  `json:"accountType"`
+	PaymentOption uint8   `json:"paymentOption"`
 }
 
 func login(c echo.Context) error {
@@ -100,9 +101,18 @@ func handlePost(c echo.Context) error {
 	}
 
 	fmt.Println("CheckoutData: ", u)
-	fmt.Printf("Successfully checked out %d items\nTotal %d\n", len(u.Items), u.Total)
 
-	return c.JSON(http.StatusCreated, echo.Map{"success": true})
+	cntItems := 0
+
+	for _, v := range u.Items {
+		cntItems += v.Qty
+	}
+	fmt.Printf("Successfully checked out %d items\nTotal %d\n", cntItems, u.Total)
+	fmt.Printf("AccountType: %d\n", u.AccountType)
+	fmt.Printf("PaymentOption: %d\n", u.PaymentOption)
+
+
+	return c.JSON(http.StatusBadRequest, echo.Map{"success": true})
 	// return c.JSON(http.StatusOK, "Welcome "+name+"!"+" You are admin: "+strconv.FormatBool(claims.Admin))
 }
 

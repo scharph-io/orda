@@ -87,6 +87,10 @@ export class AuthService {
     if (error.status === 0) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error);
+    } else if (error.status === 401) {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong.
+      return throwError(() => new Error('Invalid username or password'));
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong.
@@ -99,7 +103,7 @@ export class AuthService {
     return throwError(
       () =>
         new Error(
-          `There was an error, please try again later ${error.status === 0 ? '' : `ERR${error.status}`}`,
+          `Login failed, try again later ${error.status === 0 ? '' : ` (ERR${error.status})`}`,
         ),
     );
   }

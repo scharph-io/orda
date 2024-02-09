@@ -5,7 +5,7 @@ import { OrderGridComponent } from './ordergrid/ordergrid.component';
 import { ArticleGroup, createFakeArticles } from './article';
 import { CartComponent } from './cart/cart.component';
 import { CartStore } from './cart/cart.store';
-import { CheckoutService } from './services/articles.service';
+import { CheckoutService } from './services/checkout.service';
 import { MatIconModule } from '@angular/material/icon';
 
 /**

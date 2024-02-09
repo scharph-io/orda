@@ -76,12 +76,10 @@ export class LoginComponent {
             this.authService.forwardToHome();
           },
           error: (err) => {
-            this.error = err;
+            this.error = err.message;
           },
         });
     }
-
-    // console.log(username, password);
   }
 
   logout() {

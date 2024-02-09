@@ -1,4 +1,4 @@
-import { Component, Inject, inject } from '@angular/core';
+import { Component, Inject, computed, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -9,13 +9,27 @@ import {
   MatDialogClose,
 } from '@angular/material/dialog';
 import { CartItem } from '../cart.store';
-import { CurrencyPipe, JsonPipe } from '@angular/common';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { FormsModule } from '@angular/forms';
+import {
+  MatButtonToggle,
+  MatButtonToggleModule,
+} from '@angular/material/button-toggle';
+import {
+  FormControl,
+  FormsModule,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { CheckoutData, CheckoutService } from '../../services/articles.service';
+import {
+  CheckoutData,
+  CheckoutService,
+  AccountTypeKeys,
+  PaymentOptionKeys,
+  AccountType,
+  PaymentOption,
+} from '../../services/checkout.service';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
 @Component({
@@ -26,49 +40,100 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
     MatDialogContent,
     OrdaCurrencyPipe,
     FormsModule,
-    MatSlideToggleModule,
+    MatButtonToggleModule,
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    FormsModule,
     MatButtonModule,
     MatDialogActions,
     MatDialogClose,
+    MatButtonToggle,
+    ReactiveFormsModule,
   ],
   template: `
     <h1 mat-dialog-title>Summary</h1>
     <div mat-dialog-content>
       Total: {{ checkoutData.total | ordaCurrency: 'EUR' }}
-      <mat-slide-toggle [(ngModel)]="checkoutData.not_charged"
-        >Special</mat-slide-toggle
+      <mat-button-toggle-group
+        [formControl]="accountControl"
+        aria-label="Account type"
       >
+        <mat-button-toggle
+          [style.color]="'red'"
+          [value]="AccountType.CUSTOMER"
+          >{{ AccountTypeKeys[AccountType.CUSTOMER] }}</mat-button-toggle
+        >
+        <mat-button-toggle [value]="AccountType.FREE">{{
+          AccountTypeKeys[AccountType.FREE]
+        }}</mat-button-toggle>
+        <mat-button-toggle [value]="AccountType.ADVANCED">{{
+          AccountTypeKeys[AccountType.ADVANCED]
+        }}</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      @if (accountControl.value === AccountType.CUSTOMER) {
+        <mat-button-toggle-group
+          [formControl]="paymentOptionControl"
+          aria-label="Payment option"
+        >
+          <mat-button-toggle
+            [style.color]="'red'"
+            [value]="PaymentOption.CASH"
+            >{{ PaymentOptionKeys[PaymentOption.CASH] }}</mat-button-toggle
+          >
+          <mat-button-toggle [value]="PaymentOption.CARD">{{
+            PaymentOptionKeys[PaymentOption.CARD]
+          }}</mat-button-toggle>
+        </mat-button-toggle-group>
+      }
     </div>
+
     <div mat-dialog-actions>
       <button mat-button [mat-dialog-close]="{ clear: false }">Cancel</button>
       <button
         mat-button
         color="warn"
-        [mat-dialog-close]="{ clear: true }"
+        [mat-dialog-close]="{
+          clear: true,
+          accountType: accountControl.value,
+          paymentOption: paymentOptionControl.value
+        }"
         cdkFocusInitial
-        (click)="submit()"
+        (click)="
+          submit(
+            asAccountType(accountControl.value ?? 0),
+            asPaymentOption(paymentOptionControl.value ?? 0)
+          )
+        "
       >
         <mat-icon>shopping_cart_checkout</mat-icon>
-        @if (checkoutData.not_charged) {
-          Als Sponsor
-        } @else {
-          Bar
+        {{ AccountTypeKeys[asAccountType(accountControl.value ?? 0)] }}
+        @if (accountControl.value === AccountType.CUSTOMER) {
+          {{
+            PaymentOptionKeys[asPaymentOption(paymentOptionControl.value ?? 0)]
+          }}
         }
       </button>
     </div>
   `,
 })
 export class CheckoutDialogComponent {
+  accountControl = new FormControl(0, [Validators.required]);
+  paymentOptionControl = new FormControl(0, [Validators.required]);
+
   checkoutData: CheckoutData = {
     items: [],
     total: 0,
-    not_charged: false,
+    accountType: AccountType.CUSTOMER,
+    paymentOption: PaymentOption.FREE,
   };
+
+  AccountType = AccountType;
+  AccountTypeKeys = AccountTypeKeys;
+
+  PaymentOption = PaymentOption;
+  PaymentOptionKeys = PaymentOptionKeys;
 
   checkout = inject(CheckoutService);
 
@@ -83,10 +148,19 @@ export class CheckoutDialogComponent {
     );
   }
 
-  submit(): void {
-    console.log(this.checkoutData);
+  submit(accountType: AccountType, paymentOption: PaymentOption): void {
+    this.checkoutData.accountType = accountType;
+    this.checkoutData.paymentOption = paymentOption;
     this.checkout.checkout(this.checkoutData).subscribe((res) => {
       console.log(res);
     });
+  }
+
+  asAccountType(value: number): AccountType {
+    return value as AccountType;
+  }
+
+  asPaymentOption(value: number): PaymentOption {
+    return value as PaymentOption;
   }
 }
