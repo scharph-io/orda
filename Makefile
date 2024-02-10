@@ -49,6 +49,7 @@ build-local: build-ui
 	GOOS=linux 	GOARCH=arm64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm64 	$(MAIN)
 	GOOS=linux 	GOARCH=arm 		go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm 		$(MAIN)
 	GOOS=darwin GOARCH=amd64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin 	$(MAIN)
+	GOOS=darwin GOARCH=arm64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin_arm 	$(MAIN)
 
 ci-build: pre-build-ui build-ui build-local 
 
