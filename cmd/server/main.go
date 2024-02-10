@@ -111,8 +111,12 @@ func handlePost(c echo.Context) error {
 	fmt.Printf("AccountType: %d\n", u.AccountType)
 	fmt.Printf("PaymentOption: %d\n", u.PaymentOption)
 
+	if cntItems == 10{
+		return c.JSON(http.StatusForbidden, echo.Map{"success": false})
 
-	return c.JSON(http.StatusBadRequest, echo.Map{"success": true})
+	}
+
+	return c.JSON(http.StatusAccepted, echo.Map{"success": true})
 	// return c.JSON(http.StatusOK, "Welcome "+name+"!"+" You are admin: "+strconv.FormatBool(claims.Admin))
 }
 

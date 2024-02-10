@@ -40,7 +40,9 @@ export class CheckoutService {
 
   checkout(checkoutData: CheckoutData) {
     return this.http
-      .post('http://localhost:8080/restricted', checkoutData)
+      .post<{
+        success: boolean;
+      }>('http://localhost:8080/restricted', checkoutData)
       .pipe(catchError(this.handleError));
   }
 

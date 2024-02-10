@@ -32,7 +32,10 @@ PACKAGE_JSON=web/client/package.json
 help: ## This help dialog.
 	@grep -F -h "##" $(MAKEFILE_LIST) | grep -F -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
-run-local: ## Run the app locally
+run-ui: ## Run the app locally
+	npm --prefix web/client run start
+
+run: ## Run the app locally
 	go run cmd/server/main.go
 
 pre-build-ui:

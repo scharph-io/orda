@@ -52,53 +52,57 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
     ReactiveFormsModule,
   ],
   template: `
-    <h1 mat-dialog-title>Summary</h1>
-    <div mat-dialog-content>
-      Total: {{ checkoutData.total | ordaCurrency: 'EUR' }}
-      <mat-button-toggle-group
-        [formControl]="accountControl"
-        aria-label="Account type"
-      >
-        <mat-button-toggle
-          [style.color]="'red'"
-          [value]="AccountType.CUSTOMER"
-          >{{ AccountTypeKeys[AccountType.CUSTOMER] }}</mat-button-toggle
-        >
-        <mat-button-toggle [value]="AccountType.FREE">{{
-          AccountTypeKeys[AccountType.FREE]
-        }}</mat-button-toggle>
-        <mat-button-toggle [value]="AccountType.ADVANCED">{{
-          AccountTypeKeys[AccountType.ADVANCED]
-        }}</mat-button-toggle>
-      </mat-button-toggle-group>
-
-      @if (accountControl.value === AccountType.CUSTOMER) {
+    <!-- <h1 mat-dialog-title [style.text-align]="'center'" [style.font-size.em]="2">
+      Summary
+    </h1> -->
+    <div mat-dialog-content class="container">
+      <div class="total">
+        <div class="total-container">
+          <div class="item-0">
+            {{ checkoutData.total | ordaCurrency: 'EUR' }}
+          </div>
+          <div class="item-1">Total:</div>
+        </div>
+      </div>
+      <div class="account">
         <mat-button-toggle-group
-          [formControl]="paymentOptionControl"
-          aria-label="Payment option"
+          [formControl]="accountControl"
+          aria-label="Account type"
         >
-          <mat-button-toggle
-            [style.color]="'red'"
-            [value]="PaymentOption.CASH"
-            >{{ PaymentOptionKeys[PaymentOption.CASH] }}</mat-button-toggle
-          >
-          <mat-button-toggle [value]="PaymentOption.CARD">{{
-            PaymentOptionKeys[PaymentOption.CARD]
+          <mat-button-toggle [value]="AccountType.CUSTOMER">{{
+            AccountTypeKeys[AccountType.CUSTOMER]
+          }}</mat-button-toggle>
+          <mat-button-toggle [value]="AccountType.FREE">{{
+            AccountTypeKeys[AccountType.FREE]
+          }}</mat-button-toggle>
+          <mat-button-toggle [value]="AccountType.ADVANCED">{{
+            AccountTypeKeys[AccountType.ADVANCED]
           }}</mat-button-toggle>
         </mat-button-toggle-group>
-      }
+      </div>
+      <div class="payment">
+        @if (accountControl.value === AccountType.CUSTOMER) {
+          <mat-button-toggle-group
+            [formControl]="paymentOptionControl"
+            aria-label="Payment option"
+          >
+            <mat-button-toggle [value]="PaymentOption.CASH">{{
+              PaymentOptionKeys[PaymentOption.CASH]
+            }}</mat-button-toggle>
+            <mat-button-toggle [value]="PaymentOption.CARD">{{
+              PaymentOptionKeys[PaymentOption.CARD]
+            }}</mat-button-toggle>
+          </mat-button-toggle-group>
+        }
+      </div>
+      <div class="error" [style.color]="'red'">{{ error }}</div>
     </div>
 
-    <div mat-dialog-actions>
+    <div mat-dialog-actions [style.justify-content]="'space-evenly'">
       <button mat-button [mat-dialog-close]="{ clear: false }">Cancel</button>
       <button
         mat-button
-        color="warn"
-        [mat-dialog-close]="{
-          clear: true,
-          accountType: accountControl.value,
-          paymentOption: paymentOptionControl.value
-        }"
+        color="info"
         cdkFocusInitial
         (click)="
           submit(
@@ -117,10 +121,77 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       </button>
     </div>
   `,
+  styles: [
+    `
+      .container {
+        display: grid;
+        gap: 1em;
+        grid-template:
+          'total' 1fr
+          'account' auto
+          'payment' 0.7fr
+          'error' auto/1fr;
+      }
+
+      .total {
+        justify-self: center;
+        align-self: center;
+        grid-area: total;
+      }
+
+      .account {
+        justify-self: center;
+        grid-area: account;
+      }
+
+      .payment {
+        justify-self: center;
+        grid-area: payment;
+      }
+
+      .error {
+        justify-self: center;
+        grid-area: error;
+      }
+
+      .total-container {
+        display: flex;
+        gap: 0.5em;
+        flex-direction: row-reverse;
+      }
+
+      .item-1 {
+        font-size: 1.5em;
+        flex-grow: 1;
+        align-self: center;
+      }
+
+      .item-0 {
+        font-size: 2em;
+        font-weight: bold;
+        flex-grow: 2;
+        flex-basis: 1;
+        align-self: center;
+      }
+
+      mat-toggle-button {
+        background-color: #e0e0e0;
+      }
+
+      .mat-button-toggle-appearance-standard.mat-button-toggle-checked {
+        color: #e0e0e0;
+        background-color: #682bff;
+      }
+    `,
+  ],
 })
 export class CheckoutDialogComponent {
-  accountControl = new FormControl(0, [Validators.required]);
-  paymentOptionControl = new FormControl(0, [Validators.required]);
+  accountControl = new FormControl(AccountType.CUSTOMER, [Validators.required]);
+  paymentOptionControl = new FormControl(PaymentOption.CASH, [
+    Validators.required,
+  ]);
+
+  error = '';
 
   checkoutData: CheckoutData = {
     items: [],
@@ -151,8 +222,17 @@ export class CheckoutDialogComponent {
   submit(accountType: AccountType, paymentOption: PaymentOption): void {
     this.checkoutData.accountType = accountType;
     this.checkoutData.paymentOption = paymentOption;
-    this.checkout.checkout(this.checkoutData).subscribe((res) => {
-      console.log(res);
+
+    this.checkout.checkout(this.checkoutData).subscribe({
+      next: (res: any) => {
+        if (res.success) {
+          this.error = '';
+          this.dialogRef.close({ clear: true });
+        }
+      },
+      error: (err) => {
+        this.error = err.message;
+      },
     });
   }
 
