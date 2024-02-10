@@ -31,6 +31,8 @@ import {
   PaymentOption,
 } from '../../services/checkout.service';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
+import { MessageService, Severity } from '../../../shared/message.service';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'orda-checkout-dialog',
@@ -51,10 +53,8 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
     MatButtonToggle,
     ReactiveFormsModule,
   ],
+  providers: [OrdaCurrencyPipe],
   template: `
-    <!-- <h1 mat-dialog-title [style.text-align]="'center'" [style.font-size.em]="2">
-      Summary
-    </h1> -->
     <div mat-dialog-content class="container">
       <div class="total">
         <div class="total-container">
@@ -101,8 +101,9 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
     <div mat-dialog-actions [style.justify-content]="'space-evenly'">
       <button mat-button [mat-dialog-close]="{ clear: false }">Cancel</button>
       <button
+        class="btn-checkout"
         mat-button
-        color="info"
+        color="warn"
         cdkFocusInitial
         (click)="
           submit(
@@ -182,6 +183,11 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
         color: #e0e0e0;
         background-color: #682bff;
       }
+
+      .btn-checkout {
+        background-color: #f29f05b0;
+        color: #606b73;
+      }
     `,
   ],
 })
@@ -207,8 +213,10 @@ export class CheckoutDialogComponent {
   PaymentOptionKeys = PaymentOptionKeys;
 
   checkout = inject(CheckoutService);
+  message = inject(MessageService);
 
   constructor(
+    private currencyPipe: OrdaCurrencyPipe,
     public dialogRef: MatDialogRef<CheckoutDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CartItem[],
   ) {
@@ -228,10 +236,18 @@ export class CheckoutDialogComponent {
         if (res.success) {
           this.error = '';
           this.dialogRef.close({ clear: true });
+          this.message.send({
+            title: `${this.currencyPipe.transform(this.checkoutData.total)} in ${AccountTypeKeys[accountType]} using ${PaymentOptionKeys[paymentOption]}.`,
+            severity: Severity.INFO,
+          });
         }
       },
       error: (err) => {
         this.error = err.message;
+        this.message.send({
+          title: `${err.message}`,
+          severity: Severity.ERROR,
+        });
       },
     });
   }

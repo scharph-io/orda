@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
+import { NotificationComponent } from './shared/notification/notification.component';
+import { MessageService } from './shared/message.service';
 
 @Component({
   selector: 'orda-root',
@@ -21,6 +23,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatMenuModule,
     RouterModule,
     MatDividerModule,
+    NotificationComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
