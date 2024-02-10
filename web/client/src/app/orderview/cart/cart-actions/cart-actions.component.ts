@@ -66,6 +66,7 @@ export class CartActionsComponent {
     const dialogRef = this.dialog.open(CheckoutDialogComponent, {
       data: this.items(),
       width: 'auto',
+      minWidth: '25rem',
       height: '25rem',
     });
 

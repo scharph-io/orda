@@ -1,4 +1,8 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  isDevMode,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -8,6 +12,8 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { JwtModule } from '@auth0/angular-jwt';
+import { TranslocoHttpLoader } from './transloco-loader';
+import { provideTransloco } from '@ngneat/transloco';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,5 +31,17 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(),
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'de'],
+        defaultLang: 'de',
+        fallbackLang: 'en',
+        // Remove this option if your application doesn't support changing language in runtime.
+        reRenderOnLangChange: false,
+        prodMode: !isDevMode(),
+      },
+      loader: TranslocoHttpLoader,
+    }),
   ],
 };

@@ -120,6 +120,19 @@ func handlePost(c echo.Context) error {
 	// return c.JSON(http.StatusOK, "Welcome "+name+"!"+" You are admin: "+strconv.FormatBool(claims.Admin))
 }
 
+func handleTranslations(c echo.Context) error {
+	lang := c.Param("id")
+	translations := map[string]map[string]string{
+		"en": {
+			"hello": "Hello",
+		},
+		"de": {
+			"hello": "Hallo",
+		},
+	}
+	return c.JSON(http.StatusOK, translations[lang])
+}
+
 func main() {
 
 	fmt.Println("buildDate: ", date)
@@ -152,6 +165,8 @@ func main() {
 	r.Use(echojwt.WithConfig(config))
 	r.GET("", restricted)
 	r.POST("", handlePost)
+
+	r.GET("/translations/:id", handleTranslations)
 
 	var contentHandler = echo.WrapHandler(http.FileServer(http.FS(&client.Assets)))
 	var contentRewrite = middleware.Rewrite(map[string]string{"/*": "/dist/client/browser/$1"})

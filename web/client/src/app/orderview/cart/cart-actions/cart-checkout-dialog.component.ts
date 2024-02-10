@@ -32,7 +32,7 @@ import {
 } from '../../services/checkout.service';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import { MessageService, Severity } from '../../../shared/message.service';
-import { CurrencyPipe } from '@angular/common';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
   selector: 'orda-checkout-dialog',
@@ -52,6 +52,7 @@ import { CurrencyPipe } from '@angular/common';
     MatDialogClose,
     MatButtonToggle,
     ReactiveFormsModule,
+    TranslocoModule,
   ],
   providers: [OrdaCurrencyPipe],
   template: `
@@ -70,13 +71,13 @@ import { CurrencyPipe } from '@angular/common';
           aria-label="Account type"
         >
           <mat-button-toggle [value]="AccountType.CUSTOMER">{{
-            AccountTypeKeys[AccountType.CUSTOMER]
+            AccountTypeKeys[AccountType.CUSTOMER] | transloco
           }}</mat-button-toggle>
           <mat-button-toggle [value]="AccountType.FREE">{{
-            AccountTypeKeys[AccountType.FREE]
+            AccountTypeKeys[AccountType.FREE] | transloco
           }}</mat-button-toggle>
-          <mat-button-toggle [value]="AccountType.ADVANCED">{{
-            AccountTypeKeys[AccountType.ADVANCED]
+          <mat-button-toggle [value]="AccountType.PREMIUM">{{
+            AccountTypeKeys[AccountType.PREMIUM] | transloco
           }}</mat-button-toggle>
         </mat-button-toggle-group>
       </div>
@@ -87,10 +88,10 @@ import { CurrencyPipe } from '@angular/common';
             aria-label="Payment option"
           >
             <mat-button-toggle [value]="PaymentOption.CASH">{{
-              PaymentOptionKeys[PaymentOption.CASH]
+              PaymentOptionKeys[PaymentOption.CASH] | transloco
             }}</mat-button-toggle>
             <mat-button-toggle [value]="PaymentOption.CARD">{{
-              PaymentOptionKeys[PaymentOption.CARD]
+              PaymentOptionKeys[PaymentOption.CARD] | transloco
             }}</mat-button-toggle>
           </mat-button-toggle-group>
         }
@@ -113,10 +114,13 @@ import { CurrencyPipe } from '@angular/common';
         "
       >
         <mat-icon>shopping_cart_checkout</mat-icon>
-        {{ AccountTypeKeys[asAccountType(accountControl.value ?? 0)] }}
+        {{
+          AccountTypeKeys[asAccountType(accountControl.value ?? 0)] | transloco
+        }}
         @if (accountControl.value === AccountType.CUSTOMER) {
           {{
             PaymentOptionKeys[asPaymentOption(paymentOptionControl.value ?? 0)]
+              | transloco
           }}
         }
       </button>

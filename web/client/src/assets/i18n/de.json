@@ -1,0 +1,38 @@
+{
+  "hello": "Hallo",
+  "customer": "Kunde",
+  "menu": {
+    "home": "Startseite",
+    "orders": "Bestellungen",
+    "history": "Verlauf",
+    "info": "Info",
+    "manage": "Verwalten",
+    "store": "Geschäft"
+  },
+  "logout": "Abmelden",
+  "login": "Anmelden",
+  "cart": {
+    "title": "Warenkorb",
+    "empty": "Warenkorb ist leer",
+    "checkout": "Zur Kasse gehen",
+    "total": "Gesamt",
+    "remove": "Entfernen",
+    "quantity": "Menge",
+    "price": "Preis",
+    "subtotal": "Zwischensumme",
+    "totalPrice": "Gesamtpreis"
+  },
+  "payment": {
+    "title": "Zahlung",
+    "method": "Zahlungsmethode",
+    "card": "EC-Karte",
+    "cash": "Bargeld",
+    "submit": "Absenden"
+  },
+  "account": {
+    "title": "Kontotyp",
+    "customer": "Kunde",
+    "free": "Kostenlos",
+    "premium": "Premium"
+  }
+}

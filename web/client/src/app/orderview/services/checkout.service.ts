@@ -6,13 +6,13 @@ import { catchError, throwError } from 'rxjs';
 export enum AccountType {
   CUSTOMER,
   FREE,
-  ADVANCED,
+  PREMIUM,
 }
 
 export const AccountTypeKeys = {
-  [AccountType.CUSTOMER]: 'customer',
-  [AccountType.FREE]: 'free',
-  [AccountType.ADVANCED]: 'advanced',
+  [AccountType.CUSTOMER]: 'account.customer',
+  [AccountType.FREE]: 'account.free',
+  [AccountType.PREMIUM]: 'account.premium',
 };
 
 export enum PaymentOption {
@@ -22,9 +22,9 @@ export enum PaymentOption {
 }
 
 export const PaymentOptionKeys = {
-  [PaymentOption.FREE]: 'free',
-  [PaymentOption.CASH]: 'cash',
-  [PaymentOption.CARD]: 'card',
+  [PaymentOption.FREE]: 'payment.free',
+  [PaymentOption.CASH]: 'payment.cash',
+  [PaymentOption.CARD]: 'payment.card',
 };
 
 export interface CheckoutData {

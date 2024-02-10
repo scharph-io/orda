@@ -1,0 +1,38 @@
+{
+  "hello": "Hello",
+  "customer": "Customer",
+  "menu": {
+    "home": "Home",
+    "orders": "Orders",
+    "history": "History",
+    "info": "Info",
+    "manage": "Manage",
+    "store": "Store"
+  },
+  "logout": "Logout",
+  "login": "Login",
+  "cart": {
+    "title": "Cart",
+    "empty": "Cart is empty",
+    "checkout": "Checkout",
+    "total": "Total",
+    "remove": "Remove",
+    "quantity": "Quantity",
+    "price": "Price",
+    "subtotal": "Subtotal",
+    "totalPrice": "Total Price"
+  },
+  "payment": {
+    "title": "Payment",
+    "method": "Payment Method",
+    "card": "EC Card",
+    "cash": "Cash",
+    "submit": "Submit"
+  },
+  "account": {
+    "title": "Account Type",
+    "customer": "Customer",
+    "free": "Free",
+    "premium": "Premium"
+  }
+}

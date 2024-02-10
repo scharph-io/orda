@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { NotificationComponent } from './shared/notification/notification.component';
 import { MessageService } from './shared/message.service';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
   selector: 'orda-root',
@@ -24,6 +25,7 @@ import { MessageService } from './shared/message.service';
     RouterModule,
     MatDividerModule,
     NotificationComponent,
+    TranslocoModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

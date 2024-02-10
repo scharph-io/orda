@@ -28,24 +28,24 @@
   @if (isAuthenticated | async) {
     <button [routerLink]="['/']" mat-menu-item>
       <mat-icon>store</mat-icon>
-      <span>Store</span>
+      <span>{{ "menu.store" | transloco }}</span>
     </button>
     <button [routerLink]="['/history']" mat-menu-item>
       <mat-icon>history</mat-icon>
-      <span>History</span>
+      <span>{{ "menu.history" | transloco }}</span>
     </button>
   }
 
   @if ((isAuthenticated | async) && isAdmin) {
     <button [routerLink]="['/manage']" mat-menu-item>
       <mat-icon>manage</mat-icon>
-      <span>Manage</span>
+      <span>{{ "menu.manage" | transloco }}</span>
     </button>
   }
 
   <button [routerLink]="['/info']" mat-menu-item>
     <mat-icon>info</mat-icon>
-    <span>Info</span>
+    <span>{{ "menu.info" | transloco }}</span>
   </button>
 
   <mat-divider></mat-divider>
@@ -53,12 +53,12 @@
   @if (isAuthenticated | async) {
     <button (click)="logout()" mat-menu-item>
       <mat-icon>logout</mat-icon>
-      <span>Logout</span>
+      <span>{{ "logout" | transloco }}</span>
     </button>
   } @else {
     <button [routerLink]="['/login']" mat-menu-item>
       <mat-icon>login</mat-icon>
-      <span>Login</span>
+      <span>{{ "login" | transloco }}</span>
     </button>
   }
 </mat-menu>
