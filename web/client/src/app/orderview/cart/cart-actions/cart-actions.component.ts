@@ -3,13 +3,7 @@ import { CartItem, CartStore } from '../cart.store';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
-import {
-  MatDialog,
-  MAT_DIALOG_DATA,
-  MatDialogTitle,
-  MatDialogContent,
-} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { CheckoutDialogComponent } from './cart-checkout-dialog.component';
 
 @Component({

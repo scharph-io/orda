@@ -2,40 +2,39 @@ import { Component, inject, input } from '@angular/core';
 import { CartStore } from '../cart/cart.store';
 import { v4 as uuidv4 } from 'uuid';
 import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'orda-plus-minus',
   standalone: true,
-  imports: [TranslocoModule],
+  imports: [TranslocoModule, MatIconModule],
   template: `
-    <div class="plus" (click)="addToCart(1)">{{ key() | transloco }} +</div>
-    <div class="minus" (click)="addToCart(-1)">{{ key() | transloco }} -</div>
+    <div class="item" (click)="addToCart(1)">
+      {{ key() | transloco }} <mat-icon>add</mat-icon>
+    </div>
+    <div class="item" (click)="addToCart(-1)">
+      {{ key() | transloco }} <mat-icon>remove</mat-icon>
+    </div>
   `,
   styles: [
     `
       :host {
-        display: grid;
-        gap: 0.25em;
-        grid-template:
-          'plus' 1fr
-          'minus' 1fr/1fr;
-        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
         height: 100%;
+        gap: 0.5rem;
       }
 
-      .plus {
+      .item {
+        flex-grow: 1;
         display: flex;
-        justify-content: center;
-        justify-self: center;
-        align-self: center;
-        grid-area: plus;
-      }
+        font-size: 0.75em;
+        padding: 0.25rem;
 
-      .minus {
-        display: flex;
-        justify-self: center;
-        align-self: center;
-        grid-area: minus;
+        align-items: center;
+        border: 0.5px solid lightgrey;
+        background-color: #f5f5f5b6;
       }
     `,
   ],
