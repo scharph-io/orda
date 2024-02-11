@@ -65,65 +65,94 @@ import { TranslocoModule } from '@ngneat/transloco';
           <div class="item-1">Total:</div>
         </div>
       </div>
-      <div class="account">
-        <mat-button-toggle-group
-          [formControl]="accountControl"
-          aria-label="Account type"
-        >
-          <mat-button-toggle [value]="AccountType.CUSTOMER">{{
-            AccountTypeKeys[AccountType.CUSTOMER] | transloco
-          }}</mat-button-toggle>
-          <mat-button-toggle [value]="AccountType.FREE">{{
-            AccountTypeKeys[AccountType.FREE] | transloco
-          }}</mat-button-toggle>
-          <mat-button-toggle [value]="AccountType.PREMIUM">{{
-            AccountTypeKeys[AccountType.PREMIUM] | transloco
-          }}</mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
-      <div class="payment">
-        @if (accountControl.value === AccountType.CUSTOMER) {
+      @if (checkoutData.total > 0) {
+        <div class="account">
           <mat-button-toggle-group
-            [formControl]="paymentOptionControl"
-            aria-label="Payment option"
+            [formControl]="accountControl"
+            aria-label="Account type"
           >
-            <mat-button-toggle [value]="PaymentOption.CASH">{{
-              PaymentOptionKeys[PaymentOption.CASH] | transloco
+            <mat-button-toggle [value]="AccountType.CUSTOMER">{{
+              AccountTypeKeys[AccountType.CUSTOMER] | transloco
             }}</mat-button-toggle>
-            <mat-button-toggle [value]="PaymentOption.CARD">{{
-              PaymentOptionKeys[PaymentOption.CARD] | transloco
+            <mat-button-toggle [value]="AccountType.FREE">{{
+              AccountTypeKeys[AccountType.FREE] | transloco
+            }}</mat-button-toggle>
+            <mat-button-toggle [value]="AccountType.PREMIUM">{{
+              AccountTypeKeys[AccountType.PREMIUM] | transloco
             }}</mat-button-toggle>
           </mat-button-toggle-group>
-        }
-      </div>
+        </div>
+        <div class="payment">
+          @if (accountControl.value === AccountType.CUSTOMER) {
+            <mat-button-toggle-group
+              [formControl]="paymentOptionControl"
+              aria-label="Payment option"
+            >
+              <mat-button-toggle [value]="PaymentOption.CASH">{{
+                PaymentOptionKeys[PaymentOption.CASH] | transloco
+              }}</mat-button-toggle>
+              <mat-button-toggle [value]="PaymentOption.CARD">{{
+                PaymentOptionKeys[PaymentOption.CARD] | transloco
+              }}</mat-button-toggle>
+            </mat-button-toggle-group>
+          }
+        </div>
+      }
       <div class="error" [style.color]="'red'">{{ error }}</div>
     </div>
 
     <div mat-dialog-actions [style.justify-content]="'space-evenly'">
       <button mat-button [mat-dialog-close]="{ clear: false }">Cancel</button>
-      <button
-        class="btn-checkout"
-        mat-button
-        color="warn"
-        cdkFocusInitial
-        (click)="
-          submit(
-            asAccountType(accountControl.value ?? 0),
-            asPaymentOption(paymentOptionControl.value ?? 0)
-          )
-        "
-      >
-        <mat-icon>shopping_cart_checkout</mat-icon>
-        {{
-          AccountTypeKeys[asAccountType(accountControl.value ?? 0)] | transloco
-        }}
-        @if (accountControl.value === AccountType.CUSTOMER) {
+      @if (checkoutData.total > 0) {
+        <button
+          class="btn-checkout"
+          mat-button
+          color="warn"
+          cdkFocusInitial
+          (click)="
+            submit(
+              asAccountType(accountControl.value ?? 0),
+              asPaymentOption(paymentOptionControl.value ?? 0)
+            )
+          "
+        >
+          <mat-icon>shopping_cart_checkout</mat-icon>
           {{
-            PaymentOptionKeys[asPaymentOption(paymentOptionControl.value ?? 0)]
+            AccountTypeKeys[asAccountType(accountControl.value ?? 0)]
               | transloco
           }}
-        }
-      </button>
+          @if (accountControl.value === AccountType.CUSTOMER) {
+            {{
+              PaymentOptionKeys[
+                asPaymentOption(paymentOptionControl.value ?? 0)
+              ] | transloco
+            }}
+          }
+        </button>
+      } @else if (checkoutData.total === 0) {
+        <button
+          class="btn-checkout"
+          mat-button
+          color="warn"
+          cdkFocusInitial
+          (click)="submit(AccountType.CUSTOMER, PaymentOption.CASH)"
+        >
+          <mat-icon>shopping_cart_checkout</mat-icon>
+          {{ 'checkout.settle' | transloco }}
+        </button>
+      } @else {
+        <button
+          class="btn-checkout"
+          mat-button
+          color="warn"
+          cdkFocusInitial
+          (click)="submit(AccountType.CUSTOMER, PaymentOption.CASH)"
+        >
+          <mat-icon>shopping_cart_checkout</mat-icon>
+          {{ 'checkout.payout' | transloco }}
+          {{ PaymentOptionKeys[PaymentOption.CASH] | transloco }}
+        </button>
+      }
     </div>
   `,
   styles: [

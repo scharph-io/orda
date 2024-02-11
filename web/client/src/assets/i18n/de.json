@@ -34,5 +34,10 @@
     "customer": "Kunde",
     "free": "Kostenlos",
     "premium": "Premium"
-  }
+  },
+  "checkout": {
+    "payout": "Auszahlung",
+    "settle": "Abrechnen"
+  },
+  "cupdeposit": "Becherpfand"
 }

@@ -5,6 +5,7 @@ export interface Article {
   price: number;
   desc?: string;
   color: string;
+  active: boolean;
 }
 
 export interface ArticleGroup {
@@ -38,6 +39,7 @@ export function createFakeArticles(
         100,
       uuid: uuidv4(),
       color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+      active: Math.random() > 0.5,
     });
   }
   return data;

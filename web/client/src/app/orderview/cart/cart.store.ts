@@ -29,6 +29,16 @@ export class CartStore {
 
   addItem(item: CartItem): void {
     if (this._items.getValue().find((a) => a.uuid === item.uuid)) {
+      if (item.quantity < 0) {
+        this._items.next(
+          this._items
+            .getValue()
+            .map((a) =>
+              a.uuid === item.uuid ? { ...a, quantity: a.quantity - 1 } : a,
+            ),
+        );
+        return;
+      }
       this._items.next(
         this._items
           .getValue()

@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, NgStyle } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { Article, ArticleGroup } from '../article';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -11,6 +11,7 @@ import {
 import { Subject, takeUntil } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
+import { PlusMinusComponent } from './plus-minus.component';
 
 /**
  * @title Tab group with aligned labels
@@ -24,17 +25,25 @@ import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
     LayoutModule,
     NgStyle,
     OrdaCurrencyPipe,
+    PlusMinusComponent,
   ],
   template: `
     <div class="container">
       <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
-        @for (article of group?.articles; track article) {
+        @if (group().id === 1) {
           <mat-grid-tile
-            [style.backgroundColor]="article.color"
-            (click)="addArticle(article)"
-            >{{ article.name }}({{ article.desc }}) <br />
-            {{ article.price | ordaCurrency }}</mat-grid-tile
-          >
+            ><orda-plus-minus [key]="'cupdeposit'" [value]="100"
+          /></mat-grid-tile>
+        }
+        @for (article of group().articles; track article) {
+          @if (article.active) {
+            <mat-grid-tile
+              [style.backgroundColor]="article.color"
+              (click)="addArticle(article)"
+              >{{ article.name }}({{ article.desc }}) <br />
+              {{ article.price | ordaCurrency }}</mat-grid-tile
+            >
+          }
         }
       </mat-grid-list>
     </div>
@@ -56,7 +65,7 @@ import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
   ],
 })
 export class OrderGridComponent {
-  @Input() group?: ArticleGroup;
+  group = input.required<ArticleGroup>();
 
   destroyed = new Subject<void>();
 

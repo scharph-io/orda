@@ -34,5 +34,10 @@
     "customer": "Customer",
     "free": "Free",
     "premium": "Premium"
-  }
+  },
+  "checkout": {
+    "payout": "Payout",
+    "settle": "Settle"
+  },
+  "cupdeposit": "Cup Deposit"
 }
