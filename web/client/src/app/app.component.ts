@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 
@@ -9,7 +9,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { NotificationComponent } from './shared/notification/notification.component';
-import { MessageService } from './shared/message.service';
 import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({

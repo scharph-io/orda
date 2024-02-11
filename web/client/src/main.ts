@@ -12,8 +12,9 @@ import { isDevMode } from '@angular/core';
 if (isDevMode()) {
   console.info('Angular CDK version', CDK_VERSION.full);
   console.info('Angular Material version', MAT_VERSION.full);
+} else {
+  console.info('Orda version', ORDA_VERSION);
 }
-console.info('Orda version', ORDA_VERSION);
 
 bootstrapApplication(AppComponent, appConfig).catch((err) =>
   console.error(err),

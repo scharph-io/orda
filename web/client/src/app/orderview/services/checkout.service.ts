@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Inject, Injectable, inject } from '@angular/core';
 import { CartItem } from '../cart/cart.store';
 import { catchError, throwError } from 'rxjs';
 
@@ -38,11 +38,13 @@ export interface CheckoutData {
 export class CheckoutService {
   http = inject(HttpClient);
 
+  constructor(@Inject('ENDPOINT') private endpoint: String) {}
+
   checkout(checkoutData: CheckoutData) {
     return this.http
       .post<{
         success: boolean;
-      }>('http://localhost:8080/restricted', checkoutData)
+      }>(`${this.endpoint}/restricted`, checkoutData)
       .pipe(catchError(this.handleError));
   }
 

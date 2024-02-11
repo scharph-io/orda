@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
-// import { User } from './user';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { Inject, Injectable } from '@angular/core';
+import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 
@@ -24,7 +23,6 @@ const ACCESS_TOKEN_KEY = 'access_token';
   providedIn: 'root',
 })
 export class AuthService {
-  endpoint: string = 'http://localhost:8080/api';
   headers = new HttpHeaders().set('Content-Type', 'application/json');
 
   authState$ = new BehaviorSubject(false);
@@ -32,6 +30,7 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     public router: Router,
+    @Inject('ENDPOINT') private endpoint: String,
   ) {
     this.authState$.next(this.authenticated);
   }
@@ -41,7 +40,7 @@ export class AuthService {
     formData.append('username', username);
     formData.append('password', password);
     return this.http
-      .post<Claims>(`${this.endpoint}/auth`, formData)
+      .post<Claims>(`${this.endpoint}/api/auth`, formData)
       .pipe(catchError(this.handleError));
   }
 

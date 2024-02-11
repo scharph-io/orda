@@ -43,5 +43,9 @@ export const appConfig: ApplicationConfig = {
       },
       loader: TranslocoHttpLoader,
     }),
+    {
+      provide: 'ENDPOINT',
+      useValue: isDevMode() ? 'http://localhost:8080' : '',
+    },
   ],
 };
