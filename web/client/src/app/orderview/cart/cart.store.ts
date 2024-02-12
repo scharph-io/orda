@@ -29,36 +29,34 @@ export class CartStore {
 
   addItem(item: CartItem): void {
     if (this._items.getValue().find((a) => a.uuid === item.uuid)) {
-      if (item.quantity < 0) {
-        this._items.next(
-          this._items
-            .getValue()
-            .map((a) =>
-              a.uuid === item.uuid ? { ...a, quantity: a.quantity - 1 } : a,
-            ),
-        );
-        return;
-      }
       this._items.next(
-        this._items
-          .getValue()
-          .map((a) =>
-            a.uuid === item.uuid ? { ...a, quantity: a.quantity + 1 } : a,
-          ),
+        this._items.getValue().map((a) =>
+          a.uuid === item.uuid
+            ? {
+                ...a,
+                quantity: item.quantity > 0 ? a.quantity + 1 : a.quantity - 1,
+              }
+            : a,
+        ),
       );
     } else {
       this._items.next([...this._items.getValue(), item]);
     }
+
+    
   }
 
   removeItem(item: CartItem): void {
-    if (item.quantity > 1) {
+    if (item.quantity > 1 || item.quantity < -1) {
       this._items.next(
-        this._items
-          .getValue()
-          .map((a) =>
-            a.uuid === item.uuid ? { ...a, quantity: a.quantity - 1 } : a,
-          ),
+        this._items.getValue().map((a) =>
+          a.uuid === item.uuid
+            ? {
+                ...a,
+                quantity: item.quantity > 0 ? a.quantity - 1 : a.quantity + 1,
+              }
+            : a,
+        ),
       );
     } else {
       this._items.next(
