@@ -36,7 +36,7 @@ run-ui: ## Run the app locally
 	npm --prefix web/client run start
 
 run: ## Run the app locally
-	go run cmd/server/main.go
+	go run cmd/server2/main.go
 
 pre-build-ui:
 	cat $(PACKAGE_JSON) | jq --arg version "$(VERSION)" '.version |= $$version' | tee $(PACKAGE_JSON) > /dev/null
@@ -52,9 +52,6 @@ build-local: build-ui
 	GOOS=darwin GOARCH=arm64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin_arm 	$(MAIN)
 
 ci-build: pre-build-ui build-ui build-local 
-
-run-web: ## Run the app locally
-	npm run start --prefix web/app
 
 requirements: ## Generate go.mod & go.sum files
 	go mod tidy
