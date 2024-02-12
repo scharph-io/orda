@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, filter, map } from 'rxjs';
 
 export interface CartItem {
   uuid: string;
@@ -15,8 +15,9 @@ export class CartStore {
     [],
   );
 
-  public readonly items$: Observable<Array<CartItem>> =
-    this._items.asObservable();
+  public readonly items$: Observable<Array<CartItem>> = this._items
+    .asObservable()
+    .pipe(map((items) => items.filter((a) => a.quantity !== 0)));
 
   public readonly total$: Observable<number> = this._items.pipe(
     map((articles) =>
@@ -42,8 +43,6 @@ export class CartStore {
     } else {
       this._items.next([...this._items.getValue(), item]);
     }
-
-    
   }
 
   removeItem(item: CartItem): void {
