@@ -8,11 +8,48 @@
 // Be sure that you only ever include this mixin once!
 @include mat.core();
 
+// @import "@fontsource/inter"; // Defaults to weight 400
+@import "@fontsource/inter/500"; // Specify weight
+
+/* For use in src/lib/core/theming/_palette.scss */
+$md-unionsaxen: (
+  50: #fdf6e1,
+  100: #fae9b4,
+  200: #f6da83,
+  300: #f2cb51,
+  400: #f0c02b,
+  500: #000000,
+  600: #ebae05,
+  700: #e8a504,
+  800: #e59d03,
+  900: #e08d02,
+  A100: #ffffff,
+  A200: #ffedd4,
+  A400: #ffd8a1,
+  A700: #ffcd88,
+  contrast: (
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #f0c02b,
+    600: #000000,
+    700: #000000,
+    800: #000000,
+    900: #000000,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
+);
+
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$client-primary: mat.define-palette(mat.$indigo-palette);
-$client-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$client-primary: mat.define-palette($md-unionsaxen);
+$client-accent: mat.define-palette($md-unionsaxen, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
 $client-warn: mat.define-palette(mat.$red-palette);
@@ -42,6 +79,6 @@ body {
 }
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  background-color: #f5f5f5;
+  font-family: Inter, "Helvetica Neue", sans-serif;
+  background-image: url("./assets/background.svg");
 }

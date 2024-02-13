@@ -20,21 +20,17 @@ import { MatIconModule } from '@angular/material/icon';
     `
       :host {
         display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
+        flex-direction: row;
         height: 100%;
+        width: 100%;
         gap: 0.5rem;
       }
 
       .item {
         flex-grow: 1;
         display: flex;
-        font-size: 0.75em;
-        padding: 0.25rem;
-
         align-items: center;
-        border: 0.5px solid lightgrey;
-        background-color: #f5f5f5b6;
+        justify-content: center;
       }
     `,
   ],

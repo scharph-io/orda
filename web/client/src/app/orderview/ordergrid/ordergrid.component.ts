@@ -29,17 +29,15 @@ import { PlusMinusComponent } from './plus-minus.component';
   ],
   template: `
     <div class="container">
-      <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
+      <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="1rem">
         @if (group().id === 1) {
-          <mat-grid-tile
+          <mat-grid-tile [colspan]="2"
             ><orda-plus-minus [key]="'cupdeposit'" [value]="100"
           /></mat-grid-tile>
         }
         @for (article of group().articles; track article) {
           @if (article.active) {
-            <mat-grid-tile
-              [style.backgroundColor]="article.color"
-              (click)="addArticle(article)"
+            <mat-grid-tile (click)="addArticle(article)"
               >{{ article.name }}({{ article.desc }}) <br />
               {{ article.price | ordaCurrency }}</mat-grid-tile
             >
@@ -53,9 +51,15 @@ import { PlusMinusComponent } from './plus-minus.component';
       mat-grid-list {
         overflow: auto;
       }
+
+      mat-grid-tile {
+        border-radius: 8px;
+        // background: #ffb100;
+        background: linear-gradient(145deg, #ffbd00, #eda500);
+      }
       .container {
         margin: 0.5rem;
-        height: calc(99vh - 120px);
+        height: calc(99vh - 118px);
         overflow: auto;
       }
       .container::-webkit-scrollbar {
