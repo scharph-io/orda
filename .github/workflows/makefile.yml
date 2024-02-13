@@ -3,7 +3,7 @@ name: Makefile CI
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   # This workflow contains multiple jobs
@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
-        
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -29,16 +29,15 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
+          go-version: "1.21"
       # install applicaion dependencies
       - name: Build
-        run: make ci-build 
+        run: make ci-build
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/orda*
+          file: build/*.tar.gz
           file_glob: true
           asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
-
