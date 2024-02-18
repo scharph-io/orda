@@ -30,7 +30,7 @@ import { TranslocoModule } from '@ngneat/transloco';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  appname = 'orda client';
+  appname = 'orda Union Saxen';
 
   constructor(
     private auth: AuthService,
