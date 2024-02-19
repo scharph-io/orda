@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/tls"
+	"log"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,5 +24,19 @@ func main() {
         return c.SendString("Hello, World!")
     })
 
-    app.Listen(":8080")
+    cer, err := tls.LoadX509KeyPair("certs/ssl.cert", "certs/ssl.key")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	config := &tls.Config{Certificates: []tls.Certificate{cer}}
+
+	// Create custom listener
+	ln, err := tls.Listen("tcp", ":443", config)
+	if err != nil {
+		panic(err)
+	}
+
+	// Start server with https/ssl enabled on http://localhost:443
+	log.Fatal(app.Listener(ln))
 }
