@@ -1,18 +1,14 @@
-<div class="container">
-  <div class="articles">
-    <mat-tab-group
-      mat-align-tabs="center"
-      animationDuration="0ms"
-      dynamicHeight="false"
-    >
-      @for (group of articleGroups; track group) {
-        <mat-tab [label]="group.name"
-          ><orda-ordergrid [group]="group"></orda-ordergrid
-        ></mat-tab>
-      }
-    </mat-tab-group>
-  </div>
-  <div class="order">
-    <orda-cart></orda-cart>
-  </div>
-</div>
+<mat-tab-group
+  class="articles"
+  mat-align-tabs="center"
+  animationDuration="0ms"
+  dynamicHeight="false"
+>
+  @for (group of articleGroups; track group) {
+    <mat-tab [label]="group.name"
+      ><orda-ordergrid [group]="group"></orda-ordergrid
+    ></mat-tab>
+  }
+</mat-tab-group>
+
+<orda-cart class="order"></orda-cart>

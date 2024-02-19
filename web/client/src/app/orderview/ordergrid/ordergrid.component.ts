@@ -29,7 +29,7 @@ import { PlusMinusComponent } from './plus-minus.component';
   ],
   template: `
     <div class="container">
-      <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="1rem">
+      <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
         @if (group().id === 1) {
           <mat-grid-tile [colspan]="2"
             ><orda-plus-minus [key]="'cupdeposit'" [value]="100"
@@ -53,13 +53,17 @@ import { PlusMinusComponent } from './plus-minus.component';
       }
 
       mat-grid-tile {
-        border-radius: 8px;
-        // background: #ffb100;
-        background: linear-gradient(145deg, #ffbd00, #eda500);
+        /* From https://css.glass */
+        // background: rgba(14, 255, 0, 0.25);
+        border-radius: 10px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        // border: 1px solid rgba(255, 255, 255, 0.59);
       }
       .container {
-        margin: 0.5rem;
-        height: calc(99vh - 118px);
+        // margin: 0.5rem;
+        // height: calc(99vh - 118px);
         overflow: auto;
       }
       .container::-webkit-scrollbar {
