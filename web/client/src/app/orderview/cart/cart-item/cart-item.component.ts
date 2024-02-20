@@ -41,7 +41,7 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       grid-auto-flow: row;
       grid-template:
         'title quantity sum rm' 1fr
-        'desc quantity sum rm' 1fr / 2fr 1fr 1fr 0.3fr;
+        'desc quantity sum rm' 1fr / 1fr 0.5fr 0.5fr 0.3fr;
       height: 3em;
     }
 
@@ -58,6 +58,14 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
     .desc {
       grid-area: desc;
+      font-size: 0.75rem;
+      text-overflow: ellipsis;
+      line-height: 1.5em;
+      height: 3em;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      width: 100%;
     }
 
     .quantity {

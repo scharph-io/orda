@@ -12,6 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import { PlusMinusComponent } from './plus-minus.component';
+import { ArticleTileComponent } from './article-tile.component';
 
 /**
  * @title Tab group with aligned labels
@@ -24,8 +25,8 @@ import { PlusMinusComponent } from './plus-minus.component';
     ScrollingModule,
     LayoutModule,
     NgStyle,
-    OrdaCurrencyPipe,
     PlusMinusComponent,
+    ArticleTileComponent,
   ],
   template: `
     <div class="container">
@@ -38,9 +39,8 @@ import { PlusMinusComponent } from './plus-minus.component';
         @for (article of group().articles; track article) {
           @if (article.active) {
             <mat-grid-tile (click)="addArticle(article)"
-              >{{ article.name }}({{ article.desc }}) <br />
-              {{ article.price | ordaCurrency }}</mat-grid-tile
-            >
+              ><orda-article-tile [article]="article"
+            /></mat-grid-tile>
           }
         }
       </mat-grid-list>
@@ -50,20 +50,17 @@ import { PlusMinusComponent } from './plus-minus.component';
     `
       mat-grid-list {
         overflow: auto;
+        margin: 0.5rem;
+        height: 100%;
       }
 
       mat-grid-tile {
-        /* From https://css.glass */
-        // background: rgba(14, 255, 0, 0.25);
-        border-radius: 10px;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        border-radius: 0.5em;
+        box-shadow: 0 0.5em 0.95em rgba(0, 0, 0, 0.1);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);
-        // border: 1px solid rgba(255, 255, 255, 0.59);
       }
       .container {
-        // margin: 0.5rem;
-        // height: calc(99vh - 118px);
         overflow: auto;
       }
       .container::-webkit-scrollbar {
@@ -93,13 +90,13 @@ export class OrderGridComponent {
       ])
       .pipe(takeUntil(this.destroyed))
       .subscribe((result) => {
-        // console.log(JSON.stringify(result.breakpoints));
+        console.log(JSON.stringify(result.breakpoints));
         if (result.breakpoints[Breakpoints.XSmall]) {
           this.gridCols = 2;
         } else if (result.breakpoints[Breakpoints.Small]) {
           this.gridCols = 5;
         } else if (result.breakpoints[Breakpoints.Medium]) {
-          this.gridCols = 7;
+          this.gridCols = 6;
         } else if (result.breakpoints[Breakpoints.Large]) {
           this.gridCols = 7;
         } else if (result.breakpoints[Breakpoints.XLarge]) {

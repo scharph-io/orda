@@ -7,12 +7,10 @@
 
 .articles {
   flex-grow: 1;
-  border: 1px solid blue;
   overflow-y: hidden;
-  // height: 90%;
 }
 
 .order {
-  width: 18em;
-  border: 1px solid red;
+  background-color: #a6a6a6;
+  width: 20em;
 }

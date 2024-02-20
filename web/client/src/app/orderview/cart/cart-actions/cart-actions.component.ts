@@ -20,7 +20,7 @@ import { TranslocoModule } from '@ngneat/transloco';
       }
       <button
         mat-flat-button
-        color="primary"
+        color="success"
         [disabled]="disableCheckout()"
         (click)="openCheckoutDialog()"
       >
@@ -34,14 +34,14 @@ import { TranslocoModule } from '@ngneat/transloco';
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 2.5em;
-      font-size: 1.5em;
-      font-weight: bold;
+      // height: 2.5em;
+      // font-size: 1.5em;
+      // font-weight: bold;
     }
 
-    mat-icon button {
-      font-size: 0.7em;
-    }
+    // mat-icon button {
+    //   font-size: 0.5em;
+    // }
   `,
 })
 export class CartActionsComponent {

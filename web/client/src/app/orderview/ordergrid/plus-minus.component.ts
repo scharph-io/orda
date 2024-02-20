@@ -31,6 +31,7 @@ import { MatIconModule } from '@angular/material/icon';
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 0.8rem;
       }
     `,
   ],

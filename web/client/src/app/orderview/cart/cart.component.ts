@@ -25,34 +25,30 @@ import { TranslocoModule } from '@ngneat/transloco';
     TranslocoModule,
   ],
   template: `
-    <div class="container">
-      <div class="title">
-        <h1>{{ 'cart.title' | transloco }}</h1>
-      </div>
-      <div class="subtotal">
-        <orda-cart-header [total]="(total$ | async) ?? 0"></orda-cart-header>
-      </div>
-      <div class="cart">
-        <orda-cart-actions [items]="(items$ | async) ?? []"></orda-cart-actions>
+    <div class="title">
+      <h1>{{ 'cart.title' | transloco }}</h1>
+    </div>
+    <div class="subtotal">
+      <orda-cart-header [total]="(total$ | async) ?? 0"></orda-cart-header>
+    </div>
+    <div class="cart">
+      <orda-cart-actions [items]="(items$ | async) ?? []"></orda-cart-actions>
 
-        @for (item of items$ | async; track $index) {
-          <orda-cart-item [item]="item"></orda-cart-item>
-        }
-      </div>
+      @for (item of items$ | async; track $index) {
+        <orda-cart-item [item]="item"></orda-cart-item>
+      }
     </div>
   `,
   styles: [
     `
-      .container {
+      :host {
         display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto;
         gap: 0px 0px;
         grid-auto-flow: row;
-        grid-template-areas:
-          'title'
-          'subtotal'
-          'cart';
+        grid-template:
+          'title' 4rem
+          'subtotal' 4rem
+          'cart' auto / 1fr;
       }
 
       .title {
@@ -69,6 +65,7 @@ import { TranslocoModule } from '@ngneat/transloco';
 
       .cart {
         grid-area: cart;
+        margin: 0 1em;
       }
     `,
   ],
