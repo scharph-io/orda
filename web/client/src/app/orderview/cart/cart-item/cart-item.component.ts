@@ -1,7 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { CartItem, CartStore } from '../cart.store';
-import { CurrencyPipe, JsonPipe } from '@angular/common';
-import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 

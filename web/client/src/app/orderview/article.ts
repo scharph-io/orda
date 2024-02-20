@@ -29,7 +29,7 @@ export function createFakeArticles(
   for (let i = 0; i < items; i++) {
     data.push({
       name: `Kotellet ${i + 1}`,
-      desc: `Pommes, Ketchup, Senf, Kartoffelsalat ${i + 1}`,
+      desc: `Pommes, Ketchup, Senf, Kartoffelsalat, Reis, Salat ${i + 1}`,
       price:
         (randomIntFromInterval(
           minMaxPrice - minMaxPrice * factor,
