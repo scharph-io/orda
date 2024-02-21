@@ -1,11 +1,11 @@
 import { Component, inject, input } from '@angular/core';
-import { CartStore } from '../cart/cart.store';
+import { CartStore } from '../../cart/cart.store';
 import { v4 as uuidv4 } from 'uuid';
 import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'orda-plus-minus',
+  selector: 'orda-plus-minus-tile',
   standalone: true,
   imports: [TranslocoModule, MatIconModule],
   template: `
@@ -36,7 +36,7 @@ import { MatIconModule } from '@angular/material/icon';
     `,
   ],
 })
-export class PlusMinusComponent {
+export class PlusMinusTileComponent {
   key = input.required<string>();
   value = input.required<number>();
 

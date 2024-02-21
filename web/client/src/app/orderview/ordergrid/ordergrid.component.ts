@@ -10,9 +10,8 @@ import {
 } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
-import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
-import { PlusMinusComponent } from './plus-minus.component';
-import { ArticleTileComponent } from './article-tile.component';
+import { PlusMinusTileComponent } from './tiles/plus-minus-tile.component';
+import { ArticleTileComponent } from './tiles/article-tile.component';
 
 /**
  * @title Tab group with aligned labels
@@ -25,47 +24,34 @@ import { ArticleTileComponent } from './article-tile.component';
     ScrollingModule,
     LayoutModule,
     NgStyle,
-    PlusMinusComponent,
+    PlusMinusTileComponent,
     ArticleTileComponent,
   ],
   template: `
-    <div class="container">
-      <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
-        @if (group().id === 1) {
+    <!-- @if (group().id === 1) {
           <mat-grid-tile [colspan]="2"
-            ><orda-plus-minus [key]="'cupdeposit'" [value]="100"
+            ><orda-plus-minus-tile [key]="'cupdeposit'" [value]="100"
           /></mat-grid-tile>
-        }
-        @for (article of group().articles; track article) {
-          @if (article.active) {
-            <mat-grid-tile (click)="addArticle(article)"
-              ><orda-article-tile [article]="article"
-            /></mat-grid-tile>
-          }
-        }
-      </mat-grid-list>
-    </div>
+        } -->
+    @for (article of group().articles; track article) {
+      @if (article.active) {
+        <orda-article-tile (click)="addArticle(article)" [article]="article" />
+      }
+    }
   `,
   styles: [
     `
-      mat-grid-list {
-        overflow: auto;
-        margin: 0.5rem;
-        height: 100%;
+      :host {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: start;
       }
 
-      mat-grid-tile {
-        border-radius: 0.5em;
-        box-shadow: 0 0.5em 0.95em rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-      }
-      .container {
-        overflow: auto;
-      }
-      .container::-webkit-scrollbar {
-        display: none;
-      }
+      // .tile {
+      //   height: 5rem;
+      //   width: 5rem;
+      // }
     `,
   ],
 })

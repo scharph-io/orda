@@ -66,6 +66,9 @@ import { TranslocoModule } from '@ngneat/transloco';
       .cart {
         grid-area: cart;
         margin: 0 1em;
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
       }
     `,
   ],

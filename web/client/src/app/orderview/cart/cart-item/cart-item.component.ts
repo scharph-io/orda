@@ -9,7 +9,12 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
   standalone: true,
   imports: [OrdaCurrencyPipe, MatButtonModule, MatIconModule],
   template: `
-    <div [class]="containerClass()">
+    <div
+      [class]="{
+        container: true,
+        'container-with-desc': item().desc !== undefined
+      }"
+    >
       <div class="title">{{ item().name }}</div>
       @if (item().desc) {
         <div class="desc">{{ item().desc }}</div>
@@ -31,17 +36,13 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       gap: 0px 0.25em;
       grid-auto-flow: row;
       grid-template: 'title quantity sum rm' 1fr / 2fr 1fr 1fr 0.3fr;
-      height: 2em;
+      width: 25rem;
     }
 
     .container-with-desc {
-      display: grid;
-      gap: 0px 0.25em;
-      grid-auto-flow: row;
       grid-template:
         'title quantity sum rm' 1fr
-        'desc quantity sum rm' 1fr / 1fr 0.5fr 0.5fr 0.3fr;
-      height: 3em;
+        'desc quantity sum rm' 1fr / 1fr 0.15fr 0.3fr 0.3fr;
     }
 
     .title {
@@ -50,17 +51,11 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       align-items: center;
     }
 
-    .title-with-desc {
-      grid-area: title;
-      border-color: red;
-    }
-
     .desc {
       grid-area: desc;
       font-size: 0.75rem;
       text-overflow: ellipsis;
       line-height: 1.5em;
-      height: 3em;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
