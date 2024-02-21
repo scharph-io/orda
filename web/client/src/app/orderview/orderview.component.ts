@@ -34,22 +34,22 @@ export class OrderViewComponent {
       {
         id: 1,
         name: 'Beverages',
-        articles: createFakeArticles(30, 6.5),
+        articles: createFakeArticles('Bier', '0.5l', 30, 6.5),
       },
       {
         id: 2,
         name: 'Food',
-        articles: createFakeArticles(10, 15),
+        articles: createFakeArticles('Grillhendl', 'Pommes', 10, 15),
       },
       {
         id: 3,
         name: 'Desserts',
-        articles: createFakeArticles(5, 2.5),
+        articles: createFakeArticles('Kuchen', undefined, 5, 2.5),
       },
       {
         id: 3,
         name: 'Cigarettes',
-        articles: createFakeArticles(3, 7),
+        articles: createFakeArticles('Malboro', undefined, 3, 7),
       },
     ];
   }

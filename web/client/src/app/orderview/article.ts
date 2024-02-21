@@ -20,6 +20,8 @@ function randomIntFromInterval(min: number, max: number) {
 }
 
 export function createFakeArticles(
+  name: string,
+  desc?: string,
   items: number = 20,
   minMaxPrice: number = 10,
   factor: number = 0.2,
@@ -28,8 +30,8 @@ export function createFakeArticles(
   let data: Article[] = [];
   for (let i = 0; i < items; i++) {
     data.push({
-      name: `Kotellet ${i + 1}`,
-      desc: `Pommes, Ketchup, Senf, Kartoffelsalat, Reis, Salat ${i + 1}`,
+      name: `${name} ${i + 1}`,
+      desc: desc ?? `Lorem ipsum dolor ${i + 1}`,
       price:
         (randomIntFromInterval(
           minMaxPrice - minMaxPrice * factor,
