@@ -36,7 +36,7 @@ run-ui: ## Run the app locally
 	npm --prefix web/client run start
 
 run: ## Run the app locally
-	go run cmd/server2/main.go
+	go run cmd/server/main.go
 
 pre-build-ui:
 	cat $(PACKAGE_JSON) | jq --arg version "$(VERSION)" '.version |= $$version' | tee $(PACKAGE_JSON) > /dev/null
