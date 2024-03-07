@@ -33,20 +33,28 @@ import { ArticleTileComponent } from './tiles/article-tile.component';
             ><orda-plus-minus-tile [key]="'cupdeposit'" [value]="100"
           /></mat-grid-tile>
         } -->
-    @for (article of group().articles; track article) {
-      @if (article.active) {
-        <orda-article-tile (click)="addArticle(article)" [article]="article" />
+
+    <mat-grid-list [cols]="gridCols" rowHeight="1:1">
+      @for (article of group().articles; track article) {
+        @if (article.active) {
+          <mat-grid-tile (click)="addArticle(article)">
+            <!-- <orda-article-tile [article]="article"></orda-article-tile>
+           -->
+            {{ article.name }}
+            {{ article.desc }}
+          </mat-grid-tile>
+        }
       }
-    }
+    </mat-grid-list>
   `,
   styles: [
     `
-      :host {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: start;
-      }
+      // :host {
+      //   display: flex;
+      //   flex-wrap: wrap;
+      //   gap: 0.5rem;
+      //   justify-content: start;
+      // }
 
       // .tile {
       //   height: 5rem;
@@ -67,26 +75,16 @@ export class OrderGridComponent {
     private cart: CartStore,
   ) {
     breakpointObserver
-      .observe([
-        Breakpoints.XSmall,
-        Breakpoints.Small,
-        Breakpoints.Medium,
-        Breakpoints.Large,
-        Breakpoints.XLarge,
-      ])
+      .observe([Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large])
       .pipe(takeUntil(this.destroyed))
       .subscribe((result) => {
         console.log(JSON.stringify(result.breakpoints));
-        if (result.breakpoints[Breakpoints.XSmall]) {
-          this.gridCols = 2;
-        } else if (result.breakpoints[Breakpoints.Small]) {
+        if (result.breakpoints[Breakpoints.Small]) {
           this.gridCols = 5;
         } else if (result.breakpoints[Breakpoints.Medium]) {
           this.gridCols = 6;
         } else if (result.breakpoints[Breakpoints.Large]) {
           this.gridCols = 7;
-        } else if (result.breakpoints[Breakpoints.XLarge]) {
-          this.gridCols = 8;
         }
       });
   }

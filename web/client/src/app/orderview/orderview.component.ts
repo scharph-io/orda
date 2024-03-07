@@ -49,10 +49,10 @@ export class OrderViewComponent {
           this.cartSize = '30em';
         } else if (breakpoints[Breakpoints.Medium]) {
           console.log('screens matches Medium');
-          this.cartSize = '35em';
+          this.cartSize = '20em';
         } else if (breakpoints[Breakpoints.Large]) {
           console.log('screens matches Large');
-          this.cartSize = '50em';
+          this.cartSize = '30em';
         }
       });
   }

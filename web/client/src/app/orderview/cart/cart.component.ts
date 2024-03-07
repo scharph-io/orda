@@ -33,10 +33,11 @@ import { TranslocoModule } from '@ngneat/transloco';
     </div>
     <div class="cart">
       <orda-cart-actions [items]="(items$ | async) ?? []"></orda-cart-actions>
-
-      @for (item of items$ | async; track $index) {
-        <orda-cart-item [item]="item"></orda-cart-item>
-      }
+      <div class="cart-items">
+        @for (item of items$ | async; track $index) {
+          <orda-cart-item [item]="item"></orda-cart-item>
+        }
+      </div>
     </div>
   `,
   styles: [
@@ -69,6 +70,12 @@ import { TranslocoModule } from '@ngneat/transloco';
         display: flex;
         flex-direction: column;
         gap: 0.5em;
+      }
+
+      .cart-items {
+        overflow: auto;
+        text-align: justify;
+        height: 450px;
       }
     `,
   ],
