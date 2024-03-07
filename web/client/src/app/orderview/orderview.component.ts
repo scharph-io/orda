@@ -7,6 +7,7 @@ import { CartComponent } from './cart/cart.component';
 import { CartStore } from './cart/cart.store';
 import { CheckoutService } from './services/checkout.service';
 import { MatIconModule } from '@angular/material/icon';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 /**
  * @title Tab group with aligned labels
@@ -28,6 +29,33 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class OrderViewComponent {
   articleGroups = this.getArticleGroups();
+
+  cartSize?: string;
+
+  constructor(private responsive: BreakpointObserver) {}
+
+  ngOnInit() {
+    this.responsive
+      .observe([
+        Breakpoints.HandsetPortrait,
+        Breakpoints.Medium,
+        Breakpoints.Large,
+      ])
+      .subscribe((result) => {
+        const breakpoints = result.breakpoints;
+
+        if (breakpoints[Breakpoints.HandsetPortrait]) {
+          console.log('screens matches HandsetPortrait');
+          this.cartSize = '30em';
+        } else if (breakpoints[Breakpoints.Medium]) {
+          console.log('screens matches Medium');
+          this.cartSize = '35em';
+        } else if (breakpoints[Breakpoints.Large]) {
+          console.log('screens matches Large');
+          this.cartSize = '50em';
+        }
+      });
+  }
 
   getArticleGroups(): ArticleGroup[] {
     return [

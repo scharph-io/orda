@@ -20,7 +20,7 @@ import { TranslocoModule } from '@ngneat/transloco';
       }
       <button
         mat-flat-button
-        color="success"
+        color="primary"
         [disabled]="disableCheckout()"
         (click)="openCheckoutDialog()"
       >

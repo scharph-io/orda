@@ -35,14 +35,14 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       display: grid;
       gap: 0px 0.25em;
       grid-auto-flow: row;
-      grid-template: 'title quantity sum rm' 1fr / 2fr 1fr 1fr 0.3fr;
-      width: 25rem;
+      grid-template: 'title quantity sum rm' 1fr / auto 1fr 1fr 2rem;
+      width: auto;
     }
 
     .container-with-desc {
       grid-template:
         'title quantity sum rm' 1fr
-        'desc quantity sum rm' 1fr / 1fr 0.15fr 0.3fr 0.3fr;
+        'desc quantity sum rm' 1fr / auto 0.15fr 0.3fr 2em;
     }
 
     .title {
