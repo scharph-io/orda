@@ -8,6 +8,7 @@ import { CartStore } from './cart/cart.store';
 import { CheckoutService } from './services/checkout.service';
 import { MatIconModule } from '@angular/material/icon';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Subject, takeUntil } from 'rxjs';
 
 /**
  * @title Tab group with aligned labels
@@ -30,17 +31,22 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 export class OrderViewComponent {
   articleGroups = this.getArticleGroups();
 
+  destroyed = new Subject<void>();
+
   cartSize?: string;
 
   constructor(private responsive: BreakpointObserver) {}
 
   ngOnInit() {
+    this.cartSize = '30em';
     this.responsive
       .observe([
         Breakpoints.HandsetPortrait,
         Breakpoints.Medium,
         Breakpoints.Large,
+        Breakpoints.XLarge,
       ])
+      .pipe(takeUntil(this.destroyed))
       .subscribe((result) => {
         const breakpoints = result.breakpoints;
 
@@ -53,6 +59,9 @@ export class OrderViewComponent {
         } else if (breakpoints[Breakpoints.Large]) {
           console.log('screens matches Large');
           this.cartSize = '30em';
+        } else if (breakpoints[Breakpoints.XLarge]) {
+          console.log('screens matches XLarge');
+          this.cartSize = '20em';
         }
       });
   }

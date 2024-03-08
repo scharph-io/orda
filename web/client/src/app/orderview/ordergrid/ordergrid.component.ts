@@ -68,23 +68,24 @@ export class OrderGridComponent {
 
   destroyed = new Subject<void>();
 
-  protected gridCols = 4;
+  protected gridCols?: number;
 
   constructor(
     breakpointObserver: BreakpointObserver,
     private cart: CartStore,
   ) {
+    this.gridCols = 6;
     breakpointObserver
-      .observe([Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large])
+      .observe([Breakpoints.Small, Breakpoints.Medium, Breakpoints.XLarge])
       .pipe(takeUntil(this.destroyed))
       .subscribe((result) => {
-        console.log(JSON.stringify(result.breakpoints));
+        // console.log(JSON.stringify(result.breakpoints));
         if (result.breakpoints[Breakpoints.Small]) {
-          this.gridCols = 5;
+          this.gridCols = 4;
         } else if (result.breakpoints[Breakpoints.Medium]) {
           this.gridCols = 6;
-        } else if (result.breakpoints[Breakpoints.Large]) {
-          this.gridCols = 7;
+        } else if (result.breakpoints[Breakpoints.XLarge]) {
+          this.gridCols = 10;
         }
       });
   }
