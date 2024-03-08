@@ -10,8 +10,8 @@ import {
 } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
-import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
-import { PlusMinusComponent } from './plus-minus.component';
+import { PlusMinusTileComponent } from './tiles/plus-minus-tile.component';
+import { ArticleTileComponent } from './tiles/article-tile.component';
 
 /**
  * @title Tab group with aligned labels
@@ -24,43 +24,42 @@ import { PlusMinusComponent } from './plus-minus.component';
     ScrollingModule,
     LayoutModule,
     NgStyle,
-    OrdaCurrencyPipe,
-    PlusMinusComponent,
+    PlusMinusTileComponent,
+    ArticleTileComponent,
   ],
   template: `
-    <div class="container">
-      <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
-        @if (group().id === 1) {
-          <mat-grid-tile
-            ><orda-plus-minus [key]="'cupdeposit'" [value]="100"
+    <!-- @if (group().id === 1) {
+          <mat-grid-tile [colspan]="2"
+            ><orda-plus-minus-tile [key]="'cupdeposit'" [value]="100"
           /></mat-grid-tile>
+        } -->
+
+    <mat-grid-list [cols]="gridCols" rowHeight="1:1">
+      @for (article of group().articles; track article) {
+        @if (article.active) {
+          <mat-grid-tile (click)="addArticle(article)">
+            <!-- <orda-article-tile [article]="article"></orda-article-tile>
+           -->
+            {{ article.name }}
+            {{ article.desc }}
+          </mat-grid-tile>
         }
-        @for (article of group().articles; track article) {
-          @if (article.active) {
-            <mat-grid-tile
-              [style.backgroundColor]="article.color"
-              (click)="addArticle(article)"
-              >{{ article.name }}({{ article.desc }}) <br />
-              {{ article.price | ordaCurrency }}</mat-grid-tile
-            >
-          }
-        }
-      </mat-grid-list>
-    </div>
+      }
+    </mat-grid-list>
   `,
   styles: [
     `
-      mat-grid-list {
-        overflow: auto;
-      }
-      .container {
-        margin: 0.5rem;
-        height: calc(99vh - 120px);
-        overflow: auto;
-      }
-      .container::-webkit-scrollbar {
-        display: none;
-      }
+      // :host {
+      //   display: flex;
+      //   flex-wrap: wrap;
+      //   gap: 0.5rem;
+      //   justify-content: start;
+      // }
+
+      // .tile {
+      //   height: 5rem;
+      //   width: 5rem;
+      // }
     `,
   ],
 })
@@ -69,33 +68,24 @@ export class OrderGridComponent {
 
   destroyed = new Subject<void>();
 
-  protected gridCols = 4;
+  protected gridCols?: number;
 
   constructor(
     breakpointObserver: BreakpointObserver,
     private cart: CartStore,
   ) {
+    this.gridCols = 6;
     breakpointObserver
-      .observe([
-        Breakpoints.XSmall,
-        Breakpoints.Small,
-        Breakpoints.Medium,
-        Breakpoints.Large,
-        Breakpoints.XLarge,
-      ])
+      .observe([Breakpoints.Small, Breakpoints.Medium, Breakpoints.XLarge])
       .pipe(takeUntil(this.destroyed))
       .subscribe((result) => {
         // console.log(JSON.stringify(result.breakpoints));
-        if (result.breakpoints[Breakpoints.XSmall]) {
-          this.gridCols = 2;
-        } else if (result.breakpoints[Breakpoints.Small]) {
-          this.gridCols = 5;
+        if (result.breakpoints[Breakpoints.Small]) {
+          this.gridCols = 4;
         } else if (result.breakpoints[Breakpoints.Medium]) {
-          this.gridCols = 7;
-        } else if (result.breakpoints[Breakpoints.Large]) {
-          this.gridCols = 7;
+          this.gridCols = 6;
         } else if (result.breakpoints[Breakpoints.XLarge]) {
-          this.gridCols = 8;
+          this.gridCols = 10;
         }
       });
   }

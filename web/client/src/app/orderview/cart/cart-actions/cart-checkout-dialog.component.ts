@@ -62,7 +62,7 @@ import { TranslocoModule } from '@ngneat/transloco';
           <div class="item-0">
             {{ checkoutData.total | ordaCurrency: 'EUR' }}
           </div>
-          <div class="item-1">Total:</div>
+          <div class="item-1">{{ 'cart.total' | transloco }}:</div>
         </div>
       </div>
       @if (checkoutData.total > 0) {

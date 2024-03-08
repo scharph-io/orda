@@ -1,7 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { CartItem, CartStore } from '../cart.store';
-import { CurrencyPipe, JsonPipe } from '@angular/common';
-import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
@@ -10,7 +9,12 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
   standalone: true,
   imports: [OrdaCurrencyPipe, MatButtonModule, MatIconModule],
   template: `
-    <div [class]="containerClass()">
+    <div
+      [class]="{
+        container: true,
+        'container-with-desc': item().desc !== undefined
+      }"
+    >
       <div class="title">{{ item().name }}</div>
       @if (item().desc) {
         <div class="desc">{{ item().desc }}</div>
@@ -31,18 +35,14 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       display: grid;
       gap: 0px 0.25em;
       grid-auto-flow: row;
-      grid-template: 'title quantity sum rm' 1fr / 2fr 1fr 1fr 0.3fr;
-      height: 2em;
+      grid-template: 'title quantity sum rm' 1fr / auto 1fr 5em 2em;
+      width: auto;
     }
 
     .container-with-desc {
-      display: grid;
-      gap: 0px 0.25em;
-      grid-auto-flow: row;
       grid-template:
         'title quantity sum rm' 1fr
-        'desc quantity sum rm' 1fr / 2fr 1fr 1fr 0.3fr;
-      height: 3em;
+        'desc quantity sum rm' 1fr / auto 0.15fr 5em 2em;
     }
 
     .title {
@@ -51,13 +51,15 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       align-items: center;
     }
 
-    .title-with-desc {
-      grid-area: title;
-      border-color: red;
-    }
-
     .desc {
       grid-area: desc;
+      font-size: 0.75rem;
+      text-overflow: ellipsis;
+      line-height: 1.5em;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      width: 100%;
     }
 
     .quantity {
