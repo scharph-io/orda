@@ -51,7 +51,7 @@ func main() {
 	database.ConnectDB()
 
 	router.SetupRoutes(app)
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":8080"))
 
 	// https://github.com/gofiber/recipes/tree/master/auth-docker-postgres-jwt
 
