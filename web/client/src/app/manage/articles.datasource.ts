@@ -1,6 +1,6 @@
 import { DataSource } from '@angular/cdk/collections';
 import { Article, createFakeArticles } from '../shared/model/article';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { inject } from '@angular/core';
 import { ArticleService } from '../shared/services/article.service';
 
@@ -14,11 +14,13 @@ import { ArticleService } from '../shared/services/article.service';
 export class ArticleDataSource extends DataSource<Article> {
   /** Stream of data that is provided to the table. */
   data = new BehaviorSubject<Article[]>([]);
+  destroyed$ = new Subject<void>();
 
   constructor() {
     super();
     inject(ArticleService)
       .getArticles()
+      .pipe(takeUntil(this.destroyed$))
       .subscribe((articles) => {
         this.data.next(articles);
       });
@@ -29,5 +31,8 @@ export class ArticleDataSource extends DataSource<Article> {
     return this.data;
   }
 
-  disconnect() {}
+  disconnect() {
+    this.destroyed$.next();
+    this.destroyed$.complete();
+  }
 }

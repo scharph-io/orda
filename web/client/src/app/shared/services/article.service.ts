@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Article } from '../model/article';
 
@@ -6,6 +6,8 @@ import { Article } from '../model/article';
   providedIn: 'root',
 })
 export class ArticleService {
+  headers = new HttpHeaders().set('Content-Type', 'application/json');
+
   constructor(
     private http: HttpClient,
     @Inject('ENDPOINT') private endpoint: String,
@@ -20,19 +22,20 @@ export class ArticleService {
   }
 
   createArticle(article: Article) {
-    console.log('createArticle', article);
-    console.log('this.endpoint', this.endpoint);
-    return this.http.post(`${this.endpoint}/api/2article`, article);
+    return this.http.post(`${this.endpoint}/api/article`, article, {
+      headers: this.headers,
+    });
   }
 
   updateArticle(id: string, article: Article) {
     return this.http.put<Article>(
-      `${this.endpoint}/api/articles/${id}`,
+      `${this.endpoint}/api/article/${id}`,
       article,
+      { headers: this.headers },
     );
   }
 
   deleteArticle(id: string) {
-    return this.http.delete<Article>(`${this.endpoint}/api/articles/${id}`);
+    return this.http.delete<Article>(`${this.endpoint}/api/article/${id}`);
   }
 }

@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface Article {
-  uuid?: string;
+  id?: string;
   name: string;
   desc?: string;
   price: number;
@@ -41,7 +41,7 @@ export function createFakeArticles(
         ) /
           10) *
         100,
-      uuid: uuidv4(),
+      id: uuidv4(),
       color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
       active: Math.random() > 0.5,
     });

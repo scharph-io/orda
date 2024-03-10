@@ -73,7 +73,7 @@ import { PlusMinusComponent } from './plus-minus.component';
 export class OrderGridComponent {
   group = input.required<ArticleGroup>();
 
-  destroyed = new Subject<void>();
+  destroyed$ = new Subject<void>();
 
   protected gridCols = 4;
 
@@ -89,7 +89,7 @@ export class OrderGridComponent {
         Breakpoints.Large,
         Breakpoints.XLarge,
       ])
-      .pipe(takeUntil(this.destroyed))
+      .pipe(takeUntil(this.destroyed$))
       .subscribe((result) => {
         // console.log(JSON.stringify(result.breakpoints));
         if (result.breakpoints[Breakpoints.XSmall]) {
@@ -107,13 +107,13 @@ export class OrderGridComponent {
   }
 
   ngOnDestroy(): void {
-    this.destroyed.next();
-    this.destroyed.complete();
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   addArticle(article: Article) {
     this.cart.addItem({
-      uuid: article.uuid ?? '',
+      uuid: article.id ?? '',
       name: article.name,
       price: article.price,
       quantity: 1,

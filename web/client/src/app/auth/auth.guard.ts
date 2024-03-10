@@ -14,9 +14,6 @@ export const AuthGuard: CanActivateFn = (
   if (inject(AuthService).authenticated) {
     return true;
   }
-
-  localStorage.clear();
-
   inject(Router).navigate(['/login'], {
     queryParams: { returnUrl: state.url },
   });

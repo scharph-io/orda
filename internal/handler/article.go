@@ -8,7 +8,7 @@ import (
 	"github.com/scharph/orda/internal/model"
 )
 
-// GetAllProducts query all products
+// GetAllArticles query all Articles
 func GetAllArticles(c *fiber.Ctx) error {
 	db := database.DB
 	var articles []model.Article
@@ -17,42 +17,82 @@ func GetAllArticles(c *fiber.Ctx) error {
 	return c.JSON(articles)
 }
 
-// // GetProduct query product
-// func GetProduct(c *fiber.Ctx) error {
+// // GetArticle query Article
+// func GetArticle(c *fiber.Ctx) error {
 // 	id := c.Params("id")
 // 	db := database.DB
-// 	var product model.Product
-// 	db.Find(&product, id)
-// 	if product.Title == "" {
-// 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No product found with ID", "data": nil})
+// 	var Article model.Article
+// 	db.Find(&Article, id)
+// 	if Article.Title == "" {
+// 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No Article found with ID", "data": nil})
 // 	}
-// 	return c.JSON(fiber.Map{"status": "success", "message": "Product found", "data": product})
+// 	return c.JSON(fiber.Map{"status": "success", "message": "Article found", "data": Article})
 // }
 
-// CreateProduct new product
+// new article
 func CreateArticle(c *fiber.Ctx) error {
 	db := database.DB
-
-	article := new(model.Article)
-	fmt.Println(article)
+	article := &model.Article{}
 	if err := c.BodyParser(article); err != nil {
+		fmt.Println(err)
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't create article", "data": err})
 	}
 
 	db.Create(&article)
-	return c.JSON(fiber.Map{"status": "success", "message": "Created product", "data": article})
+	return c.JSON(fiber.Map{"status": "success", "message": "Created Article", "data": article})
 }
 
-// // DeleteProduct delete product
-// func DeleteProduct(c *fiber.Ctx) error {
-// 	id := c.Params("id")
-// 	db := database.DB
+// update article
+func UpdateArticle(c *fiber.Ctx) error {
+	id := c.Params("id")
+	db := database.DB
 
-// 	var product model.Product
-// 	db.First(&product, id)
-// 	if product.Title == "" {
-// 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No product found with ID", "data": nil})
-// 	}
-// 	db.Delete(&product)
-// 	return c.JSON(fiber.Map{"status": "success", "message": "Product successfully deleted", "data": nil})
-// }
+	type UpdateArticleInput struct {
+		Name   string `json:"name"`
+		Desc   string `json:"desc"`
+		Price  int32  `json:"price"`
+		Active bool   `json:"active"`
+	}
+	var input UpdateArticleInput
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't update Article", "data": err})
+	}
+	var article model.Article
+	db.Where("id = ?", id).First(&article)
+	if article.Name == "" {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No Article found with ID", "data": nil})
+	}
+
+	fmt.Println(input)
+	fmt.Println(article)
+
+	article.Name = input.Name
+	article.Desc = input.Desc
+	article.Price = input.Price
+	article.Active = input.Active
+	db.Save(&article)
+	return c.JSON(fiber.Map{"status": "success", "message": "Article successfully updated", "data": article})
+}
+
+// delete article
+func DeleteArticle(c *fiber.Ctx) error {
+	id := c.Params("id")
+	db := database.DB
+
+	article, err := getArticle(id)
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": err.Error(), "data": nil})
+	}
+	db.Delete(article)
+	return c.JSON(fiber.Map{"status": "success", "message": "Article successfully deleted", "data": nil})
+}
+
+func getArticle(id string) (*model.Article, error) {
+	db := database.DB
+	var article model.Article
+	db.Where("id = ?", id).First(&article)
+	if article.Name == "" {
+		return nil, fmt.Errorf("no article found with ID")
+	}
+	return &article, nil
+}

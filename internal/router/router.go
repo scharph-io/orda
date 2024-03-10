@@ -21,6 +21,9 @@ func SetupRoutes(app *fiber.App) {
 	}))
 
 	app.Use(cors.New())
+	// app.Use(cors.New(cors.Config{
+	// 	AllowOrigins: "*",
+	// 	AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH"}))
 
 	api := app.Group("/api", logger.New())
 	// api.Use(jwtware.New(jwtware.Config{
@@ -40,5 +43,8 @@ func SetupRoutes(app *fiber.App) {
 	article := api.Group("/article")
 	article.Get("/", middleware.Protected(), handler.GetAllArticles)
 	article.Post("/", middleware.Protected(), handler.CreateArticle)
+	// article.Get("/:id", middleware.Protected(), handler.GetArticle)
+	article.Put("/:id", middleware.Protected(), handler.UpdateArticle)
+	article.Delete("/:id", middleware.Protected(), handler.DeleteArticle)
 
 }

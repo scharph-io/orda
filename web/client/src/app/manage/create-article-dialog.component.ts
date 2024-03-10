@@ -1,5 +1,9 @@
 import { Component, Inject, inject } from '@angular/core';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import {
+  MatDialogRef,
+  MatDialogModule,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import {
@@ -13,11 +17,20 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { ArticleService } from '../shared/services/article.service';
+import { Article } from '../shared/model/article';
+import { MessageService } from '../shared/message.service';
 
 @Component({
   selector: 'orda-create-article-dialog',
-  template: `<form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
-    <h2 mat-dialog-title>Create Article</h2>
+  template: `<form [formGroup]="articleForm">
+    <h2 mat-dialog-title>
+      @if (isUpdate) {
+        Update
+      } @else {
+        Create
+      }
+      Article
+    </h2>
     <mat-dialog-content>
       <mat-form-field>
         <mat-label>Name</mat-label>
@@ -37,9 +50,25 @@ import { ArticleService } from '../shared/services/article.service';
     </mat-dialog-content>
     <mat-dialog-actions>
       <button mat-button mat-dialog-close>Cancel</button>
-      <button mat-button type="submit" [disabled]="!articleForm.valid">
-        Create
-      </button>
+      @if (isUpdate) {
+        <button
+          mat-button
+          color="primary"
+          (click)="update()"
+          [disabled]="!articleForm.valid"
+        >
+          Update
+        </button>
+      } @else {
+        <button
+          mat-button
+          type="submit"
+          (click)="create()"
+          [disabled]="!articleForm.valid"
+        >
+          Create
+        </button>
+      }
     </mat-dialog-actions>
   </form>`,
   styles: [
@@ -62,9 +91,9 @@ import { ArticleService } from '../shared/services/article.service';
 })
 export class CreateArticleDialogComponent {
   articleForm = new FormGroup({
-    name: new FormControl('sd', Validators.required),
-    desc: new FormControl('sd'),
-    price: new FormControl(4.2, [
+    name: new FormControl('', Validators.required),
+    desc: new FormControl(''),
+    price: new FormControl<number | undefined>(undefined, [
       Validators.required,
       Validators.min(0.1),
       Validators.max(100),
@@ -74,19 +103,55 @@ export class CreateArticleDialogComponent {
 
   articleService = inject(ArticleService);
 
-  constructor(public dialogRef: MatDialogRef<CreateArticleDialogComponent>) {}
+  isUpdate = false;
 
-  onSubmit() {
-    console.log('onSubmit');
+  constructor(
+    public dialogRef: MatDialogRef<CreateArticleDialogComponent>,
+    public messageService: MessageService,
+    @Inject(MAT_DIALOG_DATA) public data?: Article,
+  ) {
+    if (this.data !== undefined) {
+      this.isUpdate = true;
+      this.articleForm.patchValue({
+        name: this.data.name,
+        desc: this.data.desc,
+        price: this.data.price / 100,
+        active: this.data.active,
+      });
+    }
+  }
+
+  create() {
     if (this.articleForm.valid) {
       const value = this.articleForm.value;
 
-      this.articleService.createArticle({
-        name: value.name ?? '',
-        desc: value.desc ?? '',
-        price: value.price ?? 0,
-        active: value.active ?? false,
-      });
+      this.articleService
+        .createArticle({
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          price: Math.round((value.price ?? 0) * 100),
+          active: value.active ?? false,
+        })
+        .subscribe(() => {
+          this.dialogRef.close();
+        });
+    }
+  }
+
+  update() {
+    if (this.articleForm.valid) {
+      const value = this.articleForm.value;
+
+      this.articleService
+        .updateArticle(this.data?.id ?? '', {
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          price: Math.round((value.price ?? 0) * 100),
+          active: value.active ?? false,
+        })
+        .subscribe(() => {
+          this.dialogRef.close();
+        });
     }
   }
 }
