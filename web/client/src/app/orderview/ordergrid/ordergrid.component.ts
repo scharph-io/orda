@@ -1,7 +1,12 @@
-import { CommonModule, CurrencyPipe, NgStyle } from '@angular/common';
+import {
+  AsyncPipe,
+  CommonModule,
+  CurrencyPipe,
+  NgStyle,
+} from '@angular/common';
 import { Component, Input, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { Article, ArticleGroup } from '../article';
+import { Article, ArticleGroup } from '../../shared/model/article';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   BreakpointObserver,
@@ -26,6 +31,7 @@ import { PlusMinusComponent } from './plus-minus.component';
     NgStyle,
     OrdaCurrencyPipe,
     PlusMinusComponent,
+    AsyncPipe,
   ],
   template: `
     <div class="container">
@@ -35,7 +41,7 @@ import { PlusMinusComponent } from './plus-minus.component';
             ><orda-plus-minus [key]="'cupdeposit'" [value]="100"
           /></mat-grid-tile>
         }
-        @for (article of group().articles; track article) {
+        @for (article of group().articles$ | async; track article) {
           @if (article.active) {
             <mat-grid-tile
               [style.backgroundColor]="article.color"
@@ -107,7 +113,7 @@ export class OrderGridComponent {
 
   addArticle(article: Article) {
     this.cart.addItem({
-      uuid: article.uuid,
+      uuid: article.uuid ?? '',
       name: article.name,
       price: article.price,
       quantity: 1,

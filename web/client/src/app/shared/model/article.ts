@@ -1,17 +1,20 @@
+import { Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+
 export interface Article {
-  uuid: string;
+  uuid?: string;
   name: string;
-  price: number;
   desc?: string;
-  color: string;
+  price: number;
+  color?: string;
   active: boolean;
+  position?: number;
 }
 
 export interface ArticleGroup {
   id: number;
   name: string;
-  articles: Article[];
+  articles$: Observable<Article[]>;
 }
 
 function randomIntFromInterval(min: number, max: number) {
@@ -28,6 +31,7 @@ export function createFakeArticles(
   let data: Article[] = [];
   for (let i = 0; i < items; i++) {
     data.push({
+      position: i + 1,
       name: `Product ${i + 1}`,
       desc: `desc ${i + 1}`,
       price:

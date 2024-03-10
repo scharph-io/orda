@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, isDevMode } from '@angular/core';
 import {
   FormControl,
@@ -71,8 +70,7 @@ export class LoginComponent {
           this.credentials.controls.password.value,
         )
         .subscribe({
-          next: (res: Claims) => {
-            console.log(res.token)
+          next: (res: { token: string }) => {
             this.authService.setToken(res.token);
             this.authService.forwardToHome();
           },

@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/model"
@@ -11,6 +13,7 @@ func GetAllArticles(c *fiber.Ctx) error {
 	db := database.DB
 	var articles []model.Article
 	db.Find(&articles)
+	c.SendStatus(fiber.StatusOK)
 	return c.JSON(articles)
 }
 
@@ -29,10 +32,13 @@ func GetAllArticles(c *fiber.Ctx) error {
 // CreateProduct new product
 func CreateArticle(c *fiber.Ctx) error {
 	db := database.DB
+
 	article := new(model.Article)
+	fmt.Println(article)
 	if err := c.BodyParser(article); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't create article", "data": err})
 	}
+
 	db.Create(&article)
 	return c.JSON(fiber.Map{"status": "success", "message": "Created product", "data": article})
 }
