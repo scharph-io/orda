@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, isDevMode } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -43,7 +43,7 @@ export class LoginComponent {
       Validators.required,
       Validators.minLength(4),
     ]),
-    password: new FormControl('secret', [
+    password: new FormControl(isDevMode() ? 'secret' : '', [
       Validators.required,
       Validators.minLength(5),
     ]),
@@ -72,6 +72,7 @@ export class LoginComponent {
         )
         .subscribe({
           next: (res: Claims) => {
+            console.log(res.token)
             this.authService.setToken(res.token);
             this.authService.forwardToHome();
           },

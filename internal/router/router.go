@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/scharph/orda/internal/handler"
@@ -19,7 +20,16 @@ func SetupRoutes(app *fiber.App) {
 		Index:      "index.html",
 	}))
 
+	app.Use(cors.New())
+
 	api := app.Group("/api", logger.New())
+	// api.Use(jwtware.New(jwtware.Config{
+	// 	SigningKey: jwtware.SigningKey{
+	// 		JWTAlg: jwtware.RS256,
+	// 		Key:    middleware.Secret_key,
+	// 	},
+	// }))
+
 	api.Get("/", handler.Hello)
 
 	// Auth

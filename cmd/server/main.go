@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/scharph/orda/internal/database"
@@ -46,7 +45,6 @@ func main() {
 	}
 
 	app := fiber.New()
-	app.Use(cors.New())
 
 	database.ConnectDB()
 

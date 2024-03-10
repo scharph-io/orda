@@ -37,10 +37,11 @@ export class AuthService {
   // Sign-in
   auth(username: string, password: string) {
     let formData = new FormData();
-    formData.append('username', username);
+    formData.append('identity', username);
     formData.append('password', password);
+    console.log('auth', username, password);
     return this.http
-      .post<Claims>(`${this.endpoint}/api/auth`, formData)
+      .post<Claims>(`${this.endpoint}/api/auth/login`, formData)
       .pipe(catchError(this.handleError));
   }
 
