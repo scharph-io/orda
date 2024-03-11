@@ -16,9 +16,9 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { ArticleService } from '../shared/services/article.service';
-import { Article } from '../shared/model/article';
-import { MessageService } from '../shared/message.service';
+import { ArticleService } from '../../shared/services/article.service';
+import { Article } from '../../shared/model/article';
+import { MessageService } from '../../shared/message.service';
 
 @Component({
   selector: 'orda-create-article-dialog',
@@ -108,15 +108,16 @@ export class CreateArticleDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<CreateArticleDialogComponent>,
     public messageService: MessageService,
-    @Inject(MAT_DIALOG_DATA) public data?: Article,
+    @Inject(MAT_DIALOG_DATA)
+    public data: { article?: Article; categoryId: string },
   ) {
-    if (this.data !== undefined) {
+    if (this.data.article !== undefined) {
       this.isUpdate = true;
       this.articleForm.patchValue({
-        name: this.data.name,
-        desc: this.data.desc,
-        price: this.data.price / 100,
-        active: this.data.active,
+        name: this.data.article.name,
+        desc: this.data.article.desc,
+        price: this.data.article.price / 100,
+        active: this.data.article.active,
       });
     }
   }
@@ -131,6 +132,7 @@ export class CreateArticleDialogComponent {
           desc: value.desc ?? '',
           price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
+          categoryId: this.data.categoryId,
         })
         .subscribe(() => {
           this.dialogRef.close();
@@ -143,11 +145,12 @@ export class CreateArticleDialogComponent {
       const value = this.articleForm.value;
 
       this.articleService
-        .updateArticle(this.data?.id ?? '', {
+        .updateArticle(this.data.article?.id ?? '', {
           name: value.name ?? '',
           desc: value.desc ?? '',
           price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
+          categoryId: this.data.categoryId,
         })
         .subscribe(() => {
           this.dialogRef.close();

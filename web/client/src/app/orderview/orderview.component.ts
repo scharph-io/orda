@@ -2,12 +2,11 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { OrderGridComponent } from './ordergrid/ordergrid.component';
-import { ArticleGroup, createFakeArticles } from '../shared/model/article';
+import { ArticleGroup } from '../shared/model/article';
 import { CartComponent } from './cart/cart.component';
 import { CartStore } from './cart/cart.store';
 import { CheckoutService } from './services/checkout.service';
 import { MatIconModule } from '@angular/material/icon';
-import { ArticleService } from '../shared/services/article.service';
 
 /**
  * @title Tab group with aligned labels
@@ -29,11 +28,11 @@ import { ArticleService } from '../shared/services/article.service';
 })
 export class OrderViewComponent {
   articleGroups: ArticleGroup[] = [
-    {
-      id: 1,
-      name: 'Beverages',
-      articles$: inject(ArticleService).getArticles(),
-    },
+    // {
+    //   id: 1,
+    //   name: 'Beverages',
+    //   articles$: inject(ArticleService).getArticles(),
+    // },
   ];
   // getArticleGroups(): ArticleGroup[] {
   //   return [

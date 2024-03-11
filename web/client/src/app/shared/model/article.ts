@@ -9,6 +9,7 @@ export interface Article {
   color?: string;
   active: boolean;
   position?: number;
+  categoryId: string;
 }
 
 export interface ArticleGroup {
@@ -17,34 +18,34 @@ export interface ArticleGroup {
   articles$: Observable<Article[]>;
 }
 
-function randomIntFromInterval(min: number, max: number) {
-  // min and max included
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+// function randomIntFromInterval(min: number, max: number) {
+//   // min and max included
+//   return Math.floor(Math.random() * (max - min + 1) + min);
+// }
 
-export function createFakeArticles(
-  items: number = 20,
-  minMaxPrice: number = 10,
-  factor: number = 0.2,
-): Article[] {
-  minMaxPrice *= 10;
-  let data: Article[] = [];
-  for (let i = 0; i < items; i++) {
-    data.push({
-      position: i + 1,
-      name: `Product ${i + 1}`,
-      desc: `desc ${i + 1}`,
-      price:
-        (randomIntFromInterval(
-          minMaxPrice - minMaxPrice * factor,
-          minMaxPrice + minMaxPrice * factor,
-        ) /
-          10) *
-        100,
-      id: uuidv4(),
-      color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-      active: Math.random() > 0.5,
-    });
-  }
-  return data;
-}
+// export function createFakeArticles(
+//   items: number = 20,
+//   minMaxPrice: number = 10,
+//   factor: number = 0.2,
+// ): Article[] {
+//   minMaxPrice *= 10;
+//   let data: Article[] = [];
+//   for (let i = 0; i < items; i++) {
+//     data.push({
+//       position: i + 1,
+//       name: `Product ${i + 1}`,
+//       desc: `desc ${i + 1}`,
+//       price:
+//         (randomIntFromInterval(
+//           minMaxPrice - minMaxPrice * factor,
+//           minMaxPrice + minMaxPrice * factor,
+//         ) /
+//           10) *
+//         100,
+//       id: uuidv4(),
+//       color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+//       active: Math.random() > 0.5,
+//     });
+//   }
+//   return data;
+// }

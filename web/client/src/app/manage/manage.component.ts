@@ -1,17 +1,10 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { CdkTableModule } from '@angular/cdk/table';
-import { MatTableModule } from '@angular/material/table';
-import { ArticleDataSource } from './articles.datasource';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, effect, inject, signal } from '@angular/core';
+
+import { ArticlesManageComponent } from './articles/articles-manage.component';
+import { CategoryService } from '../shared/services/category.service';
+import { Category } from '../shared/model/category';
 import { MatButtonModule } from '@angular/material/button';
-import { Article } from '../shared/model/article';
-import { Dialog, DialogModule } from '@angular/cdk/dialog';
-import { CreateArticleDialogComponent } from './create-article-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { OrdaCurrencyPipe } from '../shared/currency.pipe';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ArticleService } from '../shared/services/article.service';
-import { switchMap } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 // Example ??? https://www.codeproject.com/Articles/5290817/Build-Angular-data-table-with-CRUD-operations-and
 @Component({
@@ -19,113 +12,51 @@ import { switchMap } from 'rxjs';
     <div class="container" style="margin: 1rem;">
       <h1>Manage</h1>
 
-      <h2>Categories</h2>
+      <h2>Categories ({{ categories.length }})</h2>
 
-      <h2>
-        Articles
-        <span
-          ><button
-            mat-raised-button
-            color="primary"
-            (click)="openArticleAddUpdateDialog()"
-          >
-            Add
-          </button></span
-        >
-      </h2>
+      <!-- {{ this.categories | json }} -->
 
-      <table cdk-table [dataSource]="articlesDataSource" style="margin: 1rem;">
-        <ng-container cdkColumnDef="id">
-          <th cdk-header-cell *cdkHeaderCellDef>ID</th>
-          <td cdk-cell *cdkCellDef="let element">{{ element.id }}</td>
-        </ng-container>
-        <ng-container cdkColumnDef="name">
-          <th cdk-header-cell *cdkHeaderCellDef>Name</th>
-          <td cdk-cell *cdkCellDef="let element">{{ element.name }}</td>
-        </ng-container>
-
-        <ng-container cdkColumnDef="desc">
-          <th cdk-header-cell *cdkHeaderCellDef>Description</th>
-          <td cdk-cell *cdkCellDef="let element">{{ element.desc }}</td>
-        </ng-container>
-
-        <ng-container cdkColumnDef="price">
-          <th cdk-header-cell *cdkHeaderCellDef>Price</th>
-          <td cdk-cell *cdkCellDef="let element">
-            {{ element.price | ordaCurrency }}
-          </td>
-        </ng-container>
-
-        <ng-container cdkColumnDef="active">
-          <th cdk-header-cell *cdkHeaderCellDef>Active</th>
-          <td cdk-cell *cdkCellDef="let element">
-            {{ element.active }}
-          </td>
-        </ng-container>
-
-        <ng-container [matColumnDef]="'actions'">
-          <th mat-header-cell *matHeaderCellDef>actions</th>
-          <td mat-cell *matCellDef="let element">
+      <button mat-raised-button color="primary" (click)="createCategory()">
+        New Category
+      </button>
+      <table *ngIf="categories.length > 0">
+        <tr *ngFor="let category of categories">
+          <td>{{ category.name }}</td>
+          <td>{{ category.desc }}</td>
+          <td>
             <button
-              mat-icon-button
-              (click)="openArticleAddUpdateDialog(element)"
+              mat-raised-button
+              color="primary"
+              (click)="selectedCategory = category"
             >
-              <mat-icon mat-icon-button color="primary">edit</mat-icon>
-            </button>
-            <button mat-icon-button (click)="deleteArticle(element.id)">
-              <mat-icon mat-icon-button color="warn">delete</mat-icon>
+              Select
             </button>
           </td>
-        </ng-container>
-
-        <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
-        <tr cdk-row *cdkRowDef="let row; columns: displayedColumns"></tr>
+        </tr>
       </table>
+
+      @if (categories.length > 0 && selectedCategory !== undefined) {
+        <orda-articles-manage [category]="selectedCategory" />
+      }
     </div>
   `,
   standalone: true,
-  imports: [
-    CdkTableModule,
-    MatTableModule,
-    MatIconModule,
-    MatButtonModule,
-    DialogModule,
-    OrdaCurrencyPipe,
-  ],
+  imports: [ArticlesManageComponent, MatButtonModule, CommonModule],
 })
 export class ManageComponent {
-  articlesDataSource: ArticleDataSource = new ArticleDataSource();
-  http = inject(HttpClient);
+  categoryService = inject(CategoryService);
 
-  dialog = inject(MatDialog);
-  articleService = inject(ArticleService);
+  selectedCategory?: Category;
+  categories: Category[] = [];
 
-  displayedColumns: string[] = [
-    'id',
-    'name',
-    'desc',
-    'price',
-    'active',
-    'actions',
-  ];
-
-  openArticleAddUpdateDialog(article?: Article): void {
-    const dialogRef = this.dialog.open(CreateArticleDialogComponent, {
-      data: article,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
-      this.articleService.getArticles().subscribe((articles) => {
-        this.articlesDataSource.data.next(articles);
-      });
+  ngOnInit() {
+    this.categoryService.getCategories$().subscribe((categories) => {
+      this.categories = categories;
+      this.selectedCategory = categories[0];
     });
   }
 
-  deleteArticle(id: string) {
-    this.articleService
-      .deleteArticle(id)
-      .pipe(switchMap(() => this.articleService.getArticles()))
-      .subscribe((articles) => this.articlesDataSource.data.next(articles));
+  createCategory() {
+    console.log('createCategory');
   }
 }

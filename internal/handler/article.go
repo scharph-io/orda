@@ -17,18 +17,6 @@ func GetAllArticles(c *fiber.Ctx) error {
 	return c.JSON(articles)
 }
 
-// // GetArticle query Article
-// func GetArticle(c *fiber.Ctx) error {
-// 	id := c.Params("id")
-// 	db := database.DB
-// 	var Article model.Article
-// 	db.Find(&Article, id)
-// 	if Article.Title == "" {
-// 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No Article found with ID", "data": nil})
-// 	}
-// 	return c.JSON(fiber.Map{"status": "success", "message": "Article found", "data": Article})
-// }
-
 // new article
 func CreateArticle(c *fiber.Ctx) error {
 	db := database.DB
@@ -62,9 +50,6 @@ func UpdateArticle(c *fiber.Ctx) error {
 	if article.Name == "" {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No Article found with ID", "data": nil})
 	}
-
-	fmt.Println(input)
-	fmt.Println(article)
 
 	article.Name = input.Name
 	article.Desc = input.Desc

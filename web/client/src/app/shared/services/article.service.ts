@@ -13,8 +13,10 @@ export class ArticleService {
     @Inject('ENDPOINT') private endpoint: String,
   ) {}
 
-  getArticles() {
-    return this.http.get<Article[]>(`${this.endpoint}/api/article`);
+  getArticlesBy(categoryId: string) {
+    return this.http.get<Article[]>(
+      `${this.endpoint}/api/category/${categoryId}/article`,
+    );
   }
 
   getArticle(id: string) {

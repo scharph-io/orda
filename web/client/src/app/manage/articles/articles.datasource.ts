@@ -1,8 +1,8 @@
 import { DataSource } from '@angular/cdk/collections';
-import { Article, createFakeArticles } from '../shared/model/article';
+import { Article } from '../../shared/model/article';
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { inject } from '@angular/core';
-import { ArticleService } from '../shared/services/article.service';
+import { ArticleService } from '../../shared/services/article.service';
 
 /**
  * Data source to provide what data should be rendered in the table. Note that the data source
@@ -16,10 +16,10 @@ export class ArticleDataSource extends DataSource<Article> {
   data = new BehaviorSubject<Article[]>([]);
   destroyed$ = new Subject<void>();
 
-  constructor() {
+  constructor(categoryId: string) {
     super();
     inject(ArticleService)
-      .getArticles()
+      .getArticlesBy(categoryId)
       .pipe(takeUntil(this.destroyed$))
       .subscribe((articles) => {
         this.data.next(articles);
