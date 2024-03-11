@@ -46,6 +46,7 @@ func Login(c *fiber.Ctx) error {
 
 	t, err := token.SignedString([]byte(middleware.Secret_key))
 	if err != nil {
+		fmt.Println("Error in creating token")
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 

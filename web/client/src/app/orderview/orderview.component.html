@@ -5,9 +5,9 @@
       animationDuration="0ms"
       dynamicHeight="false"
     >
-      @for (group of articleGroups; track group) {
-        <mat-tab [label]="group.name"
-          ><orda-ordergrid [group]="group"></orda-ordergrid
+      @for (category of categories(); track category) {
+        <mat-tab [label]="category.name"
+          ><orda-ordergrid [category]="category"></orda-ordergrid
         ></mat-tab>
       }
     </mat-tab-group>

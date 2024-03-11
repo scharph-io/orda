@@ -1,5 +1,5 @@
 import { Component, NgModule, inject } from '@angular/core';
-import { MessageService } from '../message.service';
+import { MessageService } from '../services/message.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

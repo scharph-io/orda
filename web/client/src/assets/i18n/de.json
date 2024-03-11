@@ -32,8 +32,8 @@
   "account": {
     "title": "Kontotyp",
     "customer": "Kunde",
-    "free": "Kostenlos",
-    "premium": "Premium"
+    "free": "Frei",
+    "premium": "Sponsor"
   },
   "checkout": {
     "payout": "Auszahlung",

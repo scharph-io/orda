@@ -19,6 +19,7 @@ import { Article } from '../../shared/model/article';
 import { ArticleService } from '../../shared/services/article.service';
 import { CreateArticleDialogComponent } from './create-article-dialog.component';
 import { Category } from '../../shared/model/category';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'orda-articles-manage',
@@ -61,7 +62,10 @@ import { Category } from '../../shared/model/category';
       <ng-container cdkColumnDef="active">
         <th cdk-header-cell *cdkHeaderCellDef>Active</th>
         <td cdk-cell *cdkCellDef="let element">
-          {{ element.active }}
+          <mat-slide-toggle
+            [checked]="element.active"
+            disabled
+          ></mat-slide-toggle>
         </td>
       </ng-container>
 
@@ -90,6 +94,7 @@ import { Category } from '../../shared/model/category';
     MatButtonModule,
     DialogModule,
     OrdaCurrencyPipe,
+    MatSlideToggle,
   ],
 })
 export class ArticlesManageComponent {

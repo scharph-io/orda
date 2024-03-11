@@ -18,7 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { ArticleService } from '../../shared/services/article.service';
 import { Article } from '../../shared/model/article';
-import { MessageService } from '../../shared/message.service';
+import { MessageService } from '../../shared/services/message.service';
 
 @Component({
   selector: 'orda-create-article-dialog',

@@ -4,9 +4,9 @@ import {
   CurrencyPipe,
   NgStyle,
 } from '@angular/common';
-import { Component, Input, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { Article, ArticleGroup } from '../../shared/model/article';
+import { Article } from '../../shared/model/article';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   BreakpointObserver,
@@ -17,6 +17,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import { PlusMinusComponent } from './plus-minus.component';
+import { Category } from '../../shared/model/category';
 
 /**
  * @title Tab group with aligned labels
@@ -36,12 +37,12 @@ import { PlusMinusComponent } from './plus-minus.component';
   template: `
     <div class="container">
       <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5rem">
-        @if (group().id === 1) {
+        @if (category().withDeposit) {
           <mat-grid-tile
             ><orda-plus-minus [key]="'cupdeposit'" [value]="100"
           /></mat-grid-tile>
         }
-        @for (article of group().articles$ | async; track article) {
+        @for (article of category().articles; track article) {
           @if (article.active) {
             <mat-grid-tile
               [style.backgroundColor]="article.color"
@@ -71,7 +72,7 @@ import { PlusMinusComponent } from './plus-minus.component';
   ],
 })
 export class OrderGridComponent {
-  group = input.required<ArticleGroup>();
+  category = input.required<Category>();
 
   destroyed$ = new Subject<void>();
 

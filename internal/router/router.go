@@ -55,4 +55,13 @@ func SetupRoutes(app *fiber.App) {
 	article.Put("/:id", middleware.Protected(), handler.UpdateArticle)
 	article.Delete("/:id", middleware.Protected(), handler.DeleteArticle)
 
+	// Checkout
+	checkout := api.Group("/checkout")
+	checkout.Post("/", middleware.Protected(), handler.CreateTransaction)
+
+	// Transaction
+	transaction := api.Group("/transaction")
+	transaction.Get("/", middleware.Protected(), handler.GetAllTransactions)
+	transaction.Delete("/:id", middleware.Protected(), handler.DeleteTransaction)
+
 }

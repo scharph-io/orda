@@ -54,11 +54,13 @@ func DeleteCategory(c *fiber.Ctx) error {
 	id := c.Params("id")
 	db := database.DB
 	var category model.Category
-	db.First(&category, id)
+	db.Where("id = ?", id).First(&category)
 	if category.Name == "" {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No Category found with ID", "data": nil})
 	}
-	db.Delete(&category)
+	if err := db.Delete(&category); err.Error != nil {
+		return c.Status(fiber.StatusMethodNotAllowed).JSON(fiber.Map{"status": "error", "message": "Couldn't delete Category", "data": err})
+	}
 	c.SendStatus(fiber.StatusOK)
 	return c.JSON(fiber.Map{"status": "success", "message": "Category successfully deleted", "data": nil})
 }
