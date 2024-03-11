@@ -2,36 +2,13 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Inject, Injectable, inject } from '@angular/core';
 import { CartItem } from '../cart/cart.store';
 import { catchError, throwError } from 'rxjs';
-
-export enum AccountType {
-  CUSTOMER,
-  FREE,
-  PREMIUM,
-}
-
-export const AccountTypeKeys = {
-  [AccountType.CUSTOMER]: 'account.customer',
-  [AccountType.FREE]: 'account.free',
-  [AccountType.PREMIUM]: 'account.premium',
-};
-
-export enum PaymentOption {
-  FREE,
-  CASH,
-  CARD,
-}
-
-export const PaymentOptionKeys = {
-  [PaymentOption.FREE]: 'payment.free',
-  [PaymentOption.CASH]: 'payment.cash',
-  [PaymentOption.CARD]: 'payment.card',
-};
+import { AccountType, PaymentOption } from '../../shared/util/transaction';
 
 export interface CheckoutData {
   items: CartItem[];
   total: number;
-  accountType: AccountType;
-  paymentOption: PaymentOption;
+  account_type: AccountType;
+  payment_option: PaymentOption;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -44,7 +21,7 @@ export class CheckoutService {
     return this.http
       .post<{
         success: boolean;
-      }>(`${this.endpoint}/restricted`, checkoutData)
+      }>(`${this.endpoint}/api/checkout`, checkoutData)
       .pipe(catchError(this.handleError));
   }
 

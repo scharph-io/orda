@@ -1,7 +1,12 @@
-import { CommonModule, CurrencyPipe, NgStyle } from '@angular/common';
-import { Component, Input, input } from '@angular/core';
+import {
+  AsyncPipe,
+  CommonModule,
+  CurrencyPipe,
+  NgStyle,
+} from '@angular/common';
+import { Component, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { Article, ArticleGroup } from '../article';
+import { Article } from '../../shared/model/article';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   BreakpointObserver,
@@ -10,8 +15,10 @@ import {
 } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
+import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import { PlusMinusTileComponent } from './tiles/plus-minus-tile.component';
 import { ArticleTileComponent } from './tiles/article-tile.component';
+import { Category } from '../../shared/model/category';
 
 /**
  * @title Tab group with aligned labels
@@ -26,47 +33,34 @@ import { ArticleTileComponent } from './tiles/article-tile.component';
     NgStyle,
     PlusMinusTileComponent,
     ArticleTileComponent,
+    OrdaCurrencyPipe,
   ],
   template: `
-    <!-- @if (group().id === 1) {
-          <mat-grid-tile [colspan]="2"
-            ><orda-plus-minus-tile [key]="'cupdeposit'" [value]="100"
-          /></mat-grid-tile>
-        } -->
-
     <mat-grid-list [cols]="gridCols" rowHeight="1:1">
-      @for (article of group().articles; track article) {
+      @if (category().withDeposit) {
+        <mat-grid-tile [colspan]="2"
+          ><orda-plus-minus-tile [key]="'cupdeposit'" [value]="100"
+        /></mat-grid-tile>
+      }
+      @for (article of category().articles; track article) {
         @if (article.active) {
           <mat-grid-tile (click)="addArticle(article)">
             <!-- <orda-article-tile [article]="article"></orda-article-tile>
            -->
             {{ article.name }}
             {{ article.desc }}
+            {{ article.price | ordaCurrency }}
           </mat-grid-tile>
         }
       }
     </mat-grid-list>
   `,
-  styles: [
-    `
-      // :host {
-      //   display: flex;
-      //   flex-wrap: wrap;
-      //   gap: 0.5rem;
-      //   justify-content: start;
-      // }
-
-      // .tile {
-      //   height: 5rem;
-      //   width: 5rem;
-      // }
-    `,
-  ],
+  styles: [``],
 })
 export class OrderGridComponent {
-  group = input.required<ArticleGroup>();
+  category = input.required<Category>();
 
-  destroyed = new Subject<void>();
+  destroyed$ = new Subject<void>();
 
   protected gridCols?: number;
 
@@ -77,7 +71,7 @@ export class OrderGridComponent {
     this.gridCols = 6;
     breakpointObserver
       .observe([Breakpoints.Small, Breakpoints.Medium, Breakpoints.XLarge])
-      .pipe(takeUntil(this.destroyed))
+      .pipe(takeUntil(this.destroyed$))
       .subscribe((result) => {
         // console.log(JSON.stringify(result.breakpoints));
         if (result.breakpoints[Breakpoints.Small]) {
@@ -91,13 +85,13 @@ export class OrderGridComponent {
   }
 
   ngOnDestroy(): void {
-    this.destroyed.next();
-    this.destroyed.complete();
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   addArticle(article: Article) {
     this.cart.addItem({
-      uuid: article.uuid,
+      uuid: article.id ?? '',
       name: article.name,
       price: article.price,
       quantity: 1,

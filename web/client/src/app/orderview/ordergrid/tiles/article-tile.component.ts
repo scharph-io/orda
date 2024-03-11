@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
-import { Article } from '../../article';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
+import { Article } from '../../../shared/model/article';
 
 @Component({
   selector: 'orda-article-tile',

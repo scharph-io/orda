@@ -14,6 +14,7 @@ import {
 import { JwtModule } from '@auth0/angular-jwt';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@ngneat/transloco';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -47,5 +48,6 @@ export const appConfig: ApplicationConfig = {
       provide: 'ENDPOINT',
       useValue: isDevMode() ? 'http://localhost:8080' : '',
     },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],
 };

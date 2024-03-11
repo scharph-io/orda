@@ -22,17 +22,19 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { CheckoutData, CheckoutService } from '../../services/checkout.service';
+import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import {
-  CheckoutData,
-  CheckoutService,
-  AccountTypeKeys,
-  PaymentOptionKeys,
+  MessageService,
+  Severity,
+} from '../../../shared/services/message.service';
+import { TranslocoModule } from '@ngneat/transloco';
+import {
   AccountType,
   PaymentOption,
-} from '../../services/checkout.service';
-import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
-import { MessageService, Severity } from '../../../shared/message.service';
-import { TranslocoModule } from '@ngneat/transloco';
+  AccountTypeKeys,
+  PaymentOptionKeys,
+} from '../../../shared/util/transaction';
 
 @Component({
   selector: 'orda-checkout-dialog',
@@ -235,8 +237,8 @@ export class CheckoutDialogComponent {
   checkoutData: CheckoutData = {
     items: [],
     total: 0,
-    accountType: AccountType.CUSTOMER,
-    paymentOption: PaymentOption.FREE,
+    account_type: AccountType.CUSTOMER,
+    payment_option: PaymentOption.FREE,
   };
 
   AccountType = AccountType;
@@ -261,12 +263,12 @@ export class CheckoutDialogComponent {
   }
 
   submit(accountType: AccountType, paymentOption: PaymentOption): void {
-    this.checkoutData.accountType = accountType;
-    this.checkoutData.paymentOption = paymentOption;
+    this.checkoutData.account_type = accountType;
+    this.checkoutData.payment_option = paymentOption;
 
     this.checkout.checkout(this.checkoutData).subscribe({
       next: (res: any) => {
-        if (res.success) {
+        if (res.status === 'success') {
           this.error = '';
           this.dialogRef.close({ clear: true });
           this.message.send({

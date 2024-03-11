@@ -67,9 +67,6 @@ build-local: build-ui
 	
 ci-build: pre-build-ui build-ui build-local 
 
-run-web: ## Run the app locally
-	npm run start --prefix web/app
-
 requirements: ## Generate go.mod & go.sum files
 	go mod tidy
 

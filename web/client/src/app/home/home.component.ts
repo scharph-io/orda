@@ -29,11 +29,7 @@ import { OrderViewComponent } from '../orderview/orderview.component';
 export class HomeComponent {
   restrictedInfo?: string;
   constructor(private authservice: AuthService) {
-    inject(DataService)
-      .getRestrictedInfo$()
-      .subscribe((info) => {
-        this.restrictedInfo = info;
-      });
+   
   }
 
   get isAdmin() {

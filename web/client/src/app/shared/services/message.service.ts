@@ -9,7 +9,7 @@ export enum Severity {
 
 export interface Message {
   title: string;
-  severity: Severity;
+  severity?: Severity;
 }
 
 @Injectable({

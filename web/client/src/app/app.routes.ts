@@ -9,8 +9,9 @@ import { InfoComponent } from './info/info.component';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'manage', component: ManageComponent, canActivate: [AuthGuard] },
-  { path: 'history', component: HistoryComponent, canActivate: [AuthGuard] },
+  // { path: 'history', component: HistoryComponent, canActivate: [AuthGuard] },
   { path: 'info', component: InfoComponent },
-  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '' },
 ];

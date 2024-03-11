@@ -1,12 +1,19 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { OrderGridComponent } from './ordergrid/ordergrid.component';
-import { ArticleGroup, createFakeArticles } from './article';
 import { CartComponent } from './cart/cart.component';
 import { CartStore } from './cart/cart.store';
 import { CheckoutService } from './services/checkout.service';
 import { MatIconModule } from '@angular/material/icon';
+import { CategoryService } from '../shared/services/category.service';
+import { Category } from '../shared/model/category';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -25,14 +32,18 @@ import { Subject, takeUntil } from 'rxjs';
     CommonModule,
     OrderGridComponent,
     CartComponent,
+    AsyncPipe,
   ],
   providers: [CartStore, CheckoutService],
 })
-export class OrderViewComponent {
-  articleGroups = this.getArticleGroups();
+export class OrderViewComponent implements OnInit {
+  categoryService = inject(CategoryService);
 
-  destroyed = new Subject<void>();
+  selectedCategory = signal<Category | undefined>(undefined);
 
+  categories = signal<Category[]>([]);
+
+  destroyed$ = new Subject<void>();
   cartSize?: string;
 
   constructor(private responsive: BreakpointObserver) {}
@@ -46,7 +57,7 @@ export class OrderViewComponent {
         Breakpoints.Large,
         Breakpoints.XLarge,
       ])
-      .pipe(takeUntil(this.destroyed))
+      .pipe(takeUntil(this.destroyed$))
       .subscribe((result) => {
         const breakpoints = result.breakpoints;
 
@@ -64,30 +75,10 @@ export class OrderViewComponent {
           this.cartSize = '20em';
         }
       });
-  }
 
-  getArticleGroups(): ArticleGroup[] {
-    return [
-      {
-        id: 1,
-        name: 'Beverages',
-        articles: createFakeArticles('Bier', '0.5l', 30, 6.5),
-      },
-      {
-        id: 2,
-        name: 'Food',
-        articles: createFakeArticles('Grillhendl', 'Pommes', 10, 15),
-      },
-      {
-        id: 3,
-        name: 'Desserts',
-        articles: createFakeArticles('Kuchen', undefined, 5, 2.5),
-      },
-      {
-        id: 3,
-        name: 'Cigarettes',
-        articles: createFakeArticles('Malboro', undefined, 3, 7),
-      },
-    ];
+    this.categoryService.getCategories$().subscribe((categories) => {
+      this.categories.set(categories);
+      this.selectedCategory.set(categories[0]);
+    });
   }
 }
