@@ -5,11 +5,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { CheckoutDialogComponent } from './cart-checkout-dialog.component';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
   selector: 'orda-cart-actions',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule, TranslocoModule],
   template: `
     <div class="container">
       @if (items().length > 0) {
@@ -24,7 +25,7 @@ import { CheckoutDialogComponent } from './cart-checkout-dialog.component';
         (click)="openCheckoutDialog()"
       >
         <mat-icon>shopping_cart_checkout</mat-icon>
-        Checkout
+        {{ 'cart.checkout' | transloco }}
       </button>
     </div>
   `,
@@ -33,14 +34,14 @@ import { CheckoutDialogComponent } from './cart-checkout-dialog.component';
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 2.5em;
-      font-size: 1.5em;
-      font-weight: bold;
+      // height: 2.5em;
+      // font-size: 1.5em;
+      // font-weight: bold;
     }
 
-    mat-icon button {
-      font-size: 0.7em;
-    }
+    // mat-icon button {
+    //   font-size: 0.5em;
+    // }
   `,
 })
 export class CartActionsComponent {

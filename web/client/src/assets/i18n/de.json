@@ -14,7 +14,7 @@
   "cart": {
     "title": "Warenkorb",
     "empty": "Warenkorb ist leer",
-    "checkout": "Zur Kasse gehen",
+    "checkout": "Zur Kasse",
     "total": "Gesamt",
     "remove": "Entfernen",
     "quantity": "Menge",

@@ -46,11 +46,25 @@ build-ui:
 
 build-local: build-ui
 	GOOS=linux 	GOARCH=amd64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME} 			$(MAIN)
-	GOOS=linux 	GOARCH=arm64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm64 	$(MAIN)
-	GOOS=linux 	GOARCH=arm 		go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm 		$(MAIN)
-	GOOS=darwin GOARCH=amd64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin 	$(MAIN)
-	GOOS=darwin GOARCH=arm64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin_arm 	$(MAIN)
+	chmod +x build/${BINARY_NAME}
+	tar -czf build/${BINARY_NAME}_$(VERSION)_linux_amd64.tar.gz -C build ${BINARY_NAME}
 
+	GOOS=linux 	GOARCH=arm64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm64 	$(MAIN)
+	chmod +x build/${BINARY_NAME}_arm64
+	tar -czf build/${BINARY_NAME}_$(VERSION)_linux_arm64.tar.gz -C build ${BINARY_NAME}_arm64
+
+	# GOOS=linux 	GOARCH=arm 		go build $(BUILD_ARGS) -o build/${BINARY_NAME}_arm 		$(MAIN)
+	# chmod +x build/${BINARY_NAME}_arm
+	# tar -czf build/${BINARY_NAME}_$(VERSION)_linux_arm.tar.gz -C build ${BINARY_NAME}_arm
+
+	GOOS=darwin GOARCH=amd64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin 	$(MAIN)
+	chmod +x build/$(BINARY_NAME)_darwin
+	tar -czf build/$(BINARY_NAME)_$(VERSION)_darwin_amd64.tar.gz -C build ${BINARY_NAME}_darwin
+
+	GOOS=darwin GOARCH=arm64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin_arm 	$(MAIN)
+	chmod +x build/$(BINARY_NAME)_darwin_arm
+	tar -czf build/$(BINARY_NAME)_$(VERSION)_darwin_arm64.tar.gz -C build ${BINARY_NAME}_darwin_arm
+	
 ci-build: pre-build-ui build-ui build-local 
 
 requirements: ## Generate go.mod & go.sum files
