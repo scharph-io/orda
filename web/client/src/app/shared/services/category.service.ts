@@ -22,9 +22,13 @@ export class CategoryService {
   }
 
   createCategory(category: Category) {
-    return this.http.post(`${this.endpoint}/api/category`, category, {
-      headers: this.headers,
-    });
+    return this.http.post<{ data: Category; message: string }>(
+      `${this.endpoint}/api/category`,
+      category,
+      {
+        headers: this.headers,
+      },
+    );
   }
 
   updateCategory(id: string, Category: Category) {

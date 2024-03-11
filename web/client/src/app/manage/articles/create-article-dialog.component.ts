@@ -134,7 +134,8 @@ export class CreateArticleDialogComponent {
           active: value.active ?? false,
           categoryId: this.data.categoryId,
         })
-        .subscribe(() => {
+        .subscribe((res) => {
+          console.log(res);
           this.dialogRef.close();
         });
     }

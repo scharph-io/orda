@@ -5,6 +5,13 @@ import { CategoryService } from '../shared/services/category.service';
 import { Category } from '../shared/model/category';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { switchMap, tap } from 'rxjs';
 
 // Example ??? https://www.codeproject.com/Articles/5290817/Build-Angular-data-table-with-CRUD-operations-and
 @Component({
@@ -15,10 +22,14 @@ import { CommonModule } from '@angular/common';
       <h2>Categories ({{ categories.length }})</h2>
 
       <!-- {{ this.categories | json }} -->
+      <form [formGroup]="newCategory">
+        <input type="text" formControlName="name" />
+        <input type="text" formControlName="desc" />
+        <button mat-raised-button color="primary" (click)="createCategory()">
+          Create
+        </button>
+      </form>
 
-      <button mat-raised-button color="primary" (click)="createCategory()">
-        New Category
-      </button>
       <table *ngIf="categories.length > 0">
         <tr *ngFor="let category of categories">
           <td>{{ category.name }}</td>
@@ -41,13 +52,23 @@ import { CommonModule } from '@angular/common';
     </div>
   `,
   standalone: true,
-  imports: [ArticlesManageComponent, MatButtonModule, CommonModule],
+  imports: [
+    ArticlesManageComponent,
+    MatButtonModule,
+    CommonModule,
+    ReactiveFormsModule,
+  ],
 })
 export class ManageComponent {
   categoryService = inject(CategoryService);
 
   selectedCategory?: Category;
   categories: Category[] = [];
+
+  newCategory = new FormGroup({
+    name: new FormControl('', [Validators.required]),
+    desc: new FormControl(''),
+  });
 
   ngOnInit() {
     this.categoryService.getCategories$().subscribe((categories) => {
@@ -57,6 +78,24 @@ export class ManageComponent {
   }
 
   createCategory() {
-    console.log('createCategory');
+    const name = this.newCategory.value.name ?? '';
+    const desc = this.newCategory.value.desc ?? '';
+    this.categoryService
+      .createCategory({
+        name,
+        desc,
+      })
+
+      .pipe(
+        tap((res) => {
+          this.selectedCategory = res.data;
+        }),
+        switchMap(() => this.categoryService.getCategories$()),
+      )
+      .subscribe((res) => {
+        this.categoryService.getCategories$().subscribe((categories) => {
+          this.categories = categories;
+        });
+      });
   }
 }

@@ -17,7 +17,6 @@ import { switchMap } from 'rxjs';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import { Article } from '../../shared/model/article';
 import { ArticleService } from '../../shared/services/article.service';
-import { ArticleDataSource } from './articles.datasource';
 import { CreateArticleDialogComponent } from './create-article-dialog.component';
 import { Category } from '../../shared/model/category';
 
@@ -113,7 +112,7 @@ export class ArticlesManageComponent {
   constructor() {
     effect(() => {
       this.articleService
-        .getArticlesBy(this.category().id)
+        .getArticlesBy(this.category().id ?? '')
         .subscribe((data) => {
           this.dataSource?.set(data);
         });
@@ -129,7 +128,7 @@ export class ArticlesManageComponent {
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
       this.articleService
-        .getArticlesBy(this.category().id)
+        .getArticlesBy(this.category().id ?? '')
         .subscribe((articles) => {
           this.dataSource?.set(articles);
         });
@@ -140,7 +139,9 @@ export class ArticlesManageComponent {
     this.articleService
       .deleteArticle(id)
       .pipe(
-        switchMap(() => this.articleService.getArticlesBy(this.category().id)),
+        switchMap(() =>
+          this.articleService.getArticlesBy(this.category().id ?? ''),
+        ),
       )
       .subscribe((articles) => this.dataSource?.set(articles));
   }
