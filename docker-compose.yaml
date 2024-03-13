@@ -1,5 +1,38 @@
 version: "3.9"
 services:
+  reverse-proxy:
+    image: traefik:v2.11
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web-secure.address=:443
+      - --accesslog.filepath=/var/log/traefik/access.log
+      - --accesslog.bufferingsize=100
+    ports:
+      # The HTTP port
+      - "80:80"
+      - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./certs:/etc/certs/
+      - ./traefik.yaml:/etc/traefik/dynamic/certs-traefik.yaml
+      - ./log:/var/log/traefik
+    environment:
+      - TZ=Europe/Vienna
+  orda:
+    image: traefik/whoami
+    labels:
+      - "traefik.http.routers.orda.rule=Host(`orda.schartis.at`)"
+      - "traefik.http.routers.orda.tls=true"
+  master:
+    image: traefik/whoami
+    labels:
+      - "traefik.http.routers.master.rule=Host(`master.schartis.at`)"
+
   db:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
