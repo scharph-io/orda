@@ -71,14 +71,18 @@
       </div>
 
       <div class="login">
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="credentials.invalid"
-          (click)="login()"
-        >
-          Login
-        </button>
+        @if (loading) {
+          <mat-spinner diameter="50"></mat-spinner>
+        } @else {
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="credentials.invalid"
+            (click)="login()"
+          >
+            Login
+          </button>
+        }
       </div>
     </div>
   </div>

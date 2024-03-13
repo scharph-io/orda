@@ -47,6 +47,23 @@ func ConnectDB() {
 	}
 
 	fmt.Println("Connection Opened to Database")
-	DB.AutoMigrate(&model.Category{}, &model.Article{}, &model.Transaction{}, &model.TransactionItem{})
+	DB.AutoMigrate(&model.User{}, &model.Category{}, &model.Article{}, &model.Transaction{}, &model.TransactionItem{})
+
+	// Check if admin user exists
+	var admin model.User
+	if DB.First(&admin, "username = ?", "admin").Error != nil {
+
+		//Generate admin user with random password
+		password := randomPassword()
+
+		fmt.Printf("Intial admin password. Please save it: '%s'", password)
+
+		// initUser("admin", password, "admin")
+
+		//Temporary user for testing
+		initUser("admin", "admin", "admin")
+		initUser("user", "example", "")
+	}
+
 	fmt.Println("Database Migrated")
 }

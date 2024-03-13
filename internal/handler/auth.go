@@ -1,13 +1,31 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/middleware"
+	"github.com/scharph/orda/internal/model"
+	"github.com/scharph/orda/internal/util"
+	"gorm.io/gorm"
 )
+
+func getUserByUsername(u string) (*model.User, error) {
+	db := database.DB
+	var user model.User
+	if err := db.Where(&model.User{Username: u}).Find(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
 
 // Login get user and password
 func Login(c *fiber.Ctx) error {
@@ -15,29 +33,28 @@ func Login(c *fiber.Ctx) error {
 		Identity string `json:"identity"`
 		Password string `json:"password"`
 	}
+
 	var input LoginInput
 	if err := c.BodyParser(&input); err != nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 	identity := input.Identity
 	pass := input.Password
-	isAdmin := false
 
-	fmt.Println("identity: ", identity)
-	fmt.Println("pass: ", pass)
+	user, err := getUserByUsername(identity)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Error on username", "errors": err.Error()})
+	}
 
-	if identity == "admin" && pass == "secret" {
-		isAdmin = true
-	} else if identity == "user" && pass == "secret" {
-		isAdmin = false
-	} else {
-		fmt.Println("username or password is wrong")
-		return c.SendStatus(fiber.StatusUnauthorized)
+	if !util.CheckPasswordHash(pass, user.Password) {
+		fmt.Println("password is wrong")
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Invalid credentials", "data": nil})
 	}
 
 	claims := jwt.MapClaims{
-		"name":  identity,
-		"admin": isAdmin,
+		"name":  user.Username,
+		"admin": strings.Contains(user.Roles, "admin"),
+		"roles": user.Roles,
 		"exp":   time.Now().Add(time.Hour * 72).Unix(),
 	}
 

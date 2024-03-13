@@ -13,7 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService, Claims } from '../auth/auth.service';
-import { JsonPipe } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'orda-login',
@@ -26,7 +26,7 @@ import { JsonPipe } from '@angular/common';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    JsonPipe,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
@@ -35,14 +35,16 @@ export class LoginComponent {
   hide = true;
   error = '';
 
+  loading = false;
+
   constructor(private authService: AuthService) {}
 
   credentials = new FormGroup({
-    username: new FormControl('admin', [
+    username: new FormControl('', [
       Validators.required,
       Validators.minLength(4),
     ]),
-    password: new FormControl(isDevMode() ? 'secret' : '', [
+    password: new FormControl('', [
       Validators.required,
       Validators.minLength(5),
     ]),
@@ -64,6 +66,7 @@ export class LoginComponent {
       this.credentials.controls.username.value &&
       this.credentials.controls.password.value
     ) {
+      this.loading = true;
       this.authService
         .auth(
           this.credentials.controls.username.value,
@@ -73,9 +76,11 @@ export class LoginComponent {
           next: (res: { token: string }) => {
             this.authService.setToken(res.token);
             this.authService.forwardToHome();
+            this.loading = false;
           },
           error: (err) => {
             this.error = err.message;
+            this.loading = false;
           },
         });
     }
