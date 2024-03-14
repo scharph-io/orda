@@ -1,5 +1,7 @@
 import {
   ApplicationConfig,
+  DEFAULT_CURRENCY_CODE,
+  LOCALE_ID,
   importProvidersFrom,
   isDevMode,
 } from '@angular/core';
@@ -15,6 +17,10 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@ngneat/transloco';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+
+import { registerLocaleData } from '@angular/common';
+import localeDe from '@angular/common/locales/de';
+registerLocaleData(localeDe, 'de');
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -49,5 +55,10 @@ export const appConfig: ApplicationConfig = {
       useValue: isDevMode() ? 'http://localhost:8080' : '',
     },
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    {
+      provide: LOCALE_ID,
+      useValue: 'de',
+    },
+    { provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' },
   ],
 };

@@ -45,11 +45,11 @@ import { Category } from '../../shared/model/category';
       @for (article of category().articles; track article) {
         @if (article.active) {
           <mat-grid-tile (click)="addArticle(article)">
-            <!-- <orda-article-tile [article]="article"></orda-article-tile>
-           -->
-            {{ article.name }}
+            <orda-article-tile [article]="article"></orda-article-tile>
+
+            <!-- {{ article.name }}
             {{ article.desc }}
-            {{ article.price | ordaCurrency }}
+            {{ article.price | ordaCurrency }} -->
           </mat-grid-tile>
         }
       }

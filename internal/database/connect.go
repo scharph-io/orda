@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	"github.com/scharph/orda/internal/config"
@@ -44,8 +45,13 @@ func ConnectDB() {
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		log.Fatal("Failed to connect to database. \n", err)
-		os.Exit(2)
+		log.Println("Failed to connect to mysql database. FALLBACK to SQLite\n", err)
+
+		DB, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+		if err != nil {
+			log.Fatal("Failed to connect to mysql database. \n", err)
+			os.Exit(2)
+		}
 	}
 
 	fmt.Println("Connection Opened to Database")
