@@ -39,6 +39,8 @@ func ConnectDB() {
 		To fully support UTF-8 encoding, you need to change charset=utf8 to charset=utf8mb4. See this article for a detailed explanation
 	*/
 
+	fmt.Println(dsn)
+
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {

@@ -26,11 +26,16 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 
 FROM base AS build-server
 COPY --from=builder-node /app/dist web/client/dist
+COPY web/client/asset.go web/client/asset.go
+COPY internal internal
+COPY cmd cmd
 RUN --mount=type=cache,target=/go/pkg/mod/ \
-    --mount=type=bind,target=. \
+    --mount=type=bind,source=go.sum,target=go.sum \
+    --mount=type=bind,source=go.mod,target=go.mod \
     go build -o /bin/server ./cmd/server
 
 FROM scratch AS server
 COPY --from=build-server /bin/server /bin/
+EXPOSE 80
 ENTRYPOINT [ "/bin/server" ]
 
