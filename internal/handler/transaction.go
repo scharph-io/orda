@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/database"
@@ -64,6 +65,19 @@ func GetAllTransactions(c *fiber.Ctx) error {
 	db := database.DB
 	var transactions []model.Transaction
 	if err := db.Model(&model.Transaction{}).Preload("Items").Find(&transactions).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get transactions", "data": err})
+	}
+	c.SendStatus(fiber.StatusOK)
+	return c.JSON(transactions)
+}
+
+func GetTransactionsLast2Days(c *fiber.Ctx) error {
+	db := database.DB
+
+	twoDaysBefore := time.Now().AddDate(0, 0, -2).Format("2006-01-02 15:04:05")
+
+	var transactions []model.Transaction
+	if err := db.Model(&model.Transaction{}).Where("updated_at > ?", twoDaysBefore).Preload("Items").Find(&transactions).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get transactions", "data": err})
 	}
 	c.SendStatus(fiber.StatusOK)

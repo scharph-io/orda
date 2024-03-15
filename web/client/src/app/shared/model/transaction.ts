@@ -1,14 +1,16 @@
 export interface TransactionItem {
-  id?: string;
-  desc: string;
+  ID?: number;
+  description: string;
   qty: number;
   transaction_id: string;
 }
 
 export interface Transaction {
-  id?: string;
+  id?: number;
   total: number;
-  payment_method: number;
+  payment_option: number;
   account_type: number;
-  items: string[];
+  items: TransactionItem[];
+  CreatedAt: string;
+  transaction_nr: string;
 }

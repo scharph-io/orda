@@ -7,5 +7,5 @@ type Article struct {
 	Desc       string `json:"desc"`
 	Price      int32  `json:"price"`
 	Active     bool   `json:"active"`
-	CategoryID string `gorm:"size:36"`
+	CategoryID string `json:"categoryId" gorm:"size:36"`
 }

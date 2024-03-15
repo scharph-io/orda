@@ -39,5 +39,11 @@
     "payout": "Auszahlung",
     "settle": "Abrechnen"
   },
-  "cupdeposit": "Becherpfand"
+  "cupdeposit": "Becherpfand",
+  "description": "Bezeichnung",
+  "quantity": "Anzahl",
+  "total": "Gesamtpreis",
+  "unitprice": "Einheitspreis",
+  "paymentOption": "Zahlungsoption",
+  "accountType": "Kontotyp"
 }

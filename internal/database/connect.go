@@ -33,6 +33,8 @@ func ConnectDB() {
 		To handle time.Time correctly, you need to include parseTime as a parameter. (more parameters)
 		To fully support UTF-8 encoding, you need to change charset=utf8 to charset=utf8mb4. See this article for a detailed explanation
 	*/
+
+	fmt.Println(dsn)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {

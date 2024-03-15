@@ -102,3 +102,9 @@ stop: ## Stop the container
 
 start: ## Start the container
 	docker start $(project_name)
+
+docker-mysql-up:
+	docker compose -f docker-compose.local.yaml up -d
+
+docker-mysql-down:
+	docker compose -f docker-compose.local.yaml down -v
