@@ -7,7 +7,7 @@ import { Article } from '../../../shared/model/article';
   standalone: true,
   imports: [OrdaCurrencyPipe],
   template: `
-    <div class="name">{{ article().name }}</div>
+    <div class="name display-3">{{ article().name }}</div>
     <div class="desc">{{ article().desc }}</div>
     <div class="price">{{ article().price | ordaCurrency }}</div>
   `,
@@ -28,17 +28,20 @@ import { Article } from '../../../shared/model/article';
 
       .name {
         justify-self: start;
-        align-self: end;
+        align-self: center;
         grid-area: name;
-        overflow: hidden;
-        white-space: nowrap;
+        overflow-wrap: break-word;
+        word-break: break-all;
+        hyphens: manual;
+
+        font-size: 0.9rem;
       }
 
       .desc {
         justify-self: start;
         align-self: center;
         grid-area: desc;
-        font-size: 0.75rem;
+        font-size: 0.85rem;
         overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 2;

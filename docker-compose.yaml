@@ -1,21 +1,66 @@
 version: "3.9"
 services:
+  reverse-proxy:
+    image: traefik:v2.11
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web-secure.address=:443
+      - --accesslog.filepath=/var/log/traefik/access.log
+      - --accesslog.bufferingsize=100
+    ports:
+      # The HTTP port
+      - "80:80"
+      - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./certs:/etc/certs/
+      - ./traefik.yaml:/etc/traefik/dynamic/certs-traefik.yaml
+      - ./log:/var/log/traefik
+    environment:
+      - TZ=Europe/Vienna
+  orda:
+    image: scharphio/orda:dev
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=orda
+      - DB_PASSWORD=orda
+      - DB_NAME=orda
+      - PORT=80
+    labels:
+      - "traefik.http.routers.orda.rule=Host(`orda.schartis.at`)"
+      - "traefik.http.routers.orda.tls=true"
+  master:
+    image: traefik/whoami
+    labels:
+      - "traefik.http.routers.master.rule=Host(`master.schartis.at`)"
+      - "traefik.http.routers.master.tls=true"
   db:
     image: mysql
-    command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: example
-    ports:
-      - "3306:3306"
+      - MYSQL_DATABASE=orda
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_USER=orda
+      - MYSQL_PASSWORD=orda
+    command:
+      - --performance_schema=0
+      - --innodb_use_native_aio=0
     volumes:
       - db_data:/var/lib/mysql
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8081:8080
-
+      - ./mysql/init:/docker-entrypoint-initdb.d/:ro
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
 volumes:
   db_data:
-## https://www.slingacademy.com/article/use-mysql-with-docker-and-docker-compose/

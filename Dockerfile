@@ -1,36 +1,41 @@
-# Building the binary of the App
-FROM golang:1.21 AS build
+# Use the official Node.js image as the base image
+FROM node:alpine3.19 as builder-node
+RUN apk update && apk add make
 
-# `boilerplate` should be replaced with your project name
-WORKDIR /go/src/app
-
-# Copy all the Code and stuff to compile everything
-COPY . .
-
-# Downloads all the dependencies in advance (could be left out, but it's more clear this way)
-RUN go mod download
-
-# Builds the application as a staticly linked one, to allow it to run on alpine
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o app .
-
-# Moving the binary to the 'final Image' to make it smaller
-FROM alpine:latest as release
-
+# Set the working directory in the container
 WORKDIR /app
 
-# Create the `public` dir and copy all the assets into it
-RUN mkdir ./static
-COPY ./static ./static
+# Copy package.json and package-lock.json to the container
+COPY web/client/package*.json ./
 
-# `boilerplate` should be replaced here as well
-COPY --from=build /go/src/app/app .
+# Install project dependencies
+RUN npm install
 
-# Add packages
-RUN apk -U upgrade \
-    && apk add --no-cache dumb-init ca-certificates \
-    && chmod +x /app/app
+# Copy the entire project to the container
+COPY web/client .
 
-# Exposes port 3000 because our program listens on that port
-EXPOSE 3000
+# Build the Angular app for production
+RUN npm run build
 
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+FROM golang:alpine AS base
+WORKDIR /src
+RUN --mount=type=cache,target=/go/pkg/mod/ \
+      --mount=type=bind,source=go.sum,target=go.sum \
+      --mount=type=bind,source=go.mod,target=go.mod \
+      go mod download -x
+
+FROM base AS build-server
+COPY --from=builder-node /app/dist web/client/dist
+COPY web/client/asset.go web/client/asset.go
+COPY internal internal
+COPY cmd cmd
+RUN --mount=type=cache,target=/go/pkg/mod/ \
+    --mount=type=bind,source=go.sum,target=go.sum \
+    --mount=type=bind,source=go.mod,target=go.mod \
+    go build -o /bin/server ./cmd/server
+
+FROM scratch AS server
+COPY --from=build-server /bin/server /bin/
+EXPOSE 80
+ENTRYPOINT [ "/bin/server" ]
+

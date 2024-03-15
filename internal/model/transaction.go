@@ -8,6 +8,7 @@ type Transaction struct {
 	PaymentOption int8              `json:"payment_option"`
 	AccountType   int8              `json:"account_type"`
 	Total         int32             `json:"total"`
+	// UserID        string            `json:"user_id"`
 }
 
 type TransactionItem struct {
