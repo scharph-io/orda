@@ -62,6 +62,7 @@ func SetupRoutes(app *fiber.App) {
 	// Transaction
 	transaction := api.Group("/transaction")
 	transaction.Get("/", middleware.Protected(), handler.GetAllTransactions)
+	transaction.Get("/last2days", middleware.Protected(), handler.GetTransactionsLast2Days)
 	transaction.Delete("/:id", middleware.Protected(), handler.DeleteTransaction)
 
 }

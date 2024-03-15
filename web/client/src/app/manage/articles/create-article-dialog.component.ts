@@ -126,6 +126,16 @@ export class CreateArticleDialogComponent {
     if (this.articleForm.valid) {
       const value = this.articleForm.value;
 
+      console.log(value);
+
+      console.log({
+        name: value.name ?? '',
+        desc: value.desc ?? '',
+        price: Math.round((value.price ?? 0) * 100),
+        active: value.active ?? false,
+        categoryId: this.data.categoryId,
+      });
+
       this.articleService
         .createArticle({
           name: value.name ?? '',

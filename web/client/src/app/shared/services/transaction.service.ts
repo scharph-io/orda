@@ -13,8 +13,13 @@ export class TransactionService {
     @Inject('ENDPOINT') private endpoint: String,
   ) {}
 
-  getTransaction$() {
+  getTransactions$() {
     return this.http.get<Transaction[]>(`${this.endpoint}/api/transaction`);
+  }
+  getTransactionsLast2Days$() {
+    return this.http.get<Transaction[]>(
+      `${this.endpoint}/api/transaction/last2Days`,
+    );
   }
 
   //   getTransaction(id: string) {

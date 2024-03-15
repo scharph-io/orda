@@ -7,5 +7,5 @@ type Category struct {
 	Articles    []Article `json:"articles"`
 	Colored     bool      `json:"colored" gorm:"default:false"`
 	WithDeposit bool      `json:"withDeposit" gorm:"default:false"`
-	//Deposit     int32   `json:"deposit"`
+	Deposit     int32     `json:"deposit"`
 }

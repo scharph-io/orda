@@ -4,7 +4,7 @@
   "menu": {
     "home": "Startseite",
     "orders": "Bestellungen",
-    "history": "Verlauf",
+    "history": "Zahlungsverlauf",
     "info": "Info",
     "manage": "Verwalten",
     "store": "Geschäft"
@@ -39,5 +39,11 @@
     "payout": "Auszahlung",
     "settle": "Abrechnen"
   },
-  "cupdeposit": "Becherpfand"
+  "cupdeposit": "Becherpfand",
+  "description": "Bezeichnung",
+  "quantity": "Anzahl",
+  "total": "Gesamtpreis",
+  "unitprice": "Einheitspreis",
+  "paymentOption": "Zahlungsoption",
+  "accountType": "Kontotyp"
 }

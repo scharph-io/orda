@@ -18,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 // Example ??? https://www.codeproject.com/Articles/5290817/Build-Angular-data-table-with-CRUD-operations-and
 @Component({
   template: `
-    <div class="container" style="margin: 1rem;">
+    <div class="container">
       <h1>Manage</h1>
 
       <h2>Categories ({{ categories.length }})</h2>
@@ -83,6 +83,13 @@ import { MatIconModule } from '@angular/material/icon';
     MatSlideToggleModule,
     MatButtonModule,
     MatIconModule,
+  ],
+  styles: [
+    `
+      .test {
+        border: 1px solid red;
+      }
+    `,
   ],
 })
 export class ManageComponent {
