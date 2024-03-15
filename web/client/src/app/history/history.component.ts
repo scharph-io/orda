@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { TransactionService } from '../shared/services/transaction.service';
 import { Transaction } from '../shared/model/transaction';
@@ -27,11 +27,13 @@ import { AuthService } from '../auth/auth.service';
   ],
   template: `
     <div class="container">
-      <h2>History</h2>
+      <h2>{{ 'menu.history' | transloco }}</h2>
       <!-- <h3>{{ info }}</h3> -->
       @if (transactions?.length === 0) {
         <p>No transactions found</p>
       }
+
+      Total: {{ total() | ordaCurrency }}
       <mat-accordion>
         @for (transaction of transactions; track transaction) {
           <mat-expansion-panel>
@@ -71,7 +73,6 @@ import { AuthService } from '../auth/auth.service';
   styles: [
     `
       .container {
-        border: 1px solid red;
         margin: 0.5em 1em;
       }
     `,
@@ -83,12 +84,15 @@ export class HistoryComponent {
   transactionService = inject(TransactionService);
   authService = inject(AuthService);
 
+  total = signal<number>(0);
+
   info = 'Loading...';
   constructor() {
     if (this.authService.isAdmin()) {
       this.transactionService.getTransactions$().subscribe((transactions) => {
         this.info = 'all';
         this.transactions = transactions;
+        this.total.set(transactions.reduce((sum, t) => sum + t.total, 0));
       });
     } else {
       this.transactionService
@@ -96,6 +100,7 @@ export class HistoryComponent {
         .subscribe((transactions) => {
           this.info = 'last2days';
           this.transactions = transactions;
+          this.total.set(transactions.reduce((sum, t) => sum + t.total, 0));
         });
     }
   }
