@@ -38,7 +38,7 @@ func ConnectDB() {
 	if err != nil {
 		log.Println("Failed to connect to mysql database. FALLBACK to SQLite\n", err)
 
-		DB, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+		DB, err = gorm.Open(sqlite.Open("orda-local.db"), &gorm.Config{})
 		if err != nil {
 			log.Fatal("Failed to connect to sqlite database. \n", err)
 			os.Exit(2)
