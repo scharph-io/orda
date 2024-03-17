@@ -34,16 +34,11 @@ import { TranslocoModule } from '@ngneat/transloco';
       }
     </div>
 
-    <orda-cart-actions
-      class="actions"
-      [items]="(items$ | async) ?? []"
-    ></orda-cart-actions>
-    <orda-cart-subtotal class="subtotal" [total]="(total$ | async) ?? 0">
-      <!-- <div class="cart">
-      
-      
-    </div> -->
-    </orda-cart-subtotal>
+    <orda-cart-actions class="actions" [items]="(items$ | async) ?? []" />
+    <orda-cart-subtotal
+      class="subtotal"
+      [subtotal]="(subtotal$ | async) ?? 0"
+    />
   `,
   styles: [
     `
@@ -59,17 +54,15 @@ import { TranslocoModule } from '@ngneat/transloco';
       :host {
         padding: 1em;
         display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr min-content min-content;
         gap: 0.5em;
         grid-auto-flow: row;
         justify-content: center;
         align-content: stretch;
         align-items: stretch;
-        grid-template-areas:
-          'cart'
-          'subtotal'
-          'actions';
+        grid-template:
+          'cart' 1fr
+          'subtotal' min-content
+          'actions' min-content/ 1fr;
       }
 
       .cart {
@@ -94,6 +87,9 @@ import { TranslocoModule } from '@ngneat/transloco';
         justify-self: center;
         align-self: start;
         grid-area: actions;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       .title {
@@ -123,7 +119,7 @@ export class CartComponent {
     return this.cart.items$;
   }
 
-  get total$(): Observable<number> {
-    return this.cart.total$;
+  get subtotal$(): Observable<number> {
+    return this.cart.subtotal$;
   }
 }

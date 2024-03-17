@@ -3,11 +3,12 @@ import { CartItem, CartStore } from '../cart.store';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'orda-cart-item',
   standalone: true,
-  imports: [OrdaCurrencyPipe, MatButtonModule, MatIconModule],
+  imports: [OrdaCurrencyPipe, MatButtonModule, MatIconModule, MatDividerModule],
   template: `
     <div
       [class]="{
@@ -29,6 +30,7 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
         >
       </div>
     </div>
+    <mat-divider></mat-divider>
   `,
   styles: `
     .container {

@@ -8,8 +8,8 @@ import { TranslocoModule } from '@ngneat/transloco';
   standalone: true,
   imports: [OrdaCurrencyPipe, TranslocoModule],
   template: `
-    {{ 'cart.subtotal' | transloco }}:
-    <span>{{ total() | ordaCurrency: 'EUR' }}</span>
+    <span>{{ 'cart.subtotal' | transloco }}:</span>
+    <span class="subtotal">{{ subtotal() | ordaCurrency: 'EUR' }}</span>
   `,
   styles: `
     :host {
@@ -20,12 +20,12 @@ import { TranslocoModule } from '@ngneat/transloco';
       height: auto;
     }
 
-    span {
+    .subtotal {
       font-size: 1.5em;
       font-weight: bold;
     }
   `,
 })
 export class CartSubtotalComponent {
-  total = input.required<number>();
+  subtotal = input.required<number>();
 }

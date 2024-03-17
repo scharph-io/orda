@@ -19,7 +19,7 @@ export class CartStore {
     .asObservable()
     .pipe(map((items) => items.filter((a) => a.quantity !== 0)));
 
-  public readonly total$: Observable<number> = this._items.pipe(
+  public readonly subtotal$: Observable<number> = this._items.pipe(
     map((articles) =>
       articles.reduce(
         (acc, article) => acc + article.price * article.quantity,

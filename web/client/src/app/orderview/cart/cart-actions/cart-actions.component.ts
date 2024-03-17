@@ -34,7 +34,13 @@ import { TranslocoModule } from '@ngneat/transloco';
       flex-direction: row;
       height: 3.5em;
       width: 100%;
-      gap: 0.5em;
+      gap: 0.25em;
+    }
+
+    button {
+      font-size: 1.1em;
+      width: 100%;
+      height: 100%;
     }
 
     // mat-icon button {
