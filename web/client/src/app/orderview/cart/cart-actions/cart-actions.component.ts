@@ -12,31 +12,29 @@ import { TranslocoModule } from '@ngneat/transloco';
   standalone: true,
   imports: [MatButtonModule, MatIconModule, TranslocoModule],
   template: `
-    <div class="container">
-      @if (items().length > 0) {
-        <button mat-icon-button color="warn" (click)="clearCart()">
-          <mat-icon>delete_forever</mat-icon>
-        </button>
-      }
-      <button
-        mat-flat-button
-        color="primary"
-        [disabled]="disableCheckout()"
-        (click)="openCheckoutDialog()"
-      >
-        <mat-icon>shopping_cart_checkout</mat-icon>
-        {{ 'cart.checkout' | transloco }}
+    @if (items().length > 0) {
+      <button class="item-0" mat-icon-button color="warn" (click)="clearCart()">
+        <mat-icon>delete_forever</mat-icon>
       </button>
-    </div>
+    }
+    <button
+      class="item-1"
+      mat-flat-button
+      color="primary"
+      [disabled]="disableCheckout()"
+      (click)="openCheckoutDialog()"
+    >
+      <mat-icon>shopping_cart_checkout</mat-icon>
+      {{ 'cart.checkout' | transloco }}
+    </button>
   `,
   styles: `
-    .container {
+    :host {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      // height: 2.5em;
-      // font-size: 1.5em;
-      // font-weight: bold;
+      flex-direction: row;
+      height: 3.5em;
+      width: 100%;
+      gap: 0.5em;
     }
 
     // mat-icon button {

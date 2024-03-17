@@ -4,22 +4,20 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
-  selector: 'orda-cart-header',
+  selector: 'orda-cart-subtotal',
   standalone: true,
   imports: [OrdaCurrencyPipe, TranslocoModule],
   template: `
-    <div class="container">
-      {{ 'cart.subtotal' | transloco }}:
-      <span>{{ total() | ordaCurrency: 'EUR' }}</span>
-    </div>
+    {{ 'cart.subtotal' | transloco }}:
+    <span>{{ total() | ordaCurrency: 'EUR' }}</span>
   `,
   styles: `
-    .container {
+    :host {
       display: flex;
       gap: 1em;
       justify-content: center;
       align-items: center;
-      height: 2em;
+      height: auto;
     }
 
     span {
@@ -28,6 +26,6 @@ import { TranslocoModule } from '@ngneat/transloco';
     }
   `,
 })
-export class CartHeaderComponent {
+export class CartSubtotalComponent {
   total = input.required<number>();
 }

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { CartItem } from './cart.store';
 import { CartStore } from './cart.store';
 import { CartItemComponent } from './cart-item/cart-item.component';
-import { CartHeaderComponent } from './cart-header/cart-header.component';
+import { CartSubtotalComponent } from './cart-subtotal/cart-subtotal.component';
 import { CartActionsComponent } from './cart-actions/cart-actions.component';
 import { TranslocoModule } from '@ngneat/transloco';
 
@@ -20,36 +20,80 @@ import { TranslocoModule } from '@ngneat/transloco';
     AsyncPipe,
     CurrencyPipe,
     CartItemComponent,
-    CartHeaderComponent,
+    CartSubtotalComponent,
     CartActionsComponent,
     TranslocoModule,
   ],
   template: `
-    <div class="title">
-      <h1>{{ 'cart.title' | transloco }}</h1>
-    </div>
-    <div class="subtotal">
-      <orda-cart-header [total]="(total$ | async) ?? 0"></orda-cart-header>
-    </div>
     <div class="cart">
-      <orda-cart-actions [items]="(items$ | async) ?? []"></orda-cart-actions>
-      <div class="cart-items">
-        @for (item of items$ | async; track $index) {
-          <orda-cart-item [item]="item"></orda-cart-item>
-        }
-      </div>
+      @for (item of items$ | async; track $index) {
+        <orda-cart-item [item]="item"></orda-cart-item>
+      }
+      @if ((items$ | async) === null || (items$ | async)?.length === 0) {
+        <span class="cartEmpty">{{ 'cart.empty' | transloco }}</span>
+      }
     </div>
+
+    <orda-cart-actions
+      class="actions"
+      [items]="(items$ | async) ?? []"
+    ></orda-cart-actions>
+    <orda-cart-subtotal class="subtotal" [total]="(total$ | async) ?? 0">
+      <!-- <div class="cart">
+      
+      
+    </div> -->
+    </orda-cart-subtotal>
   `,
   styles: [
     `
+      // :host {
+      //   display: grid;
+      //   gap: 0px 0px;
+      //   grid-auto-flow: row;
+      //   grid-template:
+      //     'subtotal' 4rem
+      //     'cart' auto / 1fr;
+      // }
+
       :host {
+        padding: 1em;
         display: grid;
-        gap: 0px 0px;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr min-content min-content;
+        gap: 0.5em;
         grid-auto-flow: row;
-        grid-template:
-          'title' 4rem
-          'subtotal' 4rem
-          'cart' auto / 1fr;
+        justify-content: center;
+        align-content: stretch;
+        align-items: stretch;
+        grid-template-areas:
+          'cart'
+          'subtotal'
+          'actions';
+      }
+
+      .cart {
+        grid-area: cart;
+        height: calc(100vh - 13em);
+        overflow-y: auto;
+      }
+
+      ::-webkit-scrollbar {
+        width: 9px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(155, 155, 155, 0.5);
+        border-radius: 20px;
+        border: transparent;
+      }
+
+      .actions {
+        justify-self: center;
+        align-self: start;
+        grid-area: actions;
       }
 
       .title {
@@ -62,20 +106,12 @@ import { TranslocoModule } from '@ngneat/transloco';
         justify-self: center;
         align-self: center;
         grid-area: subtotal;
+        height: 3em;
       }
 
-      .cart {
-        grid-area: cart;
-        margin: 0 1em;
+      .cartEmpty {
         display: flex;
-        flex-direction: column;
-        gap: 0.5em;
-      }
-
-      .cart-items {
-        overflow: auto;
-        text-align: justify;
-        height: 450px;
+        justify-content: center;
       }
     `,
   ],
