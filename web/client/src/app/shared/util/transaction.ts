@@ -1,11 +1,11 @@
 export enum AccountType {
-  CUSTOMER,
+  CASH,
   FREE,
   PREMIUM,
 }
 
 export const AccountTypeKeys = {
-  [AccountType.CUSTOMER]: 'account.customer',
+  [AccountType.CASH]: 'account.cash',
   [AccountType.FREE]: 'account.free',
   [AccountType.PREMIUM]: 'account.premium',
 };

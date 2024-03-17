@@ -6,7 +6,7 @@ import { AccountType, AccountTypeKeys } from '../util/transaction';
   standalone: true,
 })
 export class AccountTypePipe implements PipeTransform {
-  transform(value: AccountType, args?: any): any {
+  transform(value: AccountType, args?: any): string {
     return AccountTypeKeys[value];
   }
 }

@@ -31,7 +31,7 @@
   },
   "account": {
     "title": "Kontotyp",
-    "customer": "Kunde",
+    "cash": "Kasse",
     "free": "Frei",
     "premium": "Sponsor"
   },

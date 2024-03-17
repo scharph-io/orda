@@ -66,7 +66,7 @@ export class OrderViewComponent implements OnInit {
           this.cartSize = '30em';
         } else if (breakpoints[Breakpoints.Medium]) {
           console.log('screens matches Medium');
-          this.cartSize = '20em';
+          this.cartSize = '17em';
         } else if (breakpoints[Breakpoints.Large]) {
           console.log('screens matches Large');
           this.cartSize = '30em';
