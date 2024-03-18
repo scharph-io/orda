@@ -7,5 +7,6 @@ export interface Category {
   position?: number;
   colored: boolean;
   withDeposit: boolean;
+  deposit?: number;
   articles?: Article[];
 }

@@ -1,104 +1,48 @@
 import { Component, input } from '@angular/core';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import { Article } from '../../../shared/model/article';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'orda-article-tile',
   standalone: true,
-  imports: [OrdaCurrencyPipe],
+  imports: [OrdaCurrencyPipe, MatDividerModule],
   template: `
-    <div class="name display-3">{{ article().name }}</div>
-    <div class="desc">{{ article().desc }}</div>
     <div class="price">{{ article().price | ordaCurrency }}</div>
+    <div class="divider"><mat-divider></mat-divider></div>
+    <div class="desc">{{ article().desc }}</div>
+    <div class="name">{{ article().name }}</div>
   `,
   styles: [
     `
       :host {
         display: grid;
-        gap: 0.25em;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 5% 20%;
+        gap: 0px 0px;
         grid-auto-flow: row;
-        grid-template:
-          'name' 1fr
-          'desc' 1fr
-          'price' auto/1fr;
-        margin: 0.25rem;
-        width: 6em;
-        height: 6em;
-      }
-
-      .name {
-        justify-self: start;
-        align-self: center;
-        grid-area: name;
-        overflow-wrap: break-word;
-        word-break: break-all;
-        hyphens: manual;
-
-        font-size: 0.9rem;
-      }
-
-      .desc {
-        justify-self: start;
-        align-self: center;
-        grid-area: desc;
-        font-size: 0.85rem;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
+        grid-template-areas:
+          'name'
+          'desc'
+          'divider'
+          'price';
       }
 
       .price {
-        justify-self: end;
-        align-self: end;
         grid-area: price;
-        font-size: 0.8rem;
       }
 
-      // @media (min-width: 1500px) {
-      //   .name {
-      //     font-size: 1.5rem;
-      //   }
+      .divider {
+        grid-area: divider;
+      }
 
-      //   .desc {
-      //     font-size: 1rem;
-      //     -webkit-line-clamp: 3;
-      //   }
+      .desc {
+        grid-area: desc;
+      }
 
-      //   .price {
-      //     font-size: 1rem;
-      //   }
-      // }
-
-      // @media (max-width: 800px) {
-      //   .name {
-      //     font-size: 0.6rem;
-      //   }
-
-      //   .desc {
-      //     font-size: 0.4rem;
-      //     -webkit-line-clamp: 3;
-      //   }
-
-      //   .price {
-      //     font-size: 0.5rem;
-      //   }
-      // }
-
-      // @media (max-width: 600px) {
-      //   .name {
-      //     font-size: 1.2rem;
-      //   }
-
-      //   .desc {
-      //     font-size: 0.75rem;
-      //     -webkit-line-clamp: 3;
-      //   }
-
-      //   .price {
-      //     font-size: 0.95rem;
-      //   }
-      // }
+      .name {
+        grid-area: name;
+      }
     `,
   ],
 })
