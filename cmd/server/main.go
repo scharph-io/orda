@@ -58,7 +58,7 @@ func main() {
 	}
 	fmt.Println("Server running on port", port)
 	router.SetupRoutes(app)
-	log.Fatal(app.Listen(fmt.Sprintf("%s:%s", config.Config("HOST"), config.Config("PORT"))))
+	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
 
 	// https://github.com/gofiber/recipes/tree/master/auth-docker-postgres-jwt
 

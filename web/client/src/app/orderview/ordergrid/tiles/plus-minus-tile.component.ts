@@ -9,10 +9,10 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [TranslocoModule, MatIconModule],
   template: `
-    <div class="item" (click)="addToCart(1)">
+    <div class="item add" (click)="addToCart(1)">
       {{ key() | transloco }} <mat-icon>add</mat-icon>
     </div>
-    <div class="item" (click)="addToCart(-1)">
+    <div class="item remove" (click)="addToCart(-1)">
       {{ key() | transloco }} <mat-icon>remove</mat-icon>
     </div>
   `,
@@ -32,6 +32,16 @@ import { MatIconModule } from '@angular/material/icon';
         align-items: center;
         justify-content: center;
         font-size: 0.8rem;
+      }
+
+      .add {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .remove {
+        background-color: #f44336;
+        color: white;
       }
     `,
   ],
