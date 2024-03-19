@@ -40,7 +40,7 @@ import { Category } from '../../shared/model/category';
       @if (category().withDeposit) {
         <mat-grid-tile [colspan]="2"
           ><orda-plus-minus-tile
-            [key]="'cupdeposit'"
+            [key]="'deposit'"
             [value]="category().deposit ?? 100"
         /></mat-grid-tile>
       }

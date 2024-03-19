@@ -65,4 +65,8 @@ func SetupRoutes(app *fiber.App) {
 	transaction.Get("/last2days", middleware.Protected(), handler.GetTransactionsLast2Days)
 	transaction.Delete("/:id", middleware.Protected(), handler.DeleteTransaction)
 
+	// Statistic
+	statistic := api.Group("/statistic")
+	statistic.Get("/item/:id", middleware.Protected(), handler.GetItemSumFromCurrentDate)
+
 }

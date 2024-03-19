@@ -27,3 +27,17 @@
 `docker login -u scharphio`
 `docker build -t scharphio/orda:latest .`
 `docker push scharphio/orda:latest`
+
+```sql
+
+SELECT
+	articles.id as id,
+	SUM(qty) as totalQty,
+	description
+FROM transaction_items
+JOIN articles ON articles.id = transaction_items.article_id
+GROUP BY id, description
+ORDER BY totalQty DESC
+
+
+```

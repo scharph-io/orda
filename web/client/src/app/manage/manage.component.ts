@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 
 import { ArticlesManageComponent } from './articles/articles-manage.component';
 import { CategoryService } from '../shared/services/category.service';
@@ -14,37 +14,65 @@ import {
 import { switchMap, tap } from 'rxjs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import {
-  MatDialog,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogTitle,
-} from '@angular/material/dialog';
+
 // Example ??? https://www.codeproject.com/Articles/5290817/Build-Angular-data-table-with-CRUD-operations-and
 @Component({
   template: `
-    @if (accordion) {
-      <button mat-button (click)="openCategoryDialog()">Add</button>
-      <div class="example-action-buttons">
-        <button mat-button (click)="accordion.openAll()">Expand All</button>
-        <button mat-button (click)="accordion.closeAll()">Collapse All</button>
-      </div>
-    }
-    <mat-accordion class="example-headers-align" multi>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Personal data </mat-panel-title>
-          <mat-panel-description>
-            Type your name and age
-            <mat-icon>account_circle</mat-icon>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-      </mat-expansion-panel>
-    </mat-accordion>
+    <div class="container">
+      <h1>Manage</h1>
+
+      <h2>Categories ({{ categories.length }})</h2>
+
+      <!-- {{ this.categories | json }} -->
+      <form [formGroup]="newCategory">
+        <input type="text" formControlName="name" />
+        <input type="text" formControlName="desc" />
+        <mat-slide-toggle formControlName="colored">Colored </mat-slide-toggle>
+        <mat-slide-toggle formControlName="withDeposit"
+          >Deposit
+        </mat-slide-toggle>
+        <button mat-raised-button color="primary" (click)="createCategory()">
+          Create
+        </button>
+      </form>
+
+      <table *ngIf="categories.length > 0">
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Colored</th>
+          <th>Deposit</th>
+          <th>Actions</th>
+        </tr>
+        <tr
+          *ngFor="let category of categories"
+          (click)="selectedCategory = category"
+        >
+          <td>{{ category.name }}</td>
+          <td>{{ category.desc }}</td>
+          <mat-slide-toggle
+            [checked]="category.colored"
+            disabled
+          ></mat-slide-toggle>
+          <mat-slide-toggle
+            [checked]="category.withDeposit"
+            disabled
+          ></mat-slide-toggle>
+          <td>
+            <!-- TODO: Hide delete if articles are not 0 -->
+            @if (category.id !== undefined) {
+              <button mat-icon-button (click)="deleteCategory(category.id)">
+                <mat-icon mat-icon-button color="warn">delete</mat-icon>
+              </button>
+            }
+          </td>
+        </tr>
+      </table>
+
+      @if (categories.length > 0 && selectedCategory !== undefined) {
+        <orda-articles-manage [category]="selectedCategory" />
+      }
+    </div>
   `,
   standalone: true,
   imports: [
@@ -55,32 +83,16 @@ import {
     MatSlideToggleModule,
     MatButtonModule,
     MatIconModule,
-    MatButtonModule,
-    MatExpansionModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatInputModule,
   ],
   styles: [
     `
-      .example-action-buttons {
-        padding-bottom: 20px;
-      }
-
-      .example-headers-align .mat-expansion-panel-header-description {
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .example-headers-align .mat-mdc-form-field + .mat-mdc-form-field {
-        margin-left: 8px;
+      .test {
+        border: 1px solid red;
       }
     `,
   ],
 })
 export class ManageComponent {
-  @ViewChild(MatAccordion) accordion?: MatAccordion;
-
   categoryService = inject(CategoryService);
 
   selectedCategory?: Category;
@@ -154,20 +166,4 @@ export class ManageComponent {
         });
     });
   }
-
-  openCategoryDialog() {}
 }
-
-@Component({
-  selector: 'orda-category-create-dialog',
-  template: ``,
-  standalone: true,
-  imports: [
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogClose,
-    MatButtonModule,
-  ],
-})
-export class DialogElementsExampleDialog {}

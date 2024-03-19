@@ -39,7 +39,7 @@
     "payout": "Auszahlung",
     "settle": "Abrechnen"
   },
-  "cupdeposit": "Becherpfand",
+  "deposit": "Pfand",
   "description": "Bezeichnung",
   "quantity": "Anzahl",
   "total": "Gesamtpreis",
