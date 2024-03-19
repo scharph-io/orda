@@ -41,3 +41,24 @@ ORDER BY totalQty DESC
 
 
 ```
+
+TotalSum/Day
+
+```sql
+SELECT SUM(total) FROM transactions WHERE DATE(created_at) = CURDATE()
+``
+
+Cash/Day
+SELECT COUNT(*) FROM transactions WHERE payment_option = 1 AND DATE(created_at) = CURDATE()
+Sponsor/Day
+SELECT COUNT(*) FROM transactions WHERE payment_option = 2 AND DATE(created_at) = CURDATE()
+Free/Day
+SELECT COUNT(*) FROM transactions WHERE payment_option = 3 AND DATE(created_at) = CURDATE()
+```
+
+deposit/Day
+
+```sql
+SELECT article_id, SUM(qty) as totalQty FROM transaction_items WHERE DATE(created_at) = CURDATE() AND article_id LIKE 'deposit%'
+GROUP BY article_id
+```
