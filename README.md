@@ -35,7 +35,7 @@ SELECT
 	SUM(qty) as totalQty,
 	description
 FROM transaction_items
-JOIN articles ON articles.id = transaction_items.article_id
+LEFT JOIN articles ON articles.id = transaction_items.article_id
 GROUP BY id, description
 ORDER BY totalQty DESC
 
@@ -59,6 +59,6 @@ SELECT COUNT(*) FROM transactions WHERE payment_option = 3 AND DATE(created_at) 
 deposit/Day
 
 ```sql
-SELECT article_id, SUM(qty) as totalQty FROM transaction_items WHERE DATE(created_at) = CURDATE() AND article_id LIKE 'deposit%'
+SELECT article_id as desposit_id, SUM(qty) as qty FROM transaction_items WHERE DATE(created_at) = CURDATE() AND article_id LIKE 'deposit%'
 GROUP BY article_id
 ```
