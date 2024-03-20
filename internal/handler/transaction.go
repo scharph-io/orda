@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -68,52 +69,32 @@ func CreateTransaction(c *fiber.Ctx) error {
 }
 
 func GetAllTransactions(c *fiber.Ctx) error {
-	db := database.DB
-	var transactions []model.Transaction
-	if err := db.Model(&model.Transaction{}).Preload("Items").Find(&transactions).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get transactions", "data": err})
-	}
-	c.SendStatus(fiber.StatusOK)
-	return c.JSON(transactions)
-}
-
-func GetTransactionsLast2Days(c *fiber.Ctx) error {
-	db := TransactionDB{database.DB.Model(&model.Transaction{})}
-
-	var transactions []model.Transaction
-	if err := db.whereUpdatedAt(time.Now().AddDate(0, 0, -2)).Preload("Items").Find(&transactions).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get transactions", "data": err})
-	}
-	return c.Status(fiber.StatusOK).JSON(transactions)
-}
-
-func GetTransactionsByFilter(c *fiber.Ctx) error {
-	db := TransactionDB{database.DB}
+	db := &TransactionDB{database.DB}
 
 	paymentOption := c.Query("paymentOption")
 	accountType := c.Query("accountType")
+	days := c.Query("updatedBeforeDays")
 
 	var transactions []model.Transaction
 
-	db.whereAccountType("1").wherePaymentOption("1").Find(&transactions)
-
-	if paymentOption != "" && accountType != "" {
-		if err := db.whereAccountType(accountType).wherePaymentOption(paymentOption).Preload("Items").Find(&transactions).Error; err != nil {
-			return c.Status(500).JSON(err)
+	if paymentOption != "" {
+		db = db.wherePaymentOption(paymentOption)
+	}
+	if accountType != "" {
+		db = db.whereAccountType(accountType)
+	}
+	if days != "" {
+		days, err := strconv.Atoi(days)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid filter for days", "data": err})
 		}
-	} else if paymentOption != "" {
-		if err := db.wherePaymentOption(paymentOption).Preload("Items").Find(&transactions).Error; err != nil {
-			return c.Status(500).JSON(err)
-		}
-	} else if accountType != "" {
-		if err := db.whereAccountType(accountType).Preload("Items").Find(&transactions).Error; err != nil {
-			return c.Status(500).JSON(err)
-		}
-	} else {
-		return GetAllTransactions(c)
+		db = db.whereUpdatedAt(time.Now().AddDate(0, 0, -1*days))
 	}
 
-	fmt.Println(len(transactions), "option:", paymentOption, "type", accountType)
+	if err := db.Preload("Items").Find(&transactions).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get transactions", "data": err})
+	}
+
 	return c.Status(fiber.StatusOK).JSON(transactions)
 }
 
