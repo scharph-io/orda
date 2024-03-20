@@ -50,3 +50,18 @@ func GetArticleTransactionHistory(c *fiber.Ctx) error {
 	}
 	return c.Status(200).JSON(result)
 }
+
+func GetDepositHistory(c *fiber.Ctx) error {
+	db := database.DB
+
+	type DepositHistory struct {
+		DepositId string `json:"deposit_id"`
+		Qty       int32  `json:"qty"`
+	}
+
+	var result []DepositHistory
+	if err := db.Raw(database.Q_get_deposit_history).Scan(&result).Error; err != nil {
+		return c.Status(500).JSON(&fiber.Map{"status": "error", "message": "Couldn't get deposit history", "data": err})
+	}
+	return c.Status(200).JSON(result)
+}

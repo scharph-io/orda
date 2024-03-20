@@ -70,5 +70,6 @@ func SetupRoutes(app *fiber.App) {
 	statistic.Get("/transaction/paymentOption/:paymentOption", middleware.Protected(), handler.GetTransactionsByPaymentOption)
 	statistic.Get("/transaction/accountType/:accountType", middleware.Protected(), handler.GetTransactionsByAccountType)
 	statistic.Get("/articleTransactionHistory", middleware.Protected(), handler.GetArticleTransactionHistory)
+	statistic.Get("/depositHistory", middleware.Protected(), handler.GetDepositHistory)
 
 }

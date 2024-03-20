@@ -16,7 +16,6 @@ type TransactionDB struct {
 }
 
 // TODO: Dont send any prices to to server, get and calculate them on the server side
-
 func CreateTransaction(c *fiber.Ctx) error {
 	db := database.DB
 
@@ -73,7 +72,8 @@ func GetAllTransactions(c *fiber.Ctx) error {
 
 	paymentOption := c.Query("paymentOption")
 	accountType := c.Query("accountType")
-	days := c.Query("updatedBeforeDays")
+	updatedBeforeDays := c.Query("updatedBeforeDays")
+	currentDate := c.Query("currentDate")
 
 	var transactions []model.Transaction
 
@@ -83,12 +83,14 @@ func GetAllTransactions(c *fiber.Ctx) error {
 	if accountType != "" {
 		db = db.whereAccountType(accountType)
 	}
-	if days != "" {
-		days, err := strconv.Atoi(days)
+	if updatedBeforeDays != "" {
+		days, err := strconv.Atoi(updatedBeforeDays)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid filter for days", "data": err})
+			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid filter", "data": err})
 		}
 		db = db.whereUpdatedAt(time.Now().AddDate(0, 0, -1*days))
+	} else if currentDate != "" {
+		db = db.whereUpdatedAtCurrentDate()
 	}
 
 	if err := db.Preload("Items").Find(&transactions).Error; err != nil {
@@ -121,4 +123,8 @@ func (db *TransactionDB) whereAccountType(typ string) (tx *TransactionDB) {
 
 func (db *TransactionDB) whereUpdatedAt(updatedAt time.Time) (tx *TransactionDB) {
 	return &TransactionDB{DB: db.Where("updated_at > ?", updatedAt.Format("2006-01-02 15:04:05"))}
+}
+
+func (db *TransactionDB) whereUpdatedAtCurrentDate() (tx *TransactionDB) {
+	return &TransactionDB{DB: db.Where("DATE(updated_at) = CURDATE()")}
 }

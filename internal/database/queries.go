@@ -14,7 +14,7 @@ const (
 
 	Q_get_deposit_history = `
 		SELECT 
-			article_id as desposit_id, 
+			article_id as deposit_id, 
 			SUM(qty) as qty 
 		FROM transaction_items 
 		WHERE DATE(created_at) = CURDATE() AND article_id LIKE 'deposit%'
