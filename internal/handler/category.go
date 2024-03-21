@@ -10,7 +10,7 @@ import (
 func GetAllCategories(c *fiber.Ctx) error {
 	db := database.DB
 	var categories []model.Category
-	db.Model(&model.Category{}).Preload("Articles").Find(&categories)
+	db.Model(&model.Category{}).Order("position").Preload("Articles").Find(&categories)
 	c.SendStatus(fiber.StatusOK)
 	return c.JSON(categories)
 }
@@ -33,17 +33,27 @@ func UpdateCategory(c *fiber.Ctx) error {
 	db := database.DB
 
 	type UpdateCategoryInput struct {
-		Name string `json:"name"`
-		Desc string `json:"desc"`
+		Name        string `json:"name"`
+		Desc        string `json:"desc"`
+		Position    uint   `json:"position"`
+		Color       string `json:"color"`
+		WithDeposit bool   `json:"withDeposit"`
+		Deposit     int32  `json:"deposit"`
 	}
 	var input UpdateCategoryInput
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't update Category", "data": err})
 	}
+
 	var category model.Category
 	db.First(&category, id)
 	category.Name = input.Name
 	category.Desc = input.Desc
+	category.Position = input.Position
+	category.Color = input.Color
+	category.WithDeposit = input.WithDeposit
+	category.Deposit = input.Deposit
+
 	db.Save(&category)
 	c.SendStatus(fiber.StatusOK)
 	return c.JSON(fiber.Map{"status": "success", "message": "Category successfully updated", "data": category})

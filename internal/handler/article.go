@@ -22,12 +22,32 @@ func CreateArticle(c *fiber.Ctx) error {
 	db := database.DB
 	article := &model.Article{}
 	if err := c.BodyParser(article); err != nil {
-		fmt.Println(err)
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't create article", "data": err})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't create article", "data": err})
 	}
 
 	db.Create(&article)
 	return c.JSON(fiber.Map{"status": "success", "message": "Created Article", "data": article})
+}
+
+func ImportArticles(c *fiber.Ctx) error {
+	db := database.DB
+	category_id := c.Query("categoryId")
+	if category_id == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't create article", "data": "categoryId is required"})
+	}
+	articles := &[]model.Article{}
+	if err := c.BodyParser(articles); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't create article", "data": err})
+	}
+
+	// Add category id to slice
+	for i := range *articles {
+		(*articles)[i].CategoryID = category_id
+		(*articles)[i].Active = true
+	}
+
+	db.Create(articles)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Created Articles", "data": articles})
 }
 
 // update article

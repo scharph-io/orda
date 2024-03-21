@@ -8,4 +8,5 @@ type Category struct {
 	Color       string    `json:"color"`
 	WithDeposit bool      `json:"withDeposit" gorm:"default:false"`
 	Deposit     int32     `json:"deposit"`
+	Position    uint      `json:"position" gorm:"default:0"`
 }

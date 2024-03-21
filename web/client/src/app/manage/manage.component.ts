@@ -27,6 +27,7 @@ import {
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { TranslocoModule } from '@ngneat/transloco';
+import { OrdaCurrencyPipe } from '../shared/currency.pipe';
 
 // Example ??? https://www.codeproject.com/Articles/5290817/Build-Angular-data-table-with-CRUD-operations-and
 @Component({
@@ -46,6 +47,7 @@ import { TranslocoModule } from '@ngneat/transloco';
     <mat-accordion class="example-headers-align">
       @for (category of categories(); track category) {
         <mat-expansion-panel #ex>
+          <!-- <mat-expansion-panel-header [style.backgroundColor]="category.color"> -->
           <mat-expansion-panel-header>
             <mat-panel-title>
               <b>{{ category.name }}</b>
@@ -56,17 +58,22 @@ import { TranslocoModule } from '@ngneat/transloco';
           </mat-expansion-panel-header>
 
           <ng-template matExpansionPanelContent>
+            <p><b>ID:</b> {{ category.id }}</p>
             @if (category.withDeposit) {
-              <p>{{ 'deposit' | transloco }}: {{ category.deposit }}</p>
+              <p>
+                <b>{{ 'deposit' | transloco }}:</b>
+                {{ category.deposit | ordaCurrency }}
+              </p>
             }
-            <button
+            <!-- <button
               mat-raised-button
               color="primary"
               (click)="openCategoryAddUpdateDialog(category)"
             >
               {{ 'category.edit' | transloco }}
-            </button>
+            </button> -->
             <button
+              style="margin-top: 1em;"
               mat-raised-button
               color="warn"
               (click)="deleteCategory(category.id ?? '')"
@@ -96,6 +103,7 @@ import { TranslocoModule } from '@ngneat/transloco';
     MatFormFieldModule,
     MatInputModule,
     TranslocoModule,
+    OrdaCurrencyPipe,
   ],
   styles: [
     `
@@ -189,7 +197,7 @@ export class ManageComponent {
       </mat-form-field>
       <mat-form-field>
         <mat-label>{{ 'table.color' | transloco }}</mat-label>
-        <input matInput formControlName="color" />
+        <input matInput type="color" formControlName="color" />
       </mat-form-field>
       <mat-slide-toggle class="example-margin" formControlName="withDeposit">
         {{ 'table.show_deposit' | transloco }}
@@ -279,7 +287,7 @@ export class CreateCategoryDialogComponent {
         desc: this.data.category.desc,
         color: this.data.category.color,
         withDeposit: this.data.category.withDeposit,
-        deposit: this.data.category.deposit,
+        deposit: (this.data.category.deposit ?? 0) / 100,
         position: this.data.category.position,
       });
     }
@@ -294,11 +302,10 @@ export class CreateCategoryDialogComponent {
           desc: value.desc ?? '',
           color: value.color ?? '',
           withDeposit: value.withDeposit ?? false,
-          deposit: value.deposit ?? 0,
+          deposit: Math.round((value.deposit ?? 0) * 100),
           position: value.position ?? 0,
         })
         .subscribe((res) => {
-          console.log(res);
           this.dialogRef.close();
         });
     }

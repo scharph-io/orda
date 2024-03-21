@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Schlecker",
+    "desc": "",
+    "price": 50
+  },
+  {
+    "name": "Nicknacks",
+    "desc": "",
+    "price": 250
+  },
+  {
+    "name": "Erdnüsse",
+    "desc": "",
+    "price": 200
+  },
+  {
+    "name": "Chips",
+    "desc": "",
+    "price": 150
+  },
+  {
+    "name": "Schokoriegel klein",
+    "desc": "Mars, Snickers, ect",
+    "price": 100
+  },
+  {
+    "name": "Schokoriegel groß",
+    "desc": "Mars, Snickers, ect",
+    "price": 150
+  }
+]

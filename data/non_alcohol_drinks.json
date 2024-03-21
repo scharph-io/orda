@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Alkoholfrei",
+    "desc": "0,5",
+    "price": 350
+  },
+  {
+    "name": "Alkoholfrei",
+    "desc": "0,3",
+    "price": 300
+  },
+  {
+    "name": "AF mit Soda",
+    "desc": "0,5",
+    "price": 300
+  },
+  {
+    "name": "AF mit Soda",
+    "desc": "0,3",
+    "price": 220
+  },
+  {
+    "name": "AF mit Leitung",
+    "desc": "0,5",
+    "price": 250
+  },
+  {
+    "name": "AF mit Leitung",
+    "desc": "0,3",
+    "price": 160
+  },
+  {
+    "name": "Mineral",
+    "desc": "0,5",
+    "price": 200
+  },
+  {
+    "name": "Mineral",
+    "desc": "0,3",
+    "price": 150
+  },
+  {
+    "name": "Mineral Zitron",
+    "desc": "0,5",
+    "price": 230
+  },
+  {
+    "name": "Mineral Zitron",
+    "desc": "0,3",
+    "price": 180
+  },
+  {
+    "name": "Jugendgetränk",
+    "desc": "0,5",
+    "price": 100
+  },
+  {
+    "name": "Kaffee",
+    "desc": "Tasse",
+    "price": 250
+  },
+  {
+    "name": "Tee",
+    "desc": "Tasse",
+    "price": 200
+  },
+  {
+    "name": "Red Bull",
+    "desc": "Dose",
+    "price": 300
+  }
+]

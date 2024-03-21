@@ -37,61 +37,71 @@ import { TranslocoModule } from '@ngneat/transloco';
       >
     </h2>
 
-    <table cdk-table [dataSource]="dataSource()" style="margin: 1rem;">
-      <ng-container cdkColumnDef="name">
-        <th cdk-header-cell *cdkHeaderCellDef>
-          {{ 'table.name' | transloco }}
-        </th>
-        <td cdk-cell *cdkCellDef="let element">{{ element.name }}</td>
-      </ng-container>
+    @if (dataSource().length == 0) {
+      <input
+        type="file"
+        class="file-input"
+        [accept]="'json'"
+        (change)="onFileSelected($event)"
+        #fileUpload
+      />
+    }
+    @if (dataSource().length !== 0) {
+      <table cdk-table [dataSource]="dataSource()" style="margin: 1rem;">
+        <ng-container cdkColumnDef="name">
+          <th cdk-header-cell *cdkHeaderCellDef>
+            {{ 'table.name' | transloco }}
+          </th>
+          <td cdk-cell *cdkCellDef="let element">{{ element.name }}</td>
+        </ng-container>
 
-      <ng-container cdkColumnDef="desc">
-        <th cdk-header-cell *cdkHeaderCellDef>
-          {{ 'table.desc' | transloco }}
-        </th>
-        <td cdk-cell *cdkCellDef="let element">{{ element.desc }}</td>
-      </ng-container>
+        <ng-container cdkColumnDef="desc">
+          <th cdk-header-cell *cdkHeaderCellDef>
+            {{ 'table.desc' | transloco }}
+          </th>
+          <td cdk-cell *cdkCellDef="let element">{{ element.desc }}</td>
+        </ng-container>
 
-      <ng-container cdkColumnDef="price">
-        <th cdk-header-cell *cdkHeaderCellDef>
-          {{ 'table.price' | transloco }}
-        </th>
-        <td cdk-cell *cdkCellDef="let element">
-          {{ element.price | ordaCurrency }}
-        </td>
-      </ng-container>
+        <ng-container cdkColumnDef="price">
+          <th cdk-header-cell *cdkHeaderCellDef>
+            {{ 'table.price' | transloco }}
+          </th>
+          <td cdk-cell *cdkCellDef="let element">
+            {{ element.price | ordaCurrency }}
+          </td>
+        </ng-container>
 
-      <ng-container cdkColumnDef="active">
-        <th cdk-header-cell *cdkHeaderCellDef>
-          {{ 'table.active' | transloco }}
-        </th>
-        <td cdk-cell *cdkCellDef="let element">
-          <mat-slide-toggle
-            [checked]="element.active"
-            disabled
-          ></mat-slide-toggle>
-        </td>
-      </ng-container>
+        <ng-container cdkColumnDef="active">
+          <th cdk-header-cell *cdkHeaderCellDef>
+            {{ 'table.active' | transloco }}
+          </th>
+          <td cdk-cell *cdkCellDef="let element">
+            <mat-slide-toggle
+              [checked]="element.active"
+              disabled
+            ></mat-slide-toggle>
+          </td>
+        </ng-container>
 
-      <ng-container [matColumnDef]="'actions'">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-icon-button (click)="openArticleAddUpdateDialog(element)">
-            <mat-icon mat-icon-button color="primary">{{
-              'edit' | transloco
-            }}</mat-icon>
-          </button>
-          <button mat-icon-button (click)="deleteArticle(element.id)">
-            <mat-icon mat-icon-button color="warn">{{
-              'delete' | transloco
-            }}</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+        <ng-container [matColumnDef]="'actions'">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              (click)="openArticleAddUpdateDialog(element)"
+            >
+              <mat-icon mat-icon-button color="primary">edit </mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteArticle(element.id)">
+              <mat-icon mat-icon-button color="warn"> delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
-      <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
-      <tr cdk-row *cdkRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+        <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    }
   `,
   standalone: true,
   styles: [
@@ -156,5 +166,43 @@ export class ArticlesManageComponent {
         ),
       )
       .subscribe((articles) => this.dataSource?.set(articles));
+  }
+
+  onFileSelected(event: any) {
+    const file: File = (event.target as HTMLInputElement).files![0];
+
+    if (file) {
+      this.readFileContents(file).then((data) => {
+        const articles: Article[] = JSON.parse(data);
+
+        console.log(articles);
+
+        this.articleService
+          .importArticles(articles, this.category().id ?? '')
+          .pipe(
+            switchMap(() =>
+              this.articleService.getArticlesBy(this.category().id ?? ''),
+            ),
+          )
+          .subscribe((articles) => this.dataSource?.set(articles));
+      });
+    }
+  }
+
+  readFileContents(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+
+      reader.onerror = () => {
+        reader.abort();
+        reject(new DOMException('Problem parsing input file.'));
+      };
+
+      reader.readAsText(file);
+    });
   }
 }
