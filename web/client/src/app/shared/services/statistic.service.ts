@@ -4,12 +4,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 
 export interface Statistics {
-  total: string;
-  paymentOptions: number[];
-  deposit: {
-    deposit_in: number;
-    deposit_out: number;
-  };
+  deposit: Deposit;
+  payment_option: number[];
+  account_type: number[];
+  total: number;
+}
+
+export interface Deposit {
+  deposit_in: number;
+  deposit_out: number;
 }
 
 @Injectable({

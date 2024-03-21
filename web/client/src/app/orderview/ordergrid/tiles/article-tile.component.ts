@@ -30,6 +30,7 @@ import { MatDividerModule } from '@angular/material/divider';
 
       .price {
         grid-area: price;
+        text-align: center;
       }
 
       .divider {
@@ -38,10 +39,13 @@ import { MatDividerModule } from '@angular/material/divider';
 
       .desc {
         grid-area: desc;
+        font-size: 0.8em;
+        text-align: center;
       }
 
       .name {
         grid-area: name;
+        text-align: center;
       }
     `,
   ],

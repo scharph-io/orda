@@ -61,6 +61,7 @@ import { Category } from '../../shared/model/category';
       mat-grid-tile {
         cursor: pointer;
         border-radius: 0.25em;
+        background-color: lightgrey;
       }
     `,
   ],
