@@ -13,11 +13,10 @@ const (
 		`
 
 	Q_get_deposit_history = `
-		SELECT 
-			article_id as deposit_id, 
-			SUM(qty) as qty 
-		FROM transaction_items 
+		SELECT
+			SUM(CASE WHEN qty > 0 THEN qty ELSE 0 END) deposit_in,
+			SUM(CASE WHEN qty < 0 THEN qty ELSE 0 END) deposit_out
+		FROM transaction_items
 		WHERE DATE(created_at) = CURDATE() AND article_id LIKE 'deposit%'
-		GROUP BY article_id
 		`
 )

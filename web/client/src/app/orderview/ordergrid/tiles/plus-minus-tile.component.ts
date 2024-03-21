@@ -56,7 +56,7 @@ export class PlusMinusTileComponent {
 
   addToCart(factor: number) {
     this.cart.addItem({
-      uuid: factor > 0 ? `${this.key()}_add` : `${this.key()}_remove`,
+      uuid: this.key(),
       name: this.transloco.translate(this.key()),
       quantity: factor,
       price: this.value() === 0 ? DEFAULT_DEPOSIT : this.value(),
