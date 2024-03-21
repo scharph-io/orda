@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, Inject, inject, signal, ViewChild } from '@angular/core';
 
 import { ArticlesManageComponent } from './articles/articles-manage.component';
 import { CategoryService } from '../shared/services/category.service';
@@ -14,65 +14,53 @@ import {
 import { switchMap, tap } from 'rxjs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
-
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from '@angular/material/dialog';
+import { TranslocoModule } from '@ngneat/transloco';
+import { Article } from '../shared/model/article';
+import { MessageService } from '../shared/services/message.service';
+import { CreateArticleDialogComponent } from './articles/create-article-dialog.component';
 // Example ??? https://www.codeproject.com/Articles/5290817/Build-Angular-data-table-with-CRUD-operations-and
 @Component({
   template: `
-    <div class="container">
-      <h1>Manage</h1>
+    <h1>{{ 'manage_categories' | transloco }}</h1>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="openCategoryAddUpdateDialog()"
+    >
+      {{ 'new_category' | transloco }}
+    </button>
+    <mat-accordion class="example-headers-align" multi>
+      @for (category of categories(); track category) {
+        <mat-expansion-panel #ex>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ category.name }}({{ category.articles?.length }})
+            </mat-panel-title>
+            <mat-panel-description>
+              {{ category.desc }}
+            </mat-panel-description>
+          </mat-expansion-panel-header>
 
-      <h2>Categories ({{ categories.length }})</h2>
-
-      <!-- {{ this.categories | json }} -->
-      <form [formGroup]="newCategory">
-        <input type="text" formControlName="name" />
-        <input type="text" formControlName="desc" />
-        <mat-slide-toggle formControlName="colored">Colored </mat-slide-toggle>
-        <mat-slide-toggle formControlName="withDeposit"
-          >Deposit
-        </mat-slide-toggle>
-        <button mat-raised-button color="primary" (click)="createCategory()">
-          Create
-        </button>
-      </form>
-
-      <table *ngIf="categories.length > 0">
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Colored</th>
-          <th>Deposit</th>
-          <th>Actions</th>
-        </tr>
-        <tr
-          *ngFor="let category of categories"
-          (click)="selectedCategory = category"
-        >
-          <td>{{ category.name }}</td>
-          <td>{{ category.desc }}</td>
-          <mat-slide-toggle
-            [checked]="category.colored"
-            disabled
-          ></mat-slide-toggle>
-          <mat-slide-toggle
-            [checked]="category.withDeposit"
-            disabled
-          ></mat-slide-toggle>
-          <td>
-            <!-- TODO: Hide delete if articles are not 0 -->
-            @if (category.id !== undefined) {
-              <button mat-icon-button (click)="deleteCategory(category.id)">
-                <mat-icon mat-icon-button color="warn">delete</mat-icon>
-              </button>
+          <ng-template matExpansionPanelContent>
+            @if (ex.expanded) {
+              <orda-articles-manage [category]="category" />
             }
-          </td>
-        </tr>
-      </table>
-
-      @if (categories.length > 0 && selectedCategory !== undefined) {
-        <orda-articles-manage [category]="selectedCategory" />
+          </ng-template>
+        </mat-expansion-panel>
       }
-    </div>
+    </mat-accordion>
   `,
   standalone: true,
   imports: [
@@ -83,87 +71,234 @@ import { MatIconModule } from '@angular/material/icon';
     MatSlideToggleModule,
     MatButtonModule,
     MatIconModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    TranslocoModule,
   ],
   styles: [
     `
-      .test {
-        border: 1px solid red;
+      .example-action-buttons {
+        padding-bottom: 20px;
+      }
+
+      .example-headers-align .mat-expansion-panel-header-description {
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .example-headers-align .mat-mdc-form-field + .mat-mdc-form-field {
+        margin-left: 8px;
+      }
+
+      .example-headers-align {
+        display: block;
+        margin: 1em;
+      }
+
+      h1 {
+        margin-left: 0.5em;
       }
     `,
   ],
 })
 export class ManageComponent {
   categoryService = inject(CategoryService);
+  categories = signal<Category[]>([]);
 
-  selectedCategory?: Category;
-  categories: Category[] = [];
-
-  newCategory = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    desc: new FormControl(''),
-    colored: new FormControl(false),
-    withDeposit: new FormControl(false),
-  });
+  dialog = inject(MatDialog);
 
   ngOnInit() {
     this.categoryService.getCategories$().subscribe((categories) => {
-      this.categories = categories;
-      this.selectedCategory = categories[0];
+      this.categories.set(categories);
     });
-  }
-
-  createCategory() {
-    const name = this.newCategory.value.name ?? '';
-    const desc = this.newCategory.value.desc ?? '';
-    const colored = this.newCategory.value.colored ?? false;
-    const withDeposit = this.newCategory.value.withDeposit ?? false;
-
-    this.categoryService
-      .createCategory({
-        name,
-        desc,
-        colored,
-        withDeposit,
-      })
-
-      .pipe(
-        tap((res) => {
-          this.selectedCategory = res.data;
-        }),
-        switchMap(() => this.categoryService.getCategories$()),
-      )
-      .subscribe((res) => {
-        this.categoryService.getCategories$().subscribe((categories) => {
-          this.categories = categories;
-        });
-      });
-
-    this.newCategory.reset();
   }
 
   deleteCategory(id: string) {
     this.categoryService.getCategories$().subscribe((categories) => {
-      this.categories = categories;
-      this.selectedCategory = categories[0];
-
-      if (this.categories.find((c) => c.id === id)?.articles?.length !== 0) {
-        // TODO: Use message service
-        console.log("Can't delete category. Delete all articles first.");
-        return;
-      }
+      this.categories.set(categories);
 
       this.categoryService
         .deleteCategory(id)
         .pipe(switchMap(() => this.categoryService.getCategories$()))
         .subscribe({
           next: (categories) => {
-            this.categories = categories;
-            this.selectedCategory = categories[0];
+            this.categories.set(categories);
           },
           error: (_err) => {
             console.log("Can't delete category. Delete all articles first.");
           },
         });
     });
+  }
+
+  openCategoryAddUpdateDialog(category?: Category): void {
+    const dialogRef = this.dialog.open(CreateCategoryDialogComponent, {
+      data: { category },
+      minWidth: '30rem',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed');
+      this.categoryService.getCategories$().subscribe((categories) => {
+        this.categories?.set(categories);
+      });
+    });
+  }
+}
+
+@Component({
+  selector: 'orda-category-create-dialog',
+  template: `<form [formGroup]="categoryForm">
+    <h2 mat-dialog-title>
+      @if (isUpdate) {
+        Update
+      } @else {
+        Create
+      }
+      Article
+    </h2>
+    <mat-dialog-content>
+      <mat-form-field>
+        <mat-label>{{ 'name' | transloco }}</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>{{ 'description' | transloco }}</mat-label>
+        <input matInput formControlName="desc" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>{{ 'color' | transloco }}</mat-label>
+        <input matInput formControlName="color" />
+      </mat-form-field>
+      <mat-slide-toggle class="example-margin" formControlName="withDeposit">
+        {{ 'show_deposit' | transloco }}
+      </mat-slide-toggle>
+      @if (categoryForm.get('withDeposit')?.value) {
+        <mat-form-field>
+          <mat-label>{{ 'deposit' | transloco }}</mat-label>
+          <input matInput type="number" formControlName="deposit" />
+        </mat-form-field>
+      }
+      <mat-form-field>
+        <mat-label>{{ 'position' | transloco }}</mat-label>
+        <input matInput type="number" formControlName="position" />
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button mat-dialog-close>Cancel</button>
+      @if (isUpdate) {
+        <button
+          mat-button
+          color="primary"
+          (click)="update()"
+          [disabled]="!categoryForm.valid"
+        >
+          {{ 'update' | transloco }}
+        </button>
+      } @else {
+        <button
+          mat-button
+          type="submit"
+          (click)="create()"
+          [disabled]="!categoryForm.valid"
+        >
+          {{ 'create' | transloco }}
+        </button>
+      }
+    </mat-dialog-actions>
+  </form>`,
+  styles: [
+    `
+      mat-dialog-content {
+        display: flex;
+        flex-direction: column;
+      }
+    `,
+  ],
+  standalone: true,
+  imports: [
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
+    TranslocoModule,
+  ],
+})
+export class CreateCategoryDialogComponent {
+  categoryForm = new FormGroup({
+    name: new FormControl('', Validators.required),
+    desc: new FormControl(''),
+    color: new FormControl(''),
+    withDeposit: new FormControl(false),
+    deposit: new FormControl(1),
+    position: new FormControl(0),
+  });
+
+  categoryService = inject(CategoryService);
+
+  isUpdate = false;
+
+  constructor(
+    public dialogRef: MatDialogRef<CreateCategoryDialogComponent>,
+    @Inject(MAT_DIALOG_DATA)
+    public data: { category?: Category },
+  ) {
+    if (this.data.category !== undefined) {
+      this.categoryForm.patchValue({
+        name: this.data.category.name,
+        desc: this.data.category.desc,
+        color: this.data.category.color,
+        withDeposit: this.data.category.withDeposit,
+        deposit: this.data.category.deposit,
+        position: this.data.category.position,
+      });
+    }
+  }
+
+  create() {
+    if (this.categoryForm.valid) {
+      const value = this.categoryForm.value;
+      this.categoryService
+        .createCategory({
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          color: value.color ?? '',
+          withDeposit: value.withDeposit ?? false,
+          deposit: value.deposit ?? 0,
+          position: value.position ?? 0,
+        })
+        .subscribe((res) => {
+          console.log(res);
+          this.dialogRef.close();
+        });
+    }
+  }
+
+  update() {
+    if (this.categoryForm.valid) {
+      const value = this.categoryForm.value;
+
+      this.categoryService
+        .updateCategory(this.data.category?.id ?? '', {
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          withDeposit: value.withDeposit ?? false,
+          color: value.color ?? '',
+          deposit: value.deposit ?? 0,
+          position: value.position ?? 0,
+        })
+        .subscribe(() => {
+          this.dialogRef.close();
+        });
+    }
   }
 }

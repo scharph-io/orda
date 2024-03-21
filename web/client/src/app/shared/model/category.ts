@@ -5,7 +5,7 @@ export interface Category {
   name: string;
   desc?: string;
   position?: number;
-  colored: boolean;
+  color?: string;
   withDeposit: boolean;
   deposit?: number;
   articles?: Article[];

@@ -1,6 +1,5 @@
 import { DialogModule } from '@angular/cdk/dialog';
 import { CdkTableModule } from '@angular/cdk/table';
-import { HttpClient } from '@angular/common/http';
 import {
   Component,
   WritableSignal,
@@ -25,7 +24,6 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
   selector: 'orda-articles-manage',
   template: `
     <h2>
-      Articles for {{ category().name }}
       <span
         ><button
           mat-raised-button
@@ -38,10 +36,6 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
     </h2>
 
     <table cdk-table [dataSource]="dataSource()" style="margin: 1rem;">
-      <ng-container cdkColumnDef="id">
-        <th cdk-header-cell *cdkHeaderCellDef>ID</th>
-        <td cdk-cell *cdkCellDef="let element">{{ element.id }}</td>
-      </ng-container>
       <ng-container cdkColumnDef="name">
         <th cdk-header-cell *cdkHeaderCellDef>Name</th>
         <td cdk-cell *cdkCellDef="let element">{{ element.name }}</td>
@@ -86,7 +80,13 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
     </table>
   `,
   standalone: true,
-  styles: [``],
+  styles: [
+    `
+      :host {
+        overflow-y: scroll;
+      }
+    `,
+  ],
   imports: [
     CdkTableModule,
     MatTableModule,
@@ -100,19 +100,11 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 export class ArticlesManageComponent {
   category = input.required<Category>();
   dataSource: WritableSignal<Article[]> = signal([]);
-  http = inject(HttpClient);
 
   dialog = inject(MatDialog);
   articleService = inject(ArticleService);
 
-  displayedColumns: string[] = [
-    'id',
-    'name',
-    'desc',
-    'price',
-    'active',
-    'actions',
-  ];
+  displayedColumns: string[] = ['name', 'desc', 'price', 'active', 'actions'];
 
   constructor() {
     effect(() => {
