@@ -50,7 +50,11 @@
     "name": "Name",
     "desc": "Beschreibung",
     "price": "Preis",
-    "active": "Aktiviert"
+    "active": "Aktiviert",
+    "color": "Akzentfarbe",
+    "deposit": "Pfandbetrag",
+    "show_deposit": "Pfand",
+    "position": "Position"
   },
 
   "dialog": {

@@ -43,7 +43,7 @@ import { TranslocoModule } from '@ngneat/transloco';
         </button></span
       >
     </h1>
-    <mat-accordion class="example-headers-align" multi>
+    <mat-accordion class="example-headers-align">
       @for (category of categories(); track category) {
         <mat-expansion-panel #ex>
           <mat-expansion-panel-header>
@@ -180,28 +180,28 @@ export class ManageComponent {
     </h2>
     <mat-dialog-content>
       <mat-form-field>
-        <mat-label>{{ 'name' | transloco }}</mat-label>
+        <mat-label>{{ 'table.name' | transloco }}</mat-label>
         <input matInput formControlName="name" />
       </mat-form-field>
       <mat-form-field>
-        <mat-label>{{ 'description' | transloco }}</mat-label>
+        <mat-label>{{ 'table.desc' | transloco }}</mat-label>
         <input matInput formControlName="desc" />
       </mat-form-field>
       <mat-form-field>
-        <mat-label>{{ 'color' | transloco }}</mat-label>
+        <mat-label>{{ 'table.color' | transloco }}</mat-label>
         <input matInput formControlName="color" />
       </mat-form-field>
       <mat-slide-toggle class="example-margin" formControlName="withDeposit">
-        {{ 'show_deposit' | transloco }}
+        {{ 'table.show_deposit' | transloco }}
       </mat-slide-toggle>
       @if (categoryForm.get('withDeposit')?.value) {
         <mat-form-field>
-          <mat-label>{{ 'deposit' | transloco }}</mat-label>
+          <mat-label>{{ 'table.deposit' | transloco }} (€)</mat-label>
           <input matInput type="number" formControlName="deposit" />
         </mat-form-field>
       }
       <mat-form-field>
-        <mat-label>{{ 'position' | transloco }}</mat-label>
+        <mat-label>{{ 'table.position' | transloco }}</mat-label>
         <input matInput type="number" formControlName="position" />
       </mat-form-field>
     </mat-dialog-content>
