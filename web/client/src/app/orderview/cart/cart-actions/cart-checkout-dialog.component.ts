@@ -240,7 +240,7 @@ export class CheckoutDialogComponent {
     items: [],
     total: 0,
     account_type: AccountType.CASH,
-    payment_option: PaymentOption.FREE,
+    payment_option: PaymentOption.NONE,
   };
 
   AccountType = AccountType;
@@ -272,7 +272,7 @@ export class CheckoutDialogComponent {
     this.checkoutData.payment_option = paymentOption;
 
     if (accountType !== AccountType.CASH) {
-      this.checkoutData.payment_option = PaymentOption.FREE;
+      this.checkoutData.payment_option = PaymentOption.NONE;
     }
 
     this.checkout.checkout(this.checkoutData).subscribe({

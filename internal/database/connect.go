@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/model"
@@ -34,8 +36,21 @@ func ConnectDB() {
 		To fully support UTF-8 encoding, you need to change charset=utf8 to charset=utf8mb4. See this article for a detailed explanation
 	*/
 
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             time.Second, // Slow SQL threshold
+			LogLevel:                  logger.Warn, // Log level
+			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
+			ParameterizedQueries:      true,        // Don't include params in the SQL log
+			Colorful:                  true,        // Disable color
+		},
+	)
+
 	fmt.Println(dsn)
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: newLogger,
+	})
 
 	if err != nil {
 		log.Println("Failed to connect to mysql database. FALLBACK to SQLite\n", err)
@@ -50,4 +65,5 @@ func ConnectDB() {
 	fmt.Println("Connection Opened to Database")
 	DB.AutoMigrate(&model.Category{}, &model.Article{}, &model.Transaction{}, &model.TransactionItem{})
 	fmt.Println("Database Migrated")
+
 }

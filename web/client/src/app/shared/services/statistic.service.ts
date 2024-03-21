@@ -27,6 +27,12 @@ export class StatisticService {
   ) {}
 
   getStatistics$() {
-    return this.http.get<Statistics>(`${this.endpoint}/api/statistic/day`);
+    return this.http.get<Statistics>(`${this.endpoint}/api/statistic/`);
+  }
+
+  getStatisticsforDate$(date: string) {
+    return this.http.get<Statistics>(
+      `${this.endpoint}/api/statistic/date?date=${date}`,
+    );
   }
 }

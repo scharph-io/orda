@@ -11,13 +11,13 @@ export const AccountTypeKeys = {
 };
 
 export enum PaymentOption {
-  FREE,
+  NONE,
   CASH,
   CARD,
 }
 
 export const PaymentOptionKeys = {
-  [PaymentOption.FREE]: 'payment.free',
+  [PaymentOption.NONE]: 'payment.none',
   [PaymentOption.CASH]: 'payment.cash',
   [PaymentOption.CARD]: 'payment.card',
 };

@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/model"
@@ -66,7 +69,7 @@ func GetDepositHistory(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(result)
 }
 
-func GetStatisticsCurrentDay(c *fiber.Ctx) error {
+func GetStatistics(c *fiber.Ctx) error {
 	db := database.DB
 	type DepositHistory struct {
 		DepositIn  int32 `json:"deposit_in"`
@@ -75,12 +78,12 @@ func GetStatisticsCurrentDay(c *fiber.Ctx) error {
 
 	var total int
 	if err := db.Model(&model.Transaction{}).Select("SUM(total)").Find(&total).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "message": "Couldn't get transactions by payment option", "data": err})
+		total = 0
 	}
 
 	var depositHistory DepositHistory
 	if err := db.Raw(database.Q_get_deposit_history).Scan(&depositHistory).Error; err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "message": "Couldn't get deposit history", "data": err})
+		depositHistory = DepositHistory{0, 0}
 	}
 
 	paymentOption0, _ := GetPaymentOptionTotal(0)
@@ -98,6 +101,55 @@ func GetStatisticsCurrentDay(c *fiber.Ctx) error {
 			"payment_option": []int{paymentOption0, paymentOption1, paymentOption2},
 			"account_type":   []int{accountType0, accountType1, accountType2},
 		})
+}
+
+func GetStatisticsByDate(c *fiber.Ctx) error {
+	date := c.Query("date")
+	if date == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "message": "Date is required"})
+	}
+
+	fmt.Println(date)
+	t, err := time.Parse("14.03.2024, 00:00:00", date)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "message": "Invalid date format"})
+	}
+
+	fmt.Println(t)
+
+	// db := database.DB
+	// type DepositHistory struct {
+	// 	DepositIn  int32 `json:"deposit_in"`
+	// 	DepositOut int32 `json:"deposit_out"`
+	// }
+
+	// var total int
+	// if err := db.Model(&model.Transaction{}).Select("SUM(total)").Where("DATE(created_at) = DATE(?)").Find(&total).Error; err != nil {
+	// 	total = 0
+	// }
+
+	// var depositHistory DepositHistory
+	// if err := db.Raw(database.Q_get_deposit_history).Scan(&depositHistory).Error; err != nil {
+	// 	depositHistory = DepositHistory{0, 0}
+	// }
+
+	// paymentOption0, _ := GetPaymentOptionTotal(0)
+	// paymentOption1, _ := GetPaymentOptionTotal(1)
+	// paymentOption2, _ := GetPaymentOptionTotal(2)
+
+	// accountType0, _ := GetAccountTypeTotal(0)
+	// accountType1, _ := GetAccountTypeTotal(1)
+	// accountType2, _ := GetAccountTypeTotal(2)
+
+	// return c.Status(fiber.StatusOK).JSON(
+	// 	fiber.Map{
+	// 		"total":          total,
+	// 		"deposit":        depositHistory,
+	// 		"payment_option": []int{paymentOption0, paymentOption1, paymentOption2},
+	// 		"account_type":   []int{accountType0, accountType1, accountType2},
+	// 	})
+
+	return nil
 }
 
 func GetPaymentOptionTotal(option uint) (int, error) {

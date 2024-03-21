@@ -26,9 +26,10 @@
   "payment": {
     "title": "Zahlung",
     "method": "Zahlungsmethode",
-    "card": "EC-Karte",
+    "card": "Karte",
     "cash": "Bargeld",
-    "submit": "Absenden"
+    "submit": "Absenden",
+    "none": "Keine"
   },
   "account": {
     "title": "Kontotyp",
