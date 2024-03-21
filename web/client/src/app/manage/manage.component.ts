@@ -14,7 +14,7 @@ import {
 import { switchMap, tap } from 'rxjs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {
@@ -27,26 +27,28 @@ import {
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { TranslocoModule } from '@ngneat/transloco';
-import { Article } from '../shared/model/article';
-import { MessageService } from '../shared/services/message.service';
-import { CreateArticleDialogComponent } from './articles/create-article-dialog.component';
+
 // Example ??? https://www.codeproject.com/Articles/5290817/Build-Angular-data-table-with-CRUD-operations-and
 @Component({
   template: `
-    <h1>{{ 'manage_categories' | transloco }}</h1>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="openCategoryAddUpdateDialog()"
-    >
-      {{ 'new_category' | transloco }}
-    </button>
+    <h1>
+      {{ 'category.title' | transloco }}
+      <span>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openCategoryAddUpdateDialog()"
+        >
+          {{ 'category.add' | transloco }}
+        </button></span
+      >
+    </h1>
     <mat-accordion class="example-headers-align" multi>
       @for (category of categories(); track category) {
         <mat-expansion-panel #ex>
           <mat-expansion-panel-header>
             <mat-panel-title>
-              {{ category.name }}({{ category.articles?.length }})
+              <b>{{ category.name }}</b>
             </mat-panel-title>
             <mat-panel-description>
               {{ category.desc }}
@@ -54,6 +56,23 @@ import { CreateArticleDialogComponent } from './articles/create-article-dialog.c
           </mat-expansion-panel-header>
 
           <ng-template matExpansionPanelContent>
+            @if (category.withDeposit) {
+              <p>{{ 'deposit' | transloco }}: {{ category.deposit }}</p>
+            }
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="openCategoryAddUpdateDialog(category)"
+            >
+              {{ 'category.edit' | transloco }}
+            </button>
+            <button
+              mat-raised-button
+              color="warn"
+              (click)="deleteCategory(category.id ?? '')"
+            >
+              {{ 'category.delete' | transloco }}
+            </button>
             @if (ex.expanded) {
               <orda-articles-manage [category]="category" />
             }
@@ -154,11 +173,10 @@ export class ManageComponent {
   template: `<form [formGroup]="categoryForm">
     <h2 mat-dialog-title>
       @if (isUpdate) {
-        Update
+        {{ 'category.edit' | transloco }}
       } @else {
-        Create
+        {{ 'category.add' | transloco }}
       }
-      Article
     </h2>
     <mat-dialog-content>
       <mat-form-field>
@@ -188,7 +206,9 @@ export class ManageComponent {
       </mat-form-field>
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-button mat-dialog-close>
+        {{ 'dialog.cancel' | transloco }}
+      </button>
       @if (isUpdate) {
         <button
           mat-button
@@ -196,7 +216,7 @@ export class ManageComponent {
           (click)="update()"
           [disabled]="!categoryForm.valid"
         >
-          {{ 'update' | transloco }}
+          {{ 'dialog.update' | transloco }}
         </button>
       } @else {
         <button
@@ -205,7 +225,7 @@ export class ManageComponent {
           (click)="create()"
           [disabled]="!categoryForm.valid"
         >
-          {{ 'create' | transloco }}
+          {{ 'dialog.create' | transloco }}
         </button>
       }
     </mat-dialog-actions>
@@ -253,6 +273,7 @@ export class CreateCategoryDialogComponent {
     public data: { category?: Category },
   ) {
     if (this.data.category !== undefined) {
+      this.isUpdate = true;
       this.categoryForm.patchValue({
         name: this.data.category.name,
         desc: this.data.category.desc,

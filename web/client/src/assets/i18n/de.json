@@ -45,5 +45,29 @@
   "total": "Gesamtpreis",
   "unitprice": "Einheitspreis",
   "paymentOption": "Zahlungsoption",
-  "accountType": "Kontotyp"
+  "accountType": "Kontotyp",
+  "table": {
+    "name": "Name",
+    "desc": "Beschreibung",
+    "price": "Preis",
+    "active": "Aktiviert"
+  },
+
+  "dialog": {
+    "cancel": "Abbrechen",
+    "update": "Speichern",
+    "create": "Anlegen"
+  },
+  "category": {
+    "title": "Kategorie",
+    "add": "Kategorie anlegen",
+    "edit": "Kategorie bearbeiten",
+    "delete": "Kategorie löschen"
+  },
+  "article": {
+    "title": "Artikel",
+    "add": "Artikel anlegen",
+    "edit": "Artikel bearbeiten",
+    "delete": "Artikel löschen"
+  }
 }

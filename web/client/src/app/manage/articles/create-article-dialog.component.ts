@@ -19,37 +19,39 @@ import { MatButtonModule } from '@angular/material/button';
 import { ArticleService } from '../../shared/services/article.service';
 import { Article } from '../../shared/model/article';
 import { MessageService } from '../../shared/services/message.service';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
   selector: 'orda-create-article-dialog',
   template: `<form [formGroup]="articleForm">
     <h2 mat-dialog-title>
       @if (isUpdate) {
-        Update
+        {{ 'article.edit' | transloco }}
       } @else {
-        Create
+        {{ 'article.add' | transloco }}
       }
-      Article
     </h2>
     <mat-dialog-content>
       <mat-form-field>
-        <mat-label>Name</mat-label>
+        <mat-label>{{ 'table.name' | transloco }}</mat-label>
         <input matInput formControlName="name" />
       </mat-form-field>
       <mat-form-field>
-        <mat-label>Description</mat-label>
+        <mat-label>{{ 'table.desc' | transloco }}</mat-label>
         <input matInput formControlName="desc" />
       </mat-form-field>
       <mat-form-field>
-        <mat-label>Price</mat-label>
+        <mat-label>{{ 'table.price' | transloco }}</mat-label>
         <input matInput type="number" formControlName="price" />
       </mat-form-field>
       <mat-slide-toggle class="example-margin" formControlName="active">
-        Active
+        {{ 'table.active' | transloco }}
       </mat-slide-toggle>
     </mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-button mat-dialog-close>
+        {{ 'dialog.cancel' | transloco }}
+      </button>
       @if (isUpdate) {
         <button
           mat-button
@@ -57,7 +59,7 @@ import { MessageService } from '../../shared/services/message.service';
           (click)="update()"
           [disabled]="!articleForm.valid"
         >
-          Update
+          {{ 'dialog.update' | transloco }}
         </button>
       } @else {
         <button
@@ -66,7 +68,7 @@ import { MessageService } from '../../shared/services/message.service';
           (click)="create()"
           [disabled]="!articleForm.valid"
         >
-          Create
+          {{ 'dialog.create' | transloco }}
         </button>
       }
     </mat-dialog-actions>
@@ -87,6 +89,7 @@ import { MessageService } from '../../shared/services/message.service';
     MatInputModule,
     MatButtonModule,
     MatSlideToggleModule,
+    TranslocoModule,
   ],
 })
 export class CreateArticleDialogComponent {

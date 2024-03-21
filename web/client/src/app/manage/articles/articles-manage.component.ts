@@ -19,42 +19,52 @@ import { ArticleService } from '../../shared/services/article.service';
 import { CreateArticleDialogComponent } from './create-article-dialog.component';
 import { Category } from '../../shared/model/category';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
   selector: 'orda-articles-manage',
   template: `
     <h2>
+      {{ 'article.title' | transloco }}
       <span
         ><button
           mat-raised-button
           color="primary"
           (click)="openArticleAddUpdateDialog()"
         >
-          Add
+          {{ 'article.add' | transloco }}
         </button></span
       >
     </h2>
 
     <table cdk-table [dataSource]="dataSource()" style="margin: 1rem;">
       <ng-container cdkColumnDef="name">
-        <th cdk-header-cell *cdkHeaderCellDef>Name</th>
+        <th cdk-header-cell *cdkHeaderCellDef>
+          {{ 'table.name' | transloco }}
+        </th>
         <td cdk-cell *cdkCellDef="let element">{{ element.name }}</td>
       </ng-container>
 
       <ng-container cdkColumnDef="desc">
-        <th cdk-header-cell *cdkHeaderCellDef>Description</th>
+        <th cdk-header-cell *cdkHeaderCellDef>
+          {{ 'table.desc' | transloco }}
+        </th>
         <td cdk-cell *cdkCellDef="let element">{{ element.desc }}</td>
       </ng-container>
 
       <ng-container cdkColumnDef="price">
-        <th cdk-header-cell *cdkHeaderCellDef>Price</th>
+        <th cdk-header-cell *cdkHeaderCellDef>
+          {{ 'table.price' | transloco }}
+        </th>
         <td cdk-cell *cdkCellDef="let element">
           {{ element.price | ordaCurrency }}
         </td>
       </ng-container>
 
       <ng-container cdkColumnDef="active">
-        <th cdk-header-cell *cdkHeaderCellDef>Active</th>
+        <th cdk-header-cell *cdkHeaderCellDef>
+          {{ 'table.active' | transloco }}
+        </th>
         <td cdk-cell *cdkCellDef="let element">
           <mat-slide-toggle
             [checked]="element.active"
@@ -64,13 +74,17 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
       </ng-container>
 
       <ng-container [matColumnDef]="'actions'">
-        <th mat-header-cell *matHeaderCellDef>actions</th>
+        <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let element">
           <button mat-icon-button (click)="openArticleAddUpdateDialog(element)">
-            <mat-icon mat-icon-button color="primary">edit</mat-icon>
+            <mat-icon mat-icon-button color="primary">{{
+              'edit' | transloco
+            }}</mat-icon>
           </button>
           <button mat-icon-button (click)="deleteArticle(element.id)">
-            <mat-icon mat-icon-button color="warn">delete</mat-icon>
+            <mat-icon mat-icon-button color="warn">{{
+              'delete' | transloco
+            }}</mat-icon>
           </button>
         </td>
       </ng-container>
@@ -95,6 +109,7 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
     DialogModule,
     OrdaCurrencyPipe,
     MatSlideToggle,
+    TranslocoModule,
   ],
 })
 export class ArticlesManageComponent {
