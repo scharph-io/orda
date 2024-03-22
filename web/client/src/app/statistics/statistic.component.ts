@@ -1,19 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
-import {
-  StatisticService,
-  Statistics,
-} from '../shared/services/statistic.service';
-import { OrdaCurrencyPipe } from '../shared/currency.pipe';
-import { AccountType, PaymentOption } from '../shared/util/transaction';
-import {
-  MatDatepickerInputEvent,
-  MatDatepickerModule,
-} from '@angular/material/datepicker';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { provideNativeDateAdapter } from '@angular/material/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslocoModule } from '@ngneat/transloco';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { StatisticOverallComponent } from './tabs/stat-overall.component';
 import { StatisticDailyComponent } from './tabs/stat-daily.component';
@@ -30,7 +16,7 @@ import { StatisticDailyComponent } from './tabs/stat-daily.component';
       </mat-tab>
       <mat-tab [label]="'statistic.daily' | transloco">
         <ng-template matTabContent>
-          <!-- Content 2 - Loaded: {{ getTimeLoaded(2) | date: 'medium' }} -->
+          <orda-stat-daily />
         </ng-template>
       </mat-tab>
     </mat-tab-group>`,
