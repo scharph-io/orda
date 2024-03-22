@@ -14,83 +14,39 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { TranslocoModule } from '@ngneat/transloco';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatTabsModule } from '@angular/material/tabs';
+import { StatisticOverallComponent } from './tabs/stat-overall.component';
+import { StatisticDailyComponent } from './tabs/stat-daily.component';
 
 @Component({
   selector: 'orda-statistic',
   standalone: true,
   template: `<h1>Statistik</h1>
-    <mat-form-field>
-      <mat-label>{{ 'statistic.choose_date' | transloco }}</mat-label>
-      <input
-        matInput
-        [matDatepicker]="picker"
-        (dateInput)="addEvent('input', $event)"
-        (dateChange)="addEvent('change', $event)"
-        [formControl]="dateControl"
-      />
-      <mat-datepicker-toggle
-        matIconSuffix
-        [for]="picker"
-      ></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-    @if (stats !== undefined) {
-      <h2>Gesamteinnahmen/Tag</h2>
-      {{ stats.total | ordaCurrency }}
-
-      <h2>Bezahloption</h2>
-      <h3>Bar/Tag</h3>
-      {{ stats.payment_option[PaymentOption.CASH] | ordaCurrency }}
-      <h3>Karte/Tag</h3>
-      {{ stats.payment_option[PaymentOption.CARD] | ordaCurrency }}
-      <h2>Kontotyp</h2>
-      <h3>Sponsorausgaben/Tag</h3>
-      {{ stats.account_type[AccountType.PREMIUM] | ordaCurrency }}
-      <h3>Frei/Tag</h3>
-      {{ stats.account_type[AccountType.FREE] | ordaCurrency }}
-      <h2>Becherstatistik/Tag</h2>
-      Pfand Eingang: {{ stats.deposit.deposit_in }} <br />
-      Pfand Ausgang:
-      {{ stats.deposit.deposit_out * -1 }}
-
-      <h2>Gesamtübersicht Menge/Produkt</h2>
-      TODO
-    } `,
+    <mat-tab-group>
+      <mat-tab [label]="'statistic.overall' | transloco">
+        <ng-template matTabContent>
+          <orda-stat-overall />
+        </ng-template>
+      </mat-tab>
+      <mat-tab [label]="'statistic.daily' | transloco">
+        <ng-template matTabContent>
+          <!-- Content 2 - Loaded: {{ getTimeLoaded(2) | date: 'medium' }} -->
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>`,
   styles: [
     `
       :host {
-        display: block;
-        padding: 1rem;
       }
     `,
   ],
-  providers: [provideNativeDateAdapter()],
   imports: [
-    OrdaCurrencyPipe,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
+    MatTabsModule,
     TranslocoModule,
-    ReactiveFormsModule,
+    StatisticOverallComponent,
+    StatisticDailyComponent,
   ],
 })
 export class StatisticComponent implements OnInit {
-  statisticsService = inject(StatisticService);
-
-  dateControl = new FormControl(new Date());
-
-  PaymentOption = PaymentOption;
-  AccountType = AccountType;
-  stats?: Statistics;
-
-  public ngOnInit() {
-    // this.statisticsService.getStatistics$().subscribe((x) => (this.stats = x));
-  }
-
-  addEvent(type: string, event: MatDatepickerInputEvent<Date>) {
-    console.log(`${type}: ${event.value}`);
-    this.statisticsService
-      .getStatisticsforDate$(event.value?.toString() ?? new Date().toString())
-      .subscribe((x) => console.log(x));
-  }
+  ngOnInit(): void {}
 }

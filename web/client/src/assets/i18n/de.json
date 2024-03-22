@@ -75,5 +75,9 @@
     "add": "Artikel anlegen",
     "edit": "Artikel bearbeiten",
     "delete": "Artikel löschen"
+  },
+  "statistic": {
+    "overall": "Gesamt",
+    "daily": "Täglich"
   }
 }
