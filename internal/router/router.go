@@ -68,11 +68,6 @@ func SetupRoutes(app *fiber.App) {
 	// Statistic
 	statistic := api.Group("/statistic")
 	statistic.Get("/", middleware.Protected(), handler.GetStatistics)
-	statistic.Get("/item/:id", middleware.Protected(), handler.GetItemSumFromCurrentDate)
-	statistic.Get("/transaction/paymentOption/:paymentOption", middleware.Protected(), handler.GetTransactionsByPaymentOption)
-	statistic.Get("/transaction/accountType/:accountType", middleware.Protected(), handler.GetTransactionsByAccountType)
-	statistic.Get("/articleTransactionHistory", middleware.Protected(), handler.GetArticleTransactionHistory)
-	statistic.Get("/depositHistory", middleware.Protected(), handler.GetDepositHistory)
-	statistic.Get("/date", middleware.Protected(), handler.GetStatisticsByDate)
+	statistic.Get("/articles", middleware.Protected(), handler.GetArticleStatistic)
 
 }

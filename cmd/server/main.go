@@ -42,6 +42,13 @@ type CheckoutData struct {
 
 func main() {
 
+	// _, err := time.LoadLocation("Europe/Vienna")
+
+	// if err != nil {
+	// 	fmt.Println("Error loading location:", err)
+	// 	return
+	// }
+
 	if err := godotenv.Load(".env"); err != nil {
 		fmt.Println("INFO: No .env file found")
 	}

@@ -56,7 +56,8 @@
     "color": "Akzentfarbe",
     "deposit": "Pfandbetrag",
     "show_deposit": "Pfand",
-    "position": "Position"
+    "position": "Position",
+    "qty": "Anzahl"
   },
 
   "dialog": {
@@ -78,6 +79,7 @@
   },
   "statistic": {
     "overall": "Gesamt",
-    "daily": "Täglich"
+    "daily": "Täglich",
+    "choose_date": "Datum auswählen"
   }
 }
