@@ -43,6 +43,8 @@ import { AuthService } from '../auth/auth.service';
               >
               <mat-panel-description>
                 {{ transaction.total | ordaCurrency }}
+                {{ transaction.account_type | accountType | transloco }}
+                {{ transaction.payment_option | paymentOption | transloco }}
               </mat-panel-description>
             </mat-expansion-panel-header>
 
@@ -51,18 +53,20 @@ import { AuthService } from '../auth/auth.service';
                 transaction.CreatedAt | date: 'medium'
               }}</mat-chip-option>
 
-              <mat-chip-option color="primary"
+              <mat-chip-option selected color="primary"
                 >{{ 'accountType' | transloco }}:
                 {{
                   transaction.account_type | accountType | transloco
                 }}</mat-chip-option
               >
-              <mat-chip-option color="warn"
-                >{{ 'paymentOption' | transloco }}:
-                {{
-                  transaction.payment_option | paymentOption | transloco
-                }}</mat-chip-option
-              >
+              @if (transaction.payment_option !== 0) {
+                <mat-chip-option selected color="warn"
+                  >{{ 'paymentOption' | transloco }}:
+                  {{
+                    transaction.payment_option | paymentOption | transloco
+                  }}</mat-chip-option
+                >
+              }
             </mat-chip-listbox>
             <orda-items-table [items]="transaction.items"></orda-items-table>
           </mat-expansion-panel>

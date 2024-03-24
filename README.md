@@ -27,3 +27,42 @@
 `docker login -u scharphio`
 `docker build -t scharphio/orda:latest .`
 `docker push scharphio/orda:latest`
+
+```sql
+
+SELECT
+	articles.id as id,
+	SUM(qty) as totalQty,
+	description
+FROM transaction_items
+LEFT JOIN articles ON articles.id = transaction_items.article_id
+GROUP BY id, description
+ORDER BY totalQty DESC
+
+
+```
+
+TotalSum/Day
+
+```sql
+SELECT SUM(total) FROM transactions WHERE DATE(created_at) = CURDATE()
+``
+
+Cash/Day
+SELECT COUNT(*) FROM transactions WHERE payment_option = 1 AND DATE(created_at) = CURDATE()
+Sponsor/Day
+SELECT COUNT(*) FROM transactions WHERE payment_option = 2 AND DATE(created_at) = CURDATE()
+Free/Day
+SELECT COUNT(*) FROM transactions WHERE payment_option = 3 AND DATE(created_at) = CURDATE()
+```
+
+deposit/Day
+
+```sql
+SELECT
+    SUM(CASE WHEN qty > 0 THEN qty ELSE 0 END) desposit_in,
+    SUM(CASE WHEN qty < 0 THEN qty ELSE 0 END) desposit_out
+FROM transaction_items
+WHERE DATE(created_at) = CURDATE() AND article_id LIKE 'deposit%'
+
+```

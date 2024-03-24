@@ -29,6 +29,16 @@ export class ArticleService {
     });
   }
 
+  importArticles(articles: Article[], categoryId: string) {
+    return this.http.post(
+      `${this.endpoint}/api/article/import?categoryId=${categoryId}`,
+      articles,
+      {
+        headers: this.headers,
+      },
+    );
+  }
+
   updateArticle(id: string, article: Article) {
     return this.http.put<Article>(
       `${this.endpoint}/api/article/${id}`,

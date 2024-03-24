@@ -2,15 +2,20 @@ package handler
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/model"
+	"gorm.io/gorm"
 )
 
-// TODO: Dont send any prices to to server, get and calculate them on the server side
+type TransactionDB struct {
+	*gorm.DB
+}
 
+// TODO: Dont send any prices to to server, get and calculate them on the server side
 func CreateTransaction(c *fiber.Ctx) error {
 	db := database.DB
 
@@ -46,6 +51,7 @@ func CreateTransaction(c *fiber.Ctx) error {
 			Description: desc,
 			Price:       item.Price,
 			Qty:         item.Qty,
+			ArticleID:   item.UUID,
 		})
 	}
 
@@ -62,26 +68,36 @@ func CreateTransaction(c *fiber.Ctx) error {
 }
 
 func GetAllTransactions(c *fiber.Ctx) error {
-	db := database.DB
-	var transactions []model.Transaction
-	if err := db.Model(&model.Transaction{}).Preload("Items").Find(&transactions).Error; err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get transactions", "data": err})
-	}
-	c.SendStatus(fiber.StatusOK)
-	return c.JSON(transactions)
-}
+	db := &TransactionDB{database.DB}
 
-func GetTransactionsLast2Days(c *fiber.Ctx) error {
-	db := database.DB
-
-	twoDaysBefore := time.Now().AddDate(0, 0, -2).Format("2006-01-02 15:04:05")
+	paymentOption := c.Query("paymentOption")
+	accountType := c.Query("accountType")
+	updatedBeforeDays := c.Query("updatedBeforeDays")
+	currentDate := c.Query("currentDate")
 
 	var transactions []model.Transaction
-	if err := db.Model(&model.Transaction{}).Where("updated_at > ?", twoDaysBefore).Preload("Items").Find(&transactions).Error; err != nil {
+
+	if paymentOption != "" {
+		db = db.wherePaymentOption(paymentOption)
+	}
+	if accountType != "" {
+		db = db.whereAccountType(accountType)
+	}
+	if updatedBeforeDays != "" {
+		days, err := strconv.Atoi(updatedBeforeDays)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Invalid filter", "data": err})
+		}
+		db = db.whereUpdatedAt(time.Now().AddDate(0, 0, -1*days))
+	} else if currentDate != "" {
+		db = db.whereUpdatedAtCurrentDate()
+	}
+
+	if err := db.Preload("Items").Find(&transactions).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get transactions", "data": err})
 	}
-	c.SendStatus(fiber.StatusOK)
-	return c.JSON(transactions)
+
+	return c.Status(fiber.StatusOK).JSON(transactions)
 }
 
 func DeleteTransaction(c *fiber.Ctx) error {
@@ -94,6 +110,21 @@ func DeleteTransaction(c *fiber.Ctx) error {
 	if err := db.Delete(&transaction).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't delete transaction", "data": err})
 	}
-	c.SendStatus(fiber.StatusOK)
-	return c.JSON(fiber.Map{"status": "success", "message": "Deleted Transaction", "data": transaction})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Deleted Transaction", "data": transaction})
+}
+
+func (db *TransactionDB) wherePaymentOption(opt string) (tx *TransactionDB) {
+	return &TransactionDB{DB: db.Where("payment_option = ?", opt)}
+}
+
+func (db *TransactionDB) whereAccountType(typ string) (tx *TransactionDB) {
+	return &TransactionDB{DB: db.Where("account_type = ?", typ)}
+}
+
+func (db *TransactionDB) whereUpdatedAt(updatedAt time.Time) (tx *TransactionDB) {
+	return &TransactionDB{DB: db.Where("updated_at > ?", updatedAt.Format("2006-01-02 15:04:05"))}
+}
+
+func (db *TransactionDB) whereUpdatedAtCurrentDate() (tx *TransactionDB) {
+	return &TransactionDB{DB: db.Where("DATE(updated_at) = CURDATE()")}
 }

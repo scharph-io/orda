@@ -36,26 +36,35 @@ import { Category } from '../../shared/model/category';
     OrdaCurrencyPipe,
   ],
   template: `
-    <mat-grid-list [cols]="gridCols" rowHeight="1:1">
+    <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5em">
       @if (category().withDeposit) {
         <mat-grid-tile [colspan]="2"
-          ><orda-plus-minus-tile [key]="'cupdeposit'" [value]="100"
+          ><orda-plus-minus-tile
+            [key]="'deposit'"
+            [value]="category().deposit ?? 100"
         /></mat-grid-tile>
       }
       @for (article of category().articles; track article) {
         @if (article.active) {
-          <mat-grid-tile (click)="addArticle(article)">
-            <orda-article-tile [article]="article"></orda-article-tile>
-
-            <!-- {{ article.name }}
-            {{ article.desc }}
-            {{ article.price | ordaCurrency }} -->
+          <mat-grid-tile
+            (click)="addArticle(article)"
+            [style.background-color]="article.color ?? 'none'"
+          >
+            <orda-article-tile [article]="article" />
           </mat-grid-tile>
         }
       }
     </mat-grid-list>
   `,
-  styles: [``],
+  styles: [
+    `
+      mat-grid-tile {
+        cursor: pointer;
+        border-radius: 0.25em;
+        background-color: lightgrey;
+      }
+    `,
+  ],
 })
 export class OrderGridComponent {
   category = input.required<Category>();
@@ -77,7 +86,7 @@ export class OrderGridComponent {
         if (result.breakpoints[Breakpoints.Small]) {
           this.gridCols = 4;
         } else if (result.breakpoints[Breakpoints.Medium]) {
-          this.gridCols = 6;
+          this.gridCols = 7;
         } else if (result.breakpoints[Breakpoints.XLarge]) {
           this.gridCols = 10;
         }

@@ -6,7 +6,7 @@ import { PaymentOption, PaymentOptionKeys } from '../util/transaction';
   standalone: true,
 })
 export class PaymentOptionPipe implements PipeTransform {
-  transform(value: PaymentOption, args?: any): any {
+  transform(value: PaymentOption, args?: any): string {
     return PaymentOptionKeys[value];
   }
 }

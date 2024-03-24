@@ -30,16 +30,20 @@
       <mat-icon>store</mat-icon>
       <span>{{ "menu.store" | transloco }}</span>
     </button>
-    <button [routerLink]="['/history']" mat-menu-item>
-      <mat-icon>history</mat-icon>
-      <span>{{ "menu.history" | transloco }}</span>
-    </button>
   }
 
   @if ((isAuthenticated | async) && isAdmin) {
     <button [routerLink]="['/manage']" mat-menu-item>
       <mat-icon>manage</mat-icon>
       <span>{{ "menu.manage" | transloco }}</span>
+    </button>
+    <button [routerLink]="['/history']" mat-menu-item>
+      <mat-icon>history</mat-icon>
+      <span>{{ "menu.history" | transloco }}</span>
+    </button>
+    <button [routerLink]="['/statistic']" mat-menu-item>
+      <mat-icon>percent</mat-icon>
+      <span>{{ "menu.statistics" | transloco }}</span>
     </button>
   }
 

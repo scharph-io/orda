@@ -8,4 +8,5 @@ type Article struct {
 	Price      int32  `json:"price"`
 	Active     bool   `json:"active"`
 	CategoryID string `json:"categoryId" gorm:"size:36"`
+	Color      string `json:"color"`
 }

@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/database"
@@ -16,29 +17,6 @@ var (
 	version string
 	date    string
 )
-
-// jwtCustomClaims are custom claims extending default ones.
-// See https://github.com/golang-jwt/jwt for more examples
-type jwtCustomClaims struct {
-	Name  string `json:"name"`
-	Admin bool   `json:"admin"`
-	jwt.RegisteredClaims
-}
-
-type Item struct {
-	UUID  string `json:"uuid"`
-	Name  string `json:"name"`
-	Desc  string `json:"desc"`
-	Price int32  `json:"price"`
-	Qty   int    `json:"quantity"`
-}
-
-type CheckoutData struct {
-	Items         []Item `json:"items"`
-	Total         int32  `json:"total"`
-	AccountType   uint8  `json:"accountType"`
-	PaymentOption uint8  `json:"paymentOption"`
-}
 
 func main() {
 
@@ -51,14 +29,22 @@ func main() {
 	database.ConnectDB()
 
 	port := config.Config("PORT")
-
 	if port == "" {
 		port = "8080"
-
 	}
-	fmt.Println("Server running on port", port)
+
+	if tz := os.Getenv("TZ"); tz != "" {
+		var err error
+		log.Printf("setting time zone from ev to '%s'", tz)
+		time.Local, err = time.LoadLocation(tz)
+		if err != nil {
+			log.Printf("error loading location '%s': %v\n", tz, err)
+		}
+	}
+
+	log.Println("server running on port", port)
 	router.SetupRoutes(app)
-	log.Fatal(app.Listen(fmt.Sprintf("%s:%s", config.Config("HOST"), config.Config("PORT"))))
+	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
 
 	// https://github.com/gofiber/recipes/tree/master/auth-docker-postgres-jwt
 

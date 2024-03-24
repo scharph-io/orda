@@ -1,23 +1,23 @@
 export enum AccountType {
-  CUSTOMER,
+  CASH,
   FREE,
   PREMIUM,
 }
 
 export const AccountTypeKeys = {
-  [AccountType.CUSTOMER]: 'account.customer',
+  [AccountType.CASH]: 'account.cash',
   [AccountType.FREE]: 'account.free',
   [AccountType.PREMIUM]: 'account.premium',
 };
 
 export enum PaymentOption {
-  FREE,
+  NONE,
   CASH,
   CARD,
 }
 
 export const PaymentOptionKeys = {
-  [PaymentOption.FREE]: 'payment.free',
+  [PaymentOption.NONE]: 'payment.none',
   [PaymentOption.CASH]: 'payment.cash',
   [PaymentOption.CARD]: 'payment.card',
 };

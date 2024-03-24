@@ -16,10 +16,15 @@ import {
 import { JwtModule } from '@auth0/angular-jwt';
 import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@ngneat/transloco';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import {
+  DATE_PIPE_DEFAULT_OPTIONS,
+  HashLocationStrategy,
+  LocationStrategy,
+} from '@angular/common';
 
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 registerLocaleData(localeDe, 'de');
 
 export const appConfig: ApplicationConfig = {
@@ -60,5 +65,10 @@ export const appConfig: ApplicationConfig = {
       useValue: 'de',
     },
     { provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' },
+    {
+      provide: DATE_PIPE_DEFAULT_OPTIONS,
+      useValue: { dateFormat: 'shortDate' },
+    },
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
   ],
 };

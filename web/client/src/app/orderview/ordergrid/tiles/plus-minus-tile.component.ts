@@ -1,18 +1,19 @@
 import { Component, inject, input } from '@angular/core';
 import { CartStore } from '../../cart/cart.store';
-import { v4 as uuidv4 } from 'uuid';
 import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
 import { MatIconModule } from '@angular/material/icon';
+
+const DEFAULT_DEPOSIT = 100;
 
 @Component({
   selector: 'orda-plus-minus-tile',
   standalone: true,
   imports: [TranslocoModule, MatIconModule],
   template: `
-    <div class="item" (click)="addToCart(1)">
+    <div class="item add" (click)="addToCart(1)" [title]="value()">
       {{ key() | transloco }} <mat-icon>add</mat-icon>
     </div>
-    <div class="item" (click)="addToCart(-1)">
+    <div class="item remove" (click)="addToCart(-1)">
       {{ key() | transloco }} <mat-icon>remove</mat-icon>
     </div>
   `,
@@ -33,6 +34,16 @@ import { MatIconModule } from '@angular/material/icon';
         justify-content: center;
         font-size: 0.8rem;
       }
+
+      .add {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .remove {
+        background-color: #f44336;
+        color: white;
+      }
     `,
   ],
 })
@@ -41,16 +52,14 @@ export class PlusMinusTileComponent {
   value = input.required<number>();
 
   cart = inject(CartStore);
-  uuid = uuidv4();
-
-  constructor(private translocoService: TranslocoService) {}
+  transloco = inject(TranslocoService);
 
   addToCart(factor: number) {
     this.cart.addItem({
       uuid: this.key(),
-      name: this.translocoService.translate(this.key()),
+      name: this.transloco.translate(this.key()),
       quantity: factor,
-      price: this.value(),
+      price: this.value() === 0 ? DEFAULT_DEPOSIT : this.value(),
     });
   }
 }

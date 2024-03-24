@@ -28,13 +28,15 @@ import {
   MessageService,
   Severity,
 } from '../../../shared/services/message.service';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
 import {
   AccountType,
   PaymentOption,
   AccountTypeKeys,
   PaymentOptionKeys,
 } from '../../../shared/util/transaction';
+import { PaymentOptionPipe } from '../../../shared/pipes/payment-option.pipe';
+import { AccountTypePipe } from '../../../shared/pipes/account-type.pipe';
 
 @Component({
   selector: 'orda-checkout-dialog',
@@ -56,7 +58,7 @@ import {
     ReactiveFormsModule,
     TranslocoModule,
   ],
-  providers: [OrdaCurrencyPipe],
+  providers: [OrdaCurrencyPipe, PaymentOptionPipe, AccountTypePipe],
   template: `
     <div mat-dialog-content class="container">
       <div class="total">
@@ -73,8 +75,8 @@ import {
             [formControl]="accountControl"
             aria-label="Account type"
           >
-            <mat-button-toggle [value]="AccountType.CUSTOMER">{{
-              AccountTypeKeys[AccountType.CUSTOMER] | transloco
+            <mat-button-toggle [value]="AccountType.CASH">{{
+              AccountTypeKeys[AccountType.CASH] | transloco
             }}</mat-button-toggle>
             <mat-button-toggle [value]="AccountType.FREE">{{
               AccountTypeKeys[AccountType.FREE] | transloco
@@ -85,7 +87,7 @@ import {
           </mat-button-toggle-group>
         </div>
         <div class="payment">
-          @if (accountControl.value === AccountType.CUSTOMER) {
+          @if (accountControl.value === AccountType.CASH) {
             <mat-button-toggle-group
               [formControl]="paymentOptionControl"
               aria-label="Payment option"
@@ -123,7 +125,7 @@ import {
             AccountTypeKeys[asAccountType(accountControl.value ?? 0)]
               | transloco
           }}
-          @if (accountControl.value === AccountType.CUSTOMER) {
+          @if (accountControl.value === AccountType.CASH) {
             {{
               PaymentOptionKeys[
                 asPaymentOption(paymentOptionControl.value ?? 0)
@@ -137,7 +139,7 @@ import {
           mat-button
           color="warn"
           cdkFocusInitial
-          (click)="submit(AccountType.CUSTOMER, PaymentOption.CASH)"
+          (click)="submit(AccountType.CASH, PaymentOption.CASH)"
         >
           <mat-icon>shopping_cart_checkout</mat-icon>
           {{ 'checkout.settle' | transloco }}
@@ -148,7 +150,7 @@ import {
           mat-button
           color="warn"
           cdkFocusInitial
-          (click)="submit(AccountType.CUSTOMER, PaymentOption.CASH)"
+          (click)="submit(AccountType.CASH, PaymentOption.CASH)"
         >
           <mat-icon>shopping_cart_checkout</mat-icon>
           {{ 'checkout.payout' | transloco }}
@@ -227,7 +229,7 @@ import {
   ],
 })
 export class CheckoutDialogComponent {
-  accountControl = new FormControl(AccountType.CUSTOMER, [Validators.required]);
+  accountControl = new FormControl(AccountType.CASH, [Validators.required]);
   paymentOptionControl = new FormControl(PaymentOption.CASH, [
     Validators.required,
   ]);
@@ -237,8 +239,8 @@ export class CheckoutDialogComponent {
   checkoutData: CheckoutData = {
     items: [],
     total: 0,
-    account_type: AccountType.CUSTOMER,
-    payment_option: PaymentOption.FREE,
+    account_type: AccountType.CASH,
+    payment_option: PaymentOption.NONE,
   };
 
   AccountType = AccountType;
@@ -252,6 +254,9 @@ export class CheckoutDialogComponent {
 
   constructor(
     private currencyPipe: OrdaCurrencyPipe,
+    private accountTypePipe: AccountTypePipe,
+    private paymentOptionPipe: PaymentOptionPipe,
+    private transloco: TranslocoService,
     public dialogRef: MatDialogRef<CheckoutDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CartItem[],
   ) {
@@ -266,13 +271,17 @@ export class CheckoutDialogComponent {
     this.checkoutData.account_type = accountType;
     this.checkoutData.payment_option = paymentOption;
 
+    if (accountType !== AccountType.CASH) {
+      this.checkoutData.payment_option = PaymentOption.NONE;
+    }
+
     this.checkout.checkout(this.checkoutData).subscribe({
       next: (res: any) => {
         if (res.status === 'success') {
           this.error = '';
           this.dialogRef.close({ clear: true });
           this.message.send({
-            title: `${this.currencyPipe.transform(this.checkoutData.total)} in ${AccountTypeKeys[accountType]} using ${PaymentOptionKeys[paymentOption]}.`,
+            title: `${this.currencyPipe.transform(this.checkoutData.total)} bezahlt mit ${this.transloco.translate(this.paymentOptionPipe.transform(paymentOption))} verbucht nach Konto: ${this.transloco.translate(this.accountTypePipe.transform(accountType))}`,
             severity: Severity.INFO,
           });
         }

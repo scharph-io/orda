@@ -19,7 +19,9 @@ import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
       <th mat-header-cell *matHeaderCellDef>
         {{ 'description' | transloco }}
       </th>
-      <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+      <td mat-cell *matCellDef="let element" [title]="element.article_id">
+        {{ element.description }}
+      </td>
     </ng-container>
 
     <!-- Price Column -->
@@ -57,12 +59,6 @@ import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    <tr>
-      <td mat-footer-cell *matFooterCellDef colspan="4">Total</td>
-      <td mat-footer-cell *matFooterCellDef>
-        {{ 1200 | ordaCurrency }}
-      </td>
-    </tr>
   </table>`,
   styles: ``,
   imports: [MatTableModule, TranslocoModule, OrdaCurrencyPipe],

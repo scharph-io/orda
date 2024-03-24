@@ -1,8 +1,9 @@
 export interface TransactionItem {
-  ID?: number;
+  id?: number;
   description: string;
   qty: number;
   transaction_id: string;
+  article_id: string;
 }
 
 export interface Transaction {

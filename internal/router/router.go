@@ -51,6 +51,7 @@ func SetupRoutes(app *fiber.App) {
 	article := api.Group("/article")
 	article.Get("/", middleware.Protected(), handler.GetAllArticles)
 	article.Post("/", middleware.Protected(), handler.CreateArticle)
+	article.Post("/import", middleware.Protected(), handler.ImportArticles)
 	// article.Get("/:id", middleware.Protected(), handler.GetArticle)
 	article.Put("/:id", middleware.Protected(), handler.UpdateArticle)
 	article.Delete("/:id", middleware.Protected(), handler.DeleteArticle)
@@ -62,7 +63,11 @@ func SetupRoutes(app *fiber.App) {
 	// Transaction
 	transaction := api.Group("/transaction")
 	transaction.Get("/", middleware.Protected(), handler.GetAllTransactions)
-	transaction.Get("/last2days", middleware.Protected(), handler.GetTransactionsLast2Days)
 	transaction.Delete("/:id", middleware.Protected(), handler.DeleteTransaction)
+
+	// Statistic
+	statistic := api.Group("/statistic")
+	statistic.Get("/", middleware.Protected(), handler.GetStatistics)
+	statistic.Get("/articles", middleware.Protected(), handler.GetArticleStatistic)
 
 }

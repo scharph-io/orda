@@ -5,7 +5,8 @@ type Category struct {
 	Name        string    `json:"name"`
 	Desc        string    `json:"desc"`
 	Articles    []Article `json:"articles"`
-	Colored     bool      `json:"colored" gorm:"default:false"`
+	Color       string    `json:"color"`
 	WithDeposit bool      `json:"withDeposit" gorm:"default:false"`
 	Deposit     int32     `json:"deposit"`
+	Position    uint      `json:"position" gorm:"default:0"`
 }

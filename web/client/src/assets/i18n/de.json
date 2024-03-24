@@ -7,7 +7,8 @@
     "history": "Zahlungsverlauf",
     "info": "Info",
     "manage": "Verwalten",
-    "store": "Geschäft"
+    "store": "Geschäft",
+    "statistics": "Statistiken"
   },
   "logout": "Abmelden",
   "login": "Anmelden",
@@ -25,13 +26,14 @@
   "payment": {
     "title": "Zahlung",
     "method": "Zahlungsmethode",
-    "card": "EC-Karte",
+    "card": "Karte",
     "cash": "Bargeld",
-    "submit": "Absenden"
+    "submit": "Absenden",
+    "none": "Keine"
   },
   "account": {
     "title": "Kontotyp",
-    "customer": "Kunde",
+    "cash": "Kasse",
     "free": "Frei",
     "premium": "Sponsor"
   },
@@ -39,11 +41,45 @@
     "payout": "Auszahlung",
     "settle": "Abrechnen"
   },
-  "cupdeposit": "Becherpfand",
+  "deposit": "Pfand",
   "description": "Bezeichnung",
   "quantity": "Anzahl",
   "total": "Gesamtpreis",
   "unitprice": "Einheitspreis",
   "paymentOption": "Zahlungsoption",
-  "accountType": "Kontotyp"
+  "accountType": "Kontotyp",
+  "table": {
+    "name": "Name",
+    "desc": "Beschreibung",
+    "price": "Preis",
+    "active": "Aktiviert",
+    "color": "Akzentfarbe",
+    "deposit": "Pfandbetrag",
+    "show_deposit": "Pfand",
+    "position": "Position",
+    "qty": "Anzahl"
+  },
+
+  "dialog": {
+    "cancel": "Abbrechen",
+    "update": "Speichern",
+    "create": "Anlegen"
+  },
+  "category": {
+    "title": "Kategorie",
+    "add": "Kategorie anlegen",
+    "edit": "Kategorie bearbeiten",
+    "delete": "Kategorie löschen"
+  },
+  "article": {
+    "title": "Artikel",
+    "add": "Artikel anlegen",
+    "edit": "Artikel bearbeiten",
+    "delete": "Artikel löschen"
+  },
+  "statistic": {
+    "overall": "Gesamt",
+    "daily": "Täglich",
+    "choose_date": "Datum auswählen"
+  }
 }
