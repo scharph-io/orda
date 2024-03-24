@@ -1,5 +1,7 @@
 package util
 
+import "github.com/scharph/orda/internal/config"
+
 type PaymentOption uint
 
 const (
@@ -15,3 +17,15 @@ const (
 	AccountTypeFree                // 1
 	AccountTypePremium             // 2
 )
+
+const (
+	default_pw = "secret"
+)
+
+func GetPasswordFromEnv(key string) string {
+	pw := config.Config(key)
+	if pw == "" {
+		return default_pw
+	}
+	return pw
+}

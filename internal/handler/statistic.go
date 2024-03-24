@@ -38,7 +38,7 @@ func GetArticleStatistic(c *fiber.Ctx) error {
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	fmt.Println(t.Location().String())
 	fmt.Println("XXX", t.Local().Format(time.DateOnly))
 
 	return c.Status(fiber.StatusOK).JSON(getDateArticleStatistic(t.Local().Format(time.DateOnly)))

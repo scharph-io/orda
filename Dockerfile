@@ -36,6 +36,10 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 
 FROM scratch AS server
 COPY --from=build-server /bin/server /bin/
+
+COPY --from=build-server /usr/local/go/lib/time/zoneinfo.zip /
+ENV ZONEINFO=/zoneinfo.zip
+
 EXPOSE 80
 ENTRYPOINT [ "/bin/server" ]
 

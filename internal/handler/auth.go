@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/scharph/orda/internal/middleware"
+	"github.com/scharph/orda/internal/util"
 )
 
 // Login get user and password
@@ -26,9 +27,9 @@ func Login(c *fiber.Ctx) error {
 	fmt.Println("identity: ", identity)
 	fmt.Println("pass: ", pass)
 
-	if identity == "admin" && pass == "secret" {
+	if identity == "admin" && pass == util.GetPasswordFromEnv("ADMIN_PW") {
 		isAdmin = true
-	} else if identity == "user" && pass == "secret" {
+	} else if identity == "user" && pass == util.GetPasswordFromEnv("USER_PW") {
 		isAdmin = false
 	} else {
 		fmt.Println("username or password is wrong")

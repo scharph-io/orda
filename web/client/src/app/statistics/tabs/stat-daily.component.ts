@@ -23,27 +23,23 @@ import { MatTableModule } from '@angular/material/table';
   selector: 'orda-stat-daily',
   standalone: true,
   template: `<h1>Statistik</h1>
-    @if (isAdmin()) {
-      <mat-form-field>
-        <mat-label>{{ 'statistic.choose_date' | transloco }}</mat-label>
-        <input
-          matInput
-          [matDatepicker]="picker"
-          (dateInput)="addEvent('input', $event)"
-          (dateChange)="addEvent('change', $event)"
-          [formControl]="dateControl"
-          [disabled]="!isAdmin()"
-        />
-        <mat-datepicker-toggle
-          [disabled]="!isAdmin()"
-          matIconSuffix
-          [for]="picker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-    } @else {
-      {{ dateControl.value | date: 'dd.MM.yyyy' }}
-    }
+    <mat-form-field>
+      <mat-label>{{ 'statistic.choose_date' | transloco }}</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        (dateInput)="addEvent('input', $event)"
+        (dateChange)="addEvent('change', $event)"
+        [formControl]="dateControl"
+      />
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="picker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- {{ dateControl.value | date: 'dd.MM.yyyy' }} -->
 
     <h2>Gesamteinnahmen/Tag</h2>
     {{ stats().total | ordaCurrency }}
@@ -113,8 +109,6 @@ import { MatTableModule } from '@angular/material/table';
 })
 export class StatisticDailyComponent implements OnInit {
   statisticsService = inject(StatisticService);
-
-  isAdmin = input<boolean>();
 
   dateControl = new FormControl(new Date());
 

@@ -10,16 +10,14 @@ import { AuthService } from '../auth/auth.service';
   standalone: true,
   template: `<h1>Statistik</h1>
     <mat-tab-group>
-      @if (isAdmin) {
-        <mat-tab [label]="'statistic.overall' | transloco">
-          <ng-template matTabContent>
-            <orda-stat-overall />
-          </ng-template>
-        </mat-tab>
-      }
       <mat-tab [label]="'statistic.daily' | transloco">
         <ng-template matTabContent>
-          <orda-stat-daily [isAdmin]="isAdmin" />
+          <orda-stat-daily />
+        </ng-template>
+      </mat-tab>
+      <mat-tab [label]="'statistic.overall' | transloco">
+        <ng-template matTabContent>
+          <orda-stat-overall />
         </ng-template>
       </mat-tab>
     </mat-tab-group>`,
@@ -37,11 +35,5 @@ import { AuthService } from '../auth/auth.service';
   ],
 })
 export class StatisticComponent implements OnInit {
-  auth = inject(AuthService);
-
   ngOnInit(): void {}
-
-  get isAdmin(): boolean {
-    return this.auth.isAdmin();
-  }
 }

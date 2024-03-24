@@ -35,6 +35,7 @@ services:
       - DB_PASSWORD=orda
       - DB_NAME=orda
       - PORT=80
+      - TZ=Europe/Vienna
     labels:
       - "traefik.http.routers.orda.rule=Host(`orda.schartis.at`)"
       - "traefik.http.routers.orda.tls=true"
