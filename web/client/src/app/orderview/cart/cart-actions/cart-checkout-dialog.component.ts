@@ -106,7 +106,9 @@ import { AccountTypePipe } from '../../../shared/pipes/account-type.pipe';
     </div>
 
     <div mat-dialog-actions [style.justify-content]="'space-evenly'">
-      <button mat-button [mat-dialog-close]="{ clear: false }">Cancel</button>
+      <button mat-button [mat-dialog-close]="{ clear: false }">
+        {{ 'dialog.cancel' | transloco }}
+      </button>
       @if (checkoutData.total > 0) {
         <button
           class="btn-checkout"
