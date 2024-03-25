@@ -1,13 +1,36 @@
-<mat-tab-group
-  class="articles"
-  mat-align-tabs="center"
-  animationDuration="0ms"
-  dynamicHeight="false"
->
-  @for (category of categories(); track category) {
-    <mat-tab [label]="category.name"
-      ><orda-ordergrid [category]="category" [style.margin.em]="0.5"
-    /></mat-tab>
-  }
-</mat-tab-group>
-<orda-cart class="cart" [style.flex-basis]="cartSize"></orda-cart>
+@if (!isMobilePortrait()) {
+  <mat-tab-group
+    class="articles"
+    mat-align-tabs="center"
+    animationDuration="0ms"
+    dynamicHeight="false"
+  >
+    @for (category of categories(); track category) {
+      <mat-tab [label]="category.name"
+        ><orda-ordergrid
+          [category]="category"
+          [style.margin.em]="0.5"
+          [gridCols]="6"
+      /></mat-tab>
+    }
+  </mat-tab-group>
+  <orda-cart class="cart" [style.flex-basis]="cartSize"></orda-cart>
+} @else {
+  <div class="container-mobile">
+    <div class="item-0">
+      <mat-tab-group
+        mat-align-tabs="center"
+        animationDuration="0ms"
+        dynamicHeight="false"
+      >
+        @for (category of categories(); track category) {
+          <mat-tab [label]="category.name"
+            ><orda-ordergrid [category]="category" [gridCols]="2"
+          /></mat-tab>
+        }
+      </mat-tab-group>
+    </div>
+
+    <div class="footer-mobile"></div>
+  </div>
+}

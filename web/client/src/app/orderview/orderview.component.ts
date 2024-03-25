@@ -46,7 +46,9 @@ export class OrderViewComponent implements OnInit {
   destroyed$ = new Subject<void>();
   cartSize?: string;
 
-  constructor(private responsive: BreakpointObserver) {}
+  isMobilePortrait = signal<boolean>(false);
+
+  constructor(private responsive: BreakpointObserver) { }
 
   ngOnInit() {
     this.cartSize = '30em';
@@ -60,11 +62,8 @@ export class OrderViewComponent implements OnInit {
       .pipe(takeUntil(this.destroyed$))
       .subscribe((result) => {
         const breakpoints = result.breakpoints;
-
-        if (breakpoints[Breakpoints.HandsetPortrait]) {
-          console.log('screens matches HandsetPortrait');
-          this.cartSize = '30em';
-        } else if (breakpoints[Breakpoints.Medium]) {
+        this.isMobilePortrait.set(false);
+        if (breakpoints[Breakpoints.Medium]) {
           console.log('screens matches Medium');
           this.cartSize = '17em';
         } else if (breakpoints[Breakpoints.Large]) {
@@ -73,6 +72,9 @@ export class OrderViewComponent implements OnInit {
         } else if (breakpoints[Breakpoints.XLarge]) {
           console.log('screens matches XLarge');
           this.cartSize = '20em';
+        } else if (breakpoints[Breakpoints.HandsetPortrait]) {
+          console.log('screens matches HandsetPortrait');
+          this.isMobilePortrait.set(true);
         }
       });
 

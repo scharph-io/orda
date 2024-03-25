@@ -1,7 +1,4 @@
 import {
-  AsyncPipe,
-  CommonModule,
-  CurrencyPipe,
   NgStyle,
 } from '@angular/common';
 import { Component, input } from '@angular/core';
@@ -9,11 +6,9 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { Article } from '../../shared/model/article';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
-  BreakpointObserver,
-  Breakpoints,
   LayoutModule,
 } from '@angular/cdk/layout';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import { PlusMinusTileComponent } from './tiles/plus-minus-tile.component';
@@ -36,7 +31,7 @@ import { Category } from '../../shared/model/category';
     OrdaCurrencyPipe,
   ],
   template: `
-    <mat-grid-list [cols]="gridCols" rowHeight="1:1" gutterSize="0.5em">
+    <mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
       @if (category().withDeposit) {
         <mat-grid-tile [colspan]="2"
           ><orda-plus-minus-tile
@@ -71,26 +66,12 @@ export class OrderGridComponent {
 
   destroyed$ = new Subject<void>();
 
-  protected gridCols?: number;
+  gridCols = input.required<number>();
 
   constructor(
-    breakpointObserver: BreakpointObserver,
     private cart: CartStore,
   ) {
-    this.gridCols = 6;
-    breakpointObserver
-      .observe([Breakpoints.Small, Breakpoints.Medium, Breakpoints.XLarge])
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((result) => {
-        // console.log(JSON.stringify(result.breakpoints));
-        if (result.breakpoints[Breakpoints.Small]) {
-          this.gridCols = 4;
-        } else if (result.breakpoints[Breakpoints.Medium]) {
-          this.gridCols = 7;
-        } else if (result.breakpoints[Breakpoints.XLarge]) {
-          this.gridCols = 10;
-        }
-      });
+
   }
 
   ngOnDestroy(): void {
