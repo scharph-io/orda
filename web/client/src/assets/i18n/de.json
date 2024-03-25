@@ -69,7 +69,8 @@
     "title": "Kategorie",
     "add": "Kategorie anlegen",
     "edit": "Kategorie bearbeiten",
-    "delete": "Kategorie löschen"
+    "delete": "Kategorie löschen",
+    "export": "Exportieren"
   },
   "article": {
     "title": "Artikel",

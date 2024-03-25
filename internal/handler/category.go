@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"encoding/json"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/model"
@@ -82,5 +84,30 @@ func GetAllCategoryArticles(c *fiber.Ctx) error {
 	var articles []model.Article
 	db.Where("category_id = ?", id).Find(&articles)
 	c.SendStatus(fiber.StatusOK)
+
 	return c.JSON(articles)
+}
+
+func GetAllCategoryArticlesAsFile(c *fiber.Ctx) error {
+
+	type ExportArticle struct {
+		Name  string `json:"name"`
+		Desc  string `json:"desc"`
+		Price int32  `json:"price"`
+	}
+
+	id := c.Params("id")
+	db := database.DB
+	var articles []model.Article
+	db.Where("category_id = ?", id).Select("name", "desc", "price").Find(&articles)
+
+	var export []ExportArticle
+	for _, a := range articles {
+		export = append(export, ExportArticle{Name: a.Name, Desc: a.Desc, Price: a.Price})
+	}
+
+	data, _ := json.MarshalIndent(export, "", " ")
+	c.SendStatus(fiber.StatusOK)
+	c.Set(fiber.HeaderContentDisposition, "attachment; filename=name.json")
+	return c.Send(data)
 }
