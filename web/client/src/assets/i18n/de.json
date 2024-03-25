@@ -80,6 +80,23 @@
   "statistic": {
     "overall": "Gesamt",
     "daily": "Täglich",
-    "choose_date": "Datum auswählen"
+    "choose_date": "Datum auswählen",
+    "income": "Einnahmen",
+    "total_per_day": "Gesamt pro Tag",
+    "cash_per_day": "Bargeld pro Tag",
+    "card_per_day": "Karte pro Tag",
+    "premium_per_day": "Sponsor pro Tag",
+    "free_per_day": "Frei pro Tag",
+    "deposit_in_per_day": "Pfand Eingang pro Tag",
+    "deposit_out_per_day": "Pfand Ausgang pro Tag",
+    "products_sold_per_day": "Verkaufte Produkte",
+    "total": "Gesamt",
+    "cash": "Bargeld",
+    "card": "Karte",
+    "premium": "Sponsor",
+    "free": "Frei",
+    "deposit_in": "Pfand Eingang",
+    "deposit_out": "Pfand Ausgang",
+    "products_sold": "Verkaufte Produkte"
   }
 }
