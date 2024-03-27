@@ -1,7 +1,7 @@
 import {
   NgStyle,
 } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { Article } from '../../shared/model/article';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -64,15 +64,11 @@ import { Category } from '../../shared/model/category';
 export class OrderGridComponent {
   category = input.required<Category>();
 
+  cart = inject(CartStore);
+
   destroyed$ = new Subject<void>();
 
   gridCols = input.required<number>();
-
-  constructor(
-    private cart: CartStore,
-  ) {
-
-  }
 
   ngOnDestroy(): void {
     this.destroyed$.next();

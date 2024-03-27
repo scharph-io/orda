@@ -50,6 +50,7 @@ export class OrderViewComponent implements OnInit {
   cartSize?: string;
 
   isMobilePortrait = signal<boolean>(false);
+  gridCols = 3;
 
   constructor(private responsive: BreakpointObserver) { }
 
@@ -58,6 +59,7 @@ export class OrderViewComponent implements OnInit {
     this.responsive
       .observe([
         Breakpoints.HandsetPortrait,
+        Breakpoints.Small,
         Breakpoints.Medium,
         Breakpoints.Large,
         Breakpoints.XLarge,
@@ -66,18 +68,26 @@ export class OrderViewComponent implements OnInit {
       .subscribe((result) => {
         const breakpoints = result.breakpoints;
         this.isMobilePortrait.set(false);
-        if (breakpoints[Breakpoints.Medium]) {
+        if (breakpoints[Breakpoints.Small]) {
+          console.log('screens matches Small');
+          this.cartSize = '10em';
+          this.gridCols = 3;
+        } else if (breakpoints[Breakpoints.Medium]) {
           console.log('screens matches Medium');
-          this.cartSize = '17em';
+          this.cartSize = '15em';
+          this.gridCols = 6;
         } else if (breakpoints[Breakpoints.Large]) {
           console.log('screens matches Large');
           this.cartSize = '17.5em';
+          this.gridCols = 8;
         } else if (breakpoints[Breakpoints.XLarge]) {
           console.log('screens matches XLarge');
           this.cartSize = '20em';
+          this.gridCols = 10;
         } else if (breakpoints[Breakpoints.HandsetPortrait]) {
           console.log('screens matches HandsetPortrait');
           this.isMobilePortrait.set(true);
+          this.gridCols = 2;
         }
       });
 
@@ -90,4 +100,6 @@ export class OrderViewComponent implements OnInit {
   test(ev: Event) {
     console.log('test', ev);
   }
+
+
 }

@@ -9,6 +9,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialog } from '@angular/material/dialog';
 import { CheckoutDialogComponent } from '../cart-actions/cart-checkout-dialog.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { CartDialogComponent } from './cart-dialog.component';
 
 
 @Component({
@@ -21,7 +22,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </button>
     }
       <orda-cart-subtotal [subtotal]="(subtotal$ | async) ?? 0"></orda-cart-subtotal>
-      <button mat-icon-button color="info" (click)="onOpenCart.emit($event)">
+      <button mat-icon-button color="info" (click)="openCartDialog()" [disabled]="data()?.length === 0">
         <mat-icon [matBadge]="(totalQty$ | async)" matBadgeColor="warn"  aria-hidden="false">shopping_cart</mat-icon>
       </button>
       <button
@@ -51,19 +52,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
       }
     `
   ],
-  imports: [CartSubtotalComponent, AsyncPipe, MatButtonModule, MatBadgeModule, MatIconModule, TranslocoModule]
+  imports: [CartSubtotalComponent, AsyncPipe, MatButtonModule, MatBadgeModule, MatIconModule, TranslocoModule, CartDialogComponent]
 })
 export class CartFooterComponent {
   cartStore = inject(CartStore);
   dialog = inject(MatDialog);
   data = toSignal(this.cartStore.items$)
-
-  @Output() onOpenCart = new EventEmitter<Event>();
-
-  constructor() {
-
-  }
-
 
   get subtotal$() {
     return this.cartStore.subtotal$;
@@ -95,4 +89,13 @@ export class CartFooterComponent {
     });
 
   }
+
+  openCartDialog() {
+    this.dialog.open(CartDialogComponent, {
+      data: this.data(),
+      width: 'auto',
+      height: '35rem',
+    });
+  }
+
 }
