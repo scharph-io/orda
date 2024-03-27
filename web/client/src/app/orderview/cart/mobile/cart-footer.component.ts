@@ -6,6 +6,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@ngneat/transloco';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatDialog } from '@angular/material/dialog';
+import { CheckoutDialogComponent } from '../cart-actions/cart-checkout-dialog.component';
+import { toSignal } from '@angular/core/rxjs-interop';
+
 
 @Component({
   selector: 'orda-cart-footer',
@@ -20,6 +24,16 @@ import { MatBadgeModule } from '@angular/material/badge';
       <button mat-icon-button color="info" (click)="onOpenCart.emit($event)">
         <mat-icon [matBadge]="(totalQty$ | async)" matBadgeColor="warn"  aria-hidden="false">shopping_cart</mat-icon>
       </button>
+      <button
+      class="item-1"
+      mat-flat-button
+      color="primary"
+      [disabled]="data()?.length === 0"
+      (click)="openCheckoutDialog()"
+    >
+      <mat-icon>shopping_cart_checkout</mat-icon>
+      {{ 'cart.checkout' | transloco }}
+    </button>
 
   `,
   styles: [
@@ -41,8 +55,15 @@ import { MatBadgeModule } from '@angular/material/badge';
 })
 export class CartFooterComponent {
   cartStore = inject(CartStore);
+  dialog = inject(MatDialog);
+  data = toSignal(this.cartStore.items$)
 
   @Output() onOpenCart = new EventEmitter<Event>();
+
+  constructor() {
+
+  }
+
 
   get subtotal$() {
     return this.cartStore.subtotal$;
@@ -56,4 +77,22 @@ export class CartFooterComponent {
     this.cartStore.clear();
   }
 
+
+  openCheckoutDialog() {
+    const dialogRef = this.dialog.open(CheckoutDialogComponent, {
+      data: this.data(),
+      width: 'auto',
+      minWidth: '25rem',
+      height: '25rem',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed');
+
+      if (result && (result.clear as boolean)) {
+        this.clearCart();
+      }
+    });
+
+  }
 }
