@@ -16,6 +16,8 @@ import { CategoryService } from '../shared/services/category.service';
 import { Category } from '../shared/model/category';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
+import { CartSubtotalComponent } from './cart/cart-subtotal/cart-subtotal.component';
+import { CartFooterComponent } from './cart/mobile/cart-footer.component';
 
 /**
  * @title Tab group with aligned labels
@@ -33,6 +35,7 @@ import { Subject, takeUntil } from 'rxjs';
     OrderGridComponent,
     CartComponent,
     AsyncPipe,
+    CartFooterComponent,
   ],
   providers: [CartStore, CheckoutService],
 })
@@ -82,5 +85,9 @@ export class OrderViewComponent implements OnInit {
       this.categories.set(categories);
       this.selectedCategory.set(categories[0]);
     });
+  }
+
+  test(ev: Event) {
+    console.log('test', ev);
   }
 }
