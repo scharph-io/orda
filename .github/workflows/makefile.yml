@@ -45,10 +45,8 @@ jobs:
           build-args: |
             NODE_VERSION=${{ matrix.node-version }}
             BUILD=${{ github.ref_name }}
-      
-      - name: get latest git tag
-        if: github.ref == 'refs/heads/master'
-        id: git_tag
+      - name: Set tag var
+        id: vars
         run: echo "last_tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -57,8 +55,8 @@ jobs:
           context: .
           file: ./ci/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}:${{ steps.git_tag.outputs.last_tag }}-next-${GITHUB_SHA::7}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}:${{ steps.vars.outputs.last_tag }}-next-${GITHUB_SHA::7}
           build-args: |
             NODE_VERSION=${{ matrix.node-version }}
-            BUILD=${{ steps.git_tag.outputs.last_tag }}-next-${GITHUB_SHA::7}
+            BUILD=${{ steps.vars.outputs.last_tag }}-next-${GITHUB_SHA::7}
 
