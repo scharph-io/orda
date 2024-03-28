@@ -2,42 +2,43 @@ name: Makefile CI
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - "master"
+
+env:
+  IMAGE: orda
 
 jobs:
   # This workflow contains multiple jobs
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      repository-projects: write
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [21.x]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - name: setup node
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+     
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: Set up Go
-        uses: actions/setup-go@v4
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
         with:
-          go-version: "1.21"
-      # install applicaion dependencies
-      - name: Build
-        run: make ci-build
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/*.tar.gz
-          file_glob: true
-          asset_name: ${{ matrix.asset_name }}
-          tag: ${{ github.ref }}
+          context: .
+          file: ./ci/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}:${{ github.ref_name }}
+          build-args: |
+            NODE_VERSION=${{ matrix.node-version }}
+            BUILD=${{ github.ref_name }}

@@ -25,7 +25,6 @@ func main() {
 	}
 
 	app := fiber.New()
-
 	database.ConnectDB()
 
 	port := config.Config("PORT")
