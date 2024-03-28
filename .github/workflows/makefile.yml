@@ -34,6 +34,7 @@ jobs:
       
       - name: Build and push
         uses: docker/build-push-action@v5
+        if: github.ref != 'refs/heads/master'
         with:
           context: .
           file: ./ci/Dockerfile
@@ -42,3 +43,16 @@ jobs:
           build-args: |
             NODE_VERSION=${{ matrix.node-version }}
             BUILD=${{ github.ref_name }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        if: github.ref == 'refs/heads/master'
+        with:
+          context: .
+          file: ./ci/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}:0.0.1-${{ github.sha }}
+          build-args: |
+            NODE_VERSION=${{ matrix.node-version }}
+            BUILD=0.0.1-${{ github.sha }}
+
