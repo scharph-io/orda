@@ -1,5 +1,6 @@
 PROJECT=orda
-IMAGE=orda-server:latest
+IMAGE=scharphio/orda
+
 
 BINARY_NAME=$(PROJECT)
 
@@ -108,3 +109,12 @@ docker-mysql-up:
 
 docker-mysql-down:
 	docker compose -f docker-compose.local.yaml down -v
+
+docker-build:
+	docker build -f ci/Dockerfile --build-arg="BUILD=$(VERSION)" -t $(IMAGE):$(VERSION) . --progress=plain
+
+docker-push:
+	docker push $(IMAGE):$(VERSION)
+
+docker-login:
+	docker login -u scharphio
