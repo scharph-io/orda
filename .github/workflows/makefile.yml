@@ -52,8 +52,8 @@ jobs:
           context: .
           file: ./ci/Dockerfile
           push: false
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}:v0.0.1-master.${GITHUB_SHA::7}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE }}:v0.0.1-master.${{ github.sha }}
           build-args: |
             NODE_VERSION=${{ matrix.node-version }}
-            BUILD=v0.0.1-master.${GITHUB_SHA::7}
+            BUILD=v0.0.1-master.${{ github.sha }}
 
