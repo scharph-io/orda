@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { VERSION } from '../../core/version';
 
 @Component({
-  selector: 'orda-info',
+  selector: 'orda-settings',
   template: `
     <div class="container">
       <h2>Orda Client</h2>
@@ -18,6 +18,6 @@ import { VERSION } from '../../core/version';
     `,
   ],
 })
-export class InfoComponent {
+export class SettingsComponent {
   VERSION = VERSION;
 }

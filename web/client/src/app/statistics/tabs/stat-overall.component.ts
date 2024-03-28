@@ -15,30 +15,27 @@ import {
 } from '../../shared/services/statistic.service';
 import { PaymentOption, AccountType } from '../../shared/util/transaction';
 import { MatTableModule } from '@angular/material/table';
+import { StatCardComponent } from '../stat-card.component';
 
 @Component({
   selector: 'orda-stat-overall',
   standalone: true,
   template: `
-    <h2>Gesamteinnahmen/Tag</h2>
-    {{ stats().total | ordaCurrency }}
+    <h2>{{'statistic.income' | transloco}}</h2>
+    <div class="dashboard">
+    <orda-stat-card [title]="'statistic.total' | transloco" [value]="stats().total | ordaCurrency" />
 
-    <h2>Bezahloption</h2>
-    <h3>Bar/Tag</h3>
-    {{ stats().payment_option[PaymentOption.CASH] | ordaCurrency }}
-    <h3>Karte/Tag</h3>
-    {{ stats().payment_option[PaymentOption.CARD] | ordaCurrency }}
-    <h2>Kontotyp</h2>
-    <h3>Sponsorausgaben/Tag</h3>
-    {{ stats().account_type[AccountType.PREMIUM] | ordaCurrency }}
-    <h3>Frei/Tag</h3>
-    {{ stats().account_type[AccountType.FREE] | ordaCurrency }}
-    <h2>Becherstatistik/Tag</h2>
-    Pfand Eingang: {{ stats().deposit.deposit_in }} <br />
-    Pfand Ausgang:
-    {{ stats().deposit.deposit_out * -1 }}
+    <orda-stat-card [title]="'statistic.cash' | transloco" [value]="stats().payment_option[PaymentOption.CASH] | ordaCurrency" />
+    <orda-stat-card [title]="'statistic.card' | transloco" [value]="stats().payment_option[PaymentOption.CARD] | ordaCurrency" />
 
-    <h2>Gesamtübersicht Menge/Produkt</h2>
+    <orda-stat-card [title]="'statistic.premium' | transloco" [value]="stats().account_type[AccountType.PREMIUM] | ordaCurrency" />
+    <orda-stat-card [title]="'statistic.free' | transloco" [value]="stats().account_type[AccountType.FREE] | ordaCurrency" />
+
+    <orda-stat-card [title]="'statistic.deposit_in' | transloco" [value]="stats().deposit.deposit_in" />
+    <orda-stat-card [title]="'statistic.deposit_out' | transloco" [value]="stats().deposit.deposit_out * -1" />
+  </div>
+
+    <h2>{{'statistic.products_sold' | transloco}}</h2>
 
     <section class="example-container mat-elevation-z8" tabindex="0">
       <table mat-table [dataSource]="articleStats()">
@@ -74,6 +71,12 @@ import { MatTableModule } from '@angular/material/table';
         display: block;
         padding: 1rem;
       }
+
+      .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
     `,
   ],
   providers: [provideNativeDateAdapter()],
@@ -85,6 +88,7 @@ import { MatTableModule } from '@angular/material/table';
     TranslocoModule,
     ReactiveFormsModule,
     MatTableModule,
+    StatCardComponent
   ],
 })
 export class StatisticOverallComponent implements OnInit {
