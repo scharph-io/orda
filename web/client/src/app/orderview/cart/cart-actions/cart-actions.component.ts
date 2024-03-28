@@ -21,7 +21,7 @@ import { TranslocoModule } from '@ngneat/transloco';
       class="item-1"
       mat-flat-button
       color="primary"
-      [disabled]="disableCheckout()"
+      [disabled]="items().length === 0"
       (click)="openCheckoutDialog()"
     >
       <mat-icon>shopping_cart_checkout</mat-icon>
@@ -55,10 +55,6 @@ export class CartActionsComponent {
 
   clearCart(): void {
     this.cart.clear();
-  }
-
-  disableCheckout(): boolean {
-    return this.items().length === 0;
   }
 
   openCheckoutDialog() {

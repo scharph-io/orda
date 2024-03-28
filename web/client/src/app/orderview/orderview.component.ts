@@ -16,6 +16,8 @@ import { CategoryService } from '../shared/services/category.service';
 import { Category } from '../shared/model/category';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
+import { CartSubtotalComponent } from './cart/cart-subtotal/cart-subtotal.component';
+import { CartFooterComponent } from './cart/mobile/cart-footer.component';
 
 /**
  * @title Tab group with aligned labels
@@ -33,6 +35,7 @@ import { Subject, takeUntil } from 'rxjs';
     OrderGridComponent,
     CartComponent,
     AsyncPipe,
+    CartFooterComponent,
   ],
   providers: [CartStore, CheckoutService],
 })
@@ -46,13 +49,17 @@ export class OrderViewComponent implements OnInit {
   destroyed$ = new Subject<void>();
   cartSize?: string;
 
-  constructor(private responsive: BreakpointObserver) {}
+  isMobilePortrait = signal<boolean>(false);
+  gridCols = 3;
+
+  constructor(private responsive: BreakpointObserver) { }
 
   ngOnInit() {
     this.cartSize = '30em';
     this.responsive
       .observe([
         Breakpoints.HandsetPortrait,
+        Breakpoints.Small,
         Breakpoints.Medium,
         Breakpoints.Large,
         Breakpoints.XLarge,
@@ -60,19 +67,27 @@ export class OrderViewComponent implements OnInit {
       .pipe(takeUntil(this.destroyed$))
       .subscribe((result) => {
         const breakpoints = result.breakpoints;
-
-        if (breakpoints[Breakpoints.HandsetPortrait]) {
-          console.log('screens matches HandsetPortrait');
-          this.cartSize = '30em';
+        this.isMobilePortrait.set(false);
+        if (breakpoints[Breakpoints.Small]) {
+          console.log('screens matches Small');
+          this.cartSize = '10em';
+          this.gridCols = 3;
         } else if (breakpoints[Breakpoints.Medium]) {
           console.log('screens matches Medium');
-          this.cartSize = '17em';
+          this.cartSize = '15em';
+          this.gridCols = 6;
         } else if (breakpoints[Breakpoints.Large]) {
           console.log('screens matches Large');
           this.cartSize = '17.5em';
+          this.gridCols = 8;
         } else if (breakpoints[Breakpoints.XLarge]) {
           console.log('screens matches XLarge');
           this.cartSize = '20em';
+          this.gridCols = 10;
+        } else if (breakpoints[Breakpoints.HandsetPortrait]) {
+          console.log('screens matches HandsetPortrait');
+          this.isMobilePortrait.set(true);
+          this.gridCols = 2;
         }
       });
 
@@ -81,4 +96,10 @@ export class OrderViewComponent implements OnInit {
       this.selectedCategory.set(categories[0]);
     });
   }
+
+  test(ev: Event) {
+    console.log('test', ev);
+  }
+
+
 }

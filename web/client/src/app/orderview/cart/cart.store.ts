@@ -19,6 +19,12 @@ export class CartStore {
     .asObservable()
     .pipe(map((items) => items.filter((a) => a.quantity !== 0)));
 
+  public readonly totalQty$: Observable<number> = this._items.pipe(
+    map((articles) =>
+      articles.reduce((acc, article) => acc + (article.quantity > 0 ? article.quantity : -1 * article.quantity), 0),
+    ),
+  );
+
   public readonly subtotal$: Observable<number> = this._items.pipe(
     map((articles) =>
       articles.reduce(
@@ -28,15 +34,17 @@ export class CartStore {
     ),
   );
 
+
+
   addItem(item: CartItem): void {
     if (this._items.getValue().find((a) => a.uuid === item.uuid)) {
       this._items.next(
         this._items.getValue().map((a) =>
           a.uuid === item.uuid
             ? {
-                ...a,
-                quantity: item.quantity > 0 ? a.quantity + 1 : a.quantity - 1,
-              }
+              ...a,
+              quantity: item.quantity > 0 ? a.quantity + 1 : a.quantity - 1,
+            }
             : a,
         ),
       );
@@ -51,9 +59,9 @@ export class CartStore {
         this._items.getValue().map((a) =>
           a.uuid === item.uuid
             ? {
-                ...a,
-                quantity: item.quantity > 0 ? a.quantity - 1 : a.quantity + 1,
-              }
+              ...a,
+              quantity: item.quantity > 0 ? a.quantity - 1 : a.quantity + 1,
+            }
             : a,
         ),
       );

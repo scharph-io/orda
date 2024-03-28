@@ -46,6 +46,7 @@ func SetupRoutes(app *fiber.App) {
 	category.Put("/:id", middleware.Protected(), handler.UpdateCategory)
 	category.Delete("/:id", middleware.Protected(), handler.DeleteCategory)
 	category.Get("/:id/article", middleware.Protected(), handler.GetAllCategoryArticles)
+	category.Get("export/:id/article", middleware.Protected(), handler.GetAllCategoryArticlesAsFile)
 
 	// Article
 	article := api.Group("/article")

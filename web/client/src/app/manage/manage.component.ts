@@ -58,6 +58,7 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
           </mat-expansion-panel-header>
 
           <ng-template matExpansionPanelContent>
+
             <p><b>ID:</b> {{ category.id }}</p>
             @if (category.withDeposit) {
               <p>
@@ -72,6 +73,16 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
             >
               {{ 'category.edit' | transloco }}
             </button> -->
+            @if (category.articles && category.articles.length > 0) {
+              <button
+              style="margin-top: 1em;"
+              mat-raised-button
+              color="info"
+              (click)="export(category.id ?? '', category.name)"
+            >
+              {{ 'category.export' | transloco }}
+            </button>
+            }
             <button
               style="margin-top: 1em;"
               mat-raised-button
@@ -172,6 +183,12 @@ export class ManageComponent {
       this.categoryService.getCategories$().subscribe((categories) => {
         this.categories?.set(categories);
       });
+    });
+  }
+
+  export(id: string, name: string) {
+    this.categoryService.exportCategoryArticles$(id, name).subscribe((b) => {
+      console.log(b);
     });
   }
 }
