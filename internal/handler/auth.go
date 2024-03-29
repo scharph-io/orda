@@ -31,6 +31,8 @@ func Login(c *fiber.Ctx) error {
 		isAdmin = true
 	} else if identity == "user" && pass == util.GetPasswordFromEnv("USER_PW") {
 		isAdmin = false
+	} else if identity == "bar" && pass == util.GetPasswordFromEnv("USER_PW") {
+		isAdmin = false
 	} else {
 		fmt.Println("username or password is wrong")
 		return c.SendStatus(fiber.StatusUnauthorized)
