@@ -6,13 +6,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/model"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // GetAllCategories query all Categories
 func GetAllCategories(c *fiber.Ctx) error {
 	db := database.DB
 	var categories []model.Category
-	db.Model(&model.Category{}).Order("position").Preload("Articles").Find(&categories)
+	db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
+		return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+	}).Find(&categories)
 	c.SendStatus(fiber.StatusOK)
 	return c.JSON(categories)
 }
@@ -82,7 +86,7 @@ func GetAllCategoryArticles(c *fiber.Ctx) error {
 	id := c.Params("id")
 	db := database.DB
 	var articles []model.Article
-	db.Where("category_id = ?", id).Find(&articles)
+	db.Where("category_id = ?", id).Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&articles)
 	c.SendStatus(fiber.StatusOK)
 
 	return c.JSON(articles)

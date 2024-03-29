@@ -12,7 +12,7 @@ import (
 func GetAllArticles(c *fiber.Ctx) error {
 	db := database.DB
 	var articles []model.Article
-	db.Find(&articles)
+	db.Model(&model.Article{}).Order("position DESC").Find(&articles)
 	c.SendStatus(fiber.StatusOK)
 	return c.JSON(articles)
 }
@@ -22,7 +22,7 @@ func CreateArticle(c *fiber.Ctx) error {
 	db := database.DB
 	article := &model.Article{}
 	if err := c.BodyParser(article); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't create article", "data": err})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't create article", "data": err.Error()})
 	}
 
 	db.Create(&article)
@@ -56,25 +56,27 @@ func UpdateArticle(c *fiber.Ctx) error {
 	db := database.DB
 
 	type UpdateArticleInput struct {
-		Name   string `json:"name"`
-		Desc   string `json:"desc"`
-		Price  int32  `json:"price"`
-		Active bool   `json:"active"`
+		Name     string `json:"name"`
+		Desc     string `json:"desc"`
+		Price    int32  `json:"price"`
+		Active   bool   `json:"active"`
+		Position int32  `json:"position"`
 	}
 	var input UpdateArticleInput
 	if err := c.BodyParser(&input); err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't update Article", "data": err})
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't update Article", "data": err.Error()})
 	}
 	var article model.Article
 	db.Where("id = ?", id).First(&article)
 	if article.Name == "" {
-		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No Article found with ID", "data": nil})
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "error", "message": "No Article found with ID", "data": nil})
 	}
 
 	article.Name = input.Name
 	article.Desc = input.Desc
 	article.Price = input.Price
 	article.Active = input.Active
+	article.Position = input.Position
 	db.Save(&article)
 	return c.JSON(fiber.Map{"status": "success", "message": "Article successfully updated", "data": article})
 }
