@@ -18,6 +18,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 import { CartSubtotalComponent } from './cart/cart-subtotal/cart-subtotal.component';
 import { CartFooterComponent } from './cart/mobile/cart-footer.component';
+import { AuthService } from '../auth/auth.service';
 
 /**
  * @title Tab group with aligned labels
@@ -52,7 +53,9 @@ export class OrderViewComponent implements OnInit {
   isMobilePortrait = signal<boolean>(false);
   gridCols = 3;
 
-  constructor(private responsive: BreakpointObserver) { }
+  authService = inject(AuthService);
+
+  constructor(private responsive: BreakpointObserver) {}
 
   ngOnInit() {
     this.cartSize = '30em';
@@ -87,19 +90,19 @@ export class OrderViewComponent implements OnInit {
         } else if (breakpoints[Breakpoints.HandsetPortrait]) {
           console.log('screens matches HandsetPortrait');
           this.isMobilePortrait.set(true);
-          this.gridCols = 2;
+          this.gridCols = 3;
         }
       });
 
-    this.categoryService.getCategories$().subscribe((categories) => {
-      this.categories.set(categories);
-      this.selectedCategory.set(categories[0]);
-    });
+    this.categoryService
+      .getCategories$(this.authService.username)
+      .subscribe((categories) => {
+        this.categories.set(categories);
+        this.selectedCategory.set(categories[0]);
+      });
   }
 
   test(ev: Event) {
     console.log('test', ev);
   }
-
-
 }

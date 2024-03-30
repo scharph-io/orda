@@ -58,7 +58,6 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
           </mat-expansion-panel-header>
 
           <ng-template matExpansionPanelContent>
-
             <p><b>ID:</b> {{ category.id }}</p>
             @if (category.withDeposit) {
               <p>
@@ -66,22 +65,22 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
                 {{ category.deposit | ordaCurrency }}
               </p>
             }
-            <!-- <button
+            <button
               mat-raised-button
               color="primary"
               (click)="openCategoryAddUpdateDialog(category)"
             >
               {{ 'category.edit' | transloco }}
-            </button> -->
+            </button>
             @if (category.articles && category.articles.length > 0) {
               <button
-              style="margin-top: 1em;"
-              mat-raised-button
-              color="info"
-              (click)="export(category.id ?? '', category.name)"
-            >
-              {{ 'category.export' | transloco }}
-            </button>
+                style="margin-top: 1em;"
+                mat-raised-button
+                color="info"
+                (click)="export(category.id ?? '', category.name)"
+              >
+                {{ 'category.export' | transloco }}
+              </button>
             }
             <button
               style="margin-top: 1em;"
@@ -338,10 +337,11 @@ export class CreateCategoryDialogComponent {
           desc: value.desc ?? '',
           withDeposit: value.withDeposit ?? false,
           color: value.color ?? '',
-          deposit: value.deposit ?? 0,
+          deposit: Math.round((value.deposit ?? 0) * 100),
           position: value.position ?? 0,
         })
-        .subscribe(() => {
+        .subscribe((c) => {
+          console.log(c);
           this.dialogRef.close();
         });
     }

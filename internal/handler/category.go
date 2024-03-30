@@ -12,13 +12,21 @@ import (
 
 // GetAllCategories query all Categories
 func GetAllCategories(c *fiber.Ctx) error {
+	// TODO: Workaround for query parameter
+	user := c.Query("user")
 	db := database.DB
 	var categories []model.Category
-	db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
-		return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
-	}).Find(&categories)
-	c.SendStatus(fiber.StatusOK)
-	return c.JSON(categories)
+
+	if user != "" {
+		db.Model(&model.Category{}).Where(&model.Category{Desc: user}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
+			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+		}).Find(&categories).Find(&categories)
+	} else {
+		db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
+			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+		}).Find(&categories)
+	}
+	return c.Status(fiber.StatusOK).JSON(categories)
 }
 
 func CreateCategory(c *fiber.Ctx) error {
@@ -30,7 +38,7 @@ func CreateCategory(c *fiber.Ctx) error {
 
 	db.Create(&category)
 	c.SendStatus(fiber.StatusOK)
-	return c.JSON(fiber.Map{"status": "success", "message": "Created Category", "data": category})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Created Category", "data": category})
 }
 
 // UpdateCategory update category
@@ -52,7 +60,11 @@ func UpdateCategory(c *fiber.Ctx) error {
 	}
 
 	var category model.Category
-	db.First(&category, id)
+	db.Where("id = ?", id).First(&category)
+	if category.Name == "" {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No Article found with ID", "data": nil})
+	}
+
 	category.Name = input.Name
 	category.Desc = input.Desc
 	category.Position = input.Position
@@ -61,8 +73,7 @@ func UpdateCategory(c *fiber.Ctx) error {
 	category.Deposit = input.Deposit
 
 	db.Save(&category)
-	c.SendStatus(fiber.StatusOK)
-	return c.JSON(fiber.Map{"status": "success", "message": "Category successfully updated", "data": category})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Category successfully updated", "data": category})
 }
 
 // DeleteCategory delete category
@@ -77,8 +88,7 @@ func DeleteCategory(c *fiber.Ctx) error {
 	if err := db.Delete(&category); err.Error != nil {
 		return c.Status(fiber.StatusMethodNotAllowed).JSON(fiber.Map{"status": "error", "message": "Couldn't delete Category", "data": err})
 	}
-	c.SendStatus(fiber.StatusOK)
-	return c.JSON(fiber.Map{"status": "success", "message": "Category successfully deleted", "data": nil})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Category successfully deleted", "data": nil})
 }
 
 // GetAllCategoryArticles query all articles in a category
@@ -87,13 +97,10 @@ func GetAllCategoryArticles(c *fiber.Ctx) error {
 	db := database.DB
 	var articles []model.Article
 	db.Where("category_id = ?", id).Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&articles)
-	c.SendStatus(fiber.StatusOK)
-
-	return c.JSON(articles)
+	return c.Status(fiber.StatusOK).JSON(articles)
 }
 
 func GetAllCategoryArticlesAsFile(c *fiber.Ctx) error {
-
 	type ExportArticle struct {
 		Name  string `json:"name"`
 		Desc  string `json:"desc"`
@@ -111,7 +118,6 @@ func GetAllCategoryArticlesAsFile(c *fiber.Ctx) error {
 	}
 
 	data, _ := json.MarshalIndent(export, "", " ")
-	c.SendStatus(fiber.StatusOK)
 	c.Set(fiber.HeaderContentDisposition, "attachment; filename=name.json")
-	return c.Send(data)
+	return c.Status(fiber.StatusOK).Send(data)
 }

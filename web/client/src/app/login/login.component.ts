@@ -40,7 +40,7 @@ export class LoginComponent {
   credentials = new FormGroup({
     username: new FormControl('admin', [
       Validators.required,
-      Validators.minLength(4),
+      Validators.minLength(3),
     ]),
     password: new FormControl(isDevMode() ? 'secret' : '', [
       Validators.required,
