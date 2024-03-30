@@ -6,6 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/model"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // GetAllCategories query all Categories
@@ -14,12 +16,16 @@ func GetAllCategories(c *fiber.Ctx) error {
 	user := c.Query("user")
 	db := database.DB
 	var categories []model.Category
-	if user != "" {
-		db.Model(&model.Category{}).Where(&model.Category{Desc: user}).Order("position").Preload("Articles").Find(&categories)
-	} else {
-		db.Model(&model.Category{}).Order("position").Preload("Articles").Find(&categories)
-	}
 
+	if user != "" {
+		db.Model(&model.Category{}).Where(&model.Category{Desc: user}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
+			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+		}).Find(&categories).Find(&categories)
+	} else {
+		db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
+			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+		}).Find(&categories)
+	}
 	return c.Status(fiber.StatusOK).JSON(categories)
 }
 
@@ -90,8 +96,7 @@ func GetAllCategoryArticles(c *fiber.Ctx) error {
 	id := c.Params("id")
 	db := database.DB
 	var articles []model.Article
-	db.Where("category_id = ?", id).Find(&articles)
-
+	db.Where("category_id = ?", id).Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&articles)
 	return c.Status(fiber.StatusOK).JSON(articles)
 }
 

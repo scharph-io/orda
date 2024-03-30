@@ -11,21 +11,32 @@ import { CheckoutDialogComponent } from '../cart-actions/cart-checkout-dialog.co
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CartDialogComponent } from './cart-dialog.component';
 
-
 @Component({
   selector: 'orda-cart-footer',
   standalone: true,
   template: `
-    @if ((totalQty$ | async)) {
+    @if (totalQty$ | async) {
       <button class="item-0" mat-icon-button color="warn" (click)="clearCart()">
         <mat-icon>delete_forever</mat-icon>
       </button>
     }
-      <orda-cart-subtotal [subtotal]="(subtotal$ | async) ?? 0"></orda-cart-subtotal>
-      <button mat-icon-button color="info" (click)="openCartDialog()" [disabled]="data()?.length === 0">
-        <mat-icon [matBadge]="(totalQty$ | async)" matBadgeColor="warn"  aria-hidden="false">shopping_cart</mat-icon>
-      </button>
-      <button
+    <orda-cart-subtotal
+      [subtotal]="(subtotal$ | async) ?? 0"
+    ></orda-cart-subtotal>
+    <button
+      mat-icon-button
+      color="info"
+      (click)="openCartDialog()"
+      [disabled]="data()?.length === 0"
+    >
+      <mat-icon
+        [matBadge]="totalQty$ | async"
+        matBadgeColor="warn"
+        aria-hidden="false"
+        >shopping_cart</mat-icon
+      >
+    </button>
+    <button
       class="item-1"
       mat-flat-button
       color="primary"
@@ -35,29 +46,32 @@ import { CartDialogComponent } from './cart-dialog.component';
       <mat-icon>shopping_cart_checkout</mat-icon>
       {{ 'cart.checkout' | transloco }}
     </button>
-
   `,
   styles: [
     `
-      :host{
+      :host {
         display: flex;
         justify-content: space-around;
         align-items: center;
         background-color: lightgray;
         border-top: 1px solid black;
       }
-
-      orda-cart-subtotal {
-        width: 15em;
-      }
-    `
+    `,
   ],
-  imports: [CartSubtotalComponent, AsyncPipe, MatButtonModule, MatBadgeModule, MatIconModule, TranslocoModule, CartDialogComponent]
+  imports: [
+    CartSubtotalComponent,
+    AsyncPipe,
+    MatButtonModule,
+    MatBadgeModule,
+    MatIconModule,
+    TranslocoModule,
+    CartDialogComponent,
+  ],
 })
 export class CartFooterComponent {
   cartStore = inject(CartStore);
   dialog = inject(MatDialog);
-  data = toSignal(this.cartStore.items$)
+  data = toSignal(this.cartStore.items$);
 
   get subtotal$() {
     return this.cartStore.subtotal$;
@@ -70,7 +84,6 @@ export class CartFooterComponent {
   clearCart(): void {
     this.cartStore.clear();
   }
-
 
   openCheckoutDialog() {
     const dialogRef = this.dialog.open(CheckoutDialogComponent, {
@@ -87,7 +100,6 @@ export class CartFooterComponent {
         this.clearCart();
       }
     });
-
   }
 
   openCartDialog() {
@@ -97,5 +109,4 @@ export class CartFooterComponent {
       height: '35rem',
     });
   }
-
 }

@@ -44,10 +44,15 @@ import { TranslocoModule } from '@ngneat/transloco';
         <mat-label>{{ 'table.price' | transloco }}</mat-label>
         <input matInput type="number" formControlName="price" />
       </mat-form-field>
+      <mat-form-field>
+        <mat-label>{{ 'table.position' | transloco }}</mat-label>
+        <input matInput type="number" formControlName="position" />
+      </mat-form-field>
       <mat-slide-toggle class="example-margin" formControlName="active">
         {{ 'table.active' | transloco }}
       </mat-slide-toggle>
     </mat-dialog-content>
+
     <mat-dialog-actions>
       <button mat-button mat-dialog-close>
         {{ 'dialog.cancel' | transloco }}
@@ -102,6 +107,7 @@ export class CreateArticleDialogComponent {
       Validators.max(100),
     ]),
     active: new FormControl(true),
+    position: new FormControl<number>(1),
   });
 
   articleService = inject(ArticleService);
@@ -121,6 +127,7 @@ export class CreateArticleDialogComponent {
         desc: this.data.article.desc,
         price: this.data.article.price / 100,
         active: this.data.article.active,
+        position: this.data.article.position,
       });
     }
   }
@@ -129,16 +136,6 @@ export class CreateArticleDialogComponent {
     if (this.articleForm.valid) {
       const value = this.articleForm.value;
 
-      console.log(value);
-
-      console.log({
-        name: value.name ?? '',
-        desc: value.desc ?? '',
-        price: Math.round((value.price ?? 0) * 100),
-        active: value.active ?? false,
-        categoryId: this.data.categoryId,
-      });
-
       this.articleService
         .createArticle({
           name: value.name ?? '',
@@ -146,6 +143,7 @@ export class CreateArticleDialogComponent {
           price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
           categoryId: this.data.categoryId,
+          position: value.position ?? 0,
         })
         .subscribe((res) => {
           console.log(res);
@@ -155,6 +153,7 @@ export class CreateArticleDialogComponent {
   }
 
   update() {
+    console.log(this.articleForm.value);
     if (this.articleForm.valid) {
       const value = this.articleForm.value;
 
@@ -165,6 +164,7 @@ export class CreateArticleDialogComponent {
           price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
           categoryId: this.data.categoryId,
+          position: value.position ?? 0,
         })
         .subscribe(() => {
           this.dialogRef.close();

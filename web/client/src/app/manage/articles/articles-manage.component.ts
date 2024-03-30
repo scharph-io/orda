@@ -83,6 +83,15 @@ import { TranslocoModule } from '@ngneat/transloco';
           </td>
         </ng-container>
 
+        <ng-container cdkColumnDef="position">
+          <th cdk-header-cell *cdkHeaderCellDef>
+            {{ 'table.position' | transloco }}
+          </th>
+          <td cdk-cell *cdkCellDef="let element">
+            {{ element.position }}
+          </td>
+        </ng-container>
+
         <ng-container [matColumnDef]="'actions'">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let element">
@@ -129,7 +138,14 @@ export class ArticlesManageComponent {
   dialog = inject(MatDialog);
   articleService = inject(ArticleService);
 
-  displayedColumns: string[] = ['name', 'desc', 'price', 'active', 'actions'];
+  displayedColumns: string[] = [
+    'name',
+    'desc',
+    'price',
+    'active',
+    'position',
+    'actions',
+  ];
 
   constructor() {
     effect(() => {

@@ -1,4 +1,3 @@
-
 export interface Article {
   id?: string;
   name: string;
@@ -6,6 +5,6 @@ export interface Article {
   price: number;
   color?: string;
   active: boolean;
-  position?: number;
+  position: number;
   categoryId: string;
 }
