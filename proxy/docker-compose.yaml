@@ -1,0 +1,26 @@
+services:
+  reverse-proxy:
+    image: traefik:v2.11
+    command:
+      #- --api.insecure=true
+      - --providers.docker=true
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web-secure.address=:443
+      - --accesslog.filepath=/var/log/traefik/access.log
+      - --accesslog.bufferingsize=100
+    ports:
+      - "80:80"
+      - "443:443"
+      #- "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./certs:/etc/certs/
+      - ./traefik.yaml:/etc/traefik/dynamic/certs-traefik.yaml
+      - ./log:/var/log/traefik
+    environment:
+      - TZ=Europe/Vienna
+    networks:
+      - traefik-proxy
+
+networks: traefik-proxy

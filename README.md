@@ -1,68 +1,23 @@
 # Orda
 
-## Setup
+## Usage
 
-### Development
+Use the docker-compose file to start the application.
+Configure the environment variables compose file.
 
-#### Backend
-
-- install Go compiler https://go.dev/dl/
-- ensure go is in PATH with `go version`
-- start backend with `make run-local` or `go run cmd/server/main.go`
-
-#### Frontend
-
-- install NodeJS@20
-- switch to `web/app/` and run npm install
-- run `npm start`
-
-### Use a release
-
-- Download asset [Releases](https://github.com/scharph/orda/releases)
-- ensure executable `chmod +x BINARY`
-- run with `./BINARY`
-
-## Docker
-
-`docker login -u scharphio`
-`docker build -t scharphio/orda:latest .`
-`docker push scharphio/orda:latest`
-
-```sql
-
-SELECT
-	articles.id as id,
-	SUM(qty) as totalQty,
-	description
-FROM transaction_items
-LEFT JOIN articles ON articles.id = transaction_items.article_id
-GROUP BY id, description
-ORDER BY totalQty DESC
-
-
+```bash
+docker-compose up
 ```
 
-TotalSum/Day
+## Development
 
-```sql
-SELECT SUM(total) FROM transactions WHERE DATE(created_at) = CURDATE()
-``
+To start the application locally in development mode, use the following command:
 
-Cash/Day
-SELECT COUNT(*) FROM transactions WHERE payment_option = 1 AND DATE(created_at) = CURDATE()
-Sponsor/Day
-SELECT COUNT(*) FROM transactions WHERE payment_option = 2 AND DATE(created_at) = CURDATE()
-Free/Day
-SELECT COUNT(*) FROM transactions WHERE payment_option = 3 AND DATE(created_at) = CURDATE()
-```
+```bash
+## Start the application
+docker-compose -f local.docker-compose.yml up
 
-deposit/Day
-
-```sql
-SELECT
-    SUM(CASE WHEN qty > 0 THEN qty ELSE 0 END) desposit_in,
-    SUM(CASE WHEN qty < 0 THEN qty ELSE 0 END) desposit_out
-FROM transaction_items
-WHERE DATE(created_at) = CURDATE() AND article_id LIKE 'deposit%'
+## Stop the application
+docker-compose -f local.docker-compose.yml down [-v]
 
 ```
