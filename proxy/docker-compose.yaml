@@ -21,6 +21,7 @@ services:
     environment:
       - TZ=Europe/Vienna
     networks:
-      - traefik-proxy
+      - proxy
 
-networks: traefik-proxy
+networks:
+  proxy:
