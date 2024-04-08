@@ -16,7 +16,6 @@ services:
 
       - --accesslog.filepath=/var/log/traefik/access.log
       - --accesslog.bufferingsize=100
-
     labels:
       traefik.enable: "true"
       traefik.http.routers.traefik.rule: Host(`proxy.schartis.at`)
@@ -33,44 +32,6 @@ services:
     environment:
       - TZ=Europe/Vienna
     networks:
-      - proxy
-  whoami:
-    # A container that exposes an API to show its IP address
-    image: traefik/whoami
-    labels:
-      - "traefik.http.routers.master.rule=Host(`master.schartis.at`)"
-      - "traefik.http.routers.master.tls=true"
-    networks:
-      - proxy
-  # db:
-  #   image: mysql
-  #   environment:
-  #     - MYSQL_DATABASE=orda
-  #     - MYSQL_RANDOM_ROOT_PASSWORD=true
-  #     - MYSQL_USER=orda
-  #     - MYSQL_PASSWORD=orda
-  #   command:
-  #     - --performance_schema=0
-  #     - --innodb_use_native_aio=0
-  #   volumes:
-  #     - db_data:/var/lib/mysql
-  #     #- ./mysql/init:/docker-entrypoint-initdb.d/:ro
-  #   healthcheck:
-  #     test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
-  #     start_period: 5s
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 10
-  #   networks:
-  #     - proxy
-  # adminer:
-  #  image: adminer
-  #  restart: always
-  #  ports:
-  #    - 8080:8080
-  #  networks:
-  #    - adminer
+      - web
 networks:
-  proxy:
-volumes:
-  db_data:
+  web:

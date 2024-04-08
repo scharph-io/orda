@@ -21,3 +21,7 @@ docker-compose -f local.docker-compose.yml up
 docker-compose -f local.docker-compose.yml down [-v]
 
 ```
+
+## Notes
+
+https://www.digitalocean.com/community/tutorials/how-to-use-traefik-v2-as-a-reverse-proxy-for-docker-containers-on-ubuntu-20-04
