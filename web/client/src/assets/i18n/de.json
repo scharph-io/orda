@@ -99,5 +99,10 @@
     "deposit_in": "Pfand Eingang",
     "deposit_out": "Pfand Ausgang",
     "products_sold": "Verkaufte Produkte"
+  },
+  "manage": {
+    "users": "Benutzer verwalten",
+    "products": "Produkte verwalten",
+    "pages": "Seiten verwalten"
   }
 }
