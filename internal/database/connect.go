@@ -47,13 +47,13 @@ func ConnectDB() {
 		},
 	)
 
-	fmt.Println(dsn)
+	log.Println(dsn)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: newLogger,
 	})
 
 	if err != nil {
-		log.Println("Failed to connect to mysql database. FALLBACK to SQLite\n", err)
+		log.Println("failed to connect to mysql database. FALLBACK to SQLite\n", err)
 
 		DB, err = gorm.Open(sqlite.Open("orda-local.db"), &gorm.Config{})
 		if err != nil {
@@ -62,8 +62,8 @@ func ConnectDB() {
 		}
 	}
 
-	fmt.Println("Connection Opened to Database")
+	log.Println("connection Opened to Database")
 	DB.AutoMigrate(&model.Category{}, &model.Article{}, &model.Transaction{}, &model.TransactionItem{})
-	fmt.Println("Database Migrated")
+	log.Println("database migrated")
 
 }
