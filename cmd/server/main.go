@@ -34,7 +34,7 @@ func main() {
 
 	if tz := os.Getenv("TZ"); tz != "" {
 		var err error
-		log.Printf("setting time zone from ev to '%s'", tz)
+		log.Printf("setting time zone from ENV to '%s'", tz)
 		time.Local, err = time.LoadLocation(tz)
 		if err != nil {
 			log.Printf("error loading location '%s': %v\n", tz, err)

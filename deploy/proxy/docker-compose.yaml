@@ -1,0 +1,37 @@
+services:
+  reverse-proxy:
+    image: traefik:v2.11
+    command:
+      - --api.dashboard=true
+
+      - --providers.docker=true
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
+
+      - --accesslog.filepath=/var/log/traefik/access.log
+      - --accesslog.bufferingsize=100
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik.rule: Host(`proxy.schartis.at`)
+      traefik.http.routers.traefik.service: api@internal
+      traefik.http.routers.traefik.entrypoints: websecure
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/etc/certs/
+      - ./traefik.yaml:/etc/traefik/dynamic/certs-traefik.yaml
+      - ./log:/var/log/traefik
+    environment:
+      - TZ=Europe/Vienna
+    networks:
+      - web
+networks:
+  web:
