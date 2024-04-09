@@ -24,6 +24,7 @@ export class ArticleService {
   }
 
   createArticle(article: Article) {
+    console.log(article);
     return this.http.post(`${this.endpoint}/api/article`, article, {
       headers: this.headers,
     });

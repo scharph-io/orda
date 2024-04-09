@@ -1,6 +1,14 @@
+volumes:
+  db_prod:
+networks:
+  web:
+    name: traefik_web
+    external: true
+  internal_prod:
+    external: false
 services:
   orda:
-    image: scharphio/orda:latest
+    image: scharphio/orda:v0.1.3
     depends_on:
       db:
         condition: service_healthy
@@ -10,14 +18,15 @@ services:
       - DB_USER=orda
       - DB_PASSWORD=orda
       - DB_NAME=orda
-      #- PORT=80
+      - PORT=80
       - TZ=Europe/Vienna
     labels:
       - "traefik.http.routers.orda.rule=Host(`orda.schartis.at`)"
       - "traefik.http.routers.orda.tls=true"
+      - "traefik.docker.network=traefik_web"
     networks:
-      - orda-prod
-      - proxy
+      - web
+      - internal_prod
   db:
     image: mysql
     environment:
@@ -29,27 +38,15 @@ services:
       - --performance_schema=0
       - --innodb_use_native_aio=0
     volumes:
-      - db_data:/var/lib/mysql
+      - db_prod:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d/:ro
     networks:
-      - orda-prod
+      - internal_prod
+    labels:
+      - traefik.enable=false
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
       start_period: 5s
       interval: 5s
       timeout: 5s
       retries: 10
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8081:8080
-    networks:
-      - orda-prod
-volumes:
-  db_data:
-networks:
-  proxy:
-    name: proxy
-    external: true
-  orda-prod:

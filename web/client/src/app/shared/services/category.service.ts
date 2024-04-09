@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Category } from '../model/category';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,8 +14,15 @@ export class CategoryService {
     @Inject('ENDPOINT') private endpoint: String,
   ) {}
 
-  getCategories$() {
-    return this.http.get<Category[]>(`${this.endpoint}/api/category`);
+  getCategories$(user?: string) {
+    // TODO: Workaround for the user parameter
+    if (user) {
+      return this.http.get<Category[]>(
+        `${this.endpoint}/api/category?user=${user}`,
+      );
+    } else {
+      return this.http.get<Category[]>(`${this.endpoint}/api/category`);
+    }
   }
 
   getCategory(id: string) {
@@ -31,15 +39,36 @@ export class CategoryService {
     );
   }
 
-  updateCategory(id: string, Category: Category) {
-    return this.http.put<Category>(
-      `${this.endpoint}/api/category/${id}`,
-      Category,
-      { headers: this.headers },
-    );
+  updateCategory(id: string, c: Category) {
+    return this.http.put<Category>(`${this.endpoint}/api/category/${id}`, c, {
+      headers: this.headers,
+    });
   }
 
   deleteCategory(id: string) {
     return this.http.delete<Category>(`${this.endpoint}/api/category/${id}`);
+  }
+
+  exportCategoryArticles$(id: string, name: string) {
+    return this.http
+      .get(
+        `${this.endpoint}/api/category/export/${id}/article?name=${name.toLocaleLowerCase().replaceAll(' ', '_')}.json`,
+        {
+          responseType: 'blob',
+        },
+      )
+      .pipe(
+        map((data) => {
+          const blob = new Blob([data], { type: 'application/json' });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          const fileName = `${name.toLocaleLowerCase().replaceAll(' ', '_')}.json`;
+          link.setAttribute('download', fileName);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }),
+      );
   }
 }

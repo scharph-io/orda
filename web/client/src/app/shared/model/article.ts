@@ -1,6 +1,3 @@
-import { Observable } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
-
 export interface Article {
   id?: string;
   name: string;
@@ -8,6 +5,6 @@ export interface Article {
   price: number;
   color?: string;
   active: boolean;
-  position?: number;
+  position: number;
   categoryId: string;
 }

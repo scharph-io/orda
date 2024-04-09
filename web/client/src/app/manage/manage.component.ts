@@ -65,13 +65,23 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
                 {{ category.deposit | ordaCurrency }}
               </p>
             }
-            <!-- <button
+            <button
               mat-raised-button
               color="primary"
               (click)="openCategoryAddUpdateDialog(category)"
             >
               {{ 'category.edit' | transloco }}
-            </button> -->
+            </button>
+            @if (category.articles && category.articles.length > 0) {
+              <button
+                style="margin-top: 1em;"
+                mat-raised-button
+                color="info"
+                (click)="export(category.id ?? '', category.name)"
+              >
+                {{ 'category.export' | transloco }}
+              </button>
+            }
             <button
               style="margin-top: 1em;"
               mat-raised-button
@@ -172,6 +182,12 @@ export class ManageComponent {
       this.categoryService.getCategories$().subscribe((categories) => {
         this.categories?.set(categories);
       });
+    });
+  }
+
+  export(id: string, name: string) {
+    this.categoryService.exportCategoryArticles$(id, name).subscribe((b) => {
+      console.log(b);
     });
   }
 }
@@ -321,10 +337,11 @@ export class CreateCategoryDialogComponent {
           desc: value.desc ?? '',
           withDeposit: value.withDeposit ?? false,
           color: value.color ?? '',
-          deposit: value.deposit ?? 0,
+          deposit: Math.round((value.deposit ?? 0) * 100),
           position: value.position ?? 0,
         })
-        .subscribe(() => {
+        .subscribe((c) => {
+          console.log(c);
           this.dialogRef.close();
         });
     }

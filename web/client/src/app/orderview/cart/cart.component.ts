@@ -71,18 +71,6 @@ import { TranslocoModule } from '@ngneat/transloco';
         overflow-y: auto;
       }
 
-      ::-webkit-scrollbar {
-        width: 9px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background-color: rgba(155, 155, 155, 0.5);
-        border-radius: 20px;
-        border: transparent;
-      }
-
       .actions {
         justify-self: center;
         align-self: start;
@@ -113,7 +101,7 @@ import { TranslocoModule } from '@ngneat/transloco';
   ],
 })
 export class CartComponent {
-  constructor(private cart: CartStore) {}
+  constructor(private cart: CartStore) { }
 
   get items$(): Observable<CartItem[]> {
     return this.cart.items$;
