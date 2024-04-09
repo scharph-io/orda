@@ -20,8 +20,11 @@ var (
 
 func main() {
 
+	log.Println("version:", version)
+	log.Println("date:", date)
+
 	if err := godotenv.Load(".env"); err != nil {
-		fmt.Println("INFO: No .env file found")
+		log.Println("INFO: No .env file found")
 	}
 
 	app := fiber.New()
