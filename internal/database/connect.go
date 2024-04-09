@@ -62,7 +62,6 @@ func ConnectDB() {
 		}
 	}
 
-	log.Println("connection Opened to Database")
 	DB.AutoMigrate(&model.Category{}, &model.Article{}, &model.Transaction{}, &model.TransactionItem{})
 	log.Println("database migrated")
 
