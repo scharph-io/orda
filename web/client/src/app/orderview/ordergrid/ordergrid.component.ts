@@ -3,7 +3,7 @@ import {
 } from '@angular/common';
 import { Component, effect, inject, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { Article } from '../../shared/model/article';
+import { Product } from '../../shared/model/product';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   LayoutModule,
@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import { PlusMinusTileComponent } from './tiles/plus-minus-tile.component';
-import { ArticleTileComponent } from './tiles/article-tile.component';
+import { ProductTileComponent } from './tiles/product-tile.component';
 import { Category } from '../../shared/model/category';
 
 /**
@@ -27,7 +27,7 @@ import { Category } from '../../shared/model/category';
     LayoutModule,
     NgStyle,
     PlusMinusTileComponent,
-    ArticleTileComponent,
+    ProductTileComponent,
     OrdaCurrencyPipe,
   ],
   template: `
@@ -39,13 +39,13 @@ import { Category } from '../../shared/model/category';
             [value]="category().deposit ?? 100"
         /></mat-grid-tile>
       }
-      @for (article of category().articles; track article) {
-        @if (article.active) {
+      @for (product of category().products; track product) {
+        @if (product.active) {
           <mat-grid-tile
-            (click)="addArticle(article)"
-            [style.background-color]="article.color ?? 'none'"
+            (click)="addProduct(product)"
+            [style.background-color]="product.color ?? 'none'"
           >
-            <orda-article-tile [article]="article" />
+            <orda-product-tile [product]="product" />
           </mat-grid-tile>
         }
       }
@@ -75,13 +75,13 @@ export class OrderGridComponent {
     this.destroyed$.complete();
   }
 
-  addArticle(article: Article) {
+  addProduct(product: Product) {
     this.cart.addItem({
-      uuid: article.id ?? '',
-      name: article.name,
-      price: article.price,
+      uuid: product.id ?? '',
+      name: product.name,
+      price: product.price,
       quantity: 1,
-      desc: article.desc,
+      desc: product.desc,
     });
   }
 }

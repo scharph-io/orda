@@ -12,7 +12,7 @@ export class CategoryService {
   constructor(
     private http: HttpClient,
     @Inject('ENDPOINT') private endpoint: String,
-  ) {}
+  ) { }
 
   getCategories$(user?: string) {
     // TODO: Workaround for the user parameter
@@ -49,10 +49,10 @@ export class CategoryService {
     return this.http.delete<Category>(`${this.endpoint}/api/category/${id}`);
   }
 
-  exportCategoryArticles$(id: string, name: string) {
+  exportCategoryProducts$(id: string, name: string) {
     return this.http
       .get(
-        `${this.endpoint}/api/category/export/${id}/article?name=${name.toLocaleLowerCase().replaceAll(' ', '_')}.json`,
+        `${this.endpoint}/api/category/export/${id}/product?name=${name.toLocaleLowerCase().replaceAll(' ', '_')}.json`,
         {
           responseType: 'blob',
         },

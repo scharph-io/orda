@@ -51,7 +51,7 @@ func CreateTransaction(c *fiber.Ctx) error {
 			Description: desc,
 			Price:       item.Price,
 			Qty:         item.Qty,
-			ArticleID:   item.UUID,
+			ProductID:   item.UUID,
 		})
 	}
 

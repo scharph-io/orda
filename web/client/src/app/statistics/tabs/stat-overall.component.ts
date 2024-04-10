@@ -9,7 +9,7 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { ReactiveFormsModule } from '@angular/forms';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import {
-  ArticleStatistics,
+  ProductStatistics,
   StatisticService,
   Statistics,
 } from '../../shared/services/statistic.service';
@@ -38,7 +38,7 @@ import { StatCardComponent } from '../stat-card.component';
     <h2>{{'statistic.products_sold' | transloco}}</h2>
 
     <section class="example-container mat-elevation-z8" tabindex="0">
-      <table mat-table [dataSource]="articleStats()">
+      <table mat-table [dataSource]="productStats()">
         <!-- Desc Column -->
         <ng-container matColumnDef="desc">
           <th mat-header-cell *matHeaderCellDef>
@@ -105,12 +105,12 @@ export class StatisticOverallComponent implements OnInit {
     payment_option: [],
     total: 0,
   });
-  articleStats = signal<ArticleStatistics>([]);
+  productStats = signal<ProductStatistics>([]);
 
   public ngOnInit() {
     this.statisticsService.getStatistics$().subscribe((x) => this.stats.set(x));
     this.statisticsService
-      .getArticleStatistics$()
-      .subscribe((x) => this.articleStats.set(x));
+      .getProductStatistics$()
+      .subscribe((x) => this.productStats.set(x));
   }
 }

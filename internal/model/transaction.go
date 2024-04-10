@@ -31,5 +31,5 @@ type TransactionItem struct {
 	Description   string `json:"description"`
 	Qty           int32  `json:"qty"`
 	Price         int32  `json:"price"`
-	ArticleID     string `gorm:"index" json:"article_id"`
+	ProductID     string `gorm:"index" json:"product_id"`
 }

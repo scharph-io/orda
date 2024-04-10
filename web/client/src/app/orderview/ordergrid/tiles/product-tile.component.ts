@@ -1,17 +1,17 @@
 import { Component, input } from '@angular/core';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
-import { Article } from '../../../shared/model/article';
+import { Product } from '../../../shared/model/product';
 import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
-  selector: 'orda-article-tile',
+  selector: 'orda-product-tile',
   standalone: true,
   imports: [OrdaCurrencyPipe, MatDividerModule],
   template: `
-    <div class="price">{{ article().price | ordaCurrency }}</div>
+    <div class="price">{{ product().price | ordaCurrency }}</div>
     <div class="divider"><mat-divider></mat-divider></div>
-    <div class="desc">{{ article().desc }}</div>
-    <div class="name">{{ article().name }}</div>
+    <div class="desc">{{ product().desc }}</div>
+    <div class="name">{{ product().name }}</div>
   `,
   styles: [
     `
@@ -50,6 +50,6 @@ import { MatDividerModule } from '@angular/material/divider';
     `,
   ],
 })
-export class ArticleTileComponent {
-  article = input.required<Article>();
+export class ProductTileComponent {
+  product = input.required<Product>();
 }

@@ -14,25 +14,25 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { switchMap } from 'rxjs';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
-import { Article } from '../../shared/model/article';
-import { ArticleService } from '../../shared/services/article.service';
-import { CreateArticleDialogComponent } from './create-article-dialog.component';
+import { Product } from '../../shared/model/product';
+import { ProductService } from '../../shared/services/product.service';
+import { CreateProductDialogComponent } from './create-product-dialog.component';
 import { Category } from '../../shared/model/category';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
-  selector: 'orda-articles-manage',
+  selector: 'orda-products-manage',
   template: `
     <h2>
-      {{ 'article.title' | transloco }}
+      {{ 'product.title' | transloco }}
       <span
         ><button
           mat-raised-button
           color="primary"
-          (click)="openArticleAddUpdateDialog()"
+          (click)="openProductAddUpdateDialog()"
         >
-          {{ 'article.add' | transloco }}
+          {{ 'product.add' | transloco }}
         </button></span
       >
     </h2>
@@ -97,11 +97,11 @@ import { TranslocoModule } from '@ngneat/transloco';
           <td mat-cell *matCellDef="let element">
             <button
               mat-icon-button
-              (click)="openArticleAddUpdateDialog(element)"
+              (click)="openProductAddUpdateDialog(element)"
             >
               <mat-icon mat-icon-button color="primary">edit </mat-icon>
             </button>
-            <button mat-icon-button (click)="deleteArticle(element.id)">
+            <button mat-icon-button (click)="deleteProduct(element.id)">
               <mat-icon mat-icon-button color="warn"> delete</mat-icon>
             </button>
           </td>
@@ -131,12 +131,12 @@ import { TranslocoModule } from '@ngneat/transloco';
     TranslocoModule,
   ],
 })
-export class ArticlesManageComponent {
+export class ProductsManageComponent {
   category = input.required<Category>();
-  dataSource: WritableSignal<Article[]> = signal([]);
+  dataSource: WritableSignal<Product[]> = signal([]);
 
   dialog = inject(MatDialog);
-  articleService = inject(ArticleService);
+  productService = inject(ProductService);
 
   displayedColumns: string[] = [
     'name',
@@ -149,39 +149,39 @@ export class ArticlesManageComponent {
 
   constructor() {
     effect(() => {
-      this.articleService
-        .getArticlesBy(this.category().id ?? '')
+      this.productService
+        .getProductsBy(this.category().id ?? '')
         .subscribe((data) => {
           this.dataSource?.set(data);
         });
     });
   }
 
-  openArticleAddUpdateDialog(article?: Article): void {
-    const dialogRef = this.dialog.open(CreateArticleDialogComponent, {
-      data: { article, categoryId: this.category().id },
+  openProductAddUpdateDialog(product?: Product): void {
+    const dialogRef = this.dialog.open(CreateProductDialogComponent, {
+      data: { product, categoryId: this.category().id },
       minWidth: '30rem',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
-      this.articleService
-        .getArticlesBy(this.category().id ?? '')
-        .subscribe((articles) => {
-          this.dataSource?.set(articles);
+      this.productService
+        .getProductsBy(this.category().id ?? '')
+        .subscribe((products) => {
+          this.dataSource?.set(products);
         });
     });
   }
 
-  deleteArticle(id: string) {
-    this.articleService
-      .deleteArticle(id)
+  deleteProduct(id: string) {
+    this.productService
+      .deleteProduct(id)
       .pipe(
         switchMap(() =>
-          this.articleService.getArticlesBy(this.category().id ?? ''),
+          this.productService.getProductsBy(this.category().id ?? ''),
         ),
       )
-      .subscribe((articles) => this.dataSource?.set(articles));
+      .subscribe((products) => this.dataSource?.set(products));
   }
 
   onFileSelected(event: any) {
@@ -189,18 +189,18 @@ export class ArticlesManageComponent {
 
     if (file) {
       this.readFileContents(file).then((data) => {
-        const articles: Article[] = JSON.parse(data);
+        const products: Product[] = JSON.parse(data);
 
-        console.log(articles);
+        console.log(products);
 
-        this.articleService
-          .importArticles(articles, this.category().id ?? '')
+        this.productService
+          .importProducts(products, this.category().id ?? '')
           .pipe(
             switchMap(() =>
-              this.articleService.getArticlesBy(this.category().id ?? ''),
+              this.productService.getProductsBy(this.category().id ?? ''),
             ),
           )
-          .subscribe((articles) => this.dataSource?.set(articles));
+          .subscribe((products) => this.dataSource?.set(products));
       });
     }
   }

@@ -16,19 +16,19 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { ArticleService } from '../../shared/services/article.service';
-import { Article } from '../../shared/model/article';
+import { ProductService } from '../../shared/services/product.service';
+import { Product } from '../../shared/model/product';
 import { MessageService } from '../../shared/services/message.service';
 import { TranslocoModule } from '@ngneat/transloco';
 
 @Component({
-  selector: 'orda-create-article-dialog',
-  template: `<form [formGroup]="articleForm">
+  selector: 'orda-create-product-dialog',
+  template: `<form [formGroup]="productForm">
     <h2 mat-dialog-title>
       @if (isUpdate) {
-        {{ 'article.edit' | transloco }}
+        {{ 'product.edit' | transloco }}
       } @else {
-        {{ 'article.add' | transloco }}
+        {{ 'product.add' | transloco }}
       }
     </h2>
     <mat-dialog-content>
@@ -62,7 +62,7 @@ import { TranslocoModule } from '@ngneat/transloco';
           mat-button
           color="primary"
           (click)="update()"
-          [disabled]="!articleForm.valid"
+          [disabled]="!productForm.valid"
         >
           {{ 'dialog.update' | transloco }}
         </button>
@@ -71,7 +71,7 @@ import { TranslocoModule } from '@ngneat/transloco';
           mat-button
           type="submit"
           (click)="create()"
-          [disabled]="!articleForm.valid"
+          [disabled]="!productForm.valid"
         >
           {{ 'dialog.create' | transloco }}
         </button>
@@ -97,8 +97,8 @@ import { TranslocoModule } from '@ngneat/transloco';
     TranslocoModule,
   ],
 })
-export class CreateArticleDialogComponent {
-  articleForm = new FormGroup({
+export class CreateProductDialogComponent {
+  productForm = new FormGroup({
     name: new FormControl('', Validators.required),
     desc: new FormControl(''),
     price: new FormControl<number | undefined>(undefined, [
@@ -110,34 +110,34 @@ export class CreateArticleDialogComponent {
     position: new FormControl<number>(1),
   });
 
-  articleService = inject(ArticleService);
+  productService = inject(ProductService);
 
   isUpdate = false;
 
   constructor(
-    public dialogRef: MatDialogRef<CreateArticleDialogComponent>,
+    public dialogRef: MatDialogRef<CreateProductDialogComponent>,
     public messageService: MessageService,
     @Inject(MAT_DIALOG_DATA)
-    public data: { article?: Article; categoryId: string },
+    public data: { product?: Product; categoryId: string },
   ) {
-    if (this.data.article !== undefined) {
+    if (this.data.product !== undefined) {
       this.isUpdate = true;
-      this.articleForm.patchValue({
-        name: this.data.article.name,
-        desc: this.data.article.desc,
-        price: this.data.article.price / 100,
-        active: this.data.article.active,
-        position: this.data.article.position,
+      this.productForm.patchValue({
+        name: this.data.product.name,
+        desc: this.data.product.desc,
+        price: this.data.product.price / 100,
+        active: this.data.product.active,
+        position: this.data.product.position,
       });
     }
   }
 
   create() {
-    if (this.articleForm.valid) {
-      const value = this.articleForm.value;
+    if (this.productForm.valid) {
+      const value = this.productForm.value;
 
-      this.articleService
-        .createArticle({
+      this.productService
+        .createProduct({
           name: value.name ?? '',
           desc: value.desc ?? '',
           price: Math.round((value.price ?? 0) * 100),
@@ -153,12 +153,12 @@ export class CreateArticleDialogComponent {
   }
 
   update() {
-    console.log(this.articleForm.value);
-    if (this.articleForm.valid) {
-      const value = this.articleForm.value;
+    console.log(this.productForm.value);
+    if (this.productForm.valid) {
+      const value = this.productForm.value;
 
-      this.articleService
-        .updateArticle(this.data.article?.id ?? '', {
+      this.productService
+        .updateProduct(this.data.product?.id ?? '', {
           name: value.name ?? '',
           desc: value.desc ?? '',
           price: Math.round((value.price ?? 0) * 100),

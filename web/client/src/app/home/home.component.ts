@@ -29,7 +29,7 @@ import { OrderViewComponent } from '../orderview/orderview.component';
 export class HomeComponent {
   restrictedInfo?: string;
   constructor(private authservice: AuthService) {
-   
+
   }
 
   get isAdmin() {
@@ -40,12 +40,12 @@ export class HomeComponent {
     return this.authservice.isExpired();
   }
 
-  getArticleGroups() {
+  getProductGroups() {
     return [
       {
         id: 1,
         name: 'Beverages',
-        articles: [
+        products: [
           {
             name: 'Coffee',
             price: 2.5,
@@ -71,7 +71,7 @@ export class HomeComponent {
       {
         id: 2,
         name: 'Food',
-        articles: [
+        products: [
           {
             name: 'Pizza',
             price: 5.0,
@@ -93,7 +93,7 @@ export class HomeComponent {
       {
         id: 3,
         name: 'Desserts',
-        articles: [
+        products: [
           {
             name: 'Ice Cream',
             price: 2.5,

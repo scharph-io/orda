@@ -19,7 +19,7 @@ import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
       <th mat-header-cell *matHeaderCellDef>
         {{ 'description' | transloco }}
       </th>
-      <td mat-cell *matCellDef="let element" [title]="element.article_id">
+      <td mat-cell *matCellDef="let element" [title]="element.product_id">
         {{ element.description }}
       </td>
     </ng-container>
@@ -68,7 +68,7 @@ export class ItemsTableComponent implements OnInit {
 
   displayedColumns: string[] = ['position', 'desc', 'price', 'qty', 'total'];
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     // Component initialization logic goes here

@@ -72,11 +72,11 @@
     "delete": "Kategorie löschen",
     "export": "Exportieren"
   },
-  "article": {
-    "title": "Artikel",
-    "add": "Artikel anlegen",
-    "edit": "Artikel bearbeiten",
-    "delete": "Artikel löschen"
+  "product": {
+    "title": "Produkt",
+    "add": "Produkt anlegen",
+    "edit": "Produkt bearbeiten",
+    "delete": "Produkt löschen"
   },
   "statistic": {
     "overall": "Gesamt",
