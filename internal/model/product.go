@@ -14,6 +14,6 @@ type Product struct {
 	Desc    string `json:"desc"`
 	Price   int32  `json:"price"`
 	Active  bool   `json:"active"`
-	GroupID string `json:"groupId"`
+	GroupID string `json:"groupId" gorm:"size:36"`
 	Color   string `json:"color"`
 }
