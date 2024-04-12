@@ -48,6 +48,13 @@ func SetupRoutes(app *fiber.App) {
 	category.Get("/:id/product", middleware.Protected(), handler.GetAllCategoryProducts)
 	category.Get("export/:id/product", middleware.Protected(), handler.GetAllCategoryProductsAsFile)
 
+	// Group
+	group := api.Group("/group")
+	group.Get("/", middleware.Protected(), handler.GetAllGroups)
+	group.Post("/", middleware.Protected(), handler.CreateGroup)
+	group.Put("/:id", middleware.Protected(), handler.UpdateGroup)
+	group.Delete("/:id", middleware.Protected(), handler.DeleteGroup)
+
 	// Product
 	product := api.Group("/product")
 	product.Get("/", middleware.Protected(), handler.GetAllProducts)

@@ -87,7 +87,7 @@ func DeleteProduct(c *fiber.Ctx) error {
 
 	product, err := getProduct(id)
 	if err != nil {
-		return c.Status(404).JSON(fiber.Map{"status": "error", "message": err.Error(), "data": nil})
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "error", "message": err.Error(), "data": nil})
 	}
 	db.Delete(product)
 	return c.JSON(fiber.Map{"status": "success", "message": "Product successfully deleted", "data": nil})
