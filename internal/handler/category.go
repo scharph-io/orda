@@ -17,7 +17,11 @@ func GetAllCategories(c *fiber.Ctx) error {
 	db := database.DB
 	var categories []model.Category
 
-	if user != "" {
+	if user == "admin" {
+		db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
+			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+		}).Find(&categories)
+	} else if user != "" {
 		db.Model(&model.Category{}).Where(&model.Category{Desc: user}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
 			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
 		}).Find(&categories).Find(&categories)
