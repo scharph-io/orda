@@ -50,3 +50,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+  adminer:
+    image: adminer
+    labels:
+      - "traefik.http.routers.adminer.rule=Host(`adminer.schartis.at`)"
+      - "traefik.http.routers.adminer.tls=true"
+      - "traefik.docker.network=traefik_web"
+    networks:
+      - web
+      - internal_prod
+    depends_on:
+      db:
+        condition: service_healthy

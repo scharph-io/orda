@@ -1,19 +1,16 @@
-import {
-  NgStyle,
-} from '@angular/common';
+import { NgStyle } from '@angular/common';
 import { Component, effect, inject, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { Article } from '../../shared/model/article';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import {
-  LayoutModule,
-} from '@angular/cdk/layout';
+import { LayoutModule } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
 import { CartStore } from '../cart/cart.store';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import { PlusMinusTileComponent } from './tiles/plus-minus-tile.component';
 import { ArticleTileComponent } from './tiles/article-tile.component';
 import { Category } from '../../shared/model/category';
+import { MatRippleModule } from '@angular/material/core';
 
 /**
  * @title Tab group with aligned labels
@@ -25,6 +22,7 @@ import { Category } from '../../shared/model/category';
     MatGridListModule,
     ScrollingModule,
     LayoutModule,
+    MatRippleModule,
     NgStyle,
     PlusMinusTileComponent,
     ArticleTileComponent,
@@ -42,6 +40,10 @@ import { Category } from '../../shared/model/category';
       @for (article of category().articles; track article) {
         @if (article.active) {
           <mat-grid-tile
+            matRipple
+            [matRippleCentered]="false"
+            [matRippleDisabled]="false"
+            [matRippleUnbounded]="false"
             (click)="addArticle(article)"
             [style.background-color]="article.color ?? 'none'"
           >
