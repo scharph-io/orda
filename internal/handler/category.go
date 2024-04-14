@@ -10,24 +10,28 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+type CategoryDB struct {
+	*gorm.DB
+}
+
 // GetAllCategories query all Categories
 func GetAllCategories(c *fiber.Ctx) error {
 	// TODO: Workaround for query parameter
 	user := c.Query("user")
-	db := database.DB
+	db := CategoryDB{database.DB}
 	var categories []model.Category
 
 	if user == "admin" {
 		db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
-			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+			return (&CategoryDB{db}).ArticleSort()
 		}).Find(&categories)
 	} else if user != "" {
 		db.Model(&model.Category{}).Where(&model.Category{Desc: user}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
-			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+			return (&CategoryDB{db}).ArticleSort()
 		}).Find(&categories).Find(&categories)
 	} else {
 		db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
-			return db.Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}})
+			return (&CategoryDB{db}).ArticleSort()
 		}).Find(&categories)
 	}
 	return c.Status(fiber.StatusOK).JSON(categories)
@@ -98,9 +102,10 @@ func DeleteCategory(c *fiber.Ctx) error {
 // GetAllCategoryArticles query all articles in a category
 func GetAllCategoryArticles(c *fiber.Ctx) error {
 	id := c.Params("id")
-	db := database.DB
+	db := CategoryDB{database.DB}
+
 	var articles []model.Article
-	db.Where("category_id = ?", id).Order("position").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&articles)
+	db.ArticleSort().Where("category_id = ?", id).Find(&articles)
 	return c.Status(fiber.StatusOK).JSON(articles)
 }
 
@@ -124,4 +129,8 @@ func GetAllCategoryArticlesAsFile(c *fiber.Ctx) error {
 	data, _ := json.MarshalIndent(export, "", " ")
 	c.Set(fiber.HeaderContentDisposition, "attachment; filename=name.json")
 	return c.Status(fiber.StatusOK).Send(data)
+}
+
+func (db *CategoryDB) ArticleSort() *gorm.DB {
+	return db.Order("position DESC").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}, Desc: true})
 }

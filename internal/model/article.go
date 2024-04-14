@@ -9,5 +9,5 @@ type Article struct {
 	Active     bool   `json:"active"`
 	CategoryID string `json:"categoryId" gorm:"size:36"`
 	Color      string `json:"color"`
-	Position   int32  `json:"position"`
+	Position   int32  `json:"position" gorm:"default:1"`
 }
