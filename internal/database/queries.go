@@ -32,6 +32,7 @@ const (
 		FROM transaction_items
 		WHERE article_id LIKE 'deposit%'
 		`
+
 	Q_get_deposit_history_date = `
 		SELECT
 			SUM(CASE WHEN qty > 0 THEN qty ELSE 0 END) deposit_in,
