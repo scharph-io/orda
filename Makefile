@@ -39,6 +39,12 @@ run-ui: ## Run the app locally
 run: ## Run the app locally
 	go run cmd/server/main.go
 
+setup:
+	docker compose up -d
+
+down:
+	docker compose down
+
 pre-build-ui:
 	cat $(PACKAGE_JSON) | jq --arg version "$(VERSION)" '.version |= $$version' | tee $(PACKAGE_JSON) > /dev/null
 
