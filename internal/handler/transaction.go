@@ -93,7 +93,7 @@ func GetAllTransactions(c *fiber.Ctx) error {
 		db = db.whereUpdatedAtCurrentDate()
 	}
 
-	if err := db.Preload("Items").Find(&transactions).Error; err != nil {
+	if err := db.Limit(100).Preload("Items").Find(&transactions).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Couldn't get transactions", "data": err})
 	}
 
