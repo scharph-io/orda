@@ -16,7 +16,6 @@ import { TranslocoModule } from '@ngneat/transloco';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    JsonPipe,
     AsyncPipe,
     CurrencyPipe,
     CartItemComponent,
@@ -101,7 +100,7 @@ import { TranslocoModule } from '@ngneat/transloco';
   ],
 })
 export class CartComponent {
-  constructor(private cart: CartStore) { }
+  constructor(private cart: CartStore) {}
 
   get items$(): Observable<CartItem[]> {
     return this.cart.items$;

@@ -101,8 +101,4 @@ export class OrderViewComponent implements OnInit {
         this.selectedCategory.set(categories[0]);
       });
   }
-
-  test(ev: Event) {
-    console.log('test', ev);
-  }
 }

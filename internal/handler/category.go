@@ -23,15 +23,15 @@ func GetAllCategories(c *fiber.Ctx) error {
 
 	if user == "admin" {
 		db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
-			return (&CategoryDB{db}).ArticleSort()
+			return (&CategoryDB{db}).ProductSort()
 		}).Find(&categories)
 	} else if user != "" {
 		db.Model(&model.Category{}).Where(&model.Category{Desc: user}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
-			return (&CategoryDB{db}).ArticleSort()
+			return (&CategoryDB{db}).ProductSort()
 		}).Find(&categories).Find(&categories)
 	} else {
 		db.Model(&model.Category{}).Order("position").Preload("Articles", func(db *gorm.DB) *gorm.DB {
-			return (&CategoryDB{db}).ArticleSort()
+			return (&CategoryDB{db}).ProductSort()
 		}).Find(&categories)
 	}
 	return c.Status(fiber.StatusOK).JSON(categories)
@@ -104,9 +104,9 @@ func GetAllCategoryProducts(c *fiber.Ctx) error {
 	id := c.Params("id")
 	db := CategoryDB{database.DB}
 
-	var articles []model.Article
-	db.ArticleSort().Where("category_id = ?", id).Find(&articles)
-	return c.Status(fiber.StatusOK).JSON(articles)
+	var product []model.Product
+	db.ProductSort().Where("category_id = ?", id).Find(&product)
+	return c.Status(fiber.StatusOK).JSON(product)
 }
 
 func GetAllCategoryProductsAsFile(c *fiber.Ctx) error {
@@ -131,6 +131,6 @@ func GetAllCategoryProductsAsFile(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).Send(data)
 }
 
-func (db *CategoryDB) ArticleSort() *gorm.DB {
+func (db *CategoryDB) ProductSort() *gorm.DB {
 	return db.Order("position DESC").Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}, Desc: true})
 }
