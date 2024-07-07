@@ -64,12 +64,17 @@ func ConnectDB() {
 
 	fmt.Println("Connection Opened to Database")
 	// DB.AutoMigrate(&model.Category{}, &model.Product{}, &model.Transaction{}, &model.TransactionItem{})
-	DB.AutoMigrate(
-		&model.Group{},
+	if err := DB.AutoMigrate(
+		&model.ProductGroup{},
 		&model.Product{},
 		&model.View{},
 		&model.ViewItem{},
-	)
+		&model.Transaction{},
+		&model.TransactionItem{},
+	); err != nil {
+		log.Fatal("Failed to migrate database. \n", err)
+		return
+	}
 	fmt.Println("Database Migrated")
 
 }

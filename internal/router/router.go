@@ -40,17 +40,18 @@ func SetupRoutes(app *fiber.App) {
 	auth.Post("/login", handler.Login)
 
 	// Category
-	category := api.Group("/category")
-	category.Get("/", middleware.Protected(), handler.GetAllCategories)
-	category.Post("/", middleware.Protected(), handler.CreateCategory)
-	category.Put("/:id", middleware.Protected(), handler.UpdateCategory)
-	category.Delete("/:id", middleware.Protected(), handler.DeleteCategory)
-	category.Get("/:id/product", middleware.Protected(), handler.GetAllCategoryProducts)
-	category.Get("export/:id/product", middleware.Protected(), handler.GetAllCategoryProductsAsFile)
+	// category := api.Group("/category")
+	// category.Get("/", middleware.Protected(), handler.GetAllCategories)
+	// category.Post("/", middleware.Protected(), handler.CreateCategory)
+	// category.Put("/:id", middleware.Protected(), handler.UpdateCategory)
+	// category.Delete("/:id", middleware.Protected(), handler.DeleteCategory)
+	// category.Get("/:id/product", middleware.Protected(), handler.GetAllCategoryProducts)
+	// category.Get("export/:id/product", middleware.Protected(), handler.GetAllCategoryProductsAsFile)
 
 	// Group
 	group := api.Group("/group")
-	group.Get("/", middleware.Protected(), handler.GetAllGroups)
+
+	// group.Get("/", middleware.Protected(), handler.GetAllGroups)
 	group.Post("/", middleware.Protected(), handler.CreateGroup)
 	group.Put("/:id", middleware.Protected(), handler.UpdateGroup)
 	group.Delete("/:id", middleware.Protected(), handler.DeleteGroup)
