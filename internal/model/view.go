@@ -1,16 +1,23 @@
 package model
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 type View struct {
 	Base
-	Name      string     `json:"name"`
-	Deposit   uint       `json:"deposit"`
-	ViewItems []ViewItem `json:"view_items" gorm:"constraint:OnDelete:CASCADE;"`
+	Name     string    `json:"name"`
+	Deposit  uint      `json:"deposit"`
+	Products []Product `gorm:"many2many:View_Products;"`
 }
 
-type ViewItem struct {
-	Base
-	Product   Product `json:"product"`
-	ProductID string  `json:"product_id" gorm:"size:36"`
-	ViewID    string  `json:"view_id" gorm:"size:36"`
-	Position  uint    `json:"position" gorm:"default:0"`
+type ViewProduct struct {
+	ViewID    int `gorm:"primaryKey"`
+	ProductID int `gorm:"primaryKey"`
+	CreatedAt time.Time
+	DeletedAt gorm.DeletedAt
+	Position  uint
+	Color     string
 }
