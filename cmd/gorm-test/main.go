@@ -9,6 +9,7 @@ import (
 )
 
 // https://learning-cloud-native-go.github.io/docs/repository/
+// https://blog.stackademic.com/golang-crud-rest-api-with-gin-and-gorm-service-repository-pattern-167afa8e9e87
 
 type View struct {
 	ID       int
