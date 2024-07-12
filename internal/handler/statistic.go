@@ -23,16 +23,16 @@ type TransactionStatistic struct {
 	Date          string         `json:"date"`
 }
 
-type ArticleTransaction struct {
-	ArticleId   string `json:"article_id"`
+type ProductTransaction struct {
+	ProductId   string `json:"product_id"`
 	Qty         int32  `json:"qty"`
 	Description string `json:"description"`
 }
 
-func GetArticleStatistic(c *fiber.Ctx) error {
+func GetProductStatistic(c *fiber.Ctx) error {
 	date := c.Query("date")
 	if date == "" {
-		return c.Status(fiber.StatusOK).JSON(getArticleStatistic())
+		return c.Status(fiber.StatusOK).JSON(getProductStatistic())
 	}
 	t, err := time.Parse(time.RFC3339, date)
 	if err != nil {
@@ -41,21 +41,21 @@ func GetArticleStatistic(c *fiber.Ctx) error {
 	fmt.Println(t.Location().String())
 	fmt.Println("XXX", t.Local().Format(time.DateOnly))
 
-	return c.Status(fiber.StatusOK).JSON(getDateArticleStatistic(t.Local().Format(time.DateOnly)))
+	return c.Status(fiber.StatusOK).JSON(getDateProductStatistic(t.Local().Format(time.DateOnly)))
 }
 
-func getArticleStatistic() []ArticleTransaction {
-	var result []ArticleTransaction
-	if err := database.DB.Raw(database.Q_get_article_transaction_history).Scan(&result).Error; err != nil {
-		return []ArticleTransaction{}
+func getProductStatistic() []ProductTransaction {
+	var result []ProductTransaction
+	if err := database.DB.Raw(database.Q_get_product_transaction_history).Scan(&result).Error; err != nil {
+		return []ProductTransaction{}
 	}
 	return result
 }
 
-func getDateArticleStatistic(date string) []ArticleTransaction {
-	var result []ArticleTransaction
-	if err := database.DB.Raw(database.Q_get_article_transaction_history_date, date).Scan(&result).Error; err != nil {
-		return []ArticleTransaction{}
+func getDateProductStatistic(date string) []ProductTransaction {
+	var result []ProductTransaction
+	if err := database.DB.Raw(database.Q_get_product_transaction_history_date, date).Scan(&result).Error; err != nil {
+		return []ProductTransaction{}
 	}
 	return result
 }

@@ -1,7 +1,7 @@
 @if (!isMobilePortrait()) {
   <div class="container">
     <mat-tab-group
-      class="articles"
+      class="products"
       mat-align-tabs="center"
       animationDuration="0ms"
       dynamicHeight="false"
@@ -35,6 +35,6 @@
       </mat-tab-group>
     </div>
 
-    <orda-cart-footer class="footer-mobile" (onOpenCart)="test($event)" />
+    <orda-cart-footer class="footer-mobile" />
   </div>
 }

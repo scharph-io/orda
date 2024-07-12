@@ -3,7 +3,7 @@ export interface TransactionItem {
   description: string;
   qty: number;
   transaction_id: string;
-  article_id: string;
+  product_id: string;
 }
 
 export interface Transaction {

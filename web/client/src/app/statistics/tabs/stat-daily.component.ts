@@ -11,7 +11,7 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import {
-  ArticleStatistics,
+  ProductStatistics,
   StatisticService,
   Statistics,
 } from '../../shared/services/statistic.service';
@@ -57,7 +57,7 @@ import { StatCardComponent } from '../stat-card.component';
 
     <h2>{{'statistic.products_sold_per_day' | transloco}}</h2>
     <section class="example-container mat-elevation-z8" tabindex="0">
-      <table mat-table [dataSource]="articleStats()" >
+      <table mat-table [dataSource]="productStats()" >
         <!-- Desc Column -->
         <ng-container matColumnDef="desc">
           <th mat-header-cell *matHeaderCellDef>
@@ -126,7 +126,7 @@ export class StatisticDailyComponent implements OnInit {
     payment_option: [],
     total: 0,
   });
-  articleStats = signal<ArticleStatistics>([]);
+  productStats = signal<ProductStatistics>([]);
 
   public ngOnInit() {
     const date = new Date().toISOString();
@@ -134,8 +134,8 @@ export class StatisticDailyComponent implements OnInit {
       .getStatisticsforDate$(date)
       .subscribe((x) => this.stats.set(x));
     this.statisticsService
-      .getArticleStatisticsforDate$(date)
-      .subscribe((x) => this.articleStats.set(x));
+      .getProductStatisticsforDate$(date)
+      .subscribe((x) => this.productStats.set(x));
   }
 
   addEvent(type: string, event: MatDatepickerInputEvent<Date>) {
@@ -145,8 +145,8 @@ export class StatisticDailyComponent implements OnInit {
         .getStatisticsforDate$(date)
         .subscribe((x) => this.stats.set(x));
       this.statisticsService
-        .getArticleStatisticsforDate$(date)
-        .subscribe((x) => this.articleStats.set(x));
+        .getProductStatisticsforDate$(date)
+        .subscribe((x) => this.productStats.set(x));
     }
   }
 }

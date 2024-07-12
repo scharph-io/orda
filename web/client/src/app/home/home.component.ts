@@ -28,9 +28,7 @@ import { OrderViewComponent } from '../orderview/orderview.component';
 })
 export class HomeComponent {
   restrictedInfo?: string;
-  constructor(private authservice: AuthService) {
-   
-  }
+  constructor(private authservice: AuthService) {}
 
   get isAdmin() {
     return this.authservice.isAdmin();
@@ -38,72 +36,5 @@ export class HomeComponent {
 
   get isExpired() {
     return this.authservice.isExpired();
-  }
-
-  getArticleGroups() {
-    return [
-      {
-        id: 1,
-        name: 'Beverages',
-        articles: [
-          {
-            name: 'Coffee',
-            price: 2.5,
-          },
-          {
-            name: 'Tea',
-            price: 2.0,
-          },
-          {
-            name: 'Coke',
-            price: 2.0,
-          },
-          {
-            name: 'Fanta',
-            price: 2.0,
-          },
-          {
-            name: 'Sprite',
-            price: 2.0,
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: 'Food',
-        articles: [
-          {
-            name: 'Pizza',
-            price: 5.0,
-          },
-          {
-            name: 'Pasta',
-            price: 3.0,
-          },
-          {
-            name: 'Burger',
-            price: 4.0,
-          },
-          {
-            name: 'Fries',
-            price: 2.5,
-          },
-        ],
-      },
-      {
-        id: 3,
-        name: 'Desserts',
-        articles: [
-          {
-            name: 'Ice Cream',
-            price: 2.5,
-          },
-          {
-            name: 'Cake',
-            price: 3.5,
-          },
-        ],
-      },
-    ];
   }
 }

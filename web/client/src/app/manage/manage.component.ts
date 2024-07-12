@@ -1,6 +1,6 @@
 import { Component, Inject, inject, signal, ViewChild } from '@angular/core';
 
-import { ArticlesManageComponent } from './articles/articles-manage.component';
+import { ProductsManageComponent } from './products/products-manage.component';
 import { CategoryService } from '../shared/services/category.service';
 import { Category } from '../shared/model/category';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,7 +29,7 @@ import {
 import { TranslocoModule } from '@ngneat/transloco';
 import { OrdaCurrencyPipe } from '../shared/currency.pipe';
 
-// Example ??? https://www.codeproject.com/Articles/5290817/Build-Angular-data-table-with-CRUD-operations-and
+// Example ??? https://www.codeproject.com/Products/5290817/Build-Angular-data-table-with-CRUD-operations-and
 @Component({
   template: `
     <h1>
@@ -72,7 +72,7 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
             >
               {{ 'category.edit' | transloco }}
             </button>
-            @if (category.articles && category.articles.length > 0) {
+            @if (category.products && category.products.length > 0) {
               <button
                 style="margin-top: 1em;"
                 mat-raised-button
@@ -91,7 +91,7 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
               {{ 'category.delete' | transloco }}
             </button>
             @if (ex.expanded) {
-              <orda-articles-manage [category]="category" />
+              <orda-products-manage [category]="category" />
             }
           </ng-template>
         </mat-expansion-panel>
@@ -100,7 +100,7 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
   `,
   standalone: true,
   imports: [
-    ArticlesManageComponent,
+    ProductsManageComponent,
     MatButtonModule,
     CommonModule,
     ReactiveFormsModule,
@@ -165,7 +165,7 @@ export class ManageComponent {
             this.categories.set(categories);
           },
           error: (_err) => {
-            console.log("Can't delete category. Delete all articles first.");
+            console.log("Can't delete category. Delete all products first.");
           },
         });
     });
@@ -186,7 +186,7 @@ export class ManageComponent {
   }
 
   export(id: string, name: string) {
-    this.categoryService.exportCategoryArticles$(id, name).subscribe((b) => {
+    this.categoryService.exportCategoryProducts$(id, name).subscribe((b) => {
       console.log(b);
     });
   }

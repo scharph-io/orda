@@ -40,22 +40,30 @@ func SetupRoutes(app *fiber.App) {
 	auth.Post("/login", handler.Login)
 
 	// Category
-	category := api.Group("/category")
-	category.Get("/", middleware.Protected(), handler.GetAllCategories)
-	category.Post("/", middleware.Protected(), handler.CreateCategory)
-	category.Put("/:id", middleware.Protected(), handler.UpdateCategory)
-	category.Delete("/:id", middleware.Protected(), handler.DeleteCategory)
-	category.Get("/:id/article", middleware.Protected(), handler.GetAllCategoryArticles)
-	category.Get("export/:id/article", middleware.Protected(), handler.GetAllCategoryArticlesAsFile)
+	// category := api.Group("/category")
+	// category.Get("/", middleware.Protected(), handler.GetAllCategories)
+	// category.Post("/", middleware.Protected(), handler.CreateCategory)
+	// category.Put("/:id", middleware.Protected(), handler.UpdateCategory)
+	// category.Delete("/:id", middleware.Protected(), handler.DeleteCategory)
+	// category.Get("/:id/product", middleware.Protected(), handler.GetAllCategoryProducts)
+	// category.Get("export/:id/product", middleware.Protected(), handler.GetAllCategoryProductsAsFile)
 
-	// Article
-	article := api.Group("/article")
-	article.Get("/", middleware.Protected(), handler.GetAllArticles)
-	article.Post("/", middleware.Protected(), handler.CreateArticle)
-	article.Post("/import", middleware.Protected(), handler.ImportArticles)
-	// article.Get("/:id", middleware.Protected(), handler.GetArticle)
-	article.Put("/:id", middleware.Protected(), handler.UpdateArticle)
-	article.Delete("/:id", middleware.Protected(), handler.DeleteArticle)
+	// Group
+	group := api.Group("/group")
+
+	// group.Get("/", middleware.Protected(), handler.GetAllGroups)
+	group.Post("/", middleware.Protected(), handler.CreateGroup)
+	group.Put("/:id", middleware.Protected(), handler.UpdateGroup)
+	group.Delete("/:id", middleware.Protected(), handler.DeleteGroup)
+
+	// Product
+	product := api.Group("/product")
+	product.Get("/", middleware.Protected(), handler.GetAllProducts)
+	product.Post("/", middleware.Protected(), handler.CreateProduct)
+	product.Post("/import", middleware.Protected(), handler.ImportProducts)
+	// product.Get("/:id", middleware.Protected(), handler.GetProduct)
+	product.Put("/:id", middleware.Protected(), handler.UpdateProduct)
+	product.Delete("/:id", middleware.Protected(), handler.DeleteProduct)
 
 	// Checkout
 	checkout := api.Group("/checkout")
@@ -69,6 +77,6 @@ func SetupRoutes(app *fiber.App) {
 	// Statistic
 	statistic := api.Group("/statistic")
 	statistic.Get("/", middleware.Protected(), handler.GetStatistics)
-	statistic.Get("/articles", middleware.Protected(), handler.GetArticleStatistic)
+	statistic.Get("/products", middleware.Protected(), handler.GetProductStatistic)
 
 }

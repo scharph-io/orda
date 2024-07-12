@@ -33,7 +33,7 @@ func ConnectDB() {
 	/*
 		NOTE:
 		To handle time.Time correctly, you need to include parseTime as a parameter. (more parameters)
-		To fully support UTF-8 encoding, you need to change charset=utf8 to charset=utf8mb4. See this article for a detailed explanation
+		To fully support UTF-8 encoding, you need to change charset=utf8 to charset=utf8mb4. See this product for a detailed explanation
 	*/
 
 	newLogger := logger.New(
@@ -63,7 +63,18 @@ func ConnectDB() {
 	}
 
 	fmt.Println("Connection Opened to Database")
-	DB.AutoMigrate(&model.Category{}, &model.Article{}, &model.Transaction{}, &model.TransactionItem{})
+	// DB.AutoMigrate(&model.Category{}, &model.Product{}, &model.Transaction{}, &model.TransactionItem{})
+	if err := DB.AutoMigrate(
+		&model.ProductGroup{},
+		&model.Product{},
+		&model.View{},
+		&model.ViewItem{},
+		&model.Transaction{},
+		&model.TransactionItem{},
+	); err != nil {
+		log.Fatal("Failed to migrate database. \n", err)
+		return
+	}
 	fmt.Println("Database Migrated")
 
 }

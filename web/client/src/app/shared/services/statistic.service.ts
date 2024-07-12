@@ -14,9 +14,9 @@ export interface Statistics {
   account_type: number[];
 }
 
-export type ArticleStatistics = ArticleStatisitic[];
-export interface ArticleStatisitic {
-  article_id: string;
+export type ProductStatistics = ProductStatisitic[];
+export interface ProductStatisitic {
+  product_id: string;
   qty: number;
   description: string;
 }
@@ -42,13 +42,13 @@ export class StatisticService {
     return this.http.get<Statistics>(`${this.endpoint}?date=${date}`);
   }
 
-  getArticleStatistics$() {
-    return this.http.get<ArticleStatistics>(`${this.endpoint}/articles`);
+  getProductStatistics$() {
+    return this.http.get<ProductStatistics>(`${this.endpoint}/products`);
   }
 
-  getArticleStatisticsforDate$(date: string) {
-    return this.http.get<ArticleStatistics>(
-      `${this.endpoint}/articles?date=${date}`,
+  getProductStatisticsforDate$(date: string) {
+    return this.http.get<ProductStatistics>(
+      `${this.endpoint}/products?date=${date}`,
     );
   }
 }
