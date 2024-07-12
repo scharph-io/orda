@@ -8,6 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// https://learning-cloud-native-go.github.io/docs/repository/
+
 type View struct {
 	ID       int
 	Name     string
