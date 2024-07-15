@@ -1,6 +1,6 @@
 package model
 
-type ProductGroup struct {
+type Group struct {
 	Base
 	Name     string    `json:"name"`
 	Desc     string    `json:"desc"`
