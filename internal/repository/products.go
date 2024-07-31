@@ -16,6 +16,14 @@ func NewProductRepo(db *gorm.DB) *ProductRepo {
 	return &ProductRepo{db}
 }
 
+func (r *ProductRepo) Create(ctx context.Context, product *model.Product) (*model.Product, error) {
+	res := r.db.WithContext(ctx).Create(&product)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return product, nil
+}
+
 func (r *ProductRepo) ReadAll(ctx context.Context) (products []model.Product, err error) {
 	res := r.db.
 		WithContext(ctx).Model(&model.Product{}).
@@ -33,14 +41,6 @@ func (r *ProductRepo) ReadByGroupID(ctx context.Context, group_id string) (produ
 		return nil, res.Error
 	}
 	return products, nil
-}
-
-func (r *ProductRepo) Create(ctx context.Context, product *model.Product) (*model.Product, error) {
-	res := r.db.WithContext(ctx).Create(&product)
-	if res.Error != nil {
-		return nil, res.Error
-	}
-	return product, nil
 }
 
 func (r *ProductRepo) ImportMany(ctx context.Context, group_id string, products *[]model.Product) ([]model.Product, error) {
@@ -69,8 +69,3 @@ func (r *ProductRepo) Delete(ctx context.Context, id string) (bool, error) {
 	}
 	return !(res.RowsAffected == 0), nil
 }
-
-// func (r *ProductRepo) GetByID(id string) {
-// 	var product model.Product
-// 	r.DB.Where("id = ?", id).First(&product)
-// }
