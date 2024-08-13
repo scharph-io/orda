@@ -7,7 +7,7 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import {
@@ -24,8 +24,7 @@ import { StatCardComponent } from '../stat-card.component';
   selector: 'orda-stat-daily',
   standalone: true,
   template: `
-
-    <h2>{{'statistic.income' | transloco}}</h2>
+    <h2>{{ 'statistic.income' | transloco }}</h2>
     <mat-form-field>
       <mat-label>{{ 'statistic.choose_date' | transloco }}</mat-label>
       <input
@@ -42,22 +41,42 @@ import { StatCardComponent } from '../stat-card.component';
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
     <div class="dashboard">
-    <orda-stat-card [title]="'statistic.total_per_day' | transloco" [value]="stats().total | ordaCurrency" />
+      <orda-stat-card
+        [title]="'statistic.total_per_day' | transloco"
+        [value]="stats().total | ordaCurrency"
+      />
 
-    <orda-stat-card [title]="'statistic.cash_per_day' | transloco" [value]="stats().payment_option[PaymentOption.CASH] | ordaCurrency" />
-    <orda-stat-card [title]="'statistic.card_per_day' | transloco" [value]="stats().payment_option[PaymentOption.CARD] | ordaCurrency" />
+      <orda-stat-card
+        [title]="'statistic.cash_per_day' | transloco"
+        [value]="stats().payment_option[PaymentOption.CASH] | ordaCurrency"
+      />
+      <orda-stat-card
+        [title]="'statistic.card_per_day' | transloco"
+        [value]="stats().payment_option[PaymentOption.CARD] | ordaCurrency"
+      />
 
-    <orda-stat-card [title]="'statistic.premium_per_day' | transloco" [value]="stats().account_type[AccountType.PREMIUM] | ordaCurrency" />
-    <orda-stat-card [title]="'statistic.free_per_day' | transloco" [value]="stats().account_type[AccountType.FREE] | ordaCurrency" />
+      <orda-stat-card
+        [title]="'statistic.premium_per_day' | transloco"
+        [value]="stats().account_type[AccountType.PREMIUM] | ordaCurrency"
+      />
+      <orda-stat-card
+        [title]="'statistic.free_per_day' | transloco"
+        [value]="stats().account_type[AccountType.FREE] | ordaCurrency"
+      />
 
-    <orda-stat-card [title]="'statistic.deposit_in_per_day' | transloco" [value]="stats().deposit.deposit_in" />
-    <orda-stat-card [title]="'statistic.deposit_out_per_day' | transloco" [value]="stats().deposit.deposit_out * -1" />
-  </div>
+      <orda-stat-card
+        [title]="'statistic.deposit_in_per_day' | transloco"
+        [value]="stats().deposit.deposit_in"
+      />
+      <orda-stat-card
+        [title]="'statistic.deposit_out_per_day' | transloco"
+        [value]="stats().deposit.deposit_out * -1"
+      />
+    </div>
 
-
-    <h2>{{'statistic.products_sold_per_day' | transloco}}</h2>
+    <h2>{{ 'statistic.products_sold_per_day' | transloco }}</h2>
     <section class="example-container mat-elevation-z8" tabindex="0">
-      <table mat-table [dataSource]="productStats()" >
+      <table mat-table [dataSource]="productStats()">
         <!-- Desc Column -->
         <ng-container matColumnDef="desc">
           <th mat-header-cell *matHeaderCellDef>
@@ -82,7 +101,8 @@ import { StatCardComponent } from '../stat-card.component';
         ></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
-    </section> `,
+    </section>
+  `,
   styles: [
     `
       :host {
@@ -107,7 +127,7 @@ import { StatCardComponent } from '../stat-card.component';
     ReactiveFormsModule,
     DatePipe,
     MatTableModule,
-    StatCardComponent
+    StatCardComponent,
   ],
 })
 export class StatisticDailyComponent implements OnInit {

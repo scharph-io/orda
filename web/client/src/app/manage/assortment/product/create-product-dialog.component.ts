@@ -16,9 +16,7 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { ProductService } from '../../shared/services/product.service';
-import { Product } from '../../shared/model/product';
-import { MessageService } from '../../shared/services/message.service';
+
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
@@ -44,10 +42,7 @@ import { TranslocoModule } from '@jsverse/transloco';
         <mat-label>{{ 'table.price' | transloco }}</mat-label>
         <input matInput type="number" formControlName="price" />
       </mat-form-field>
-      <mat-form-field>
-        <mat-label>{{ 'table.position' | transloco }}</mat-label>
-        <input matInput type="number" formControlName="position" />
-      </mat-form-field>
+
       <mat-slide-toggle class="example-margin" formControlName="active">
         {{ 'table.active' | transloco }}
       </mat-slide-toggle>
@@ -107,68 +102,66 @@ export class CreateProductDialogComponent {
       Validators.max(100),
     ]),
     active: new FormControl(true),
-    position: new FormControl<number>(1),
   });
 
-  productService = inject(ProductService);
+  //   productService = inject(ProductService);
 
   isUpdate = false;
 
   constructor(
     public dialogRef: MatDialogRef<CreateProductDialogComponent>,
-    public messageService: MessageService,
-    @Inject(MAT_DIALOG_DATA)
-    public data: { product?: Product; categoryId: string },
+    // public messageService: MessageService,
+    // @Inject(MAT_DIALOG_DATA)
+    // public data: { product?: Product; groupId: string },
   ) {
-    if (this.data.product !== undefined) {
-      this.isUpdate = true;
-      this.productForm.patchValue({
-        name: this.data.product.name,
-        desc: this.data.product.desc,
-        price: this.data.product.price / 100,
-        active: this.data.product.active,
-        position: this.data.product.position,
-      });
-    }
+    // if (this.data.product !== undefined) {
+    //   this.isUpdate = true;
+    //   this.productForm.patchValue({
+    //     name: this.data.product.name,
+    //     desc: this.data.product.desc,
+    //     price: this.data.product.price / 100,
+    //     active: this.data.product.active,
+    //     position: this.data.product.position,
+    //   });
+    // }
   }
 
   create() {
-    if (this.productForm.valid) {
-      const value = this.productForm.value;
-
-      this.productService
-        .createProduct({
-          name: value.name ?? '',
-          desc: value.desc ?? '',
-          price: Math.round((value.price ?? 0) * 100),
-          active: value.active ?? false,
-          categoryId: this.data.categoryId,
-          position: value.position ?? 0,
-        })
-        .subscribe((res) => {
-          console.log(res);
-          this.dialogRef.close();
-        });
-    }
+    // if (this.productForm.valid) {
+    //   const value = this.productForm.value;
+    //   this.productService
+    //     .createProduct({
+    //       name: value.name ?? '',
+    //       desc: value.desc ?? '',
+    //       price: Math.round((value.price ?? 0) * 100),
+    //       active: value.active ?? false,
+    //       categoryId: this.data.categoryId,
+    //       position: value.position ?? 0,
+    //     })
+    //     .subscribe((res) => {
+    //       console.log(res);
+    //       this.dialogRef.close();
+    //     });
+    // }
   }
 
   update() {
     console.log(this.productForm.value);
-    if (this.productForm.valid) {
-      const value = this.productForm.value;
+    // if (this.productForm.valid) {
+    //   const value = this.productForm.value;
 
-      this.productService
-        .updateProduct(this.data.product?.id ?? '', {
-          name: value.name ?? '',
-          desc: value.desc ?? '',
-          price: Math.round((value.price ?? 0) * 100),
-          active: value.active ?? false,
-          categoryId: this.data.categoryId,
-          position: value.position ?? 0,
-        })
-        .subscribe(() => {
-          this.dialogRef.close();
-        });
-    }
+    //   this.productService
+    //     .updateProduct(this.data.product?.id ?? '', {
+    //       name: value.name ?? '',
+    //       desc: value.desc ?? '',
+    //       price: Math.round((value.price ?? 0) * 100),
+    //       active: value.active ?? false,
+    //       categoryId: this.data.categoryId,
+    //       position: value.position ?? 0,
+    //     })
+    //     .subscribe(() => {
+    //       this.dialogRef.close();
+    //     });
+    // }
   }
 }

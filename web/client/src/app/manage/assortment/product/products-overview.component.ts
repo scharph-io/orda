@@ -12,32 +12,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { switchMap } from 'rxjs';
-import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
-import { Product } from '../../shared/model/product';
-import { ProductService } from '../../shared/services/product.service';
-import { CreateProductDialogComponent } from './create-product-dialog.component';
-import { Category } from '../../shared/model/category';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
+
 import { TranslocoModule } from '@jsverse/transloco';
+import { CreateProductDialogComponent } from './create-product-dialog.component';
 
 @Component({
-  selector: 'orda-products-manage',
+  selector: 'orda-products-overview',
   template: `
-    <h2>
-      {{ 'product.title' | transloco }}
-      <span
-        ><button
-          mat-raised-button
-          color="primary"
-          (click)="openProductAddUpdateDialog()"
-        >
-          {{ 'product.add' | transloco }}
-        </button></span
-      >
-    </h2>
+    <div class="toolbar">
+      <h2>products</h2>
+      <button mat-fab extended (click)="openProductAddUpdateDialog()">
+        <mat-icon>add</mat-icon>
+        new_product
+      </button>
+    </div>
 
-    @if (dataSource().length == 0) {
+    <!-- @if (dataSource().length == 0) {
       <input
         type="file"
         class="file-input"
@@ -110,11 +100,17 @@ import { TranslocoModule } from '@jsverse/transloco';
         <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
         <tr cdk-row *cdkRowDef="let row; columns: displayedColumns"></tr>
       </table>
-    }
+    } -->
   `,
   standalone: true,
   styles: [
     `
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 1em;
+      }
       :host {
         overflow-y: scroll;
       }
@@ -126,99 +122,89 @@ import { TranslocoModule } from '@jsverse/transloco';
     MatIconModule,
     MatButtonModule,
     DialogModule,
-    OrdaCurrencyPipe,
-    MatSlideToggle,
     TranslocoModule,
   ],
 })
-export class ProductsManageComponent {
-  category = input.required<Category>();
-  dataSource: WritableSignal<Product[]> = signal([]);
+export class ProductsOverviewComponent {
+  //   category = input.required<Category>();
+  //   dataSource: WritableSignal<Product[]> = signal([]);
 
   dialog = inject(MatDialog);
-  productService = inject(ProductService);
+  //   productService = inject(ProductService);
 
-  displayedColumns: string[] = [
-    'name',
-    'desc',
-    'price',
-    'active',
-    'position',
-    'actions',
-  ];
+  displayedColumns: string[] = ['name', 'desc', 'price', 'active', 'actions'];
 
-  constructor() {
-    effect(() => {
-      this.productService
-        .getProductsBy(this.category().id ?? '')
-        .subscribe((data) => {
-          this.dataSource?.set(data);
-        });
-    });
-  }
+  //   constructor() {
+  //     effect(() => {
+  //       this.productService
+  //         .getProductsBy(this.category().id ?? '')
+  //         .subscribe((data) => {
+  //           this.dataSource?.set(data);
+  //         });
+  //     });
+  //   }
 
-  openProductAddUpdateDialog(product?: Product): void {
+  openProductAddUpdateDialog(): void {
     const dialogRef = this.dialog.open(CreateProductDialogComponent, {
-      data: { product, categoryId: this.category().id },
+      // data: { product, categoryId: this.category().id },
       minWidth: '30rem',
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');
-      this.productService
-        .getProductsBy(this.category().id ?? '')
-        .subscribe((products) => {
-          this.dataSource?.set(products);
-        });
+      //   this.productService
+      //     .getProductsBy(this.category().id ?? '')
+      //     .subscribe((products) => {
+      //       this.dataSource?.set(products);
+      //     });
     });
   }
 
-  deleteProduct(id: string) {
-    this.productService
-      .deleteProduct(id)
-      .pipe(
-        switchMap(() =>
-          this.productService.getProductsBy(this.category().id ?? ''),
-        ),
-      )
-      .subscribe((products) => this.dataSource?.set(products));
-  }
+  //   deleteProduct(id: string) {
+  //     this.productService
+  //       .deleteProduct(id)
+  //       .pipe(
+  //         switchMap(() =>
+  //           this.productService.getProductsBy(this.category().id ?? ''),
+  //         ),
+  //       )
+  //       .subscribe((products) => this.dataSource?.set(products));
+  //   }
 
-  onFileSelected(event: any) {
-    const file: File = (event.target as HTMLInputElement).files![0];
+  //   onFileSelected(event: any) {
+  //     const file: File = (event.target as HTMLInputElement).files![0];
 
-    if (file) {
-      this.readFileContents(file).then((data) => {
-        const products: Product[] = JSON.parse(data);
+  //     if (file) {
+  //       this.readFileContents(file).then((data) => {
+  //         const products: Product[] = JSON.parse(data);
 
-        console.log(products);
+  //         console.log(products);
 
-        this.productService
-          .importProducts(products, this.category().id ?? '')
-          .pipe(
-            switchMap(() =>
-              this.productService.getProductsBy(this.category().id ?? ''),
-            ),
-          )
-          .subscribe((products) => this.dataSource?.set(products));
-      });
-    }
-  }
+  //         this.productService
+  //           .importProducts(products, this.category().id ?? '')
+  //           .pipe(
+  //             switchMap(() =>
+  //               this.productService.getProductsBy(this.category().id ?? ''),
+  //             ),
+  //           )
+  //           .subscribe((products) => this.dataSource?.set(products));
+  //       });
+  //     }
+  //   }
 
-  readFileContents(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+  //   readFileContents(file: File): Promise<string> {
+  //     return new Promise((resolve, reject) => {
+  //       const reader = new FileReader();
 
-      reader.onload = () => {
-        resolve(reader.result as string);
-      };
+  //       reader.onload = () => {
+  //         resolve(reader.result as string);
+  //       };
 
-      reader.onerror = () => {
-        reader.abort();
-        reject(new DOMException('Problem parsing input file.'));
-      };
+  //       reader.onerror = () => {
+  //         reader.abort();
+  //         reject(new DOMException('Problem parsing input file.'));
+  //       };
 
-      reader.readAsText(file);
-    });
-  }
+  //       reader.readAsText(file);
+  //     });
+  //   }
 }

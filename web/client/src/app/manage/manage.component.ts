@@ -26,7 +26,7 @@ import {
   MatDialogRef,
   MatDialogTitle,
 } from '@angular/material/dialog';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { OrdaCurrencyPipe } from '../shared/currency.pipe';
 
 // Example ??? https://www.codeproject.com/Products/5290817/Build-Angular-data-table-with-CRUD-operations-and

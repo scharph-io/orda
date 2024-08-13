@@ -52,6 +52,11 @@
     <span>{{ "menu.info" | transloco }}</span>
   </button>
 
+  <button [routerLink]="['/assortment']" mat-menu-item>
+    <mat-icon>info</mat-icon>
+    <span>Assortment</span>
+  </button>
+
   <mat-divider></mat-divider>
 
   @if (isAuthenticated | async) {
@@ -67,4 +72,6 @@
   }
 </mat-menu>
 
-<router-outlet></router-outlet>
+<div class="content">
+  <router-outlet></router-outlet>
+</div>

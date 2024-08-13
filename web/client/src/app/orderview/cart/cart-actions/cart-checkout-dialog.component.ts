@@ -28,7 +28,7 @@ import {
   MessageService,
   Severity,
 } from '../../../shared/services/message.service';
-import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import {
   AccountType,
   PaymentOption,
