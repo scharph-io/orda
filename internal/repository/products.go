@@ -24,7 +24,7 @@ func (r *ProductRepo) Create(ctx context.Context, product *model.Product) (*mode
 	return product, nil
 }
 
-func (r *ProductRepo) ReadAll(ctx context.Context) (products []model.Product, err error) {
+func (r *ProductRepo) Read(ctx context.Context) (products []model.Product, err error) {
 	res := r.db.
 		WithContext(ctx).Model(&model.Product{}).
 		Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&products)
@@ -43,7 +43,7 @@ func (r *ProductRepo) ReadByGroupID(ctx context.Context, group_id string) (produ
 	return products, nil
 }
 
-func (r *ProductRepo) ImportMany(ctx context.Context, group_id string, products *[]model.Product) ([]model.Product, error) {
+func (r *ProductRepo) ImportMany(ctx context.Context, products *[]model.Product, group_id string) ([]model.Product, error) {
 	for i := range *products {
 		(*products)[i].GroupID = group_id
 	}

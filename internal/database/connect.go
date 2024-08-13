@@ -64,11 +64,17 @@ func ConnectDB() {
 
 	fmt.Println("Connection Opened to Database")
 	// DB.AutoMigrate(&model.Category{}, &model.Product{}, &model.Transaction{}, &model.TransactionItem{})
+
+	if err := DB.SetupJoinTable(&model.View{}, "Products", &model.ViewProduct{}); err != nil {
+		log.Fatal("Failed to setup join table. \n", err)
+		return
+	}
+
 	if err := DB.AutoMigrate(
 		&model.Group{},
 		&model.Product{},
 
-		// &model.View{},
+		&model.View{},
 		// &model.Transaction{},
 		// &model.TransactionItem{},
 	); err != nil {

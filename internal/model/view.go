@@ -10,12 +10,14 @@ type View struct {
 	Base
 	Name     string    `json:"name"`
 	Deposit  uint      `json:"deposit"`
-	Products []Product `gorm:"many2many:View_Products;"`
+	Products []Product `json:"products" gorm:"many2many:view_products;"`
 }
 
 type ViewProduct struct {
-	ViewID    int `gorm:"primaryKey"`
-	ProductID int `gorm:"primaryKey"`
+	ViewID    string  `gorm:"primaryKey"`
+	View      View    `gorm:"foreignKey:ViewID"`
+	ProductID string  `gorm:"primaryKey"`
+	Product   Product `gorm:"foreignKey:ProductID"`
 	CreatedAt time.Time
 	DeletedAt gorm.DeletedAt
 	Position  uint

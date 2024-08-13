@@ -15,16 +15,24 @@ func NewViewRepo(db *gorm.DB) *ViewRepo {
 	return &ViewRepo{db}
 }
 
+func (r *ViewRepo) Create(ctx context.Context, view *model.View) (*model.View, error) {
+	res := r.db.WithContext(ctx).Create(&view)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return view, nil
+}
+
 func (r *ViewRepo) Read(ctx context.Context) (views []model.View, err error) {
-	res := r.db.WithContext(ctx).Find(&views)
+	res := r.db.WithContext(ctx).Model(&model.View{}).Preload("Products").Find(&views)
 	if res.Error != nil {
 		return nil, res.Error
 	}
 	return views, nil
 }
 
-func (r *ViewRepo) ReadByViewID(ctx context.Context, viewID string) (view model.View, err error) {
-	res := r.db.WithContext(ctx).Where("view_id = ?", viewID).First(&view)
+func (r *ViewRepo) ReadByID(ctx context.Context, id string) (view model.View, err error) {
+	res := r.db.WithContext(ctx).Where("id = ?", id).First(&view)
 	if res.Error != nil {
 		return model.View{}, res.Error
 	}
@@ -47,9 +55,15 @@ func (r *ViewRepo) Delete(ctx context.Context, id string) (bool, error) {
 	return !(res.RowsAffected == 0), nil
 }
 
-func (r *ViewRepo) AddProduct(ctx context.Context, viewID string, product *model.Product) (bool, error) {
+func (r *ViewRepo) AddProduct(ctx context.Context, id string, product *model.Product) (bool, error) {
+	if err := r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", id).Association("Products").Append(product); err != nil {
+		return false, err
+	}
+	return true, nil
+}
 
-	if err := r.db.WithContext(ctx).Model(&model.View{}).Where("view_id = ?", viewID).Association("Products").Append(product); err != nil {
+func (r *ViewRepo) RemoveProduct(ctx context.Context, id string, product *model.Product) (bool, error) {
+	if err := r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", id).Association("Products").Delete(product); err != nil {
 		return false, err
 	}
 	return true, nil

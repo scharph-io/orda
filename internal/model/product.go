@@ -14,4 +14,5 @@ type Product struct {
 	Desc    string `json:"desc"`
 	Price   int32  `json:"price"`
 	GroupID string `json:"groupId" gorm:"size:36"`
+	Views   []View `json:"views" gorm:"many2many:view_products;"`
 }
