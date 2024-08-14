@@ -1,4 +1,4 @@
-import { Product } from './product';
+import { Product, ViewProduct } from './product';
 
 export interface Category {
   id?: string;
@@ -8,5 +8,5 @@ export interface Category {
   color?: string;
   withDeposit: boolean;
   deposit?: number;
-  products?: Product[];
+  products?: ViewProduct[];
 }

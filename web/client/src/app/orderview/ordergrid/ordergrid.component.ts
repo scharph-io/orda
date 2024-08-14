@@ -1,7 +1,7 @@
 import { NgStyle } from '@angular/common';
 import { Component, effect, inject, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { Product } from '../../shared/model/product';
+import { ViewProduct } from '../../shared/model/product';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LayoutModule } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
@@ -77,7 +77,7 @@ export class OrderGridComponent {
     this.destroyed$.complete();
   }
 
-  addProduct(product: Product) {
+  addProduct(product: ViewProduct) {
     this.cart.addItem({
       uuid: product.id ?? '',
       name: product.name,

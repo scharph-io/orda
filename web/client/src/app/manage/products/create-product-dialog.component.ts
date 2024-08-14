@@ -127,7 +127,6 @@ export class CreateProductDialogComponent {
         desc: this.data.product.desc,
         price: this.data.product.price / 100,
         active: this.data.product.active,
-        position: this.data.product.position,
       });
     }
   }
@@ -142,8 +141,7 @@ export class CreateProductDialogComponent {
           desc: value.desc ?? '',
           price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
-          categoryId: this.data.categoryId,
-          position: value.position ?? 0,
+          groupId: this.data.categoryId,
         })
         .subscribe((res) => {
           console.log(res);
@@ -163,8 +161,7 @@ export class CreateProductDialogComponent {
           desc: value.desc ?? '',
           price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
-          categoryId: this.data.categoryId,
-          position: value.position ?? 0,
+          groupId: this.data.categoryId,
         })
         .subscribe(() => {
           this.dialogRef.close();

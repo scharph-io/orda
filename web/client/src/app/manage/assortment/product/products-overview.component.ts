@@ -1,5 +1,5 @@
 import { DialogModule } from '@angular/cdk/dialog';
-import { CdkTableModule } from '@angular/cdk/table';
+import { MatTableModule } from '@angular/material/table';
 import {
   Component,
   WritableSignal,
@@ -11,10 +11,12 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { TranslocoModule } from '@jsverse/transloco';
 import { CreateProductDialogComponent } from './create-product-dialog.component';
+import { Product } from '../../../shared/model/product';
+import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
 @Component({
   selector: 'orda-products-overview',
@@ -35,50 +37,41 @@ import { CreateProductDialogComponent } from './create-product-dialog.component'
         (change)="onFileSelected($event)"
         #fileUpload
       />
-    }
+    } -->
     @if (dataSource().length !== 0) {
-      <table cdk-table [dataSource]="dataSource()" style="margin: 1rem;">
-        <ng-container cdkColumnDef="name">
-          <th cdk-header-cell *cdkHeaderCellDef>
+      <table mat-table [dataSource]="dataSource()" style="margin: 1rem;">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>
             {{ 'table.name' | transloco }}
           </th>
-          <td cdk-cell *cdkCellDef="let element">{{ element.name }}</td>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
         </ng-container>
 
-        <ng-container cdkColumnDef="desc">
-          <th cdk-header-cell *cdkHeaderCellDef>
+        <ng-container matColumnDef="desc">
+          <th mat-header-cell *matHeaderCellDef>
             {{ 'table.desc' | transloco }}
           </th>
-          <td cdk-cell *cdkCellDef="let element">{{ element.desc }}</td>
+          <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
         </ng-container>
 
-        <ng-container cdkColumnDef="price">
-          <th cdk-header-cell *cdkHeaderCellDef>
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef>
             {{ 'table.price' | transloco }}
           </th>
-          <td cdk-cell *cdkCellDef="let element">
+          <td mat-cell *matCellDef="let element">
             {{ element.price | ordaCurrency }}
           </td>
         </ng-container>
 
-        <ng-container cdkColumnDef="active">
-          <th cdk-header-cell *cdkHeaderCellDef>
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef>
             {{ 'table.active' | transloco }}
           </th>
-          <td cdk-cell *cdkCellDef="let element">
+          <td mat-cell *matCellDef="let element">
             <mat-slide-toggle
               [checked]="element.active"
               disabled
             ></mat-slide-toggle>
-          </td>
-        </ng-container>
-
-        <ng-container cdkColumnDef="position">
-          <th cdk-header-cell *cdkHeaderCellDef>
-            {{ 'table.position' | transloco }}
-          </th>
-          <td cdk-cell *cdkCellDef="let element">
-            {{ element.position }}
           </td>
         </ng-container>
 
@@ -97,14 +90,26 @@ import { CreateProductDialogComponent } from './create-product-dialog.component'
           </td>
         </ng-container>
 
-        <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
-        <tr cdk-row *cdkRowDef="let row; columns: displayedColumns"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
-    } -->
+    }
   `,
   standalone: true,
   styles: [
     `
+      table {
+        width: 100%;
+      }
+
+      .mat-mdc-table {
+        background-color: transparent;
+      }
+
+      .mat-column-price {
+        color: red;
+      }
+
       .toolbar {
         display: flex;
         justify-content: space-between;
@@ -117,17 +122,30 @@ import { CreateProductDialogComponent } from './create-product-dialog.component'
     `,
   ],
   imports: [
-    CdkTableModule,
     MatTableModule,
+    MatSlideToggleModule,
     MatIconModule,
     MatButtonModule,
     DialogModule,
     TranslocoModule,
+    OrdaCurrencyPipe,
   ],
 })
 export class ProductsOverviewComponent {
   //   category = input.required<Category>();
-  //   dataSource: WritableSignal<Product[]> = signal([]);
+  // dataSource: WritableSignal<Product[]> = signal([]);
+  dataSource: WritableSignal<Product[]> = signal([
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+    { name: 'test', price: 100, active: true, groupId: '1' },
+  ]);
 
   dialog = inject(MatDialog);
   //   productService = inject(ProductService);
@@ -144,9 +162,9 @@ export class ProductsOverviewComponent {
   //     });
   //   }
 
-  openProductAddUpdateDialog(): void {
+  openProductAddUpdateDialog(product?: any): void {
     const dialogRef = this.dialog.open(CreateProductDialogComponent, {
-      // data: { product, categoryId: this.category().id },
+      // data: { product, groupId: this.category().id },
       minWidth: '30rem',
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -159,16 +177,16 @@ export class ProductsOverviewComponent {
     });
   }
 
-  //   deleteProduct(id: string) {
-  //     this.productService
-  //       .deleteProduct(id)
-  //       .pipe(
-  //         switchMap(() =>
-  //           this.productService.getProductsBy(this.category().id ?? ''),
-  //         ),
-  //       )
-  //       .subscribe((products) => this.dataSource?.set(products));
-  //   }
+  deleteProduct(id: string) {
+    //     this.productService
+    //       .deleteProduct(id)
+    //       .pipe(
+    //         switchMap(() =>
+    //           this.productService.getProductsBy(this.category().id ?? ''),
+    //         ),
+    //       )
+    //       .subscribe((products) => this.dataSource?.set(products));
+  }
 
   //   onFileSelected(event: any) {
   //     const file: File = (event.target as HTMLInputElement).files![0];
