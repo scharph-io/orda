@@ -34,7 +34,7 @@ func (r *ProductRepo) Read(ctx context.Context) (products []model.Product, err e
 	return products, nil
 }
 
-func (r *ProductRepo) ReadByGroupID(ctx context.Context, group_id string) (products []model.Product, err error) {
+func (r *ProductRepo) ReadByGroupId(ctx context.Context, group_id string) (products []model.Product, err error) {
 	res := r.db.WithContext(ctx).Where("group_id = ?", group_id).
 		Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&products)
 	if res.Error != nil {
@@ -55,7 +55,7 @@ func (r *ProductRepo) ImportMany(ctx context.Context, products *[]model.Product,
 }
 
 func (r *ProductRepo) Update(ctx context.Context, id string, product *model.Product) (*model.Product, error) {
-	res := r.db.WithContext(ctx).Model(&model.Product{}).Where("id = ?", id).Updates(&product)
+	res := r.db.WithContext(ctx).Model(&model.Product{}).Where("id = ?", id).Updates(&product).Find(&product)
 	if res.Error != nil {
 		return nil, res.Error
 	}

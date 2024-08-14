@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/model"
 	"gorm.io/gorm"
@@ -32,9 +33,13 @@ func (g *GroupRepo) Read(ctx context.Context) (groups []model.Group, err error) 
 }
 
 func (g *GroupRepo) Update(ctx context.Context, id string, group *model.Group) (*model.Group, error) {
-	res := g.db.WithContext(ctx).Model(&model.Group{}).Where("id = ?", id).Updates(&group)
+	res := g.db.WithContext(ctx).Model(&model.Group{}).Where("id = ?", id).Updates(&group).Find(&group)
 	if res.Error != nil {
 		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, fmt.Errorf("group not found")
 	}
 	return group, nil
 }

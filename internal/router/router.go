@@ -8,7 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/scharph/orda/internal/handler"
-	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/web/client"
 )
 
@@ -39,6 +38,22 @@ func SetupRoutes(app *fiber.App) {
 	auth := api.Group("/auth")
 	auth.Post("/login", handler.Login)
 
+	// Assortment
+	assortment := api.Group("/assortment")
+	assortmentHandler := createAssortmentHandler()
+
+	group := assortment.Group("/groups")
+	group.Get("/", assortmentHandler.GetGroups)
+	group.Post("/", assortmentHandler.CreateGroup)
+	group.Put("/:id", assortmentHandler.UpdateGroup)
+	group.Delete("/:id", assortmentHandler.DeleteGroup)
+
+	product := assortment.Group("/products")
+	product.Get("/", assortmentHandler.GetProducts)
+	product.Post("/", assortmentHandler.CreateProduct)
+	product.Put("/:id", assortmentHandler.UpdateProduct)
+	product.Delete("/:id", assortmentHandler.DeleteProduct)
+
 	// Category
 	// category := api.Group("/category")
 	// category.Get("/", middleware.Protected(), handler.GetAllCategories)
@@ -48,35 +63,35 @@ func SetupRoutes(app *fiber.App) {
 	// category.Get("/:id/product", middleware.Protected(), handler.GetAllCategoryProducts)
 	// category.Get("export/:id/product", middleware.Protected(), handler.GetAllCategoryProductsAsFile)
 
-	// Group
-	group := api.Group("/group")
+	// // Group
+	// group := api.Group("/group")
 
-	// group.Get("/", middleware.Protected(), handler.GetAllGroups)
-	group.Post("/", middleware.Protected(), handler.CreateGroup)
-	group.Put("/:id", middleware.Protected(), handler.UpdateGroup)
-	group.Delete("/:id", middleware.Protected(), handler.DeleteGroup)
+	// // group.Get("/", middleware.Protected(), handler.GetAllGroups)
+	// group.Post("/", middleware.Protected(), handler.CreateGroup)
+	// group.Put("/:id", middleware.Protected(), handler.UpdateGroup)
+	// group.Delete("/:id", middleware.Protected(), handler.DeleteGroup)
 
-	// Product
-	product := api.Group("/product")
-	product.Get("/", middleware.Protected(), handler.GetAllProducts)
-	product.Post("/", middleware.Protected(), handler.CreateProduct)
-	product.Post("/import", middleware.Protected(), handler.ImportProducts)
-	// product.Get("/:id", middleware.Protected(), handler.GetProduct)
-	product.Put("/:id", middleware.Protected(), handler.UpdateProduct)
-	product.Delete("/:id", middleware.Protected(), handler.DeleteProduct)
+	// // Product
+	// product := api.Group("/product")
+	// product.Get("/", middleware.Protected(), handler.GetAllProducts)
+	// product.Post("/", middleware.Protected(), handler.CreateProduct)
+	// product.Post("/import", middleware.Protected(), handler.ImportProducts)
+	// // product.Get("/:id", middleware.Protected(), handler.GetProduct)
+	// product.Put("/:id", middleware.Protected(), handler.UpdateProduct)
+	// product.Delete("/:id", middleware.Protected(), handler.DeleteProduct)
 
-	// Checkout
-	checkout := api.Group("/checkout")
-	checkout.Post("/", middleware.Protected(), handler.CreateTransaction)
+	// // Checkout
+	// checkout := api.Group("/checkout")
+	// checkout.Post("/", middleware.Protected(), handler.CreateTransaction)
 
-	// Transaction
-	transaction := api.Group("/transaction")
-	transaction.Get("/", middleware.Protected(), handler.GetAllTransactions)
-	transaction.Delete("/:id", middleware.Protected(), handler.DeleteTransaction)
+	// // Transaction
+	// transaction := api.Group("/transaction")
+	// transaction.Get("/", middleware.Protected(), handler.GetAllTransactions)
+	// transaction.Delete("/:id", middleware.Protected(), handler.DeleteTransaction)
 
-	// Statistic
-	statistic := api.Group("/statistic")
-	statistic.Get("/", middleware.Protected(), handler.GetStatistics)
-	statistic.Get("/products", middleware.Protected(), handler.GetProductStatistic)
+	// // Statistic
+	// statistic := api.Group("/statistic")
+	// statistic.Get("/", middleware.Protected(), handler.GetStatistics)
+	// statistic.Get("/products", middleware.Protected(), handler.GetProductStatistic)
 
 }

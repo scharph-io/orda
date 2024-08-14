@@ -104,11 +104,11 @@ stop: ## Stop the container
 start: ## Start the container
 	docker start $(project_name)
 
-docker-mysql-up:
-	docker compose -f docker-compose.local.yaml up -d
+docker-dev-up:
+	docker compose -f docker-compose.yaml up -d
 
-docker-mysql-down:
-	docker compose -f docker-compose.local.yaml down -v
+docker-dev-down:
+	docker compose -f docker-compose.yaml down -v
 
 docker-build:
 	docker build -f ci/Dockerfile --build-arg="BUILD=$(VERSION)" -t $(IMAGE):$(VERSION) . --progress=plain
