@@ -2,20 +2,24 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './auth/auth.guard';
 import { HomeComponent } from './home/home.component';
-import { ManageComponent } from './manage/manage.component';
 import { HistoryComponent } from './history/history.component';
 import { SettingsComponent } from './settings/settings.component';
 import { StatisticComponent } from './statistics/statistic.component';
 import { AssortmentOverviewComponent } from './manage/assortment/overview.component';
 import { GroupsOverviewComponent } from './manage/assortment/group/groups-overview.component';
 import { GroupDetailsDialogComponent } from './manage/assortment/group/group-details-dialog.component';
+import { ViewsOverviewComponent } from './manage/views/overview.component';
+import { ClientsOverviewComponent } from './manage/clients/overview.component';
+import { ViewDetailsComponent } from './manage/views/details/details.component';
 
 export const routes: Routes = [
   { path: 'assortment/group/:id', component: GroupDetailsDialogComponent },
   { path: 'assortment', component: AssortmentOverviewComponent },
+  { path: 'views', component: ViewsOverviewComponent },
+  { path: 'views/:id', component: ViewDetailsComponent },
+  { path: 'clients', component: ClientsOverviewComponent },
 
   // { path: 'login', component: LoginComponent },
-  // { path: 'manage', component: ManageComponent, canActivate: [AuthGuard] },
   // { path: 'history', component: HistoryComponent, canActivate: [AuthGuard] },
   // {
   //   path: 'statistic',

@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupsOverviewComponent } from './group/groups-overview.component';
 import { MatDialog } from '@angular/material/dialog';
-import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
+// import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
 import { CreateGroupDialogComponent } from './group/create-group-dialog.component';
 
 @Component({
