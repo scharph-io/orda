@@ -53,7 +53,7 @@ export class AssortmentOverviewComponent {
   openGroupAddUpdateDialog(): void {
     const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
       //   data: { product, categoryId: this.category().id },
-      minWidth: '30rem',
+      minWidth: '90vw',
     });
 
     dialogRef.afterClosed().subscribe((result) => {

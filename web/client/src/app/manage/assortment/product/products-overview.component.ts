@@ -165,7 +165,7 @@ export class ProductsOverviewComponent {
   openProductAddUpdateDialog(product?: any): void {
     const dialogRef = this.dialog.open(CreateProductDialogComponent, {
       // data: { product, groupId: this.category().id },
-      minWidth: '30rem',
+      minWidth: '90vw',
     });
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed');

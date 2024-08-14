@@ -17,6 +17,7 @@ import {
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
+import { ViewProductComponent } from './view-product/view-product.component';
 
 export interface ViewGroup {
   id?: string;
@@ -33,7 +34,7 @@ export interface ViewGroup {
       <h2>view details</h2>
       <button mat-fab extended (click)="openViewAddUpdateDialog()">
         <mat-icon>add</mat-icon>
-        add_viewproduct
+        add
       </button>
     </div>
 
@@ -44,44 +45,39 @@ export interface ViewGroup {
           <div
             cdkDropList
             class="example-list"
-            (cdkDropListDropped)="drop($event)"
+            (cdkDropListDropped)="drop(g.products, $event)"
           >
             @for (p of g.products; track p) {
-              <div class="example-box" cdkDrag>
+              <div
+                class="example-box"
+                cdkDrag
+                [cdkDragStartDelay]="250"
+                (cdkDragDropped)="msg('dropped')"
+                (cdkDragEnded)="msg('ended')"
+              >
                 <div
                   class="example-custom-placeholder"
                   *cdkDragPlaceholder
                 ></div>
-                {{ p.name }}
+                <orda-view-product [product]="p" />
               </div>
             }
           </div>
         </div>
       }
     </div>
-
-    <!-- <mat-list>
-      @for (g of groups; track g.position) {
-        <div mat-subheader>{{ g.name }}</div>
-        @for (p of g.products; track p) {
-          <div cdkDropList (cdkDropListDropped)="drop(g.id ?? '', $event)">
-            <mat-list-item cdkDrag>
-              <div matListItemTitle>{{ p.name }}</div>
-              <div matListItemLine>{{ p.desc }}</div>
-            </mat-list-item>
-            <mat-list-item
-              class="example-custom-placeholder"
-              *cdkDragPlaceholder
-            />
-          </div>
-        }
-        <mat-divider></mat-divider>
-      }
-    </mat-list> -->
   `,
   standalone: true,
   styles: [
     `
+      :host {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
       mat-grid-tile {
         background: grey;
         border: 1px solid red;
@@ -97,9 +93,9 @@ export interface ViewGroup {
         width: 500px;
         max-width: 100%;
         border: solid 1px #ccc;
-        min-height: 60px;
+        min-height: 40px;
         display: block;
-        background: white;
+        // background: white;
         border-radius: 4px;
         overflow: hidden;
       }
@@ -114,7 +110,7 @@ export interface ViewGroup {
         justify-content: space-between;
         box-sizing: border-box;
         cursor: move;
-        background: white;
+        // background: white;
         font-size: 14px;
       }
 
@@ -158,6 +154,7 @@ export interface ViewGroup {
     CdkDropList,
     CdkDrag,
     CdkDragPlaceholder,
+    ViewProductComponent,
   ],
 })
 export class ViewDetailsComponent {
@@ -173,7 +170,7 @@ export class ViewDetailsComponent {
       products: [
         {
           id: '0',
-          name: 'Bier 1',
+          name: 'Bier 0',
           price: 400,
           active: true,
           groupId: '1',
@@ -182,7 +179,7 @@ export class ViewDetailsComponent {
         },
         {
           id: '1',
-          name: 'Bier 2',
+          name: 'Bier 1',
           price: 500,
           active: true,
           groupId: '1',
@@ -191,7 +188,71 @@ export class ViewDetailsComponent {
         },
         {
           id: '2',
+          name: 'Bier 2',
+          price: 2000,
+          active: true,
+          groupId: '1',
+          position: 3,
+          desc: '2L',
+          color: 'blue',
+        },
+        {
+          id: '3',
           name: 'Bier 3',
+          price: 500,
+          active: true,
+          groupId: '1',
+          position: 2,
+          desc: '0.3L',
+        },
+        {
+          id: '4',
+          name: 'Bier 4',
+          price: 2000,
+          active: true,
+          groupId: '1',
+          position: 3,
+          desc: '2L',
+        },
+        {
+          id: '5',
+          name: 'Bier 5',
+          price: 500,
+          active: true,
+          groupId: '1',
+          position: 2,
+          desc: '0.3L',
+        },
+        {
+          id: '6',
+          name: 'Bier 6',
+          price: 2000,
+          active: true,
+          groupId: '1',
+          position: 3,
+          desc: '2L',
+        },
+        {
+          id: '7',
+          name: 'Bier 7',
+          price: 2000,
+          active: true,
+          groupId: '1',
+          position: 3,
+          desc: '2L',
+        },
+        {
+          id: '8',
+          name: 'Bier 8',
+          price: 500,
+          active: true,
+          groupId: '1',
+          position: 2,
+          desc: '0.3L',
+        },
+        {
+          id: '9',
+          name: 'Bier 9',
           price: 2000,
           active: true,
           groupId: '1',
@@ -240,6 +301,10 @@ export class ViewDetailsComponent {
     },
   ];
 
+  msg(msg: string) {
+    console.log(msg);
+  }
+
   openViewAddUpdateDialog(): void {
     // const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
     //   //   data: { product, categoryId: this.category().id },
@@ -263,11 +328,7 @@ export class ViewDetailsComponent {
   //     );
   //   }
 
-  drop(event: CdkDragDrop<ViewProduct[]>) {
-    moveItemInArray(
-      this.groups[0].products,
-      event.previousIndex,
-      event.currentIndex,
-    );
+  drop(p: ViewProduct[], event: CdkDragDrop<ViewProduct[]>) {
+    moveItemInArray(p, event.previousIndex, event.currentIndex);
   }
 }

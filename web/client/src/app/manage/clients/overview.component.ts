@@ -3,19 +3,20 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
+import { ClientsTableComponent } from './clients-table/clients-table.component';
 // import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
 
 @Component({
   selector: 'orda-clients-overview',
   template: `
     <div class="toolbar">
-      <h2>views</h2>
+      <h2>clients</h2>
       <button mat-fab extended (click)="openClientAddUpdateDialog()">
         <mat-icon>add</mat-icon>
         new_client
       </button>
     </div>
-    <!-- <orda-groups-overview /> -->
+    <orda-clients-table />
   `,
   standalone: true,
   styles: [
@@ -28,7 +29,12 @@ import { MatDialog } from '@angular/material/dialog';
       }
     `,
   ],
-  imports: [MatIconModule, MatButtonModule, DialogModule],
+  imports: [
+    MatIconModule,
+    MatButtonModule,
+    DialogModule,
+    ClientsTableComponent,
+  ],
 })
 export class ClientsOverviewComponent {
   dialog = inject(MatDialog);
