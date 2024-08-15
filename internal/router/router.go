@@ -44,6 +44,8 @@ func SetupRoutes(app *fiber.App) {
 
 	group := assortment.Group("/groups")
 	group.Get("/", assortmentHandler.GetGroups)
+	group.Get("/:id", assortmentHandler.GetGroupById)
+
 	group.Post("/", assortmentHandler.CreateGroup)
 	group.Put("/:id", assortmentHandler.UpdateGroup)
 	group.Delete("/:id", assortmentHandler.DeleteGroup)

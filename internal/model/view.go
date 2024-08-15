@@ -9,7 +9,6 @@ import (
 type View struct {
 	Base
 	Name     string    `json:"name"`
-	Deposit  uint      `json:"deposit"`
 	Products []Product `json:"products" gorm:"many2many:view_products;"`
 }
 

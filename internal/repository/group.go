@@ -32,6 +32,14 @@ func (g *GroupRepo) Read(ctx context.Context) (groups []model.Group, err error) 
 	return groups, nil
 }
 
+func (g *GroupRepo) ReadById(ctx context.Context, id string) (group model.Group, err error) {
+	res := g.db.WithContext(ctx).Where("id = ?", id).Preload("Products").First(&group)
+	if res.Error != nil {
+		return model.Group{}, res.Error
+	}
+	return group, nil
+}
+
 func (g *GroupRepo) Update(ctx context.Context, id string, group *model.Group) (*model.Group, error) {
 	res := g.db.WithContext(ctx).Model(&model.Group{}).Where("id = ?", id).Updates(&group).Find(&group)
 	if res.Error != nil {

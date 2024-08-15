@@ -2,6 +2,7 @@ import { DialogModule } from '@angular/cdk/dialog';
 import { MatTableModule } from '@angular/material/table';
 import {
   Component,
+  OnInit,
   WritableSignal,
   effect,
   inject,
@@ -15,8 +16,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { TranslocoModule } from '@jsverse/transloco';
 import { CreateProductDialogComponent } from './create-product-dialog.component';
-import { Product } from '../../../shared/model/product';
+import { Group, Product } from '../../../shared/model/product';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
+import { AssortmentService } from '../../../shared/services/assortment.service';
 
 @Component({
   selector: 'orda-products-overview',
@@ -131,49 +133,34 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
     OrdaCurrencyPipe,
   ],
 })
-export class ProductsOverviewComponent {
-  //   category = input.required<Category>();
-  // dataSource: WritableSignal<Product[]> = signal([]);
-  dataSource: WritableSignal<Product[]> = signal([
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-    { name: 'test', price: 100, active: true, groupId: '1' },
-  ]);
+export class ProductsOverviewComponent implements OnInit {
+  group = input.required<Group>();
+  dataSource: WritableSignal<Product[]> = signal([]);
+
+  assortmentService = inject(AssortmentService);
 
   dialog = inject(MatDialog);
-  //   productService = inject(ProductService);
 
   displayedColumns: string[] = ['name', 'desc', 'price', 'active', 'actions'];
 
-  //   constructor() {
-  //     effect(() => {
-  //       this.productService
-  //         .getProductsBy(this.category().id ?? '')
-  //         .subscribe((data) => {
-  //           this.dataSource?.set(data);
-  //         });
-  //     });
-  //   }
+  constructor() {}
+  ngOnInit(): void {
+    this.dataSource.set(this.group().products ?? []);
+  }
 
   openProductAddUpdateDialog(product?: any): void {
     const dialogRef = this.dialog.open(CreateProductDialogComponent, {
-      // data: { product, groupId: this.category().id },
+      data: { product, groupId: this.group().id },
       minWidth: '90vw',
     });
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
-      //   this.productService
-      //     .getProductsBy(this.category().id ?? '')
-      //     .subscribe((products) => {
-      //       this.dataSource?.set(products);
-      //     });
+      console.log('The dialog was closed', result);
+      console.log('The dialog was closed', result);
+      // this.assortmentService
+      //   .getProductsByGroupId$(this.group().id ?? '')
+      //   .subscribe((products) => {
+      //     this.dataSource?.set(products);
+      //   });
     });
   }
 

@@ -18,8 +18,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 
 import { TranslocoModule } from '@jsverse/transloco';
-import { Product } from '../../../shared/model/product';
-import { MessageService } from '../../../shared/services/message.service';
+import { Group, Product } from '../../../shared/model/product';
+import {
+  MessageService,
+  Severity,
+} from '../../../shared/services/message.service';
+import { AssortmentService } from '../../../shared/services/assortment.service';
+import { catchError, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'orda-create-group-dialog',
@@ -39,6 +44,10 @@ import { MessageService } from '../../../shared/services/message.service';
       <mat-form-field>
         <mat-label>{{ 'table.desc' | transloco }}</mat-label>
         <input matInput formControlName="desc" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>{{ 'table.deposit' | transloco }}</mat-label>
+        <input matInput formControlName="deposit" type="number" />
       </mat-form-field>
     </mat-dialog-content>
 
@@ -90,72 +99,66 @@ export class CreateGroupDialogComponent {
   groupForm = new FormGroup({
     name: new FormControl('', Validators.required),
     desc: new FormControl(''),
-    price: new FormControl<number | undefined>(undefined, [
-      Validators.required,
-      Validators.min(0.1),
-      Validators.max(100),
-    ]),
-    active: new FormControl(true),
-    position: new FormControl<number>(1),
+    deposit: new FormControl(0),
   });
-
-  //   productService = inject(ProductService);
 
   isUpdate = false;
 
+  dialogRef = inject(MatDialogRef<CreateGroupDialogComponent>);
+  messageService = inject(MessageService);
+  assortmentService = inject(AssortmentService);
+
   constructor(
-    public dialogRef: MatDialogRef<CreateGroupDialogComponent>,
-    // public messageService: MessageService,
-    // @Inject(MAT_DIALOG_DATA)
-    // public data: { product?: Grouop; categoryId: string },
+    @Inject(MAT_DIALOG_DATA)
+    public data: { group?: Group; groupId: string },
   ) {
-    // if (this.data.product !== undefined) {
-    //   this.isUpdate = true;
-    //   this.productForm.patchValue({
-    //     name: this.data.product.name,
-    //     desc: this.data.product.desc,
-    //     price: this.data.product.price / 100,
-    //     active: this.data.product.active,
-    //     position: this.data.product.position,
-    //   });
-    // }
+    if (this.data.group !== undefined) {
+      this.isUpdate = true;
+      this.groupForm.patchValue({
+        name: this.data.group.name,
+        desc: this.data.group.desc,
+        deposit: this.data.group.deposit / 100,
+      });
+    }
   }
 
   create() {
-    // if (this.productForm.valid) {
-    //   const value = this.productForm.value;
-    //   this.productService
-    //     .createProduct({
-    //       name: value.name ?? '',
-    //       desc: value.desc ?? '',
-    //       price: Math.round((value.price ?? 0) * 100),
-    //       active: value.active ?? false,
-    //       categoryId: this.data.categoryId,
-    //       position: value.position ?? 0,
-    //     })
-    //     .subscribe((res) => {
-    //       console.log(res);
-    //       this.dialogRef.close();
-    //     });
-    // }
+    if (this.groupForm.valid) {
+      const value = this.groupForm.value;
+      this.assortmentService
+        .addGroup$({
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          deposit: Math.round((value.deposit ?? 0) * 100),
+        })
+        .pipe(
+          catchError((err) => {
+            this.messageService.send({
+              title: err.statusText,
+              severity: Severity.ERROR,
+            });
+            return EMPTY;
+          }),
+        )
+        .subscribe((res) => {
+          this.dialogRef.close(res);
+        });
+    }
   }
 
   update() {
-    // console.log(this.productForm.value);
-    // if (this.productForm.valid) {
-    //   const value = this.productForm.value;
-    //   this.productService
-    //     .updateProduct(this.data.product?.id ?? '', {
-    //       name: value.name ?? '',
-    //       desc: value.desc ?? '',
-    //       price: Math.round((value.price ?? 0) * 100),
-    //       active: value.active ?? false,
-    //       categoryId: this.data.categoryId,
-    //       position: value.position ?? 0,
-    //     })
-    //     .subscribe(() => {
-    //       this.dialogRef.close();
-    //     });
-    // }
+    console.log(this.groupForm.value);
+    if (this.groupForm.valid) {
+      const value = this.groupForm.value;
+      this.assortmentService
+        .updateGroup$(this.data.group?.id ?? '', {
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          deposit: Math.round((value.deposit ?? 0) * 100),
+        })
+        .subscribe((res) => {
+          this.dialogRef.close(res);
+        });
+    }
   }
 }

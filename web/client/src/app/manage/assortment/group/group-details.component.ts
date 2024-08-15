@@ -1,4 +1,11 @@
-import { Component, Inject, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  effect,
+  Inject,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MatDialogRef,
@@ -10,28 +17,25 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ProductsOverviewComponent } from '../product/products-overview.component';
 import { ActivatedRoute } from '@angular/router';
+import { AssortmentService } from '../../../shared/services/assortment.service';
+import { Group } from '../../../shared/model/product';
+import { JsonPipe } from '@angular/common';
+import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
 @Component({
   selector: 'orda-group-details',
   template: `
     <div class="container">
       <div class="header">
-        <h3>Group Details</h3>
-        <!-- <button
-          (click)="dialogRef.close()"
-          mat-icon-button
-          aria-label="Example icon button with a open in new tab icon"
-        >
-          <mat-icon>close</mat-icon>
-        </button> -->
+        <h3>{{ group()?.name }}</h3>
       </div>
       <div class="content">
-        <orda-products-overview />
+        {{ group()?.desc }}
+        {{ group()?.deposit | ordaCurrency }}
+        @if (group(); as g) {
+          <orda-products-overview [group]="g" />
+        }
       </div>
-      <!-- <div class="footer">
-        <button mat-raised-button>Basic</button>
-        <button mat-raised-button>Basic</button>
-      </div> -->
     </div>
   `,
   styles: [
@@ -66,15 +70,26 @@ import { ActivatedRoute } from '@angular/router';
     MatButtonModule,
     MatIconModule,
     ProductsOverviewComponent,
+    OrdaCurrencyPipe,
   ],
 })
-export class GroupDetailsDialogComponent implements OnInit {
+export class GroupDetailsComponent implements OnInit {
   route = inject(ActivatedRoute);
+  assortmentService = inject(AssortmentService);
+
+  groupId = signal<string>('');
+  group = signal<Group | undefined>(undefined);
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
-      console.log('Test ID:', params['id']);
+      this.groupId.set(params['id']);
     });
   }
-  constructor() {}
+  constructor() {
+    effect(() => {
+      this.assortmentService.getGroup$(this.groupId()).subscribe((data) => {
+        this.group?.set(data);
+      });
+    });
+  }
 }

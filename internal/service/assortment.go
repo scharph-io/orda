@@ -9,20 +9,23 @@ import (
 )
 
 type GroupRequest struct {
-	Name string `json:"name"`
-	Desc string `json:"description"`
+	Name    string `json:"name"`
+	Desc    string `json:"desc"`
+	Deposit uint   `json:"deposit"`
 }
 
 type GroupResponse struct {
-	Id        string `json:"id"`
-	Name      string `json:"name"`
-	Desc      string `json:"description"`
-	CreatedAt string `json:"created_at"`
+	Id        string            `json:"id"`
+	Name      string            `json:"name"`
+	Desc      string            `json:"desc"`
+	Deposit   uint              `json:"deposit"`
+	CreatedAt string            `json:"created_at"`
+	Products  []ProductResponse `json:"products,omitempty"`
 }
 
 type ProductRequest struct {
 	Name    string `json:"name"`
-	Desc    string `json:"description"`
+	Desc    string `json:"desc"`
 	Price   int32  `json:"price"`
 	GroupID string `json:"group_id"`
 }
@@ -30,9 +33,10 @@ type ProductRequest struct {
 type ProductResponse struct {
 	Id        string `json:"id"`
 	Name      string `json:"name"`
-	Desc      string `json:"description"`
+	Desc      string `json:"desc"`
 	Price     int32  `json:"price"`
 	GroupID   string `json:"group_id"`
+	Active    bool   `json:"active"`
 	UpdatedAt string `json:"updated_at"`
 }
 
@@ -56,6 +60,7 @@ func (a *AssortmentService) GetGroups(ctx context.Context) ([]GroupResponse, err
 			Id:        group.ID,
 			Name:      group.Name,
 			Desc:      group.Desc,
+			Deposit:   group.Deposit,
 			CreatedAt: group.CreatedAt.String(),
 		})
 	}
@@ -66,8 +71,36 @@ func (a *AssortmentService) GetGroups(ctx context.Context) ([]GroupResponse, err
 	return groups, nil
 }
 
+func (a *AssortmentService) GetGroup(ctx context.Context, id string) (*GroupResponse, error) {
+	res, err := a.groupRepo.ReadById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var products []ProductResponse
+	for _, product := range res.Products {
+		products = append(products, ProductResponse{
+			Id:        product.ID,
+			Name:      product.Name,
+			Desc:      product.Desc,
+			Price:     product.Price,
+			GroupID:   product.GroupID,
+			Active:    product.Active,
+			UpdatedAt: product.UpdatedAt.String(),
+		})
+	}
+
+	return &GroupResponse{
+		Id:        res.ID,
+		Name:      res.Name,
+		Desc:      res.Desc,
+		Deposit:   res.Deposit,
+		CreatedAt: res.CreatedAt.String(),
+		Products:  products}, nil
+}
+
 func (a *AssortmentService) CreateGroup(ctx context.Context, group GroupRequest) (*GroupResponse, error) {
-	res, err := a.groupRepo.Create(ctx, &model.Group{Name: group.Name, Desc: group.Desc})
+	res, err := a.groupRepo.Create(ctx, &model.Group{Name: group.Name, Desc: group.Desc, Deposit: group.Deposit})
 	if err != nil {
 		return nil, err
 	}
@@ -75,6 +108,7 @@ func (a *AssortmentService) CreateGroup(ctx context.Context, group GroupRequest)
 		Id:        res.ID,
 		Name:      res.Name,
 		Desc:      res.Desc,
+		Deposit:   res.Deposit,
 		CreatedAt: res.CreatedAt.String(),
 	}, nil
 }
@@ -88,6 +122,7 @@ func (a *AssortmentService) UpdateGroup(ctx context.Context, id string, group Gr
 		Id:        res.ID,
 		Name:      res.Name,
 		Desc:      res.Desc,
+		Deposit:   res.Deposit,
 		CreatedAt: res.CreatedAt.String(),
 	}, nil
 }

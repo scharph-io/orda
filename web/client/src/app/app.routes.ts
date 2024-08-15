@@ -7,13 +7,13 @@ import { SettingsComponent } from './settings/settings.component';
 import { StatisticComponent } from './statistics/statistic.component';
 import { AssortmentOverviewComponent } from './manage/assortment/overview.component';
 import { GroupsOverviewComponent } from './manage/assortment/group/groups-overview.component';
-import { GroupDetailsDialogComponent } from './manage/assortment/group/group-details-dialog.component';
+import { GroupDetailsComponent } from './manage/assortment/group/group-details.component';
 import { ViewsOverviewComponent } from './manage/views/overview.component';
 import { ClientsOverviewComponent } from './manage/clients/overview.component';
 import { ViewDetailsComponent } from './manage/views/details/details.component';
 
 export const routes: Routes = [
-  { path: 'assortment/group/:id', component: GroupDetailsDialogComponent },
+  { path: 'assortment/group/:id', component: GroupDetailsComponent },
   { path: 'assortment', component: AssortmentOverviewComponent },
   { path: 'views', component: ViewsOverviewComponent },
   { path: 'views/:id', component: ViewDetailsComponent },

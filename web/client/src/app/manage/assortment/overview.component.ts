@@ -1,11 +1,13 @@
 import { DialogModule } from '@angular/cdk/dialog';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnChanges, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupsOverviewComponent } from './group/groups-overview.component';
 import { MatDialog } from '@angular/material/dialog';
 // import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
 import { CreateGroupDialogComponent } from './group/create-group-dialog.component';
+import { AssortmentService } from '../../shared/services/assortment.service';
+import { Group } from '../../shared/model/product';
 
 @Component({
   selector: 'orda-assortment-overview',
@@ -17,7 +19,7 @@ import { CreateGroupDialogComponent } from './group/create-group-dialog.componen
         new_group
       </button>
     </div>
-    <orda-groups-overview />
+    <orda-groups-overview [groups]="groups()" />
   `,
   standalone: true,
   styles: [
@@ -44,10 +46,16 @@ import { CreateGroupDialogComponent } from './group/create-group-dialog.componen
     CreateGroupDialogComponent,
   ],
 })
-export class AssortmentOverviewComponent {
+export class AssortmentOverviewComponent implements OnInit {
+  assortmentService = inject(AssortmentService);
   dialog = inject(MatDialog);
-  test() {
-    console.log('test');
+
+  groups = signal<Group[]>([]);
+
+  ngOnInit(): void {
+    this.assortmentService.getGroups$().subscribe((g) => {
+      this.groups.set(g);
+    });
   }
 
   openGroupAddUpdateDialog(): void {
@@ -57,12 +65,9 @@ export class AssortmentOverviewComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed');
-      //   this.productService
-      //     .getProductsBy(this.category().id ?? '')
-      //     .subscribe((products) => {
-      //       this.dataSource?.set(products);
-      //     });
+      console.log('The dialog was closed', result);
+
+      this.ngOnInit();
     });
   }
 }

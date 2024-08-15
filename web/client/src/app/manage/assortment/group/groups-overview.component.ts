@@ -1,29 +1,21 @@
-import { DialogModule } from '@angular/cdk/dialog';
-import { Component, inject } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { GroupDetailsDialogComponent } from './group-details-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { Group } from '../../../shared/model/product';
 
 @Component({
   selector: 'orda-groups-overview',
   template: `
     <mat-grid-list cols="5" rowHeight="4:3" gutterSize="1em">
-      <mat-grid-tile [routerLink]="['/assortment/group', id]"
-        >Getraenke</mat-grid-tile
-      >
-      <mat-grid-tile [routerLink]="['/assortment/group', id]"
-        >Speisen</mat-grid-tile
-      >
-      <mat-grid-tile [routerLink]="['/assortment/group', id]"
-        >Tabak</mat-grid-tile
-      >
-      <mat-grid-tile [routerLink]="['/assortment/group', id]"
-        >Tickets</mat-grid-tile
-      >
-      <mat-grid-tile [routerLink]="['/assortment/group', id]"
-        >Getraenke</mat-grid-tile
-      >
+      @for (g of groups(); track g.id) {
+        <mat-grid-tile [routerLink]="['/assortment/group', g.id]">
+          <div>{{ g.name }}</div>
+          <div>{{ g.desc }}</div>
+          @if (g.deposit && g.deposit > 0) {
+            <div>{{ g.deposit }}</div>
+          }
+        </mat-grid-tile>
+      }
     </mat-grid-list>
   `,
   standalone: true,
@@ -34,18 +26,13 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
       }
 
       mat-grid-tile {
-        background: white;
+        background: grey;
         border: 1px solid black;
       }
     `,
   ],
-  imports: [
-    DialogModule,
-    MatGridListModule,
-    GroupDetailsDialogComponent,
-    RouterModule,
-  ],
+  imports: [MatGridListModule, RouterModule],
 })
 export class GroupsOverviewComponent {
-  public id = 12;
+  groups = input.required<Group[]>();
 }

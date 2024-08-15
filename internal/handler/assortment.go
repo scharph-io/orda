@@ -21,11 +21,21 @@ func (h *AssortmentHandler) GetGroups(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(groups)
 }
 
+func (h *AssortmentHandler) GetGroupById(c *fiber.Ctx) error {
+	id := c.Params("id")
+	group, err := h.assortmentService.GetGroup(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(group)
+}
+
 func (h *AssortmentHandler) CreateGroup(c *fiber.Ctx) error {
 	var group service.GroupRequest
 	if err := c.BodyParser(&group); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
+
 	createdGroup, err := h.assortmentService.CreateGroup(c.Context(), group)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})

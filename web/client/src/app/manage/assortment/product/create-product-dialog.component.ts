@@ -18,6 +18,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 
 import { TranslocoModule } from '@jsverse/transloco';
+import { MessageService } from '../../../shared/services/message.service';
+import { Product } from '../../../shared/model/product';
+import { AssortmentService } from '../../../shared/services/assortment.service';
 
 @Component({
   selector: 'orda-create-product-dialog',
@@ -104,45 +107,42 @@ export class CreateProductDialogComponent {
     active: new FormControl(true),
   });
 
-  //   productService = inject(ProductService);
-
   isUpdate = false;
+  dialogRef = inject(MatDialogRef<CreateProductDialogComponent>);
+  messageService = inject(MessageService);
+  assortmentService = inject(AssortmentService);
 
   constructor(
-    public dialogRef: MatDialogRef<CreateProductDialogComponent>,
-    // public messageService: MessageService,
-    // @Inject(MAT_DIALOG_DATA)
-    // public data: { product?: Product; groupId: string },
+    @Inject(MAT_DIALOG_DATA)
+    public data: { product?: Product; groupId: string },
   ) {
-    // if (this.data.product !== undefined) {
-    //   this.isUpdate = true;
-    //   this.productForm.patchValue({
-    //     name: this.data.product.name,
-    //     desc: this.data.product.desc,
-    //     price: this.data.product.price / 100,
-    //     active: this.data.product.active,
-    //     position: this.data.product.position,
-    //   });
-    // }
+    if (this.data.product !== undefined) {
+      this.isUpdate = true;
+      this.productForm.patchValue({
+        name: this.data.product.name,
+        desc: this.data.product.desc,
+        price: this.data.product.price / 100,
+        active: this.data.product.active,
+      });
+    }
   }
 
   create() {
-    // if (this.productForm.valid) {
-    //   const value = this.productForm.value;
-    //   this.productService
-    //     .createProduct({
-    //       name: value.name ?? '',
-    //       desc: value.desc ?? '',
-    //       price: Math.round((value.price ?? 0) * 100),
-    //       active: value.active ?? false,
-    //       categoryId: this.data.categoryId,
-    //       position: value.position ?? 0,
-    //     })
-    //     .subscribe((res) => {
-    //       console.log(res);
-    //       this.dialogRef.close();
-    //     });
-    // }
+    if (this.productForm.valid) {
+      const value = this.productForm.value;
+      this.assortmentService
+        .createProduct({
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          price: Math.round((value.price ?? 0) * 100),
+          active: value.active ?? false,
+          groupId: this.data.groupId,
+        })
+        .subscribe((res) => {
+          console.log(res);
+          this.dialogRef.close();
+        });
+    }
   }
 
   update() {
