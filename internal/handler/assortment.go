@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/service"
 )
@@ -49,6 +51,8 @@ func (h *AssortmentHandler) UpdateGroup(c *fiber.Ctx) error {
 	if err := c.BodyParser(&group); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
+
+	log.Printf("group: %s", group.Desc)
 	updatedGroup, err := h.assortmentService.UpdateGroup(c.Context(), id, group)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})

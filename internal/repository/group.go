@@ -40,8 +40,17 @@ func (g *GroupRepo) ReadById(ctx context.Context, id string) (group model.Group,
 	return group, nil
 }
 
-func (g *GroupRepo) Update(ctx context.Context, id string, group *model.Group) (*model.Group, error) {
-	res := g.db.WithContext(ctx).Model(&model.Group{}).Where("id = ?", id).Updates(&group).Find(&group)
+func (g *GroupRepo) Update(ctx context.Context, id string, new *model.Group) (*model.Group, error) {
+	var group model.Group
+	if res := g.db.WithContext(ctx).Model(&model.Group{}).Where("id = ?", id).Find(&group); res.Error != nil {
+		return nil, res.Error
+	}
+
+	group.Deposit = new.Deposit
+	group.Desc = new.Desc
+	group.Name = new.Name
+
+	res := g.db.WithContext(ctx).Save(&group)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -49,7 +58,7 @@ func (g *GroupRepo) Update(ctx context.Context, id string, group *model.Group) (
 	if res.RowsAffected == 0 {
 		return nil, fmt.Errorf("group not found")
 	}
-	return group, nil
+	return &group, nil
 }
 
 func (g *GroupRepo) Delete(ctx context.Context, id string) (bool, error) {

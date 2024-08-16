@@ -155,12 +155,11 @@ export class ProductsOverviewComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed', result);
-      console.log('The dialog was closed', result);
-      // this.assortmentService
-      //   .getProductsByGroupId$(this.group().id ?? '')
-      //   .subscribe((products) => {
-      //     this.dataSource?.set(products);
-      //   });
+      this.assortmentService
+        .getProductsByGroupId$(this.group().id ?? '')
+        .subscribe((products) => {
+          this.dataSource?.set(products);
+        });
     });
   }
 

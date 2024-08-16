@@ -26,6 +26,12 @@ import {
 import { AssortmentService } from '../../../shared/services/assortment.service';
 import { catchError, EMPTY } from 'rxjs';
 
+export enum ActionType {
+  ADD = 'add',
+  EDIT = 'edit',
+  DELETE = 'delete',
+}
+
 @Component({
   selector: 'orda-create-group-dialog',
   template: `<form [formGroup]="groupForm">
@@ -52,14 +58,24 @@ import { catchError, EMPTY } from 'rxjs';
     </mat-dialog-content>
 
     <mat-dialog-actions>
-      <button mat-button mat-dialog-close>
+      <button mat-button mat-dialog-close type="reset">
         {{ 'dialog.cancel' | transloco }}
       </button>
       @if (isUpdate) {
         <button
           mat-button
+          style="background-color: red; color:white"
+          (click)="submit(ActionType.DELETE)"
+          type="submit"
+        >
+          {{ 'dialog.delete' | transloco }}
+        </button>
+        <button
+          mat-button
           color="primary"
-          (click)="update()"
+          type="submit"
+          (click)="submit(ActionType.EDIT)"
+          style="background-color: green; color:white"
           [disabled]="!groupForm.valid"
         >
           {{ 'dialog.update' | transloco }}
@@ -68,7 +84,8 @@ import { catchError, EMPTY } from 'rxjs';
         <button
           mat-button
           type="submit"
-          (click)="create()"
+          (click)="submit(ActionType.ADD)"
+          type="submit"
           [disabled]="!groupForm.valid"
         >
           {{ 'dialog.create' | transloco }}
@@ -81,6 +98,10 @@ import { catchError, EMPTY } from 'rxjs';
       mat-dialog-content {
         display: flex;
         flex-direction: column;
+      }
+
+      .mat-error {
+        color: red;
       }
     `,
   ],
@@ -108,57 +129,30 @@ export class CreateGroupDialogComponent {
   messageService = inject(MessageService);
   assortmentService = inject(AssortmentService);
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA)
-    public data: { group?: Group; groupId: string },
-  ) {
-    if (this.data.group !== undefined) {
-      this.isUpdate = true;
+  group = inject<Group>(MAT_DIALOG_DATA);
+
+  ActionType = ActionType;
+
+  constructor() {
+    if (this.group) {
       this.groupForm.patchValue({
-        name: this.data.group.name,
-        desc: this.data.group.desc,
-        deposit: this.data.group.deposit / 100,
+        name: this.group.name,
+        desc: this.group.desc ?? '',
+        deposit: this.group.deposit / 100,
       });
+      this.isUpdate = true;
     }
   }
 
-  create() {
-    if (this.groupForm.valid) {
-      const value = this.groupForm.value;
-      this.assortmentService
-        .addGroup$({
-          name: value.name ?? '',
-          desc: value.desc ?? '',
-          deposit: Math.round((value.deposit ?? 0) * 100),
-        })
-        .pipe(
-          catchError((err) => {
-            this.messageService.send({
-              title: err.statusText,
-              severity: Severity.ERROR,
-            });
-            return EMPTY;
-          }),
-        )
-        .subscribe((res) => {
-          this.dialogRef.close(res);
-        });
-    }
-  }
-
-  update() {
-    console.log(this.groupForm.value);
-    if (this.groupForm.valid) {
-      const value = this.groupForm.value;
-      this.assortmentService
-        .updateGroup$(this.data.group?.id ?? '', {
-          name: value.name ?? '',
-          desc: value.desc ?? '',
-          deposit: Math.round((value.deposit ?? 0) * 100),
-        })
-        .subscribe((res) => {
-          this.dialogRef.close(res);
-        });
-    }
+  submit(action: ActionType) {
+    const data = this.groupForm.value;
+    this.dialogRef.close({
+      action,
+      data: {
+        name: data.name,
+        desc: data.desc,
+        deposit: data.deposit ?? 0 * 100,
+      } as Group,
+    });
   }
 }

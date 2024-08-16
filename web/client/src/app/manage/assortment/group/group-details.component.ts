@@ -1,37 +1,48 @@
-import {
-  Component,
-  effect,
-  Inject,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import {
-  MatDialogRef,
-  MatDialogModule,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+
+import { MatCardModule } from '@angular/material/card';
 
 import { MatListModule } from '@angular/material/list';
 import { ProductsOverviewComponent } from '../product/products-overview.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AssortmentService } from '../../../shared/services/assortment.service';
 import { Group } from '../../../shared/model/product';
-import { JsonPipe } from '@angular/common';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
+import {
+  ActionType,
+  CreateGroupDialogComponent,
+} from './create-group-dialog.component';
+import { switchMap } from 'rxjs';
+import { MessageService } from '../../../shared/services/message.service';
 
 @Component({
   selector: 'orda-group-details',
   template: `
     <div class="container">
       <div class="header">
-        <h3>{{ group()?.name }}</h3>
+        <mat-card appearance="outlined">
+          <mat-card-header>
+            <mat-card-title>{{ group().name }}</mat-card-title>
+            @if (group().desc) {
+              <mat-card-subtitle>{{ group().desc }}</mat-card-subtitle>
+            }
+            @if (group().deposit > 0) {
+              <mat-card-subtitle>{{
+                group().deposit | ordaCurrency
+              }}</mat-card-subtitle>
+            }
+          </mat-card-header>
+
+          <mat-card-actions align="end">
+            <button mat-button (click)="editGroup()">edit</button>
+          </mat-card-actions>
+        </mat-card>
       </div>
+
       <div class="content">
-        {{ group()?.desc }}
-        {{ group()?.deposit | ordaCurrency }}
         @if (group(); as g) {
           <orda-products-overview [group]="g" />
         }
@@ -45,9 +56,6 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
         flex-direction: column;
       }
       .header {
-        display: flex;
-        justify-content: space-between;
-        flex-direction: row;
         margin: 0.5em 0.5em;
       }
 
@@ -69,27 +77,59 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
     MatListModule,
     MatButtonModule,
     MatIconModule,
+    MatCardModule,
     ProductsOverviewComponent,
     OrdaCurrencyPipe,
   ],
 })
 export class GroupDetailsComponent implements OnInit {
   route = inject(ActivatedRoute);
+  router = inject(Router);
   assortmentService = inject(AssortmentService);
+  messageService = inject(MessageService);
 
-  groupId = signal<string>('');
-  group = signal<Group | undefined>(undefined);
+  dialog = inject(MatDialog);
+
+  group = signal<Group>({} as Group);
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      this.groupId.set(params['id']);
-    });
-  }
-  constructor() {
-    effect(() => {
-      this.assortmentService.getGroup$(this.groupId()).subscribe((data) => {
-        this.group?.set(data);
+    this.route.params
+      .pipe(
+        switchMap((params) => this.assortmentService.getGroup$(params['id'])),
+      )
+      .subscribe((group) => {
+        this.group.set(group);
       });
+  }
+
+  editGroup(): void {
+    const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
+      data: this.group(),
+      minWidth: '90vw',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed', result);
+
+      switch (result.action) {
+        case ActionType.EDIT:
+          this.assortmentService
+            .updateGroup$(this.group().id ?? '', result.data)
+            .subscribe((res) => {
+              this.messageService.send({ title: 'Group updated' });
+              this.group.set(res);
+            });
+          break;
+        case ActionType.DELETE:
+          this.assortmentService
+            .deleteGroup$(this.group().id ?? '')
+            .subscribe(() => {
+              this.messageService.send({
+                title: `Group ${this.group().name} deleted`,
+              });
+              this.router.navigate(['/assortment']);
+            });
+          break;
+      }
     });
   }
 }

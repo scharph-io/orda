@@ -8,13 +8,18 @@ import { MatDialog } from '@angular/material/dialog';
 import { CreateGroupDialogComponent } from './group/create-group-dialog.component';
 import { AssortmentService } from '../../shared/services/assortment.service';
 import { Group } from '../../shared/model/product';
+import {
+  MessageService,
+  Severity,
+} from '../../shared/services/message.service';
+import { catchError, EMPTY, pipe } from 'rxjs';
 
 @Component({
   selector: 'orda-assortment-overview',
   template: `
     <div class="toolbar">
       <h2>assortment</h2>
-      <button mat-fab extended (click)="openGroupAddUpdateDialog()">
+      <button mat-fab extended (click)="openGroupAddDialog()">
         <mat-icon>add</mat-icon>
         new_group
       </button>
@@ -48,6 +53,7 @@ import { Group } from '../../shared/model/product';
 })
 export class AssortmentOverviewComponent implements OnInit {
   assortmentService = inject(AssortmentService);
+  messageService = inject(MessageService);
   dialog = inject(MatDialog);
 
   groups = signal<Group[]>([]);
@@ -58,16 +64,27 @@ export class AssortmentOverviewComponent implements OnInit {
     });
   }
 
-  openGroupAddUpdateDialog(): void {
+  openGroupAddDialog(): void {
     const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
-      //   data: { product, categoryId: this.category().id },
       minWidth: '90vw',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed', result);
-
-      this.ngOnInit();
+      this.assortmentService
+        .addGroup$(result.data)
+        .pipe(
+          catchError((err) => {
+            this.messageService.send(err.statusText);
+            return EMPTY;
+          }),
+        )
+        .subscribe((res) => {
+          this.messageService.send({
+            title: `Group ${result.data.name} added`,
+            severity: Severity.INFO,
+          });
+          this.ngOnInit();
+        });
     });
   }
 }

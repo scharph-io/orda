@@ -131,12 +131,12 @@ export class CreateProductDialogComponent {
     if (this.productForm.valid) {
       const value = this.productForm.value;
       this.assortmentService
-        .createProduct({
+        .addProduct({
           name: value.name ?? '',
           desc: value.desc ?? '',
-          price: Math.round((value.price ?? 0) * 100),
+          price: value.price ?? 0,
           active: value.active ?? false,
-          groupId: this.data.groupId,
+          group_id: this.data.groupId,
         })
         .subscribe((res) => {
           console.log(res);
@@ -154,7 +154,6 @@ export class CreateProductDialogComponent {
     //     .updateProduct(this.data.product?.id ?? '', {
     //       name: value.name ?? '',
     //       desc: value.desc ?? '',
-    //       price: Math.round((value.price ?? 0) * 100),
     //       active: value.active ?? false,
     //       categoryId: this.data.categoryId,
     //       position: value.position ?? 0,

@@ -12,7 +12,7 @@ export interface Product {
   desc?: string;
   price: number;
   active: boolean;
-  groupId: string;
+  group_id: string;
 }
 
 export interface ViewProduct {

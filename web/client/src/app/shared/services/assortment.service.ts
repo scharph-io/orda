@@ -15,12 +15,13 @@ export class AssortmentService {
   ) {}
 
   getGroups$() {
-    return this.http.get<Group[]>(`${this.endpoint}${this.path}`);
+    return this.http.get<Group[]>(`${this.endpoint}${this.path}/groups`);
   }
 
   addGroup$(group: Group) {
+    group.deposit = Math.round(group.deposit * 100);
     return this.http.post<{ data: Group; message: string }>(
-      `${this.endpoint}${this.path}`,
+      `${this.endpoint}${this.path}/groups`,
       group,
       {
         headers: this.headers,
@@ -33,6 +34,7 @@ export class AssortmentService {
   }
 
   updateGroup$(id: string, group: Group) {
+    group.deposit = Math.round(group.deposit * 100);
     return this.http.put<Group>(
       `${this.endpoint}${this.path}/groups/${id}`,
       group,
@@ -48,13 +50,31 @@ export class AssortmentService {
 
   getProductsByGroupId$(id: string) {
     return this.http.get<Product[]>(
-      `${this.endpoint}${this.path}/${id}/products?group_id=${id}`,
+      `${this.endpoint}${this.path}/products?group_id=${id}`,
     );
   }
 
-  createProduct(product: Product) {
+  addProduct(product: Product) {
+    product.price = Math.round(product.price * 100);
     return this.http.post<Product>(
       `${this.endpoint}${this.path}/products`,
+      product,
+      {
+        headers: this.headers,
+      },
+    );
+  }
+
+  deleteProduct$(id: string) {
+    return this.http.delete<Product>(
+      `${this.endpoint}${this.path}/products/${id}`,
+    );
+  }
+
+  updateProduct$(id: string, product: Product) {
+    product.price = Math.round(product.price * 100);
+    return this.http.put<Product>(
+      `${this.endpoint}${this.path}/products/${id}`,
       product,
       {
         headers: this.headers,

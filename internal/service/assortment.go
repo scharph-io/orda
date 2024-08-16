@@ -114,7 +114,13 @@ func (a *AssortmentService) CreateGroup(ctx context.Context, group GroupRequest)
 }
 
 func (a *AssortmentService) UpdateGroup(ctx context.Context, id string, group GroupRequest) (*GroupResponse, error) {
-	res, err := a.groupRepo.Update(ctx, id, &model.Group{Name: group.Name, Desc: group.Desc})
+
+	res, err := a.groupRepo.Update(ctx, id,
+		&model.Group{
+			Name:    group.Name,
+			Desc:    group.Desc,
+			Deposit: group.Deposit,
+		})
 	if err != nil {
 		return nil, err
 	}
@@ -154,6 +160,7 @@ func (a *AssortmentService) GetGroupProducts(ctx context.Context, id string) ([]
 }
 
 func (a *AssortmentService) CreateProduct(ctx context.Context, product ProductRequest) (*ProductResponse, error) {
+
 	res, err := a.productRepo.Create(ctx, &model.Product{
 		Name:    product.Name,
 		Desc:    product.Desc,
