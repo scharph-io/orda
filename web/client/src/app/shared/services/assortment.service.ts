@@ -54,7 +54,7 @@ export class AssortmentService {
     );
   }
 
-  addProduct(product: Product) {
+  addProduct$(product: Product) {
     product.price = Math.round(product.price * 100);
     return this.http.post<Product>(
       `${this.endpoint}${this.path}/products`,
@@ -71,8 +71,13 @@ export class AssortmentService {
     );
   }
 
+  deleteProductsByGroupId$(id: string) {
+    return this.http.delete<Product[]>(
+      `${this.endpoint}${this.path}/groups/${id}/products`,
+    );
+  }
+
   updateProduct$(id: string, product: Product) {
-    product.price = Math.round(product.price * 100);
     return this.http.put<Product>(
       `${this.endpoint}${this.path}/products/${id}`,
       product,

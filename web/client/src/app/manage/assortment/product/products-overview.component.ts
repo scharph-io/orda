@@ -1,7 +1,10 @@
 import { DialogModule } from '@angular/cdk/dialog';
 import { MatTableModule } from '@angular/material/table';
 import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   OnInit,
   WritableSignal,
   effect,
@@ -12,23 +15,40 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import {
+  MatSlideToggleChange,
+  MatSlideToggleModule,
+} from '@angular/material/slide-toggle';
 
 import { TranslocoModule } from '@jsverse/transloco';
 import { CreateProductDialogComponent } from './create-product-dialog.component';
 import { Group, Product } from '../../../shared/model/product';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import { AssortmentService } from '../../../shared/services/assortment.service';
+import { catchError, EMPTY, switchMap } from 'rxjs';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  MessageService,
+  Severity,
+} from '../../../shared/services/message.service';
 
 @Component({
   selector: 'orda-products-overview',
   template: `
     <div class="toolbar">
       <h2>products</h2>
-      <button mat-fab extended (click)="openProductAddUpdateDialog()">
-        <mat-icon>add</mat-icon>
-        new_product
-      </button>
+      <div style="display: flex; gap:0.5em">
+        <button mat-fab extended (click)="openProductAddUpdateDialog()">
+          <mat-icon>add</mat-icon>
+          new_product
+        </button>
+        @if (dataSource().length !== 0) {
+          <button disabled mat-fab extended (click)="deleteAll()">
+            <mat-icon>delete</mat-icon>
+            delete_all
+          </button>
+        }
+      </div>
     </div>
 
     <!-- @if (dataSource().length == 0) {
@@ -72,7 +92,7 @@ import { AssortmentService } from '../../../shared/services/assortment.service';
           <td mat-cell *matCellDef="let element">
             <mat-slide-toggle
               [checked]="element.active"
-              disabled
+              (change)="changed(element, $event)"
             ></mat-slide-toggle>
           </td>
         </ng-container>
@@ -124,6 +144,8 @@ import { AssortmentService } from '../../../shared/services/assortment.service';
     `,
   ],
   imports: [
+    FormsModule,
+    ReactiveFormsModule,
     MatTableModule,
     MatSlideToggleModule,
     MatIconModule,
@@ -132,31 +154,42 @@ import { AssortmentService } from '../../../shared/services/assortment.service';
     TranslocoModule,
     OrdaCurrencyPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsOverviewComponent implements OnInit {
-  group = input.required<Group>();
+  products = input.required<Product[]>();
+  group = input.required<string>();
   dataSource: WritableSignal<Product[]> = signal([]);
 
   assortmentService = inject(AssortmentService);
+  messageService = inject(MessageService);
 
   dialog = inject(MatDialog);
 
   displayedColumns: string[] = ['name', 'desc', 'price', 'active', 'actions'];
 
   constructor() {}
+
   ngOnInit(): void {
-    this.dataSource.set(this.group().products ?? []);
+    this.dataSource.set(this.products() ?? []);
   }
 
-  openProductAddUpdateDialog(product?: any): void {
+  deleteAll() {
+    this.assortmentService
+      .deleteProductsByGroupId$(this.group() ?? '')
+      .pipe()
+      .subscribe((products) => this.dataSource?.set([]));
+  }
+
+  openProductAddUpdateDialog(product?: Product): void {
     const dialogRef = this.dialog.open(CreateProductDialogComponent, {
-      data: { product, groupId: this.group().id },
+      data: { product, groupId: this.group() },
       minWidth: '90vw',
     });
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed', result);
       this.assortmentService
-        .getProductsByGroupId$(this.group().id ?? '')
+        .getProductsByGroupId$(this.group() ?? '')
         .subscribe((products) => {
           this.dataSource?.set(products);
         });
@@ -164,14 +197,34 @@ export class ProductsOverviewComponent implements OnInit {
   }
 
   deleteProduct(id: string) {
-    //     this.productService
-    //       .deleteProduct(id)
-    //       .pipe(
-    //         switchMap(() =>
-    //           this.productService.getProductsBy(this.category().id ?? ''),
-    //         ),
-    //       )
-    //       .subscribe((products) => this.dataSource?.set(products));
+    this.assortmentService
+      .deleteProduct$(id)
+      .pipe(
+        switchMap(() =>
+          this.assortmentService.getProductsByGroupId$(this.group() ?? ''),
+        ),
+      )
+      .subscribe((products) => this.dataSource?.set(products));
+  }
+
+  changed(p: Product, ev: MatSlideToggleChange) {
+    this.assortmentService
+      .updateProduct$(p.id ?? '', {
+        ...p,
+        active: ev.checked,
+      })
+      .pipe(
+        catchError((err) => {
+          this.messageService.send({
+            title: 'Product updated failed',
+            severity: Severity.ERROR,
+          });
+          return EMPTY;
+        }),
+      )
+      .subscribe((res) => {
+        this.messageService.send({ title: 'Product updated' });
+      });
   }
 
   //   onFileSelected(event: any) {

@@ -17,6 +17,7 @@ import {
 } from './create-group-dialog.component';
 import { switchMap } from 'rxjs';
 import { MessageService } from '../../../shared/services/message.service';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'orda-group-details',
@@ -25,13 +26,13 @@ import { MessageService } from '../../../shared/services/message.service';
       <div class="header">
         <mat-card appearance="outlined">
           <mat-card-header>
-            <mat-card-title>{{ group().name }}</mat-card-title>
-            @if (group().desc) {
-              <mat-card-subtitle>{{ group().desc }}</mat-card-subtitle>
+            <mat-card-title>{{ group()?.name }}</mat-card-title>
+            @if (group()?.desc) {
+              <mat-card-subtitle>{{ group()?.desc }}</mat-card-subtitle>
             }
-            @if (group().deposit > 0) {
+            @if (group()?.deposit ?? 0 > 0) {
               <mat-card-subtitle>{{
-                group().deposit | ordaCurrency
+                group()?.deposit | ordaCurrency
               }}</mat-card-subtitle>
             }
           </mat-card-header>
@@ -43,8 +44,11 @@ import { MessageService } from '../../../shared/services/message.service';
       </div>
 
       <div class="content">
-        @if (group(); as g) {
-          <orda-products-overview [group]="g" />
+        @if (group()) {
+          <orda-products-overview
+            [products]="group()?.products ?? []"
+            [group]="group()?.id ?? ''"
+          />
         }
       </div>
     </div>
@@ -80,6 +84,7 @@ import { MessageService } from '../../../shared/services/message.service';
     MatCardModule,
     ProductsOverviewComponent,
     OrdaCurrencyPipe,
+    JsonPipe,
   ],
 })
 export class GroupDetailsComponent implements OnInit {
@@ -90,7 +95,7 @@ export class GroupDetailsComponent implements OnInit {
 
   dialog = inject(MatDialog);
 
-  group = signal<Group>({} as Group);
+  group = signal<Group | undefined>(undefined);
 
   ngOnInit(): void {
     this.route.params
@@ -113,7 +118,7 @@ export class GroupDetailsComponent implements OnInit {
       switch (result.action) {
         case ActionType.EDIT:
           this.assortmentService
-            .updateGroup$(this.group().id ?? '', result.data)
+            .updateGroup$(this.group()?.id ?? '', result.data)
             .subscribe((res) => {
               this.messageService.send({ title: 'Group updated' });
               this.group.set(res);
@@ -121,10 +126,10 @@ export class GroupDetailsComponent implements OnInit {
           break;
         case ActionType.DELETE:
           this.assortmentService
-            .deleteGroup$(this.group().id ?? '')
+            .deleteGroup$(this.group()?.id ?? '')
             .subscribe(() => {
               this.messageService.send({
-                title: `Group ${this.group().name} deleted`,
+                title: `Group ${this.group()?.name} deleted`,
               });
               this.router.navigate(['/assortment']);
             });

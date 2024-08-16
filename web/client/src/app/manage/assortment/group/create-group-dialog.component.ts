@@ -151,7 +151,7 @@ export class CreateGroupDialogComponent {
       data: {
         name: data.name,
         desc: data.desc,
-        deposit: data.deposit ?? 0 * 100,
+        deposit: Math.round(data.deposit ?? 0 * 100),
       } as Group,
     });
   }

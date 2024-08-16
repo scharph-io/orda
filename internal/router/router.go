@@ -49,6 +49,7 @@ func SetupRoutes(app *fiber.App) {
 	group.Post("/", assortmentHandler.CreateGroup)
 	group.Put("/:id", assortmentHandler.UpdateGroup)
 	group.Delete("/:id", assortmentHandler.DeleteGroup)
+	group.Delete("/:id/products", assortmentHandler.DeleteProductsByGroup)
 
 	product := assortment.Group("/products")
 	product.Get("/", assortmentHandler.GetProducts)

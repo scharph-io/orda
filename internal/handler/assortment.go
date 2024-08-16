@@ -123,3 +123,15 @@ func (h *AssortmentHandler) DeleteProduct(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{})
 }
+
+func (h *AssortmentHandler) DeleteProductsByGroup(c *fiber.Ctx) error {
+	group_id := c.Params("id")
+	deleted, err := h.assortmentService.DeleteAllProductsByGroup(c.Context(), group_id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+	}
+	if !deleted {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "products not found"})
+	}
+	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{})
+}

@@ -112,10 +112,9 @@ export class CreateProductDialogComponent {
   messageService = inject(MessageService);
   assortmentService = inject(AssortmentService);
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA)
-    public data: { product?: Product; groupId: string },
-  ) {
+  data = inject<{ product?: Product; groupId: string }>(MAT_DIALOG_DATA);
+
+  constructor() {
     if (this.data.product !== undefined) {
       this.isUpdate = true;
       this.productForm.patchValue({
@@ -131,10 +130,10 @@ export class CreateProductDialogComponent {
     if (this.productForm.valid) {
       const value = this.productForm.value;
       this.assortmentService
-        .addProduct({
+        .addProduct$({
           name: value.name ?? '',
           desc: value.desc ?? '',
-          price: value.price ?? 0,
+          price: Math.round(value.price ?? 0 * 100),
           active: value.active ?? false,
           group_id: this.data.groupId,
         })
@@ -147,20 +146,20 @@ export class CreateProductDialogComponent {
 
   update() {
     console.log(this.productForm.value);
-    // if (this.productForm.valid) {
-    //   const value = this.productForm.value;
+    if (this.productForm.valid) {
+      const value = this.productForm.value;
 
-    //   this.productService
-    //     .updateProduct(this.data.product?.id ?? '', {
-    //       name: value.name ?? '',
-    //       desc: value.desc ?? '',
-    //       active: value.active ?? false,
-    //       categoryId: this.data.categoryId,
-    //       position: value.position ?? 0,
-    //     })
-    //     .subscribe(() => {
-    //       this.dialogRef.close();
-    //     });
-    // }
+      this.assortmentService
+        .updateProduct$(this.data.product?.id ?? '', {
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          active: value.active ?? false,
+          price: Math.round(value.price ?? 0 * 100),
+          group_id: this.data.groupId,
+        })
+        .subscribe(() => {
+          this.dialogRef.close();
+        });
+    }
   }
 }

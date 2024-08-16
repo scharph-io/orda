@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/model"
 	"github.com/scharph/orda/internal/repository"
@@ -154,7 +153,7 @@ func (a *AssortmentService) GetGroupProducts(ctx context.Context, id string) ([]
 		})
 	}
 	if len(products) == 0 {
-		return nil, fmt.Errorf("no products found")
+		return []ProductResponse{}, nil
 	}
 	return products, nil
 }
@@ -202,4 +201,8 @@ func (a *AssortmentService) UpdateProduct(ctx context.Context, id string, produc
 
 func (a *AssortmentService) DeleteProduct(ctx context.Context, id string) (bool, error) {
 	return a.productRepo.Delete(ctx, id)
+}
+
+func (a *AssortmentService) DeleteAllProductsByGroup(ctx context.Context, group_id string) (bool, error) {
+	return a.productRepo.DeleteByGroupId(ctx, group_id)
 }

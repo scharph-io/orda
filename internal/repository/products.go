@@ -54,16 +54,34 @@ func (r *ProductRepo) ImportMany(ctx context.Context, products *[]model.Product,
 	return *products, nil
 }
 
-func (r *ProductRepo) Update(ctx context.Context, id string, product *model.Product) (*model.Product, error) {
-	res := r.db.WithContext(ctx).Model(&model.Product{}).Where("id = ?", id).Updates(&product).Find(&product)
+func (r *ProductRepo) Update(ctx context.Context, id string, new *model.Product) (*model.Product, error) {
+	var product model.Product
+	res := r.db.WithContext(ctx).Model(&model.Product{}).Where("id = ?", id).Find(&product)
 	if res.Error != nil {
 		return nil, res.Error
 	}
-	return product, nil
+
+	product.Name = new.Name
+	product.Desc = new.Desc
+	product.Price = new.Price
+	product.GroupID = new.GroupID
+
+	if res := r.db.WithContext(ctx).Save(&product); res.Error != nil {
+		return nil, res.Error
+	}
+	return &product, nil
 }
 
 func (r *ProductRepo) Delete(ctx context.Context, id string) (bool, error) {
 	res := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.Product{})
+	if res.Error != nil {
+		return false, res.Error
+	}
+	return !(res.RowsAffected == 0), nil
+}
+
+func (r *ProductRepo) DeleteByGroupId(ctx context.Context, group_id string) (bool, error) {
+	res := r.db.WithContext(ctx).Where("group_id = ?", group_id).Delete(&model.Product{})
 	if res.Error != nil {
 		return false, res.Error
 	}
