@@ -6,7 +6,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/repository"
-	"github.com/scharph/orda/internal/service"
 )
 
 func main() {
@@ -20,7 +19,7 @@ func main() {
 	db := database.DB
 
 	productRepo := repository.NewProductRepo(db)
-	groupRepo := repository.NewGroupRepo(db)
+	// groupRepo := repository.NewGroupRepo(db)
 	viewRepo := repository.NewViewRepo(db)
 	// viewProductRepo := repository.NewViewProductRepo(db)
 
@@ -35,9 +34,17 @@ func main() {
 
 	view := views[0]
 
-	vS := service.NewViewService(viewRepo, productRepo, groupRepo)
+	// vS := service.NewViewService(viewRepo, productRepo, groupRepo)
 
-	vS.AddProduct(ctx, view.ID, "01915f5d-307a-75d3-b5f1-e62cdb11cadd")
+	// vS.AddProduct(ctx, view.ID, "01915f5d-307a-75d3-b5f1-e62cdb11cadd")
+
+	products, err := productRepo.Read(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	p := products[0]
+
+	viewRepo.AddProduct(ctx, view.ID, &p)
 
 	// res, err := viewProductRepo.ReadByViewId(ctx, views[0].ID)
 	// if err != nil {
