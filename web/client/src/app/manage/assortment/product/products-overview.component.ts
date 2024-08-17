@@ -22,7 +22,7 @@ import {
 
 import { TranslocoModule } from '@jsverse/transloco';
 import { CreateProductDialogComponent } from './create-product-dialog.component';
-import { Group, Product } from '../../../shared/model/product';
+import { Product } from '../../../shared/model/product';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import { AssortmentService } from '../../../shared/services/assortment.service';
 import { catchError, EMPTY, switchMap } from 'rxjs';
@@ -104,10 +104,13 @@ import {
               mat-icon-button
               (click)="openProductAddUpdateDialog(element)"
             >
-              <mat-icon mat-icon-button color="primary">edit </mat-icon>
+              <mat-icon mat-icon-button color="primary">edit</mat-icon>
             </button>
             <button mat-icon-button (click)="deleteProduct(element.id)">
-              <mat-icon mat-icon-button color="warn"> delete</mat-icon>
+              <mat-icon mat-icon-button color="warn">delete</mat-icon>
+            </button>
+            <button mat-icon-button (click)="duplicate(element.id)">
+              <mat-icon mat-icon-button color="primary">edit</mat-icon>
             </button>
           </td>
         </ng-container>
@@ -154,7 +157,6 @@ import {
     TranslocoModule,
     OrdaCurrencyPipe,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsOverviewComponent implements OnInit {
   products = input.required<Product[]>();
@@ -191,6 +193,7 @@ export class ProductsOverviewComponent implements OnInit {
       this.assortmentService
         .getProductsByGroupId$(this.group() ?? '')
         .subscribe((products) => {
+          console.log(products);
           this.dataSource?.set(products);
         });
     });
@@ -205,6 +208,24 @@ export class ProductsOverviewComponent implements OnInit {
         ),
       )
       .subscribe((products) => this.dataSource?.set(products));
+  }
+
+  duplicate(p: Product) {
+    this.assortmentService
+      .addProduct$({
+        desc: p.desc,
+        name: p.name,
+        group_id: this.group() ?? '',
+        price: p.price,
+        active: false,
+      })
+      .subscribe((res) => {
+        this.assortmentService
+          .getProductsByGroupId$(this.group() ?? '')
+          .subscribe((products) => {
+            this.dataSource?.set(products);
+          });
+      });
   }
 
   changed(p: Product, ev: MatSlideToggleChange) {

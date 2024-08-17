@@ -27,6 +27,7 @@ type ProductRequest struct {
 	Desc    string `json:"desc"`
 	Price   int32  `json:"price"`
 	GroupID string `json:"group_id"`
+	Active  bool   `json:"active"`
 }
 
 type ProductResponse struct {
@@ -150,6 +151,7 @@ func (a *AssortmentService) GetGroupProducts(ctx context.Context, id string) ([]
 			Price:     product.Price,
 			GroupID:   product.GroupID,
 			UpdatedAt: product.UpdatedAt.String(),
+			Active:    product.Active,
 		})
 	}
 	if len(products) == 0 {
@@ -165,6 +167,7 @@ func (a *AssortmentService) CreateProduct(ctx context.Context, product ProductRe
 		Desc:    product.Desc,
 		Price:   product.Price,
 		GroupID: product.GroupID,
+		Active:  product.Active,
 	})
 	if err != nil {
 		return nil, err
@@ -176,6 +179,7 @@ func (a *AssortmentService) CreateProduct(ctx context.Context, product ProductRe
 		Price:     res.Price,
 		GroupID:   res.GroupID,
 		UpdatedAt: res.UpdatedAt.String(),
+		Active:    res.Active,
 	}, nil
 }
 
@@ -185,6 +189,7 @@ func (a *AssortmentService) UpdateProduct(ctx context.Context, id string, produc
 		Desc:    product.Desc,
 		Price:   product.Price,
 		GroupID: product.GroupID,
+		Active:  product.Active,
 	})
 	if err != nil {
 		return nil, err
@@ -195,6 +200,7 @@ func (a *AssortmentService) UpdateProduct(ctx context.Context, id string, produc
 		Desc:      res.Desc,
 		Price:     res.Price,
 		GroupID:   res.GroupID,
+		Active:    res.Active,
 		UpdatedAt: res.UpdatedAt.String(),
 	}, nil
 }

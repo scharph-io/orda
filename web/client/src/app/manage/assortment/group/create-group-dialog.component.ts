@@ -63,6 +63,7 @@ export enum ActionType {
       </button>
       @if (isUpdate) {
         <button
+          disabled
           mat-button
           style="background-color: red; color:white"
           (click)="submit(ActionType.DELETE)"
@@ -151,7 +152,7 @@ export class CreateGroupDialogComponent {
       data: {
         name: data.name,
         desc: data.desc,
-        deposit: Math.round(data.deposit ?? 0 * 100),
+        deposit: Math.round((data.deposit ?? 0) * 100),
       } as Group,
     });
   }

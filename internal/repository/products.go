@@ -65,6 +65,7 @@ func (r *ProductRepo) Update(ctx context.Context, id string, new *model.Product)
 	product.Desc = new.Desc
 	product.Price = new.Price
 	product.GroupID = new.GroupID
+	product.Active = new.Active
 
 	if res := r.db.WithContext(ctx).Save(&product); res.Error != nil {
 		return nil, res.Error

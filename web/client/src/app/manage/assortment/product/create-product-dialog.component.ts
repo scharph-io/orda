@@ -133,32 +133,29 @@ export class CreateProductDialogComponent {
         .addProduct$({
           name: value.name ?? '',
           desc: value.desc ?? '',
-          price: Math.round(value.price ?? 0 * 100),
+          price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
           group_id: this.data.groupId,
         })
         .subscribe((res) => {
-          console.log(res);
-          this.dialogRef.close();
+          this.dialogRef.close(res);
         });
     }
   }
 
   update() {
-    console.log(this.productForm.value);
     if (this.productForm.valid) {
       const value = this.productForm.value;
-
       this.assortmentService
         .updateProduct$(this.data.product?.id ?? '', {
           name: value.name ?? '',
           desc: value.desc ?? '',
           active: value.active ?? false,
-          price: Math.round(value.price ?? 0 * 100),
+          price: Math.round((value.price ?? 0) * 100),
           group_id: this.data.groupId,
         })
-        .subscribe(() => {
-          this.dialogRef.close();
+        .subscribe((res) => {
+          this.dialogRef.close(res);
         });
     }
   }

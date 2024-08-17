@@ -19,7 +19,6 @@ export class AssortmentService {
   }
 
   addGroup$(group: Group) {
-    group.deposit = Math.round(group.deposit * 100);
     return this.http.post<{ data: Group; message: string }>(
       `${this.endpoint}${this.path}/groups`,
       group,
@@ -34,7 +33,6 @@ export class AssortmentService {
   }
 
   updateGroup$(id: string, group: Group) {
-    group.deposit = Math.round(group.deposit * 100);
     return this.http.put<Group>(
       `${this.endpoint}${this.path}/groups/${id}`,
       group,
@@ -55,7 +53,6 @@ export class AssortmentService {
   }
 
   addProduct$(product: Product) {
-    product.price = Math.round(product.price * 100);
     return this.http.post<Product>(
       `${this.endpoint}${this.path}/products`,
       product,
@@ -78,6 +75,7 @@ export class AssortmentService {
   }
 
   updateProduct$(id: string, product: Product) {
+    console.log(product);
     return this.http.put<Product>(
       `${this.endpoint}${this.path}/products/${id}`,
       product,
