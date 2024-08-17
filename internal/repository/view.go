@@ -31,7 +31,7 @@ func (r *ViewRepo) Read(ctx context.Context) (views []model.View, err error) {
 	return views, nil
 }
 
-func (r *ViewRepo) ReadByID(ctx context.Context, id string) (view model.View, err error) {
+func (r *ViewRepo) ReadById(ctx context.Context, id string) (view model.View, err error) {
 	res := r.db.WithContext(ctx).Where("id = ?", id).First(&view)
 	if res.Error != nil {
 		return model.View{}, res.Error

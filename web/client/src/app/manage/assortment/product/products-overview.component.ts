@@ -119,7 +119,9 @@ import {
               (click)="openProductAddUpdateDialog(element, true)"
               title="Duplicate"
             >
-              <mat-icon mat-icon-button color="primary">content_copy</mat-icon>
+              <mat-icon mat-icon-button color="primary"
+                >control_point_duplicate</mat-icon
+              >
             </button>
           </td>
         </ng-container>

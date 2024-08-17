@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -81,10 +80,6 @@ func (h *AssortmentHandler) GetProducts(c *fiber.Ctx) error {
 	products, err := h.assortmentService.GetGroupProducts(c.Context(), group_id)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
-	}
-
-	for _, v := range products {
-		fmt.Printf("product: %v\n", v.Price)
 	}
 	return c.Status(fiber.StatusOK).JSON(products)
 }

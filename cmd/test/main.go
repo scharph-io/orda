@@ -6,6 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/repository"
+	"github.com/scharph/orda/internal/service"
 )
 
 func main() {
@@ -19,9 +20,9 @@ func main() {
 	db := database.DB
 
 	productRepo := repository.NewProductRepo(db)
-	// groupRepo := repository.NewGroupRepo(db)
+	groupRepo := repository.NewGroupRepo(db)
 	viewRepo := repository.NewViewRepo(db)
-	viewProductRepo := repository.NewViewProductRepo(db)
+	// viewProductRepo := repository.NewViewProductRepo(db)
 
 	ctx := db.Statement.Context
 
@@ -62,19 +63,22 @@ func main() {
 	// fmt.Println("Added Products:", len(result))
 
 	// Get the first 3 products
-	products, err := productRepo.Read(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("Products:", len(products))
+	// products, err := productRepo.Read(ctx)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println("Products:", len(products))
 
 	// p := products[:5]
 
-	// view, err := viewRepo.Create(ctx, &model.View{
-	// 	Name:     "Kiosk 2",
-	// 	Deposit:  100,
-	// 	Products: p,
+	// _, err := viewRepo.Create(ctx, &model.View{
+	// 	Name: "Kiosk 2",
+	// 	// Products: p,
 	// })
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
 	views, err := viewRepo.Read(ctx)
 
@@ -82,7 +86,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	fmt.Printf("View: %d\n", len(views))
+	fmt.Printf("Views: %d\n", len(views))
 
 	// res, err := viewProductRepo.ReadByViewId(ctx, views[0].ID)
 	// if err != nil {
@@ -94,19 +98,31 @@ func main() {
 
 	// }
 
-	res, err := viewProductRepo.Read(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	for _, v := range res {
-		fmt.Println(v.View.Name, v.Position, v.Product.Name, v.Position, v.Color)
+	// res, err := viewProductRepo.Read(ctx)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// for _, v := range res {
+	// 	fmt.Println(v.View.Name, v.Position, v.Product.Name, v.Position, v.Color)
 
-	}
+	// }
 	// for _, v := range ReadViewProducts {
 	// 	fmt.Println(v.Name, v.Deposit)
 	// 	for _, p := range v.Products {
 	// 		fmt.Println("--", p.Name, p.Desc, p.Price)
 	// 	}
 	// }
+
+	_ = service.NewViewService(viewRepo, productRepo, groupRepo)
+
+	// v := "01915f7f-36c1-79f7-a050-613526320bf3"
+	// p := "01915f5d-307a-75d3-b5f1-e62cdb11cadd"
+
+	// res, err := viewService.AddProduct(ctx, v, p)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	// fmt.Println(res)
 
 }

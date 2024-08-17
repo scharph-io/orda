@@ -15,3 +15,13 @@ func createAssortmentHandler() *handler.AssortmentHandler {
 		),
 	)
 }
+
+func createViewHandler() *handler.ViewHandler {
+	return handler.NewViewHandler(
+		service.NewViewService(
+			repository.NewViewRepo(database.DB),
+			repository.NewProductRepo(database.DB),
+			repository.NewGroupRepo(database.DB),
+		),
+	)
+}

@@ -57,6 +57,16 @@ func SetupRoutes(app *fiber.App) {
 	product.Put("/:id", assortmentHandler.UpdateProduct)
 	product.Delete("/:id", assortmentHandler.DeleteProduct)
 
+	views := api.Group("/views")
+	viewHandler := createViewHandler()
+	views.Get("/", viewHandler.GetViews)
+	views.Post("/", viewHandler.CreateView)
+	views.Get("/:id", viewHandler.GetViewById)
+	// views.Put("/:id", viewHandler.UpdateView)
+	// views.Delete("/:id", viewHandler.DeleteView)
+	views.Put("/:id/products", viewHandler.AddProduct)
+	// views.Delete("/:id/products", viewHandler.DeleteProductFromView)
+
 	// Category
 	// category := api.Group("/category")
 	// category.Get("/", middleware.Protected(), handler.GetAllCategories)

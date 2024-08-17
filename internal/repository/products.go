@@ -34,6 +34,14 @@ func (r *ProductRepo) Read(ctx context.Context) (products []model.Product, err e
 	return products, nil
 }
 
+func (r *ProductRepo) ReadByID(ctx context.Context, id string) (product *model.Product, err error) {
+	res := r.db.WithContext(ctx).Where("id = ?", id).First(&product)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return product, nil
+}
+
 func (r *ProductRepo) ReadByGroupId(ctx context.Context, group_id string) (products []model.Product, err error) {
 	res := r.db.WithContext(ctx).Where("group_id = ?", group_id).
 		Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&products)
