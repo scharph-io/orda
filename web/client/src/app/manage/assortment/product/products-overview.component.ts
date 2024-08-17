@@ -103,14 +103,23 @@ import {
             <button
               mat-icon-button
               (click)="openProductAddUpdateDialog(element)"
+              title="Edit"
             >
               <mat-icon mat-icon-button color="primary">edit</mat-icon>
             </button>
-            <button mat-icon-button (click)="deleteProduct(element.id)">
+            <button
+              mat-icon-button
+              (click)="deleteProduct(element.id)"
+              title="Delete"
+            >
               <mat-icon mat-icon-button color="warn">delete</mat-icon>
             </button>
-            <button mat-icon-button (click)="duplicate(element.id)">
-              <mat-icon mat-icon-button color="primary">edit</mat-icon>
+            <button
+              mat-icon-button
+              (click)="openProductAddUpdateDialog(element, true)"
+              title="Duplicate"
+            >
+              <mat-icon mat-icon-button color="primary">content_copy</mat-icon>
             </button>
           </td>
         </ng-container>
@@ -118,6 +127,10 @@ import {
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
+    } @else {
+      <div class="container">
+        <p>No products available</p>
+      </div>
     }
   `,
   standalone: true,
@@ -180,21 +193,29 @@ export class ProductsOverviewComponent implements OnInit {
     this.assortmentService
       .deleteProductsByGroupId$(this.group() ?? '')
       .pipe()
-      .subscribe((products) => this.dataSource?.set([]));
+      .subscribe((_) => this.dataSource?.set([]));
   }
 
-  openProductAddUpdateDialog(product?: Product): void {
+  openProductAddUpdateDialog(
+    product?: Product,
+    duplicate: boolean = false,
+  ): void {
     const dialogRef = this.dialog.open(CreateProductDialogComponent, {
-      data: { product, groupId: this.group() },
+      data: { product, groupId: this.group(), duplicate },
       minWidth: '90vw',
     });
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('The dialog was closed', result);
+      // console.log('The dialog was closed', result);
+
+      this.messageService.send({
+        title: this.genProductMsg(result.product, result.action),
+        severity: Severity.INFO,
+      });
+
       this.assortmentService
         .getProductsByGroupId$(this.group() ?? '')
         .subscribe((products) => {
-          console.log(products);
-          this.dataSource?.set(products);
+          this.dataSource.set(products);
         });
     });
   }
@@ -207,24 +228,9 @@ export class ProductsOverviewComponent implements OnInit {
           this.assortmentService.getProductsByGroupId$(this.group() ?? ''),
         ),
       )
-      .subscribe((products) => this.dataSource?.set(products));
-  }
-
-  duplicate(p: Product) {
-    this.assortmentService
-      .addProduct$({
-        desc: p.desc,
-        name: p.name,
-        group_id: this.group() ?? '',
-        price: p.price,
-        active: false,
-      })
-      .subscribe((res) => {
-        this.assortmentService
-          .getProductsByGroupId$(this.group() ?? '')
-          .subscribe((products) => {
-            this.dataSource?.set(products);
-          });
+      .subscribe((products) => {
+        this.messageService.send({ title: 'Product deleted' });
+        this.dataSource?.set(products);
       });
   }
 
@@ -285,4 +291,22 @@ export class ProductsOverviewComponent implements OnInit {
   //       reader.readAsText(file);
   //     });
   //   }
+
+  genProductMsg(p: Product, action: string): string {
+    let msg = '';
+    if (p.desc === undefined) {
+      msg = `${p.name}`;
+    } else {
+      msg = `${p.name} (${p.desc})`;
+    }
+    switch (action) {
+      case 'duplicate':
+      case 'create':
+        return `Product ${msg} added`;
+      case 'edit':
+        return `Product ${msg} updated`;
+      default:
+        return '';
+    }
+  }
 }

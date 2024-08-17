@@ -75,7 +75,6 @@ export class AssortmentService {
   }
 
   updateProduct$(id: string, product: Product) {
-    console.log(product);
     return this.http.put<Product>(
       `${this.endpoint}${this.path}/products/${id}`,
       product,

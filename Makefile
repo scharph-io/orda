@@ -36,6 +36,9 @@ help: ## This help dialog.
 run-ui: ## Run the app locally
 	npm --prefix web/client run start
 
+update-ui: 
+	npm --prefix web/client install
+
 run: ## Run the app locally
 	go run cmd/server/main.go
 
