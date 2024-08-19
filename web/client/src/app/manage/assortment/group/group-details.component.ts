@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,7 +17,7 @@ import {
 } from './create-group-dialog.component';
 import { switchMap } from 'rxjs';
 import { MessageService } from '../../../shared/services/message.service';
-import { JsonPipe } from '@angular/common';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'orda-group-details',
@@ -38,7 +38,9 @@ import { JsonPipe } from '@angular/common';
           </mat-card-header>
 
           <mat-card-actions align="end">
-            <button mat-button (click)="editGroup()">edit</button>
+            <button mat-button (click)="editGroup()">
+              {{ 'group.edit' | transloco }}
+            </button>
           </mat-card-actions>
         </mat-card>
       </div>
@@ -84,7 +86,7 @@ import { JsonPipe } from '@angular/common';
     MatCardModule,
     ProductsOverviewComponent,
     OrdaCurrencyPipe,
-    JsonPipe,
+    TranslocoModule,
   ],
 })
 export class GroupDetailsComponent implements OnInit {
