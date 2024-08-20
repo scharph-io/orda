@@ -40,6 +40,9 @@ run-ui: ## Run the app locally
 update-ui: 
 	npm --prefix web/client install
 
+update-ng:
+	npm update --prefix web/client
+
 run: ## Run the app locally
 	go run cmd/server/main.go
 
