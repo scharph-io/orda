@@ -13,8 +13,8 @@ type ViewRequest struct {
 }
 
 type ViewResponse struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id     string              `json:"id"`
+	Name   string              `json:"name"`
 	Groups []ViewGroupResponse `json:"groups"`
 }
 
@@ -59,35 +59,17 @@ func (s *ViewService) GetViews(ctx context.Context) ([]ViewResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	var views []ViewResponse
 	for _, v := range res {
 		fmt.Println(v)
-		views = append(views, 
+		views = append(views,
 			ViewResponse{
-				Name: v.Name, 
-				Id: v.ID, 
+				Name: v.Name,
+				Id:   v.ID,
 				Groups: []ViewGroupResponse{
 					{
-						Name: "View 1", 
+						Name: "View 1",
 						Products: []ProductResponse{
 							{Name: "Product 1", Desc: "0.5L", Price: 250},
 							{Name: "Product 2", Desc: "0.2L", Price: 150},
@@ -95,7 +77,7 @@ func (s *ViewService) GetViews(ctx context.Context) ([]ViewResponse, error) {
 						},
 					},
 					{
-						Name: "View 2", 
+						Name: "View 2",
 						Products: []ProductResponse{
 							{Name: "Product 1", Desc: "0.5L", Price: 250},
 							{Name: "Product 2", Desc: "0.2L", Price: 150},
@@ -104,7 +86,7 @@ func (s *ViewService) GetViews(ctx context.Context) ([]ViewResponse, error) {
 					},
 				},
 			})
-		
+
 	}
 	return views, nil
 }
@@ -119,14 +101,14 @@ func (s *ViewService) GetViewByID(ctx context.Context, id string) (*ViewResponse
 }
 
 func (s *ViewService) AddProduct(ctx context.Context, viewId, productId string) (*ViewResponse, error) {
-	res, err := s.productRepo.ReadByID(ctx, productId)
-	if err != nil {
-		return nil, err
-	}
-	_, err = s.repo.AddProduct(ctx, viewId, res)
-	if err != nil {
-		return nil, err
-	}
+	// res, err := s.productRepo.ReadByID(ctx, productId)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// _, err = s.repo.AddProduct(ctx, viewId, res)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	return &ViewResponse{Id: viewId}, nil
 }

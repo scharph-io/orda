@@ -44,7 +44,22 @@ func main() {
 	}
 	p := products[0]
 
-	viewRepo.AddProduct(ctx, view.ID, &p)
+	viewRepo.AddProduct(ctx, view.ID, p)
+
+	view1, err := viewRepo.ReadById(ctx, "01917afe-07de-744e-b2d8-8e002e76cfb5")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(len(view1.Products))
+
+	view1.Products = append(view.Products, products[2])
+	// fmt.Println(view)
+
+	_, err = viewRepo.Update(ctx, &view)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// res, err := viewProductRepo.ReadByViewId(ctx, views[0].ID)
 	// if err != nil {
