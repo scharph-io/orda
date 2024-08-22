@@ -31,23 +31,43 @@ import {
   MessageService,
   Severity,
 } from '../../../shared/services/message.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'orda-products-overview',
   template: `
     <div class="toolbar">
-      <h2>products</h2>
-      <div style="display: flex; gap:0.5em">
-        <button mat-fab extended (click)="openProductAddUpdateDialog()">
+      <h2>{{ 'product.title' | transloco }}</h2>
+      <div style="display: flex; gap:0.5em; align-items: center">
+        <button mat-flat-button (click)="openProductAddUpdateDialog()">
           <mat-icon>add</mat-icon>
-          new_product
+          {{ 'product.new' | transloco }}
         </button>
-        @if (dataSource().length !== 0) {
-          <button disabled mat-fab extended (click)="deleteAll()">
-            <mat-icon>delete</mat-icon>
-            delete_all
+
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          aria-label="Example icon-button with a menu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item disabled>
+            <mat-icon>download</mat-icon>
+            <span>Import TODO</span>
           </button>
-        }
+          <button mat-menu-item disabled>
+            <mat-icon>upload</mat-icon>
+            <span>Export TODO</span>
+          </button>
+
+          @if (dataSource().length !== 0) {
+            <button mat-menu-item (click)="deleteAll()">
+              <mat-icon>delete</mat-icon>
+              {{ 'product.delete' | transloco }}
+            </button>
+          }
+        </mat-menu>
       </div>
     </div>
 
@@ -87,7 +107,7 @@ import {
 
         <ng-container matColumnDef="active">
           <th mat-header-cell *matHeaderCellDef>
-            {{ 'table.active' | transloco }}
+            <!-- {{ 'table.active' | transloco }} -->
           </th>
           <td mat-cell *matCellDef="let element">
             <mat-slide-toggle
@@ -142,12 +162,12 @@ import {
         width: 100%;
       }
 
-      .mat-mdc-table {
-        background-color: transparent;
+      th {
+        font-weight: bold;
       }
 
-      .mat-column-price {
-        color: red;
+      .mat-mdc-table {
+        background-color: transparent;
       }
 
       .toolbar {
@@ -155,6 +175,7 @@ import {
         justify-content: space-between;
         align-items: center;
         margin: 0 1em;
+        flex-wrap: wrap;
       }
       :host {
         overflow-y: scroll;
@@ -171,6 +192,7 @@ import {
     DialogModule,
     TranslocoModule,
     OrdaCurrencyPipe,
+    MatMenuModule,
   ],
 })
 export class ProductsOverviewComponent implements OnInit {

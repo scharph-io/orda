@@ -27,6 +27,7 @@ BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 
 
 PACKAGE_JSON=web/client/package.json
+ ##SSL_CERT_DIR=/etc/ssl/certs
 
 .PHONY: build-local
 
@@ -38,6 +39,9 @@ run-ui: ## Run the app locally
 
 update-ui: 
 	npm --prefix web/client install
+
+update-ng:
+	npm update --prefix web/client
 
 run: ## Run the app locally
 	go run cmd/server/main.go
@@ -115,6 +119,9 @@ docker-dev-up:
 
 docker-dev-down:
 	docker compose -f docker-compose.yaml down -v
+
+docker-dev-logs:
+	docker compose -f docker-compose.yaml logs
 
 docker-build:
 	docker build -f ci/Dockerfile --build-arg="BUILD=$(VERSION)" -t $(IMAGE):$(VERSION) . --progress=plain

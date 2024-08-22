@@ -1,5 +1,5 @@
 import { DialogModule } from '@angular/cdk/dialog';
-import { Component, inject, OnChanges, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupsOverviewComponent } from './group/groups-overview.component';
@@ -13,15 +13,16 @@ import {
   Severity,
 } from '../../shared/services/message.service';
 import { catchError, EMPTY, pipe } from 'rxjs';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'orda-assortment-overview',
   template: `
     <div class="toolbar">
-      <h2>assortment</h2>
+      <h2>{{ 'assortment.title' | transloco }}</h2>
       <button mat-fab extended (click)="openGroupAddDialog()">
         <mat-icon>add</mat-icon>
-        new_group
+        {{ 'group.new' | transloco }}
       </button>
     </div>
     <orda-groups-overview [groups]="groups()" />
@@ -49,6 +50,7 @@ import { catchError, EMPTY, pipe } from 'rxjs';
     DialogModule,
     GroupsOverviewComponent,
     CreateGroupDialogComponent,
+    TranslocoModule,
   ],
 })
 export class AssortmentOverviewComponent implements OnInit {

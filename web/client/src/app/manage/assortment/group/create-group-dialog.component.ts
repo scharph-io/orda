@@ -18,13 +18,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 
 import { TranslocoModule } from '@jsverse/transloco';
-import { Group, Product } from '../../../shared/model/product';
-import {
-  MessageService,
-  Severity,
-} from '../../../shared/services/message.service';
+import { Group } from '../../../shared/model/product';
+import { MessageService } from '../../../shared/services/message.service';
 import { AssortmentService } from '../../../shared/services/assortment.service';
-import { catchError, EMPTY } from 'rxjs';
 
 export enum ActionType {
   ADD = 'add',
@@ -79,7 +75,7 @@ export enum ActionType {
           style="background-color: green; color:white"
           [disabled]="!groupForm.valid"
         >
-          {{ 'dialog.update' | transloco }}
+          {{ 'dialog.edit' | transloco }}
         </button>
       } @else {
         <button

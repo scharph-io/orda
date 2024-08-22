@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/model"
 	"github.com/scharph/orda/internal/repository"
@@ -14,6 +15,7 @@ type ViewRequest struct {
 type ViewResponse struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
+	Groups []ViewGroupResponse `json:"groups"`
 }
 
 type ViewGroupResponse struct {
@@ -57,9 +59,52 @@ func (s *ViewService) GetViews(ctx context.Context) ([]ViewResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	var views []ViewResponse
 	for _, v := range res {
-		views = append(views, ViewResponse{Name: v.Name, Id: v.ID})
+		fmt.Println(v)
+		views = append(views, 
+			ViewResponse{
+				Name: v.Name, 
+				Id: v.ID, 
+				Groups: []ViewGroupResponse{
+					{
+						Name: "View 1", 
+						Products: []ProductResponse{
+							{Name: "Product 1", Desc: "0.5L", Price: 250},
+							{Name: "Product 2", Desc: "0.2L", Price: 150},
+							{Name: "Product 3", Desc: "0.4L", Price: 200},
+						},
+					},
+					{
+						Name: "View 2", 
+						Products: []ProductResponse{
+							{Name: "Product 1", Desc: "0.5L", Price: 250},
+							{Name: "Product 2", Desc: "0.2L", Price: 150},
+							{Name: "Product 3", Desc: "0.4L", Price: 200},
+						},
+					},
+				},
+			})
+		
 	}
 	return views, nil
 }
