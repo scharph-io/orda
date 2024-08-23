@@ -1,10 +1,15 @@
 import { DialogModule } from '@angular/cdk/dialog';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { View } from '../../shared/model/view';
+import { CreateViewDialogComponent } from './create-view-dialog.component';
+import { ViewService } from '../../shared/services/view.service';
+import { MatMenu, MatMenuModule } from '@angular/material/menu';
 // import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
 
 @Component({
@@ -12,16 +17,41 @@ import { RouterModule } from '@angular/router';
   template: `
     <div class="toolbar">
       <h2>views</h2>
-      <button mat-fab extended (click)="openViewAddUpdateDialog()">
-        <mat-icon>add</mat-icon>
-        new_view
-      </button>
+      <div>
+        <button mat-fab extended (click)="openViewAddUpdateDialog()">
+          <mat-icon>add</mat-icon>
+          new_view
+        </button>
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          aria-label="Example icon-button with a menu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item disabled>
+            <mat-icon>download</mat-icon>
+            <span>Import TODO</span>
+          </button>
+          <button mat-menu-item disabled>
+            <mat-icon>upload</mat-icon>
+            <span>Export TODO</span>
+          </button>
+        </mat-menu>
+      </div>
     </div>
-    <mat-grid-list cols="5" rowHeight="4:3" gutterSize="1em">
-      <mat-grid-tile [routerLink]="['/views', id]">Kiosk</mat-grid-tile>
-      <mat-grid-tile [routerLink]="['/views', id]">Eingang</mat-grid-tile>
-      <mat-grid-tile [routerLink]="['/views', id]">Seidlbar</mat-grid-tile>
-    </mat-grid-list>
+    @if (views().length === 0) {
+      <div class="container">No views found</div>
+    } @else {
+      <mat-grid-list cols="5" rowHeight="4:3" gutterSize="1em">
+        @for (view of views(); track view) {
+          <mat-grid-tile [routerLink]="['/views', view.id]">{{
+            view.name
+          }}</mat-grid-tile>
+        }
+      </mat-grid-list>
+    }
   `,
   standalone: true,
   styles: [
@@ -44,25 +74,50 @@ import { RouterModule } from '@angular/router';
     DialogModule,
     MatGridListModule,
     RouterModule,
+    MatMenuModule,
   ],
 })
-export class ViewsOverviewComponent {
+export class ViewsOverviewComponent implements OnInit {
   dialog = inject(MatDialog);
+  http = inject(HttpClient);
+  viewService = inject(ViewService);
 
-  id = 13;
+  views = signal<View[]>([]);
+
+  ngOnInit(): void {
+    this.viewService.getViews$().subscribe((views) => {
+      this.views.set(views);
+    });
+  }
 
   openViewAddUpdateDialog(): void {
-    // const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
-    //   //   data: { product, categoryId: this.category().id },
-    //   minWidth: '30rem',
-    // });
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   console.log('The dialog was closed');
-    //   //   this.productService
-    //   //     .getProductsBy(this.category().id ?? '')
-    //   //     .subscribe((products) => {
-    //   //       this.dataSource?.set(products);
-    //   //     });
-    // });
+    const dialogRef = this.dialog.open(CreateViewDialogComponent, {
+      // data: { views: this.views() },
+      minWidth: '30rem',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed', result.data);
+
+      if (result?.action === 'add') {
+        this.viewService.addView$(result.data as View).subscribe((res) => {
+          console.log('addView', JSON.stringify(res));
+          this.ngOnInit();
+        });
+      }
+
+      // if (result?.action === 'update') {
+      //   this.viewService
+      //     .updateView$(result.data.id, result.data)
+      //     .subscribe((res) => {
+      //       console.log('updateView', res);
+      //       this.views.set(
+      //         this.views().map((view) =>
+      //           view.id === result.data.id ? res : view,
+      //         ),
+      //       );
+      //     });
+      // }
+    });
   }
 }

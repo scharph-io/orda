@@ -16,5 +16,4 @@ type Product struct {
 	Price   int32  `json:"price"`
 	GroupID string `json:"groupId" gorm:"size:36"`
 	Active  bool   `json:"active"`
-	Views   []View `json:"views" gorm:"many2many:view_products;"`
 }

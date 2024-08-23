@@ -1,10 +1,10 @@
 import { DialogModule } from '@angular/cdk/dialog';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { ViewProduct } from '../../../shared/model/product';
 import { MatDividerModule } from '@angular/material/divider';
@@ -18,6 +18,12 @@ import {
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { ViewProductComponent } from './view-product/view-product.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { CreateViewDialogComponent } from '../create-view-dialog.component';
+import { switchMap } from 'rxjs';
+import { ViewService } from '../../../shared/services/view.service';
+import { group } from '@angular/animations';
+import { View } from '../../../shared/model/view';
 
 export interface ViewGroup {
   id?: string;
@@ -31,14 +37,33 @@ export interface ViewGroup {
   selector: 'orda-view-details',
   template: `
     <div class="toolbar">
-      <h2>view details</h2>
-      <button mat-fab extended (click)="openViewAddUpdateDialog()">
-        <mat-icon>add</mat-icon>
-        add
-      </button>
+      <h2>view details {{ view().name }}</h2>
+      <div>
+        <button mat-fab extended>
+          <mat-icon>add</mat-icon>
+          add_product
+        </button>
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          aria-label="Example icon-button with a menu"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="openUpdateDialog()">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button mat-menu-item (click)="delete()">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </div>
     </div>
 
-    <div>
+    <!-- <div>
       @for (g of groups; track g) {
         <h4>{{ g.name }}</h4>
         <div>
@@ -65,7 +90,7 @@ export interface ViewGroup {
           </div>
         </div>
       }
-    </div>
+    </div> -->
   `,
   standalone: true,
   styles: [
@@ -155,169 +180,48 @@ export interface ViewGroup {
     CdkDrag,
     CdkDragPlaceholder,
     ViewProductComponent,
+    MatMenuModule,
   ],
 })
-export class ViewDetailsComponent {
+export class ViewDetailsComponent implements OnInit {
   dialog = inject(MatDialog);
 
-  id = 13;
+  viewService = inject(ViewService);
 
-  groups: ViewGroup[] = [
-    {
-      id: '1',
-      name: 'Getränke',
-      position: 1,
-      products: [
-        {
-          id: '0',
-          name: 'Bier 0',
-          price: 400,
-          active: true,
-          groupId: '1',
-          position: 1,
-          desc: '0.5L',
-        },
-        {
-          id: '1',
-          name: 'Bier 1',
-          price: 500,
-          active: true,
-          groupId: '1',
-          position: 2,
-          desc: '0.3L',
-        },
-        {
-          id: '2',
-          name: 'Bier 2',
-          price: 2000,
-          active: true,
-          groupId: '1',
-          position: 3,
-          desc: '2L',
-          color: 'blue',
-        },
-        {
-          id: '3',
-          name: 'Bier 3',
-          price: 500,
-          active: true,
-          groupId: '1',
-          position: 2,
-          desc: '0.3L',
-        },
-        {
-          id: '4',
-          name: 'Bier 4',
-          price: 2000,
-          active: true,
-          groupId: '1',
-          position: 3,
-          desc: '2L',
-        },
-        {
-          id: '5',
-          name: 'Bier 5',
-          price: 500,
-          active: true,
-          groupId: '1',
-          position: 2,
-          desc: '0.3L',
-        },
-        {
-          id: '6',
-          name: 'Bier 6',
-          price: 2000,
-          active: true,
-          groupId: '1',
-          position: 3,
-          desc: '2L',
-        },
-        {
-          id: '7',
-          name: 'Bier 7',
-          price: 2000,
-          active: true,
-          groupId: '1',
-          position: 3,
-          desc: '2L',
-        },
-        {
-          id: '8',
-          name: 'Bier 8',
-          price: 500,
-          active: true,
-          groupId: '1',
-          position: 2,
-          desc: '0.3L',
-        },
-        {
-          id: '9',
-          name: 'Bier 9',
-          price: 2000,
-          active: true,
-          groupId: '1',
-          position: 3,
-          desc: '2L',
-        },
-      ],
-    },
-    {
-      id: '2',
-      name: 'Speisen',
-      position: 2,
-      products: [
-        {
-          name: 'Leberkäs Semmel',
-          price: 200,
-          active: true,
-          groupId: '2',
-          position: 1,
-          desc: 'desc',
-        },
-        {
-          name: 'Kotelett',
-          price: 790,
-          active: true,
-          groupId: '2',
-          position: 2,
-          desc: 'mit Pommes und Ketchup',
-        },
-      ],
-    },
-    {
-      id: '3',
-      name: 'Tabak',
-      position: 5,
-      products: [
-        {
-          name: 'Zigaretten',
-          desc: 'Alle Sorten',
-          price: 700,
-          active: true,
-          groupId: '1',
-          position: 1,
-        },
-      ],
-    },
-  ];
+  route = inject(ActivatedRoute);
+  router = inject(Router);
 
-  msg(msg: string) {
-    console.log(msg);
+  view = signal<View>({ id: '' });
+
+  ngOnInit(): void {
+    this.route.params
+      .pipe(switchMap((params) => this.viewService.getView$(params['id'])))
+      .subscribe((v) => {
+        this.view.set(v);
+      });
   }
 
-  openViewAddUpdateDialog(): void {
-    // const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
-    //   //   data: { product, categoryId: this.category().id },
-    //   minWidth: '30rem',
-    // });
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   console.log('The dialog was closed');
-    //   //   this.productService
-    //   //     .getProductsBy(this.category().id ?? '')
-    //   //     .subscribe((products) => {
-    //   //       this.dataSource?.set(products);
-    //   //     });
-    // });
+  openUpdateDialog(): void {
+    const dialogRef = this.dialog.open(CreateViewDialogComponent, {
+      data: this.view(),
+      minWidth: '30rem',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed', result.data);
+      this.viewService
+        .updateView$(this.view().id, result.data as View)
+        .subscribe((res) => {
+          console.log('updateView', res);
+          this.view.set(res);
+        });
+    });
+  }
+
+  delete(): void {
+    this.viewService.deleteView$(this.view().id).subscribe((res) => {
+      console.log('deleteView', res);
+      this.router.navigate(['/views']);
+    });
   }
 
   //   drop(groupId: string, event: CdkDragDrop<ViewProduct>) {

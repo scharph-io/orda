@@ -13,8 +13,8 @@ type View struct {
 }
 
 type ViewProduct struct {
-	ViewID    string  `gorm:"primaryKey"`
-	View      View    `gorm:"foreignKey:ViewID"`
+	ViewID string `gorm:"primaryKey"`
+	// View      View    `gorm:"foreignKey:ViewID"`
 	ProductID string  `gorm:"primaryKey"`
 	Product   Product `gorm:"foreignKey:ProductID"`
 	CreatedAt time.Time

@@ -49,7 +49,7 @@ func (s *ViewService) CreateView(ctx context.Context, view *ViewRequest) (*ViewR
 	if err != nil {
 		return nil, err
 	}
-	return &ViewResponse{Id: res.ID, Name: res.Name}, nil
+	return &ViewResponse{Id: res.ID, Name: res.Name, Groups: []ViewGroupResponse{}}, nil
 
 }
 
@@ -61,33 +61,43 @@ func (s *ViewService) GetViews(ctx context.Context) ([]ViewResponse, error) {
 	}
 
 	var views []ViewResponse
-	for _, v := range res {
-		fmt.Println(v)
-		views = append(views,
-			ViewResponse{
-				Name: v.Name,
-				Id:   v.ID,
-				Groups: []ViewGroupResponse{
-					{
-						Name: "View 1",
-						Products: []ProductResponse{
-							{Name: "Product 1", Desc: "0.5L", Price: 250},
-							{Name: "Product 2", Desc: "0.2L", Price: 150},
-							{Name: "Product 3", Desc: "0.4L", Price: 200},
-						},
-					},
-					{
-						Name: "View 2",
-						Products: []ProductResponse{
-							{Name: "Product 1", Desc: "0.5L", Price: 250},
-							{Name: "Product 2", Desc: "0.2L", Price: 150},
-							{Name: "Product 3", Desc: "0.4L", Price: 200},
-						},
-					},
-				},
-			})
 
+	if len(res) == 0 {
+		return []ViewResponse{}, nil
 	}
+
+	for _, v := range res {
+		views = append(views, ViewResponse{Name: v.Name, Id: v.ID, Groups: []ViewGroupResponse{}})
+	}
+
+	fmt.Println(len(res))
+	// for _, v := range res {
+	// 	fmt.Println(v)
+	// 	views = append(views,
+	// 		ViewResponse{
+	// 			Name: v.Name,
+	// 			Id:   v.ID,
+	// 			Groups: []ViewGroupResponse{
+	// 				{
+	// 					Name: "View 1",
+	// 					Products: []ProductResponse{
+	// 						{Name: "Product 1", Desc: "0.5L", Price: 250},
+	// 						{Name: "Product 2", Desc: "0.2L", Price: 150},
+	// 						{Name: "Product 3", Desc: "0.4L", Price: 200},
+	// 					},
+	// 				},
+	// 				{
+	// 					Name: "View 2",
+	// 					Products: []ProductResponse{
+	// 						{Name: "Product 1", Desc: "0.5L", Price: 250},
+	// 						{Name: "Product 2", Desc: "0.2L", Price: 150},
+	// 						{Name: "Product 3", Desc: "0.4L", Price: 200},
+	// 					},
+	// 				},
+	// 			},
+	// 		})
+
+	// }
 	return views, nil
 }
 
@@ -114,9 +124,13 @@ func (s *ViewService) AddProduct(ctx context.Context, viewId, productId string) 
 }
 
 func (s *ViewService) UpdateView(ctx context.Context, id string, view *ViewRequest) (*ViewResponse, error) {
-	res, err := s.repo.Update(ctx, id, &model.View{Name: view.Name})
+	res, err := s.repo.Update(ctx, &model.View{Name: view.Name, Base: model.Base{ID: id}})
 	if err != nil {
 		return nil, err
 	}
 	return &ViewResponse{Name: res.Name, Id: res.ID}, nil
+}
+
+func (s *ViewService) DeleteView(ctx context.Context, id string) (bool, error) {
+	return s.repo.Delete(ctx, id)
 }

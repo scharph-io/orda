@@ -24,7 +24,7 @@ func (r *ViewRepo) Create(ctx context.Context, view *model.View) (*model.View, e
 }
 
 func (r *ViewRepo) Read(ctx context.Context) (views []model.View, err error) {
-	res := r.db.WithContext(ctx).Model(&model.View{}).Preload("Products").Find(&views)
+	res := r.db.WithContext(ctx).Model(&model.View{}).Preload("Products").Order("name ASC").Find(&views)
 	if res.Error != nil {
 		return nil, res.Error
 	}
