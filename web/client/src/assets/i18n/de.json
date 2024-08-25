@@ -78,6 +78,7 @@
   },
   "product": {
     "title": "Produkte",
+    "append": "Produkt hinzufügen",
     "add": "Produkt anlegen",
     "edit": "Produkt bearbeiten",
     "delete": "Alle löschen",

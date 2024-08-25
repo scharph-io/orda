@@ -24,6 +24,8 @@ import { switchMap } from 'rxjs';
 import { ViewService } from '../../../shared/services/view.service';
 import { group } from '@angular/animations';
 import { View } from '../../../shared/model/view';
+import { TranslocoModule } from '@jsverse/transloco';
+import { ProductAppendDialogComponent } from './product-append-dialog.component';
 
 export interface ViewGroup {
   id?: string;
@@ -37,11 +39,14 @@ export interface ViewGroup {
   selector: 'orda-view-details',
   template: `
     <div class="toolbar">
-      <h2>view details {{ view().name }}</h2>
+      <h2>{{ view().name }}</h2>
       <div>
-        <button mat-fab extended>
+        <button
+          style="background-color: #E6E050;"
+          mat-icon-button
+          (click)="openProductAppendDialog()"
+        >
           <mat-icon>add</mat-icon>
-          add_product
         </button>
         <button
           mat-icon-button
@@ -181,6 +186,7 @@ export interface ViewGroup {
     CdkDragPlaceholder,
     ViewProductComponent,
     MatMenuModule,
+    TranslocoModule,
   ],
 })
 export class ViewDetailsComponent implements OnInit {
@@ -206,12 +212,19 @@ export class ViewDetailsComponent implements OnInit {
       data: this.view(),
       minWidth: '30rem',
     });
+    dialogRef.beforeClosed().subscribe((res) => {
+      console.log('The dialog was started closed', res.data);
+    });
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed', result.data);
+
+      if (!result) {
+        return;
+      }
+
       this.viewService
         .updateView$(this.view().id, result.data as View)
         .subscribe((res) => {
-          console.log('updateView', res);
           this.view.set(res);
         });
     });
@@ -222,6 +235,17 @@ export class ViewDetailsComponent implements OnInit {
       console.log('deleteView', res);
       this.router.navigate(['/views']);
     });
+  }
+
+  openProductAppendDialog() {
+    const dialogRef = this.dialog.open(ProductAppendDialogComponent, {
+      data: this.view(),
+      minWidth: '30rem',
+    });
+    dialogRef.beforeClosed().subscribe((res) => {
+      console.log('The dialog was started closed', res.data);
+    });
+    dialogRef.afterClosed().subscribe((result) => {});
   }
 
   //   drop(groupId: string, event: CdkDragDrop<ViewProduct>) {

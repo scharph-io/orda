@@ -123,7 +123,7 @@ export class CreateViewDialogComponent {
   ActionType = ActionType;
 
   constructor() {
-    console.log('CreateViewDialogComponent', this.view.name);
+    // console.log('CreateViewDialogComponent', this.view.name);
     if (this.view) {
       this.viewForm.patchValue(this.view);
       this.isUpdate = true;

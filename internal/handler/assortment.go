@@ -75,7 +75,11 @@ func (h *AssortmentHandler) DeleteGroup(c *fiber.Ctx) error {
 func (h *AssortmentHandler) GetProducts(c *fiber.Ctx) error {
 	group_id := c.Query("group_id")
 	if group_id == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "group_id is required"})
+		products, err := h.assortmentService.GetProducts(c.Context())
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+		}
+		return c.Status(fiber.StatusOK).JSON(products)
 	}
 	products, err := h.assortmentService.GetGroupProducts(c.Context(), group_id)
 	if err != nil {

@@ -99,9 +99,12 @@ export class ViewsOverviewComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed', result.data);
 
+      if (!result) {
+        return;
+      }
+
       if (result?.action === 'add') {
         this.viewService.addView$(result.data as View).subscribe((res) => {
-          console.log('addView', JSON.stringify(res));
           this.ngOnInit();
         });
       }

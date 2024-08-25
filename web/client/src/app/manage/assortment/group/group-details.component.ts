@@ -31,9 +31,10 @@ import { TranslocoModule } from '@jsverse/transloco';
               <mat-card-subtitle>{{ group()?.desc }}</mat-card-subtitle>
             }
             @if (group()?.deposit ?? 0 > 0) {
-              <mat-card-subtitle>{{
-                group()?.deposit | ordaCurrency
-              }}</mat-card-subtitle>
+              <mat-card-subtitle
+                >{{ 'deposit' | transloco }}:
+                {{ group()?.deposit | ordaCurrency }}</mat-card-subtitle
+              >
             }
           </mat-card-header>
 
@@ -116,6 +117,10 @@ export class GroupDetailsComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed', result);
+
+      if (!result) {
+        return;
+      }
 
       switch (result.action) {
         case ActionType.EDIT:

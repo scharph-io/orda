@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"slices"
 
 	"github.com/scharph/orda/internal/model"
 	"github.com/scharph/orda/internal/repository"
@@ -35,9 +36,10 @@ type ProductResponse struct {
 	Name      string `json:"name"`
 	Desc      string `json:"desc"`
 	Price     int32  `json:"price"`
-	GroupID   string `json:"group_id"`
-	Active    bool   `json:"active"`
-	UpdatedAt string `json:"updated_at"`
+	GroupID   string `json:"group_id,omitempty"`
+	Group     string `json:"group,omitempty"`
+	Active    bool   `json:"active,omitempty"`
+	UpdatedAt string `json:"updated_at,omitempty"`
 }
 
 type AssortmentService struct {
@@ -152,6 +154,34 @@ func (a *AssortmentService) GetGroupProducts(ctx context.Context, id string) ([]
 			GroupID:   product.GroupID,
 			UpdatedAt: product.UpdatedAt.String(),
 			Active:    product.Active,
+		})
+	}
+	if len(products) == 0 {
+		return []ProductResponse{}, nil
+	}
+	return products, nil
+}
+
+func (a *AssortmentService) GetProducts(ctx context.Context) ([]ProductResponse, error) {
+
+	groups, err := a.groupRepo.Read(ctx)
+	res, err := a.productRepo.Read(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var products []ProductResponse
+	for _, product := range res {
+
+		products = append(products, ProductResponse{
+			Id:    product.ID,
+			Name:  product.Name,
+			Desc:  product.Desc,
+			Price: product.Price,
+			// GroupID: product.GroupID,
+			Group: groups[slices.IndexFunc(groups, func(g model.Group) bool {
+				return g.ID == product.GroupID
+			})].Name,
 		})
 	}
 	if len(products) == 0 {

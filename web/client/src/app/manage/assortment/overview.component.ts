@@ -72,6 +72,9 @@ export class AssortmentOverviewComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
       this.assortmentService
         .addGroup$(result.data)
         .pipe(

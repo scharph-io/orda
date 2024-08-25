@@ -231,6 +231,10 @@ export class ProductsOverviewComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       // console.log('The dialog was closed', result);
 
+      if (!result) {
+        return;
+      }
+
       this.messageService.send({
         title: this.genProductMsg(result.product, result.action),
         severity: Severity.INFO,
