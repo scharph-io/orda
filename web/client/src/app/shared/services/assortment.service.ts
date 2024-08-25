@@ -52,6 +52,10 @@ export class AssortmentService {
     );
   }
 
+  getProducts$() {
+    return this.http.get<Product[]>(`${this.endpoint}${this.path}/products`);
+  }
+
   addProduct$(product: Product) {
     return this.http.post<Product>(
       `${this.endpoint}${this.path}/products`,
