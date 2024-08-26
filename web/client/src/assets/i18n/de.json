@@ -59,7 +59,8 @@
     "position": "Position",
     "qty": "Anzahl",
     "group": "Gruppe",
-    "use": "Verwenden"
+    "use": "Verwenden",
+    "no-data": "Keine Daten verfügbar"
   },
 
   "dialog": {
@@ -67,7 +68,7 @@
     "edit": "Speichern",
     "create": "Anlegen",
     "delete": "Löschen",
-    "append"  : "Hinzufügen"
+    "append": "Hinzufügen"
   },
   "assortment": {
     "title": "Sortiment"

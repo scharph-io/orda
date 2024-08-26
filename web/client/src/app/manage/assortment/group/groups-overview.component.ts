@@ -6,7 +6,7 @@ import { Group } from '../../../shared/model/product';
 @Component({
   selector: 'orda-groups-overview',
   template: `
-    <mat-grid-list cols="5" rowHeight="4:3" gutterSize="1em">
+    <mat-grid-list cols="7" rowHeight="4:3" gutterSize="1em">
       @if (groups().length === 0) {
         <div>No groups found</div>
         <!-- <mat-grid-tile class="template">
@@ -15,11 +15,10 @@ import { Group } from '../../../shared/model/product';
       }
       @for (g of groups(); track g.id) {
         <mat-grid-tile [routerLink]="['/assortment/group', g.id]">
-          <div>{{ g.name }}</div>
-          <div>{{ g.desc }}</div>
-          @if (g.deposit && g.deposit > 0) {
-            <div>{{ g.deposit }}</div>
-          }
+          <div class="group-layout">
+            <div class="title">{{ g.name }}</div>
+            <div class="desc">{{ g.desc }}</div>
+          </div>
         </mat-grid-tile>
       }
     </mat-grid-list>
@@ -39,6 +38,23 @@ import { Group } from '../../../shared/model/product';
       .template {
         background: lightgrey;
         border: 5px dotted black;
+      }
+
+      .group-layout {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        // align-items: center;
+        height: 100%;
+
+        .title {
+          font-size: 1.5em;
+        }
+
+        .desc {
+          font-size: 0.9em;
+          font-weight: lighter;
+        }
       }
     `,
   ],

@@ -226,7 +226,7 @@ export class ProductsOverviewComponent implements OnInit {
   ): void {
     const dialogRef = this.dialog.open(CreateProductDialogComponent, {
       data: { product, groupId: this.group(), duplicate },
-      minWidth: '90vw',
+      minWidth: '40vw',
     });
     dialogRef.afterClosed().subscribe((result) => {
       // console.log('The dialog was closed', result);

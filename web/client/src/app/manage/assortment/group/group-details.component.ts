@@ -113,7 +113,7 @@ export class GroupDetailsComponent implements OnInit {
   editGroup(): void {
     const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
       data: this.group(),
-      minWidth: '90vw',
+      minWidth: '30vw',
     });
     dialogRef.afterClosed().subscribe((result) => {
       console.log('The dialog was closed', result);

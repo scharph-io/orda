@@ -68,7 +68,7 @@ export class AssortmentOverviewComponent implements OnInit {
 
   openGroupAddDialog(): void {
     const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
-      minWidth: '90vw',
+      minWidth: '30vw',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
