@@ -68,3 +68,7 @@ func (r *ViewRepo) RemoveProduct(ctx context.Context, id string, product *model.
 	}
 	return true, nil
 }
+
+func (r *ViewRepo) GetNoneAssignedProducts(ctx context.Context) {
+	r.db.WithContext(ctx).Model(&model.Product{}).Where("view_id IS NULL").Find(&model.Product{})
+}

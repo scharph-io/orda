@@ -122,7 +122,6 @@ export class CreateGroupDialogComponent {
 
   isUpdate = false;
 
-  dialogRef = inject(MatDialogRef<CreateGroupDialogComponent>);
   messageService = inject(MessageService);
   assortmentService = inject(AssortmentService);
 
@@ -130,7 +129,12 @@ export class CreateGroupDialogComponent {
 
   ActionType = ActionType;
 
-  constructor() {
+  constructor(
+    public dialogRef: MatDialogRef<
+      CreateGroupDialogComponent,
+      { action: ActionType; group: Group }
+    >,
+  ) {
     if (this.group) {
       this.groupForm.patchValue({
         name: this.group.name,
@@ -145,11 +149,11 @@ export class CreateGroupDialogComponent {
     const data = this.groupForm.value;
     this.dialogRef.close({
       action,
-      data: {
-        name: data.name,
-        desc: data.desc,
+      group: {
+        name: data.name ?? '',
+        desc: data.desc ?? '',
         deposit: Math.round((data.deposit ?? 0) * 100),
-      } as Group,
+      },
     });
   }
 }

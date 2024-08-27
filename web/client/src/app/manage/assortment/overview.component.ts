@@ -1,5 +1,12 @@
 import { DialogModule } from '@angular/cdk/dialog';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  Injector,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { GroupsOverviewComponent } from './group/groups-overview.component';
@@ -14,6 +21,7 @@ import {
 } from '../../shared/services/message.service';
 import { catchError, EMPTY, pipe } from 'rxjs';
 import { TranslocoModule } from '@jsverse/transloco';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'orda-assortment-overview',
@@ -53,30 +61,38 @@ import { TranslocoModule } from '@jsverse/transloco';
     TranslocoModule,
   ],
 })
-export class AssortmentOverviewComponent implements OnInit {
+export class AssortmentOverviewComponent {
   assortmentService = inject(AssortmentService);
   messageService = inject(MessageService);
   dialog = inject(MatDialog);
+  private readonly injector = inject(Injector);
 
-  groups = signal<Group[]>([]);
+  conditionalCount = computed(() => {
+    return 'Nothing to see here!';
+  });
 
-  ngOnInit(): void {
-    this.assortmentService.getGroups$().subscribe((g) => {
-      this.groups.set(g);
-    });
-  }
+  // toSignal(this.assortmentService.getGroups$(), { initialValue: [] });
+
+  groups = toSignal(this.assortmentService.getGroups$(), { initialValue: [] });
 
   openGroupAddDialog(): void {
-    const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
-      minWidth: '30vw',
-    });
+    const dialogRef = this.dialog.open<CreateGroupDialogComponent, any, Group>(
+      CreateGroupDialogComponent,
+      {
+        data: '',
+        minWidth: '30vw',
+      },
+    );
 
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) {
         return;
       }
+
+      if (result.group === undefined) {
+      }
       this.assortmentService
-        .addGroup$(result.data)
+        .addGroup$(result.group)
         .pipe(
           catchError((err) => {
             this.messageService.send(err.statusText);
@@ -88,7 +104,10 @@ export class AssortmentOverviewComponent implements OnInit {
             title: `Group ${result.data.name} added`,
             severity: Severity.INFO,
           });
-          this.ngOnInit();
+          this.groups = toSignal(this.assortmentService.getGroups$(), {
+            initialValue: [],
+            injector: this.injector,
+          });
         });
     });
   }

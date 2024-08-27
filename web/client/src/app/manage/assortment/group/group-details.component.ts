@@ -15,9 +15,10 @@ import {
   ActionType,
   CreateGroupDialogComponent,
 } from './create-group-dialog.component';
-import { switchMap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 import { MessageService } from '../../../shared/services/message.service';
 import { TranslocoModule } from '@jsverse/transloco';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'orda-group-details',
@@ -90,7 +91,7 @@ import { TranslocoModule } from '@jsverse/transloco';
     TranslocoModule,
   ],
 })
-export class GroupDetailsComponent implements OnInit {
+export class GroupDetailsComponent {
   route = inject(ActivatedRoute);
   router = inject(Router);
   assortmentService = inject(AssortmentService);
@@ -98,17 +99,11 @@ export class GroupDetailsComponent implements OnInit {
 
   dialog = inject(MatDialog);
 
-  group = signal<Group | undefined>(undefined);
-
-  ngOnInit(): void {
-    this.route.params
-      .pipe(
-        switchMap((params) => this.assortmentService.getGroup$(params['id'])),
-      )
-      .subscribe((group) => {
-        this.group.set(group);
-      });
-  }
+  group = toSignal(
+    inject(ActivatedRoute).params.pipe(
+      switchMap((params) => inject(AssortmentService).getGroup$(params['id'])),
+    ),
+  );
 
   editGroup(): void {
     const dialogRef = this.dialog.open(CreateGroupDialogComponent, {
@@ -124,12 +119,18 @@ export class GroupDetailsComponent implements OnInit {
 
       switch (result.action) {
         case ActionType.EDIT:
-          this.assortmentService
-            .updateGroup$(this.group()?.id ?? '', result.data)
-            .subscribe((res) => {
-              this.messageService.send({ title: 'Group updated' });
-              this.group.set(res);
-            });
+          this.group = toSignal(
+            this.assortmentService
+              .updateGroup$(this.group()?.id ?? '', result.data)
+              .pipe(
+                tap((res) => {
+                  this.messageService.send({
+                    title: `Group '${res.name}' updated`,
+                  });
+                }),
+              ),
+          );
+
           break;
         case ActionType.DELETE:
           this.assortmentService
