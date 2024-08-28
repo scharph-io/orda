@@ -66,13 +66,6 @@ export class AssortmentOverviewComponent {
   messageService = inject(MessageService);
   dialog = inject(MatDialog);
   private readonly injector = inject(Injector);
-
-  conditionalCount = computed(() => {
-    return 'Nothing to see here!';
-  });
-
-  // toSignal(this.assortmentService.getGroups$(), { initialValue: [] });
-
   groups = toSignal(this.assortmentService.getGroups$(), { initialValue: [] });
 
   openGroupAddDialog(): void {
@@ -84,15 +77,13 @@ export class AssortmentOverviewComponent {
       },
     );
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (!result) {
+    dialogRef.afterClosed().subscribe((group) => {
+      if (!group) {
         return;
       }
 
-      if (result.group === undefined) {
-      }
       this.assortmentService
-        .addGroup$(result.group)
+        .addGroup$(group)
         .pipe(
           catchError((err) => {
             this.messageService.send(err.statusText);
@@ -101,7 +92,7 @@ export class AssortmentOverviewComponent {
         )
         .subscribe((res) => {
           this.messageService.send({
-            title: `Group ${result.data.name} added`,
+            title: `Group ${group.name} added`,
             severity: Severity.INFO,
           });
           this.groups = toSignal(this.assortmentService.getGroups$(), {
