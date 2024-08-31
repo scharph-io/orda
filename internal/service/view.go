@@ -112,6 +112,10 @@ func (s *ViewService) GetViewByID(ctx context.Context, id string) (*ViewResponse
 }
 
 func (s *ViewService) AddProducts(ctx context.Context, viewId string, viewProduct *[]ViewProductRequest) error {
+	if _, err := s.repo.ReadById(ctx, viewId); err != nil {
+		return err
+	}
+
 	var p []model.ViewProduct
 	for _, vp := range *viewProduct {
 		p = append(p, model.ViewProduct{
