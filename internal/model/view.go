@@ -1,11 +1,5 @@
 package model
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
-
 type View struct {
 	Base
 	Name     string    `json:"name"`
@@ -17,8 +11,6 @@ type ViewProduct struct {
 	// View      View    `gorm:"foreignKey:ViewID"`
 	ProductID string  `gorm:"primaryKey"`
 	Product   Product `gorm:"foreignKey:ProductID"`
-	CreatedAt time.Time
-	DeletedAt gorm.DeletedAt
 	Position  uint
 	Color     string
 }

@@ -15,7 +15,7 @@ type GroupRequest struct {
 }
 
 type GroupResponse struct {
-	Id        string            `json:"id"`
+	Id        string            `json:"id,omitempty"`
 	Name      string            `json:"name"`
 	Desc      string            `json:"desc"`
 	Deposit   uint              `json:"deposit"`
@@ -31,8 +31,13 @@ type ProductRequest struct {
 	Active  bool   `json:"active"`
 }
 
+type ViewGroupResponse struct {
+	Name     string             `json:"name"`
+	Products []*ProductResponse `json:"products"`
+}
+
 type ProductResponse struct {
-	Id        string `json:"id"`
+	Id        string `json:"id,omitempty"`
 	Name      string `json:"name"`
 	Desc      string `json:"desc"`
 	Price     int32  `json:"price"`

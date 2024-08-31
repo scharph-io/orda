@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/model"
 	"gorm.io/gorm"
@@ -34,9 +33,6 @@ func (r *ViewRepo) Read(ctx context.Context) (views []model.View, err error) {
 
 func (r *ViewRepo) ReadById(ctx context.Context, id string) (view model.View, err error) {
 	err = r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", id).Preload("Products").First(&view).Error
-
-	fmt.Println(view)
-
 	return view, err
 }
 

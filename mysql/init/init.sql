@@ -62,8 +62,6 @@ INSERT INTO `products` (`id`, `created_at`, `updated_at`, `deleted_at`, `name`, 
 CREATE TABLE `view_products` (
   `view_id` varchar(191) NOT NULL,
   `product_id` varchar(191) NOT NULL,
-  `created_at` datetime(3) DEFAULT NULL,
-  `deleted_at` datetime(3) DEFAULT NULL,
   `position` bigint unsigned DEFAULT NULL,
   `color` longtext,
   PRIMARY KEY (`view_id`,`product_id`),

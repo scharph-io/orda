@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/service"
 )
@@ -70,13 +72,19 @@ func (h *ViewHandler) DeleteView(c *fiber.Ctx) error {
 	}
 }
 
-func (h *ViewHandler) AddProduct(c *fiber.Ctx) error {
+func (h *ViewHandler) AddProducts(c *fiber.Ctx) error {
 	id := c.Params("id")
-	product := c.Query("product")
-
-	_, err := h.ViewService.AddProduct(c.Context(), id, product)
+	view, err := h.ViewService.GetViewByID(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "Product added to view"})
+	var viewProducts []service.ViewProductRequest
+	if err := c.BodyParser(&viewProducts); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+	}
+	err = h.ViewService.AddProducts(c.Context(), id, &viewProducts)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("%d products added to view %s", len(viewProducts), view.Id)})
 }

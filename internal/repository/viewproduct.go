@@ -38,3 +38,7 @@ func (r *ViewProductRepo) ReadByProductId(ctx context.Context, id string) (views
 	}
 	return views, nil
 }
+
+func (r *ViewProductRepo) Create(ctx context.Context, viewProduct ...model.ViewProduct) error {
+	return r.db.WithContext(ctx).Create(&viewProduct).Error
+}
