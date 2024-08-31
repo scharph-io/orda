@@ -13,19 +13,15 @@ type ViewRequest struct {
 }
 
 type ViewResponse struct {
-	Id     string              `json:"id"`
-	Name   string              `json:"name"`
-	Groups []ViewGroupResponse `json:"groups"`
+	Id         string                    `json:"id"`
+	Name       string                    `json:"name"`
+	Assortment []AssortmentGroupResponse `json:"assortment,omitempty"`
 }
 
-type ViewGroupResponse struct {
+type AssortmentGroupResponse struct {
 	// Roles    []string              `json:"roles"`
 	Name     string            `json:"name"`
 	Products []ProductResponse `json:"products"`
-}
-type Response struct {
-	Name   string              `json:"name"`
-	Groups []ViewGroupResponse `json:"groups"`
 }
 
 // ProductView is a service that provides view functions for products.
@@ -49,7 +45,7 @@ func (s *ViewService) CreateView(ctx context.Context, view *ViewRequest) (*ViewR
 	if err != nil {
 		return nil, err
 	}
-	return &ViewResponse{Id: res.ID, Name: res.Name, Groups: []ViewGroupResponse{}}, nil
+	return &ViewResponse{Id: res.ID, Name: res.Name, Assortment: []AssortmentGroupResponse{}}, nil
 
 }
 
@@ -67,37 +63,9 @@ func (s *ViewService) GetViews(ctx context.Context) ([]ViewResponse, error) {
 	}
 
 	for _, v := range res {
-		views = append(views, ViewResponse{Name: v.Name, Id: v.ID, Groups: []ViewGroupResponse{}})
+		views = append(views, ViewResponse{Name: v.Name, Id: v.ID, Assortment: []AssortmentGroupResponse{}})
 	}
 
-	fmt.Println(len(res))
-	// for _, v := range res {
-	// 	fmt.Println(v)
-	// 	views = append(views,
-	// 		ViewResponse{
-	// 			Name: v.Name,
-	// 			Id:   v.ID,
-	// 			Groups: []ViewGroupResponse{
-	// 				{
-	// 					Name: "View 1",
-	// 					Products: []ProductResponse{
-	// 						{Name: "Product 1", Desc: "0.5L", Price: 250},
-	// 						{Name: "Product 2", Desc: "0.2L", Price: 150},
-	// 						{Name: "Product 3", Desc: "0.4L", Price: 200},
-	// 					},
-	// 				},
-	// 				{
-	// 					Name: "View 2",
-	// 					Products: []ProductResponse{
-	// 						{Name: "Product 1", Desc: "0.5L", Price: 250},
-	// 						{Name: "Product 2", Desc: "0.2L", Price: 150},
-	// 						{Name: "Product 3", Desc: "0.4L", Price: 200},
-	// 					},
-	// 				},
-	// 			},
-	// 		})
-
-	// }
 	return views, nil
 }
 
@@ -107,18 +75,24 @@ func (s *ViewService) GetViewByID(ctx context.Context, id string) (*ViewResponse
 	if err != nil {
 		return nil, err
 	}
+
+	groups, err := s.groupRepo.Read(ctx)
+
+	fmt.Println(len(groups))
+	fmt.Println(len(res.Products))
+
 	return &ViewResponse{Name: res.Name, Id: res.ID}, nil
 }
 
 func (s *ViewService) AddProduct(ctx context.Context, viewId, productId string) (*ViewResponse, error) {
-	// res, err := s.productRepo.ReadByID(ctx, productId)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// _, err = s.repo.AddProduct(ctx, viewId, res)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	product, err := s.productRepo.ReadByID(ctx, productId)
+	if err != nil {
+		return nil, err
+	}
+	_, err = s.repo.AddProduct(ctx, viewId, product)
+	if err != nil {
+		return nil, err
+	}
 
 	return &ViewResponse{Id: viewId}, nil
 }

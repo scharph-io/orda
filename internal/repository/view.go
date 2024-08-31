@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/model"
 	"gorm.io/gorm"
@@ -32,19 +33,16 @@ func (r *ViewRepo) Read(ctx context.Context) (views []model.View, err error) {
 }
 
 func (r *ViewRepo) ReadById(ctx context.Context, id string) (view model.View, err error) {
-	res := r.db.WithContext(ctx).Where("id = ?", id).Preload("Products").First(&view)
-	if res.Error != nil {
-		return model.View{}, res.Error
-	}
-	return view, nil
+	err = r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", id).Preload("Products").First(&view).Error
+
+	fmt.Println(view)
+
+	return view, err
 }
 
 func (r *ViewRepo) Update(ctx context.Context, view *model.View) (*model.View, error) {
-	res := r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", view.ID).Updates(&view)
-	if res.Error != nil {
-		return nil, res.Error
-	}
-	return view, nil
+	err := r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", view.ID).Updates(&view).Error
+	return view, err
 }
 
 func (r *ViewRepo) Delete(ctx context.Context, id string) (bool, error) {
@@ -55,8 +53,8 @@ func (r *ViewRepo) Delete(ctx context.Context, id string) (bool, error) {
 	return !(res.RowsAffected == 0), nil
 }
 
-func (r *ViewRepo) AddProduct(ctx context.Context, id string, product model.Product) (bool, error) {
-	if err := r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", id).Preload("Products").Association("Products").Append(&product); err != nil {
+func (r *ViewRepo) AddProduct(ctx context.Context, id string, product *model.Product) (bool, error) {
+	if err := r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", id).Preload("Products").Association("Products").Append(product); err != nil {
 		return false, err
 	}
 	return true, nil
