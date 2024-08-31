@@ -1,11 +1,11 @@
 _type: export
 __export_format: 4
-__export_date: 2024-08-19T13:15:49.419Z
+__export_date: 2024-08-31T14:31:26.427Z
 __export_source: insomnia.desktop.app:v9.3.3
 resources:
-  - _id: req_8d612726112e4b6389350cfdafe51128
-    parentId: fld_753d6fa56be04da9b94542eaf6a1be6e
-    modified: 1724073269028
+  - _id: req_7060a6777875405ea89e3fe8f49d10b8
+    parentId: fld_5cd2eac2567d48c1bfdaa53862cf33a0
+    modified: 1725106902732
     created: 1723885221570
     url: "{{ _.url }}/api/views/:id/products"
     name: AddProductById
@@ -15,7 +15,7 @@ resources:
     parameters:
       - id: pair_1b5e4bbb8af24946a60460a5d0687209
         name: product
-        value: 01915f5d-307a-75d3-b5f1-e62cdb11cadd
+        value: 0191a852-7722-7175-a89b-99fa438f600a
         description: ""
         disabled: false
     headers:
@@ -26,7 +26,7 @@ resources:
     isPrivate: false
     pathParameters:
       - name: id
-        value: 01915f7f-36c1-79f7-a050-613526320bf3
+        value: 0191a85b-875d-7ebe-b3c0-a95302d8d12f
     settingStoreCookies: true
     settingSendCookies: true
     settingDisableRenderRequestBody: false
@@ -34,7 +34,7 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: fld_753d6fa56be04da9b94542eaf6a1be6e
+  - _id: fld_5cd2eac2567d48c1bfdaa53862cf33a0
     parentId: wrk_scratchpad
     modified: 1723882760899
     created: 1723882760899
@@ -46,14 +46,14 @@ resources:
     _type: request_group
   - _id: wrk_scratchpad
     parentId: null
-    modified: 1724072387781
-    created: 1724072387781
+    modified: 1723789589925
+    created: 1723789589925
     name: Scratch Pad
     description: ""
     scope: collection
     _type: workspace
-  - _id: req_307eff11e6104cdf88641b14c20f0aa3
-    parentId: fld_753d6fa56be04da9b94542eaf6a1be6e
+  - _id: req_e4ff960d0daf4c0d82dcaec0d32ea9fe
+    parentId: fld_5cd2eac2567d48c1bfdaa53862cf33a0
     modified: 1723884056763
     created: 1723883923784
     url: "{{ _.url }}/api/views"
@@ -85,9 +85,9 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_5041955947e4417fac21b55f68858953
-    parentId: fld_753d6fa56be04da9b94542eaf6a1be6e
-    modified: 1724073080262
+  - _id: req_3b938a8be04b4cfb9fffba38262f28ff
+    parentId: fld_5cd2eac2567d48c1bfdaa53862cf33a0
+    modified: 1725104888614
     created: 1723884176609
     url: "{{ _.url }}/api/views/"
     name: GetAll
@@ -118,9 +118,9 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_2b63b587bef341f29720edf5733b3693
-    parentId: fld_753d6fa56be04da9b94542eaf6a1be6e
-    modified: 1724073241116
+  - _id: req_f8a95caf8d85495da4b910f79a82beae
+    parentId: fld_5cd2eac2567d48c1bfdaa53862cf33a0
+    modified: 1725105313851
     created: 1723884334362
     url: "{{ _.url }}/api/views/:id"
     name: GetById
@@ -145,7 +145,7 @@ resources:
     isPrivate: false
     pathParameters:
       - name: id
-        value: 01915f7f-36c1-79f7-a050-613526320bf3
+        value: 0191a3b1-5995-7ee3-9c96-3c9efc5e8a2a
     settingStoreCookies: true
     settingSendCookies: true
     settingDisableRenderRequestBody: false
@@ -153,8 +153,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_d2bf45d84fbf4b82b2bb38967b046406
-    parentId: fld_652128919ed84c66aafedad7b6b58128
+  - _id: req_005621ba6a6540a7a1a1c53f61bba4ed
+    parentId: fld_ca9a727f82e24dfbb47e783a9c932bd7
     modified: 1724073099651
     created: 1723741482711
     url: http://localhost:8080/api/assortment/groups/:id
@@ -179,8 +179,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: fld_652128919ed84c66aafedad7b6b58128
-    parentId: fld_7ce08643e4024c39ae14dd9e7db286b3
+  - _id: fld_ca9a727f82e24dfbb47e783a9c932bd7
+    parentId: fld_dc0f60cfa6544de28851e2c1119efe0a
     modified: 1723736819623
     created: 1723643586836
     name: Groups
@@ -189,7 +189,7 @@ resources:
     environmentPropertyOrder: null
     metaSortKey: -1723643647408
     _type: request_group
-  - _id: fld_7ce08643e4024c39ae14dd9e7db286b3
+  - _id: fld_dc0f60cfa6544de28851e2c1119efe0a
     parentId: wrk_scratchpad
     modified: 1723640832504
     created: 1723640832504
@@ -199,8 +199,8 @@ resources:
     environmentPropertyOrder: null
     metaSortKey: -1723640832504
     _type: request_group
-  - _id: req_d8bcaae96bca4cecbc0562151bfd078d
-    parentId: fld_652128919ed84c66aafedad7b6b58128
+  - _id: req_f4903084373141e6a16a63bb8f1431ab
+    parentId: fld_ca9a727f82e24dfbb47e783a9c932bd7
     modified: 1723741491706
     created: 1723640835795
     url: http://localhost:8080/api/assortment/groups
@@ -226,8 +226,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_3e4fa858c869439191d0d9125977df63
-    parentId: fld_652128919ed84c66aafedad7b6b58128
+  - _id: req_81a5f27b21b94848897d2bed92686927
+    parentId: fld_ca9a727f82e24dfbb47e783a9c932bd7
     modified: 1724073117371
     created: 1723641670507
     url: http://localhost:8080/api/assortment/groups/:id
@@ -263,8 +263,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_5d435cd28b2d4065b74fce8edc18cf0c
-    parentId: fld_652128919ed84c66aafedad7b6b58128
+  - _id: req_7a4c12bedcf34a65b469582291c8c738
+    parentId: fld_ca9a727f82e24dfbb47e783a9c932bd7
     modified: 1724073227292
     created: 1723641870369
     url: http://localhost:8080/api/assortment/groups/:id
@@ -289,8 +289,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_25685b65e0014c46bc0aad511f043914
-    parentId: fld_652128919ed84c66aafedad7b6b58128
+  - _id: req_5e0f5caa815c49fea21eba680e1eae54
+    parentId: fld_ca9a727f82e24dfbb47e783a9c932bd7
     modified: 1723740640517
     created: 1723641066875
     url: http://localhost:8080/api/assortment/groups
@@ -327,8 +327,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_7c39d1dcd5264b05a3a6ec72eda2b3e3
-    parentId: fld_d7ac762c8fce440f8ff996f9673119a5
+  - _id: req_d9c65019a7974021a8688e8e44fa9878
+    parentId: fld_f37c5cbf9a1346a3a98d1fb5b0dc1567
     modified: 1724073210268
     created: 1723643564614
     url: http://localhost:8080/api/assortment/products
@@ -360,8 +360,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: fld_d7ac762c8fce440f8ff996f9673119a5
-    parentId: fld_7ce08643e4024c39ae14dd9e7db286b3
+  - _id: fld_f37c5cbf9a1346a3a98d1fb5b0dc1567
+    parentId: fld_dc0f60cfa6544de28851e2c1119efe0a
     modified: 1723643647308
     created: 1723643647308
     name: Products
@@ -370,8 +370,8 @@ resources:
     environmentPropertyOrder: null
     metaSortKey: -1723643647308
     _type: request_group
-  - _id: req_1fb7272f3cec4713b871045dab7a38e5
-    parentId: fld_d7ac762c8fce440f8ff996f9673119a5
+  - _id: req_a7165e7957be4ea78ad37d4875d9c534
+    parentId: fld_f37c5cbf9a1346a3a98d1fb5b0dc1567
     modified: 1723648038566
     created: 1723643765596
     url: http://localhost:8080/api/assortment/products
@@ -413,8 +413,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_09f4472642ea4d68a4326df154a9a081
-    parentId: fld_d7ac762c8fce440f8ff996f9673119a5
+  - _id: req_31f6b8cd43f94208a55d28d2ccb25426
+    parentId: fld_f37c5cbf9a1346a3a98d1fb5b0dc1567
     modified: 1724073132209
     created: 1723644141606
     url: http://localhost:8080/api/assortment/products/:id
@@ -455,8 +455,8 @@ resources:
     settingRebuildPath: true
     settingFollowRedirects: global
     _type: request
-  - _id: req_5ce23f9ef4c342bda9ddea28c43a63d8
-    parentId: fld_d7ac762c8fce440f8ff996f9673119a5
+  - _id: req_d5c2fd2ee12f447ea1424919d93a32d4
+    parentId: fld_f37c5cbf9a1346a3a98d1fb5b0dc1567
     modified: 1724073145692
     created: 1723648000348
     url: http://localhost:8080/api/assortment/products/:id
@@ -483,22 +483,22 @@ resources:
     _type: request
   - _id: env_99d30891da4bdcebc63947a8fc17f076de878684
     parentId: wrk_scratchpad
-    modified: 1724072531034
-    created: 1724072391640
+    modified: 1725104910739
+    created: 1723789597907
     name: Base Environment
     data:
-      url: http://localhost:8080
+      url: localhost:8080
     dataPropertyOrder:
       "&":
         - url
     color: null
     isPrivate: false
-    metaSortKey: 1724072391640
+    metaSortKey: 1723789597907
     _type: environment
   - _id: jar_99d30891da4bdcebc63947a8fc17f076de878684
     parentId: wrk_scratchpad
-    modified: 1724072391714
-    created: 1724072391714
+    modified: 1723789597973
+    created: 1723789597973
     name: Default Jar
     cookies: []
     _type: cookie_jar
