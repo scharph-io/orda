@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/model"
 	"github.com/scharph/orda/internal/repository"
@@ -118,6 +119,9 @@ func (s *ViewService) AddProducts(ctx context.Context, viewId string, viewProduc
 
 	var p []model.ViewProduct
 	for _, vp := range *viewProduct {
+		if pr, err := s.vpRepo.ReadByViewAndProductId(ctx, viewId, vp.ProductID); pr.ProductID != "" || err == nil {
+			continue
+		}
 		p = append(p, model.ViewProduct{
 			ViewID:    viewId,
 			ProductID: vp.ProductID,
@@ -125,6 +129,11 @@ func (s *ViewService) AddProducts(ctx context.Context, viewId string, viewProduc
 			Position:  vp.Position,
 		})
 	}
+
+	if len(p) == 0 {
+		return fmt.Errorf("no products to add")
+	}
+
 	return s.vpRepo.Create(ctx, p...)
 }
 

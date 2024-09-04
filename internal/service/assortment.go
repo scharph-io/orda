@@ -43,7 +43,7 @@ type ProductResponse struct {
 	Price     int32  `json:"price"`
 	GroupID   string `json:"group_id,omitempty"`
 	Group     string `json:"group,omitempty"`
-	Active    bool   `json:"active,omitempty"`
+	Active    bool   `json:"active"`
 	UpdatedAt string `json:"updated_at,omitempty"`
 }
 

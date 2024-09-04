@@ -84,7 +84,7 @@ func (h *ViewHandler) AddProducts(c *fiber.Ctx) error {
 	}
 	err = h.ViewService.AddProducts(c.Context(), id, &viewProducts)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("%d products added to view %s", len(viewProducts), view.Id)})
 }
