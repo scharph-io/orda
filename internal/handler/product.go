@@ -40,6 +40,7 @@ func ImportProducts(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't create product", "data": err})
 	}
 
+	// TODO: Add category id to slice
 	// Add category id to slice
 	// for i := range *products {
 	// (*products)[i].GroupID = category_id
