@@ -6,7 +6,7 @@ import { CartStore } from './cart.store';
 import { CartItemComponent } from './cart-item/cart-item.component';
 import { CartSubtotalComponent } from './cart-subtotal/cart-subtotal.component';
 import { CartActionsComponent } from './cart-actions/cart-actions.component';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 
 /**
  * @title Tab group with aligned labels

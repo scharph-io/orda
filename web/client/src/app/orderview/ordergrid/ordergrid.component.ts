@@ -1,7 +1,7 @@
 import { NgStyle } from '@angular/common';
 import { Component, effect, inject, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { Product } from '../../shared/model/product';
+import { ViewProduct } from '../../shared/model/product';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LayoutModule } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
@@ -9,7 +9,7 @@ import { CartStore } from '../cart/cart.store';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import { PlusMinusTileComponent } from './tiles/plus-minus-tile.component';
 import { ProductTileComponent } from './tiles/product-tile.component';
-import { Category } from '../../shared/model/category';
+// import { Category } from '../../shared/model/category';
 import { MatRippleModule } from '@angular/material/core';
 
 /**
@@ -30,7 +30,7 @@ import { MatRippleModule } from '@angular/material/core';
   ],
   template: `
     <mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
-      @if (category().withDeposit) {
+      <!-- @if (category().withDeposit) {
         <mat-grid-tile [colspan]="2"
           ><orda-plus-minus-tile
             [key]="'deposit'"
@@ -50,7 +50,7 @@ import { MatRippleModule } from '@angular/material/core';
             <orda-product-tile [product]="product" />
           </mat-grid-tile>
         }
-      }
+      } -->
     </mat-grid-list>
   `,
   styles: [
@@ -64,7 +64,7 @@ import { MatRippleModule } from '@angular/material/core';
   ],
 })
 export class OrderGridComponent {
-  category = input.required<Category>();
+  // category = input.required<Category>();
 
   cart = inject(CartStore);
 
@@ -77,7 +77,7 @@ export class OrderGridComponent {
     this.destroyed$.complete();
   }
 
-  addProduct(product: Product) {
+  addProduct(product: ViewProduct) {
     this.cart.addItem({
       uuid: product.id ?? '',
       name: product.name,

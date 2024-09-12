@@ -2,15 +2,15 @@ package model
 
 type View struct {
 	Base
-	Name      string     `json:"name"`
-	Deposit   uint       `json:"deposit"`
-	ViewItems []ViewItem `json:"view_items" gorm:"constraint:OnDelete:CASCADE;"`
+	Name     string    `json:"name"`
+	Products []Product `json:"products" gorm:"many2many:view_products;"`
 }
 
-type ViewItem struct {
-	Base
-	Product   Product `json:"product"`
-	ProductID string  `json:"product_id" gorm:"size:36"`
-	ViewID    string  `json:"view_id" gorm:"size:36"`
-	Position  uint    `json:"position" gorm:"default:0"`
+type ViewProduct struct {
+	ViewID string `gorm:"primaryKey"`
+	// View      View    `gorm:"foreignKey:ViewID"`
+	ProductID string  `gorm:"primaryKey"`
+	Product   Product `gorm:"foreignKey:ProductID"`
+	Position  uint
+	Color     string
 }

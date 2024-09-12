@@ -41,10 +41,10 @@ func ImportProducts(c *fiber.Ctx) error {
 	}
 
 	// Add category id to slice
-	for i := range *products {
-		(*products)[i].GroupID = category_id
-		(*products)[i].Active = true
-	}
+	// for i := range *products {
+	// (*products)[i].GroupID = category_id
+	// (*products)[i].Active = true
+	// }
 
 	db.Create(products)
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "Created Products", "data": products})
@@ -75,7 +75,7 @@ func UpdateProduct(c *fiber.Ctx) error {
 	product.Name = input.Name
 	product.Desc = input.Desc
 	product.Price = input.Price
-	product.Active = input.Active
+	// product.Active = input.Active
 	db.Save(&product)
 	return c.JSON(fiber.Map{"status": "success", "message": "Product successfully updated", "data": product})
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, input } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { TransactionItem } from '../../shared/model/transaction';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 
 @Component({
@@ -68,7 +68,7 @@ export class ItemsTableComponent implements OnInit {
 
   displayedColumns: string[] = ['position', 'desc', 'price', 'qty', 'total'];
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     // Component initialization logic goes here

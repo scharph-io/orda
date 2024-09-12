@@ -50,33 +50,44 @@
   "accountType": "Kontotyp",
   "table": {
     "name": "Name",
-    "desc": "Beschreibung",
+    "desc": "Info",
     "price": "Preis",
     "active": "Aktiviert",
     "color": "Akzentfarbe",
-    "deposit": "Pfandbetrag",
+    "deposit": "Pfand (€)",
     "show_deposit": "Pfand",
     "position": "Position",
-    "qty": "Anzahl"
+    "qty": "Anzahl",
+    "group": "Gruppe",
+    "use": "Verwenden",
+    "no-data": "Keine Daten verfügbar"
   },
 
   "dialog": {
     "cancel": "Abbrechen",
-    "update": "Speichern",
-    "create": "Anlegen"
+    "edit": "Speichern",
+    "create": "Anlegen",
+    "delete": "Löschen",
+    "append": "Hinzufügen"
   },
-  "category": {
-    "title": "Kategorie",
-    "add": "Kategorie anlegen",
-    "edit": "Kategorie bearbeiten",
-    "delete": "Kategorie löschen",
+  "assortment": {
+    "title": "Sortiment"
+  },
+  "search": "Bier ...",
+  "group": {
+    "title": "Productgruppen",
+    "new": "Neue Produktgruppe",
+    "edit": "bearbeiten",
+    "delete": "löschen",
     "export": "Exportieren"
   },
   "product": {
-    "title": "Produkt",
+    "title": "Produkte",
+    "append": "Produkt hinzufügen",
     "add": "Produkt anlegen",
     "edit": "Produkt bearbeiten",
-    "delete": "Produkt löschen"
+    "delete": "Alle löschen",
+    "new": "Neu"
   },
   "statistic": {
     "overall": "Gesamt",

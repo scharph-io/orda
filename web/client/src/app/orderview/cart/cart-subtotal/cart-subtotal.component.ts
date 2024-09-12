@@ -1,7 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'orda-cart-subtotal',

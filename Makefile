@@ -27,6 +27,7 @@ BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 
 
 PACKAGE_JSON=web/client/package.json
+ ##SSL_CERT_DIR=/etc/ssl/certs
 
 .PHONY: build-local
 
@@ -36,8 +37,17 @@ help: ## This help dialog.
 run-ui: ## Run the app locally
 	npm --prefix web/client run start
 
+update-ui: 
+	npm --prefix web/client install
+
+update-ng:
+	npm update --prefix web/client
+
 run: ## Run the app locally
 	go run cmd/server/main.go
+
+run-playground: ## Run the app locally
+	go run cmd/test/main.go
 
 pre-build-ui:
 	cat $(PACKAGE_JSON) | jq --arg version "$(VERSION)" '.version |= $$version' | tee $(PACKAGE_JSON) > /dev/null
@@ -104,11 +114,14 @@ stop: ## Stop the container
 start: ## Start the container
 	docker start $(project_name)
 
-docker-mysql-up:
-	docker compose -f docker-compose.local.yaml up -d
+docker-dev-up:
+	docker compose -f docker-compose.yaml up -d
 
-docker-mysql-down:
-	docker compose -f docker-compose.local.yaml down -v
+docker-dev-down:
+	docker compose -f docker-compose.yaml down -v
+
+docker-dev-logs:
+	docker compose -f docker-compose.yaml logs
 
 docker-build:
 	docker build -f ci/Dockerfile --build-arg="BUILD=$(VERSION)" -t $(IMAGE):$(VERSION) . --progress=plain

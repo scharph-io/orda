@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { MatTabsModule } from '@angular/material/tabs';
 import { StatisticOverallComponent } from './tabs/stat-overall.component';
 import { StatisticDailyComponent } from './tabs/stat-daily.component';

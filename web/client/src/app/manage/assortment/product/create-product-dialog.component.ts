@@ -16,10 +16,11 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { ProductService } from '../../shared/services/product.service';
-import { Product } from '../../shared/model/product';
-import { MessageService } from '../../shared/services/message.service';
-import { TranslocoModule } from '@ngneat/transloco';
+
+import { TranslocoModule } from '@jsverse/transloco';
+import { MessageService } from '../../../shared/services/message.service';
+import { Product } from '../../../shared/model/product';
+import { AssortmentService } from '../../../shared/services/assortment.service';
 
 @Component({
   selector: 'orda-create-product-dialog',
@@ -44,10 +45,7 @@ import { TranslocoModule } from '@ngneat/transloco';
         <mat-label>{{ 'table.price' | transloco }}</mat-label>
         <input matInput type="number" formControlName="price" />
       </mat-form-field>
-      <mat-form-field>
-        <mat-label>{{ 'table.position' | transloco }}</mat-label>
-        <input matInput type="number" formControlName="position" />
-      </mat-form-field>
+
       <mat-slide-toggle class="example-margin" formControlName="active">
         {{ 'table.active' | transloco }}
       </mat-slide-toggle>
@@ -65,6 +63,15 @@ import { TranslocoModule } from '@ngneat/transloco';
           [disabled]="!productForm.valid"
         >
           {{ 'dialog.update' | transloco }}
+        </button>
+      } @else if (data.duplicate) {
+        <button
+          mat-button
+          color="primary"
+          (click)="duplicate()"
+          [disabled]="!productForm.valid"
+        >
+          {{ 'dialog.duplicate' | transloco }}
         </button>
       } @else {
         <button
@@ -99,35 +106,32 @@ import { TranslocoModule } from '@ngneat/transloco';
 })
 export class CreateProductDialogComponent {
   productForm = new FormGroup({
-    name: new FormControl('', Validators.required),
+    name: new FormControl('test', Validators.required),
     desc: new FormControl(''),
-    price: new FormControl<number | undefined>(undefined, [
+    price: new FormControl<number | undefined>(2, [
       Validators.required,
       Validators.min(0.1),
       Validators.max(100),
     ]),
     active: new FormControl(true),
-    position: new FormControl<number>(1),
   });
 
-  productService = inject(ProductService);
-
   isUpdate = false;
+  dialogRef = inject(MatDialogRef<CreateProductDialogComponent>);
+  assortmentService = inject(AssortmentService);
 
-  constructor(
-    public dialogRef: MatDialogRef<CreateProductDialogComponent>,
-    public messageService: MessageService,
-    @Inject(MAT_DIALOG_DATA)
-    public data: { product?: Product; categoryId: string },
-  ) {
+  data = inject<{ groupId: string; product?: Product; duplicate?: boolean }>(
+    MAT_DIALOG_DATA,
+  );
+
+  constructor() {
     if (this.data.product !== undefined) {
-      this.isUpdate = true;
+      this.isUpdate = !(this.data.duplicate ?? false);
       this.productForm.patchValue({
         name: this.data.product.name,
         desc: this.data.product.desc,
         price: this.data.product.price / 100,
         active: this.data.product.active,
-        position: this.data.product.position,
       });
     }
   }
@@ -135,39 +139,50 @@ export class CreateProductDialogComponent {
   create() {
     if (this.productForm.valid) {
       const value = this.productForm.value;
-
-      this.productService
-        .createProduct({
+      this.assortmentService
+        .addProduct$({
           name: value.name ?? '',
           desc: value.desc ?? '',
           price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
-          categoryId: this.data.categoryId,
-          position: value.position ?? 0,
+          group_id: this.data.groupId,
         })
-        .subscribe((res) => {
-          console.log(res);
-          this.dialogRef.close();
+        .subscribe((product) => {
+          this.dialogRef.close({ product, action: 'create' });
         });
     }
   }
 
   update() {
-    console.log(this.productForm.value);
     if (this.productForm.valid) {
       const value = this.productForm.value;
+      this.assortmentService
+        .updateProduct$(this.data.product?.id ?? '', {
+          name: value.name ?? '',
+          desc: value.desc ?? '',
+          active: value.active ?? false,
+          price: Math.round((value.price ?? 0) * 100),
+          group_id: this.data.groupId,
+        })
+        .subscribe((product) => {
+          this.dialogRef.close({ product, action: 'edit' });
+        });
+    }
+  }
 
-      this.productService
-        .updateProduct(this.data.product?.id ?? '', {
+  duplicate() {
+    if (this.productForm.valid) {
+      const value = this.productForm.value;
+      this.assortmentService
+        .addProduct$({
           name: value.name ?? '',
           desc: value.desc ?? '',
           price: Math.round((value.price ?? 0) * 100),
           active: value.active ?? false,
-          categoryId: this.data.categoryId,
-          position: value.position ?? 0,
+          group_id: this.data.groupId,
         })
-        .subscribe(() => {
-          this.dialogRef.close();
+        .subscribe((product) => {
+          this.dialogRef.close({ product, action: 'duplicate' });
         });
     }
   }

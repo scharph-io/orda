@@ -7,7 +7,7 @@ import { OrdaCurrencyPipe } from '../shared/currency.pipe';
 import { ItemsTableComponent } from './items-table/items-table.component';
 import { PaymentOptionPipe } from '../shared/pipes/payment-option.pipe';
 import { AccountTypePipe } from '../shared/pipes/account-type.pipe';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { MatChipsModule } from '@angular/material/chips';
 import { AuthService } from '../auth/auth.service';
 

@@ -1,6 +1,6 @@
 import { Component, inject, input } from '@angular/core';
 import { CartStore } from '../../cart/cart.store';
-import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { MatIconModule } from '@angular/material/icon';
 
 const DEFAULT_DEPOSIT = 100;

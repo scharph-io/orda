@@ -20,7 +20,10 @@ type Transaction struct {
 func (t *Transaction) AfterCreate(tx *gorm.DB) (err error) {
 
 	t.TransactionNr = fmt.Sprintf("%s.%d", t.CreatedAt.Format("20060102"), t.ID)
-	tx.Save(t)
+	if err := tx.Save(t).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 

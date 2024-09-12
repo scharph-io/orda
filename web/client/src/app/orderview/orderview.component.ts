@@ -12,8 +12,8 @@ import { CartComponent } from './cart/cart.component';
 import { CartStore } from './cart/cart.store';
 import { CheckoutService } from './services/checkout.service';
 import { MatIconModule } from '@angular/material/icon';
-import { CategoryService } from '../shared/services/category.service';
-import { Category } from '../shared/model/category';
+// import { CategoryService } from '../shared/services/category.service';
+// import { Category } from '../shared/model/category';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 import { CartSubtotalComponent } from './cart/cart-subtotal/cart-subtotal.component';
@@ -41,11 +41,11 @@ import { AuthService } from '../auth/auth.service';
   providers: [CartStore, CheckoutService],
 })
 export class OrderViewComponent implements OnInit {
-  categoryService = inject(CategoryService);
+  // categoryService = inject(CategoryService);
 
-  selectedCategory = signal<Category | undefined>(undefined);
+  // selectedCategory = signal<Category | undefined>(undefined);
 
-  categories = signal<Category[]>([]);
+  // categories = signal<Category[]>([]);
 
   destroyed$ = new Subject<void>();
   cartSize?: string;
@@ -94,11 +94,11 @@ export class OrderViewComponent implements OnInit {
         }
       });
 
-    this.categoryService
-      .getCategories$(this.authService.username)
-      .subscribe((categories) => {
-        this.categories.set(categories);
-        this.selectedCategory.set(categories[0]);
-      });
+    // this.categoryService
+    //   .getCategories$(this.authService.username)
+    //   .subscribe((categories) => {
+    //     this.categories.set(categories);
+    //     this.selectedCategory.set(categories[0]);
+    //   });
   }
 }

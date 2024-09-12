@@ -33,10 +33,6 @@
   }
 
   @if ((isAuthenticated | async) && isAdmin) {
-    <button [routerLink]="['/manage']" mat-menu-item>
-      <mat-icon>manage</mat-icon>
-      <span>{{ "menu.manage" | transloco }}</span>
-    </button>
     <button [routerLink]="['/history']" mat-menu-item>
       <mat-icon>history</mat-icon>
       <span>{{ "menu.history" | transloco }}</span>
@@ -50,6 +46,19 @@
   <button [routerLink]="['/info']" mat-menu-item>
     <mat-icon>info</mat-icon>
     <span>{{ "menu.info" | transloco }}</span>
+  </button>
+
+  <button [routerLink]="['/assortment']" mat-menu-item>
+    <mat-icon>info</mat-icon>
+    <span>Assortment</span>
+  </button>
+  <button [routerLink]="['/views']" mat-menu-item>
+    <mat-icon>info</mat-icon>
+    <span>Views</span>
+  </button>
+  <button [routerLink]="['/clients']" mat-menu-item>
+    <mat-icon>info</mat-icon>
+    <span>Clients</span>
   </button>
 
   <mat-divider></mat-divider>
@@ -67,4 +76,6 @@
   }
 </mat-menu>
 
-<router-outlet></router-outlet>
+<div class="content">
+  <router-outlet></router-outlet>
+</div>

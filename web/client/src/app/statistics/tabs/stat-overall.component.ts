@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ReactiveFormsModule } from '@angular/forms';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 import {
@@ -21,21 +21,42 @@ import { StatCardComponent } from '../stat-card.component';
   selector: 'orda-stat-overall',
   standalone: true,
   template: `
-    <h2>{{'statistic.income' | transloco}}</h2>
+    <h2>{{ 'statistic.income' | transloco }}</h2>
     <div class="dashboard">
-    <orda-stat-card [title]="'statistic.total' | transloco" [value]="stats().total | ordaCurrency" />
+      <orda-stat-card
+        [title]="'statistic.total' | transloco"
+        [value]="stats().total | ordaCurrency"
+      />
 
-    <orda-stat-card [title]="'statistic.cash' | transloco" [value]="stats().payment_option[PaymentOption.CASH] | ordaCurrency" />
-    <orda-stat-card [title]="'statistic.card' | transloco" [value]="stats().payment_option[PaymentOption.CARD] | ordaCurrency" />
+      <orda-stat-card
+        [title]="'statistic.cash' | transloco"
+        [value]="stats().payment_option[PaymentOption.CASH] | ordaCurrency"
+      />
+      <orda-stat-card
+        [title]="'statistic.card' | transloco"
+        [value]="stats().payment_option[PaymentOption.CARD] | ordaCurrency"
+      />
 
-    <orda-stat-card [title]="'statistic.premium' | transloco" [value]="stats().account_type[AccountType.PREMIUM] | ordaCurrency" />
-    <orda-stat-card [title]="'statistic.free' | transloco" [value]="stats().account_type[AccountType.FREE] | ordaCurrency" />
+      <orda-stat-card
+        [title]="'statistic.premium' | transloco"
+        [value]="stats().account_type[AccountType.PREMIUM] | ordaCurrency"
+      />
+      <orda-stat-card
+        [title]="'statistic.free' | transloco"
+        [value]="stats().account_type[AccountType.FREE] | ordaCurrency"
+      />
 
-    <orda-stat-card [title]="'statistic.deposit_in' | transloco" [value]="stats().deposit.deposit_in" />
-    <orda-stat-card [title]="'statistic.deposit_out' | transloco" [value]="stats().deposit.deposit_out * -1" />
-  </div>
+      <orda-stat-card
+        [title]="'statistic.deposit_in' | transloco"
+        [value]="stats().deposit.deposit_in"
+      />
+      <orda-stat-card
+        [title]="'statistic.deposit_out' | transloco"
+        [value]="stats().deposit.deposit_out * -1"
+      />
+    </div>
 
-    <h2>{{'statistic.products_sold' | transloco}}</h2>
+    <h2>{{ 'statistic.products_sold' | transloco }}</h2>
 
     <section class="example-container mat-elevation-z8" tabindex="0">
       <table mat-table [dataSource]="productStats()">
@@ -88,7 +109,7 @@ import { StatCardComponent } from '../stat-card.component';
     TranslocoModule,
     ReactiveFormsModule,
     MatTableModule,
-    StatCardComponent
+    StatCardComponent,
   ],
 })
 export class StatisticOverallComponent implements OnInit {

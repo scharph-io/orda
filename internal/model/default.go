@@ -15,7 +15,6 @@ type Base struct {
 }
 
 func (b *Base) BeforeCreate(txn *gorm.DB) error {
-
 	uuid, _ := uuid.NewV7()
 	b.ID = uuid.String()
 	return nil
