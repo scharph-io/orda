@@ -19,9 +19,9 @@ type ViewProductRequest struct {
 }
 
 type ViewResponse struct {
-	Id         string                    `json:"id,omitempty"`
+	Id         string                    `json:"id"`
 	Name       string                    `json:"name"`
-	Assortment map[string]*GroupResponse `json:"assortment,omitempty"`
+	Assortment map[string]*GroupResponse `json:"assortment"`
 }
 
 // ProductView is a service that provides view functions for products.
@@ -109,7 +109,7 @@ func (s *ViewService) GetViewByID(ctx context.Context, id string) (*ViewResponse
 		}
 	}
 
-	return &ViewResponse{Name: res.Name, Assortment: m}, nil
+	return &ViewResponse{Id: res.ID, Name: res.Name, Assortment: m}, nil
 }
 
 func (s *ViewService) AddProducts(ctx context.Context, viewId string, viewProduct *[]ViewProductRequest) error {

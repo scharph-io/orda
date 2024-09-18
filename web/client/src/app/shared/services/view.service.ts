@@ -2,6 +2,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { View } from '../model/view';
 
+interface ViewProductRequest {
+  product_id: string;
+  position: number;
+  color: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -40,5 +46,22 @@ export class ViewService {
     return this.http.put<View>(`${this.endpoint}${this.path}/${id}`, view, {
       headers: this.headers,
     });
+  }
+
+  appendProductsToView$(viewId: string, productIds: string[]) {
+    const data = productIds.map(
+      (id) =>
+        ({ color: '', position: 0, product_id: id }) as ViewProductRequest,
+    );
+
+    console.log('sdsd --> ', data);
+
+    return this.http.post(
+      `${this.endpoint}${this.path}/${viewId}/products`,
+      data,
+      {
+        headers: this.headers,
+      },
+    );
   }
 }
