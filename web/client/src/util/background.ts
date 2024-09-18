@@ -1,14 +1,14 @@
 // Basic command-line example
 // Usage: node save-as-png.js
-const fs = require("fs");
-const trianglify = require("trianglify");
+const fs = require('fs');
+const trianglify = require('trianglify');
 
 // Generate a pattern and then grab the PNG data uri
 const canvas = trianglify({
   width: 2560,
   height: 1440,
   cellSize: 250,
-  xColors: ["#D9D9D9", "#A6A6A6", "#595959", "#262626", "#0D0D0D"],
+  xColors: ['#D9D9D9', '#A6A6A6', '#595959', '#262626', '#0D0D0D'],
   variance: 0.8,
   seed: 150,
 }).toSVGTree();

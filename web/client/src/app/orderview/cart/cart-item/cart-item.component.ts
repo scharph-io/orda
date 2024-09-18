@@ -13,7 +13,7 @@ import { MatDividerModule } from '@angular/material/divider';
     <div
       [class]="{
         container: true,
-        'container-with-desc': item().desc !== undefined
+        'container-with-desc': item().desc !== undefined,
       }"
     >
       <div class="title">{{ item().name }}</div>

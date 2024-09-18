@@ -21,7 +21,12 @@ export class CartStore {
 
   public readonly totalQty$: Observable<number> = this._items.pipe(
     map((products) =>
-      products.reduce((acc, product) => acc + (product.quantity > 0 ? product.quantity : -1 * product.quantity), 0),
+      products.reduce(
+        (acc, product) =>
+          acc +
+          (product.quantity > 0 ? product.quantity : -1 * product.quantity),
+        0,
+      ),
     ),
   );
 
@@ -34,17 +39,15 @@ export class CartStore {
     ),
   );
 
-
-
   addItem(item: CartItem): void {
     if (this._items.getValue().find((a) => a.uuid === item.uuid)) {
       this._items.next(
         this._items.getValue().map((a) =>
           a.uuid === item.uuid
             ? {
-              ...a,
-              quantity: item.quantity > 0 ? a.quantity + 1 : a.quantity - 1,
-            }
+                ...a,
+                quantity: item.quantity > 0 ? a.quantity + 1 : a.quantity - 1,
+              }
             : a,
         ),
       );
@@ -59,9 +62,9 @@ export class CartStore {
         this._items.getValue().map((a) =>
           a.uuid === item.uuid
             ? {
-              ...a,
-              quantity: item.quantity > 0 ? a.quantity - 1 : a.quantity + 1,
-            }
+                ...a,
+                quantity: item.quantity > 0 ? a.quantity - 1 : a.quantity + 1,
+              }
             : a,
         ),
       );
