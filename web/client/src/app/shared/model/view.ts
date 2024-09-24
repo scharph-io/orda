@@ -1,7 +1,7 @@
-import { Product } from './product';
+import { Product, ViewProduct } from './product';
 
 export interface View {
   id: string;
   name?: string;
-  products?: Product[];
+  products?: ViewProduct[];
 }

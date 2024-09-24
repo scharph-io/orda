@@ -4,8 +4,8 @@ import { View } from '../model/view';
 
 interface ViewProductRequest {
   product_id: string;
-  position: number;
-  color: string;
+  position?: number;
+  color?: string;
 }
 
 @Injectable({
@@ -49,16 +49,9 @@ export class ViewService {
   }
 
   appendProductsToView$(viewId: string, productIds: string[]) {
-    const data = productIds.map(
-      (id) =>
-        ({ color: '', position: 0, product_id: id }) as ViewProductRequest,
-    );
-
-    console.log('sdsd --> ', data);
-
     return this.http.post(
       `${this.endpoint}${this.path}/${viewId}/products`,
-      data,
+      productIds.map((id) => ({ product_id: id }) as ViewProductRequest),
       {
         headers: this.headers,
       },

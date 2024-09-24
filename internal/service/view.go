@@ -18,10 +18,16 @@ type ViewProductRequest struct {
 	Position  uint   `json:"position"`
 }
 
+type ViewProductResponse struct {
+	ProductResponse
+	Position uint   `json:"position"`
+	Color    string `json:"color,omitempty"`
+}
+
 type ViewResponse struct {
-	Id         string                    `json:"id"`
-	Name       string                    `json:"name"`
-	Assortment map[string]*GroupResponse `json:"assortment"`
+	Id         string                        `json:"id"`
+	Name       string                        `json:"name"`
+	Assortment map[string]*ViewGroupResponse `json:"assortment"`
 }
 
 // ProductView is a service that provides view functions for products.
@@ -75,44 +81,58 @@ func (s *ViewService) GetViews(ctx context.Context) ([]ViewResponse, error) {
 
 // ReadByViewID returns a view by its viewID.
 func (s *ViewService) GetViewByID(ctx context.Context, id string) (*ViewResponse, error) {
-	res, err := s.repo.ReadById(ctx, id)
+
+	viewProducts, err := s.vpRepo.ReadByViewId(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-
-	m := make(map[string]*GroupResponse)
 
 	groups, err := s.groupRepo.Read(ctx)
 	if err != nil {
 		return nil, err
 	}
 
+	m := make(map[string]*ViewGroupResponse)
+
 	for _, g := range groups {
-		var products []ProductResponse
-		for _, p := range res.Products {
-			if p.GroupID == g.ID {
-				products = append(products, ProductResponse{
-					Id:        p.ID,
-					Name:      p.Name,
-					Desc:      p.Desc,
-					Price:     p.Price,
-					Active:    p.Active,
-					UpdatedAt: p.UpdatedAt.String()})
-				m[g.ID] = &GroupResponse{
-					Name:      g.Name,
-					Desc:      g.Desc,
-					Products:  products,
-					Deposit:   g.Deposit,
-					CreatedAt: g.CreatedAt.String(),
+		var products []ViewProductResponse
+		for _, vp := range viewProducts {
+			if vp.Product.GroupID == g.ID {
+				if vp.Product.Active {
+					products = append(products, ViewProductResponse{
+						ProductResponse: ProductResponse{
+							Id:        vp.Product.ID,
+							Name:      vp.Product.Name,
+							Desc:      vp.Product.Desc,
+							Price:     vp.Product.Price,
+							UpdatedAt: vp.Product.UpdatedAt.String()},
+						Position: vp.Position,
+						Color:    vp.Color,
+					})
+				}
+
+				m[g.ID] = &ViewGroupResponse{
+					GroupResponse: GroupResponse{
+						Name:      g.Name,
+						Desc:      g.Desc,
+						Deposit:   g.Deposit,
+						CreatedAt: g.CreatedAt.String()},
+					Products: products,
 				}
 			}
 		}
+	}
+
+	res, err := s.repo.ReadById(ctx, id)
+	if err != nil {
+		return nil, err
 	}
 
 	return &ViewResponse{Id: res.ID, Name: res.Name, Assortment: m}, nil
 }
 
 func (s *ViewService) AddProducts(ctx context.Context, viewId string, viewProduct *[]ViewProductRequest) error {
+
 	if _, err := s.repo.ReadById(ctx, viewId); err != nil {
 		return err
 	}
