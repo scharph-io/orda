@@ -6,7 +6,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
-import { ViewProduct } from '../../../shared/model/product';
 import { MatDividerModule } from '@angular/material/divider';
 // import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
 
@@ -23,18 +22,10 @@ import { CreateViewDialogComponent } from '../create-view-dialog.component';
 import { switchMap, tap } from 'rxjs';
 import { ViewService } from '../../../shared/services/view.service';
 import { group } from '@angular/animations';
-import { View } from '../../../shared/model/view';
+import { View, ViewProduct } from '../../../shared/model/view';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ProductAppendDialogComponent } from './product-append-dialog.component';
 import { JsonPipe } from '@angular/common';
-
-export interface ViewGroup {
-  id?: string;
-  name: string;
-  desc?: string;
-  position: number;
-  products: ViewProduct[];
-}
 
 @Component({
   selector: 'orda-view-details',
@@ -69,7 +60,9 @@ export interface ViewGroup {
       </div>
     </div>
 
-    {{ view() | json }}
+    <pre><code> {{ view() | json }}</code></pre>
+    {{ view().assortment }}
+    <!-- @for (g of view().groups | keyvalue; track g.key) {} -->
 
     <!-- <div>
       @for (g of groups; track g) {

@@ -5,7 +5,7 @@ import {
   inject,
   input,
 } from '@angular/core';
-import { ViewProduct } from '../../../../shared/model/product';
+import { ViewProduct } from '../../../../shared/model/view';
 
 @Component({
   selector: 'orda-view-product',

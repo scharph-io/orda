@@ -27,7 +27,7 @@ type ViewProductResponse struct {
 type ViewResponse struct {
 	Id         string                        `json:"id"`
 	Name       string                        `json:"name"`
-	Assortment map[string]*ViewGroupResponse `json:"assortment"`
+	Assortment map[string]*ViewGroupResponse `json:"assortment,omitempty"`
 }
 
 // ProductView is a service that provides view functions for products.
@@ -167,4 +167,8 @@ func (s *ViewService) UpdateView(ctx context.Context, id string, view *ViewReque
 
 func (s *ViewService) DeleteView(ctx context.Context, id string) (bool, error) {
 	return s.repo.Delete(ctx, id)
+}
+
+func (s *ViewService) GetUnappendedViewProducts(ctx context.Context, viewId string) ([]ProductResponse, error) {
+	return []ProductResponse{}, nil
 }
