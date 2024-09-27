@@ -26,6 +26,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { ProductAppendDialogComponent } from './product-append-dialog.component';
 import { JsonPipe, KeyValuePipe } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
 @Component({
   selector: 'orda-view-details',
@@ -64,6 +65,9 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
     @for (a of view().assortment | keyvalue; track a.key) {
       <h4>{{ a.value.name }}</h4>
+      <button mat-icon-button [routerLink]="['/assortment/group/', a.key]">
+        <mat-icon>settings</mat-icon>
+      </button>
       <div class="mat-elevation-z8">
         <table
           mat-table
@@ -75,19 +79,30 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
             <td mat-cell *matCellDef="let element">{{ element.name }}</td>
           </ng-container>
 
-          <ng-container matColumnDef="price">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let element">{{ element.price }}</td>
-          </ng-container>
-
           <ng-container matColumnDef="desc">
             <th mat-header-cell *matHeaderCellDef>Weight</th>
             <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
           </ng-container>
 
           <ng-container matColumnDef="color">
-            <th mat-header-cell *matHeaderCellDef>Weight</th>
-            <td mat-cell *matCellDef="let element">{{ element.color }}</td>
+            <th mat-header-cell *matHeaderCellDef>Color</th>
+            <td mat-cell *matCellDef="let element">
+              <input
+                type="color"
+                id="favcolor"
+                name="favcolor"
+                [value]="element.color"
+              />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button>
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -219,6 +234,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
     KeyValuePipe,
     MatListModule,
     MatTableModule,
+    OrdaCurrencyPipe,
+    RouterModule,
   ],
 })
 export class ViewDetailsComponent implements OnInit {
@@ -231,7 +248,7 @@ export class ViewDetailsComponent implements OnInit {
 
   view = signal<View>({ id: '' });
 
-  displayedColumns: string[] = ['name', 'desc', 'price', 'color'];
+  displayedColumns: string[] = ['name', 'desc', 'color', 'action'];
 
   ngOnInit(): void {
     this.route.params
