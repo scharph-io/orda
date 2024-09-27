@@ -21,11 +21,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { CreateViewDialogComponent } from '../create-view-dialog.component';
 import { switchMap, tap } from 'rxjs';
 import { ViewService } from '../../../shared/services/view.service';
-import { group } from '@angular/animations';
 import { View, ViewProduct } from '../../../shared/model/view';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ProductAppendDialogComponent } from './product-append-dialog.component';
-import { JsonPipe } from '@angular/common';
+import { JsonPipe, KeyValuePipe } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'orda-view-details',
@@ -60,9 +60,41 @@ import { JsonPipe } from '@angular/common';
       </div>
     </div>
 
-    <pre><code> {{ view() | json }}</code></pre>
-    {{ view().assortment }}
-    <!-- @for (g of view().groups | keyvalue; track g.key) {} -->
+    <h3>Assortment</h3>
+
+    @for (a of view().assortment | keyvalue; track a.key) {
+      <h4>{{ a.value.name }}</h4>
+      <div class="mat-elevation-z8">
+        <table
+          mat-table
+          [dataSource]="a.value.products"
+          class="mat-elevation-z8"
+        >
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>No.</th>
+            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let element">{{ element.price }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="desc">
+            <th mat-header-cell *matHeaderCellDef>Weight</th>
+            <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="color">
+            <th mat-header-cell *matHeaderCellDef>Weight</th>
+            <td mat-cell *matCellDef="let element">{{ element.color }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    }
 
     <!-- <div>
       @for (g of groups; track g) {
@@ -184,6 +216,9 @@ import { JsonPipe } from '@angular/common';
     MatMenuModule,
     TranslocoModule,
     JsonPipe,
+    KeyValuePipe,
+    MatListModule,
+    MatTableModule,
   ],
 })
 export class ViewDetailsComponent implements OnInit {
@@ -196,6 +231,8 @@ export class ViewDetailsComponent implements OnInit {
 
   view = signal<View>({ id: '' });
 
+  displayedColumns: string[] = ['name', 'desc', 'price', 'color'];
+
   ngOnInit(): void {
     this.route.params
       .pipe(switchMap((params) => this.viewService.getView$(params['id'])))
@@ -203,6 +240,10 @@ export class ViewDetailsComponent implements OnInit {
         this.view.set(v);
       });
   }
+
+  // asViewProductDataSource<T>(data: T[]) {
+  //   return new MatTableDataSource<T>(data);
+  // }
 
   openUpdateDialog(): void {
     const dialogRef = this.dialog.open<CreateViewDialogComponent, View, any>(
