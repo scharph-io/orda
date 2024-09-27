@@ -100,7 +100,7 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let element">
               <button mat-icon-button>
-                <mat-icon>delete</mat-icon>
+                <mat-icon style="color: red;">delete</mat-icon>
               </button>
             </td>
           </ng-container>

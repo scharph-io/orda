@@ -110,7 +110,7 @@ export class CreateProductDialogComponent {
     desc: new FormControl(''),
     price: new FormControl<number | undefined>(2, [
       Validators.required,
-      Validators.min(0.1),
+      Validators.min(0.0),
       Validators.max(100),
     ]),
     active: new FormControl(true),
