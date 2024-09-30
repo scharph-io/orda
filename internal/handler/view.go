@@ -38,7 +38,7 @@ func (h *ViewHandler) GetViews(c *fiber.Ctx) error {
 
 func (h *ViewHandler) GetViewById(c *fiber.Ctx) error {
 	id := c.Params("id")
-	view, err := h.ViewService.GetViewByID(c.Context(), id)
+	view, err := h.ViewService.GetViewByIdDetail(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -74,7 +74,7 @@ func (h *ViewHandler) DeleteView(c *fiber.Ctx) error {
 
 func (h *ViewHandler) AddProducts(c *fiber.Ctx) error {
 	id := c.Params("id")
-	view, err := h.ViewService.GetViewByID(c.Context(), id)
+	view, err := h.ViewService.GetViewById(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
@@ -87,4 +87,24 @@ func (h *ViewHandler) AddProducts(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
 	}
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("%d products added to view '%s'", len(viewProducts), view.Name)})
+}
+
+func (h *ViewHandler) RemoveProducts(c *fiber.Ctx) error {
+	id := c.Params("id")
+	view, err := h.ViewService.GetViewById(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	var viewProducts []service.ViewProductRequest
+	if err := c.BodyParser(&viewProducts); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	err = h.ViewService.RemoveProducts(c.Context(), view.Id, &viewProducts)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("%d products removed from view '%s'", len(viewProducts), view.Name)})
+
 }

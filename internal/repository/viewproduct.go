@@ -47,3 +47,7 @@ func (r *ViewProductRepo) ReadByViewAndProductId(ctx context.Context, viewId, pr
 func (r *ViewProductRepo) Create(ctx context.Context, viewProduct ...model.ViewProduct) error {
 	return r.db.WithContext(ctx).Create(&viewProduct).Error
 }
+
+func (r *ViewProductRepo) Delete(ctx context.Context, viewProduct ...model.ViewProduct) error {
+	return r.db.WithContext(ctx).Delete(&viewProduct).Error
+}

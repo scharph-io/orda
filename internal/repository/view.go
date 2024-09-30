@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/model"
 	"gorm.io/gorm"
@@ -32,13 +33,17 @@ func (r *ViewRepo) Read(ctx context.Context) (views []model.View, err error) {
 }
 
 func (r *ViewRepo) ReadById(ctx context.Context, id string) (view model.View, err error) {
-	err = r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", id).Preload("Products").First(&view).Error
-	return view, err
+	if err = r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", id).Preload("Products").First(&view).Error; err != nil {
+		return view, fmt.Errorf("view %w", err)
+	}
+	return view, nil
 }
 
 func (r *ViewRepo) Update(ctx context.Context, view *model.View) (*model.View, error) {
-	err := r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", view.ID).Updates(&view).Error
-	return view, err
+	if err := r.db.WithContext(ctx).Model(&model.View{}).Where("id = ?", view.ID).Updates(&view).Error; err != nil {
+		return nil, fmt.Errorf("view %w", err)
+	}
+	return view, nil
 }
 
 func (r *ViewRepo) Delete(ctx context.Context, id string) (bool, error) {

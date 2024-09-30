@@ -50,7 +50,17 @@ export class ViewService {
 
   appendProductsToView$(viewId: string, productIds: string[]) {
     return this.http.post(
-      `${this.endpoint}${this.path}/${viewId}/products`,
+      `${this.endpoint}${this.path}/${viewId}/products/add`,
+      productIds.map((id) => ({ product_id: id }) as ViewProductRequest),
+      {
+        headers: this.headers,
+      },
+    );
+  }
+
+  removeProductFromView$(viewId: string, productIds: string[]) {
+    return this.http.post(
+      `${this.endpoint}${this.path}/${viewId}/products/remove`,
       productIds.map((id) => ({ product_id: id }) as ViewProductRequest),
       {
         headers: this.headers,

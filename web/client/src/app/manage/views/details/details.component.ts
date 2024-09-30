@@ -102,7 +102,7 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let element">
-              <button mat-icon-button>
+              <button mat-icon-button (click)="remove(element.id)">
                 <mat-icon style="color: red;">delete</mat-icon>
               </button>
             </td>
@@ -296,6 +296,15 @@ export class ViewDetailsComponent implements OnInit {
       console.log('deleteView', res);
       this.router.navigate(['/views']);
     });
+  }
+
+  remove(productId: string): void {
+    this.viewService
+      .removeProductFromView$(this.view().id, [productId])
+      .subscribe((res) => {
+        console.log('removeProductFromView', res);
+        this.ngOnInit();
+      });
   }
 
   openProductAppendDialog() {
