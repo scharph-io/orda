@@ -68,6 +68,9 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       <button mat-icon-button [routerLink]="['/assortment/group/', a.key]">
         <mat-icon>settings</mat-icon>
       </button>
+      <button mat-icon-button>
+        <mat-icon>delete</mat-icon>
+      </button>
       <div class="mat-elevation-z8">
         <table
           mat-table
@@ -75,12 +78,12 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
           class="mat-elevation-z8"
         >
           <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>No.</th>
+            <th mat-header-cell *matHeaderCellDef>Product</th>
             <td mat-cell *matCellDef="let element">{{ element.name }}</td>
           </ng-container>
 
           <ng-container matColumnDef="desc">
-            <th mat-header-cell *matHeaderCellDef>Weight</th>
+            <th mat-header-cell *matHeaderCellDef>Description</th>
             <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
           </ng-container>
 
@@ -302,6 +305,7 @@ export class ViewDetailsComponent implements OnInit {
     });
     dialogRef.beforeClosed().subscribe((res) => {
       console.log('The dialog was closed', res);
+      this.ngOnInit();
     });
     // dialogRef.afterClosed().subscribe((result) => {});
   }
