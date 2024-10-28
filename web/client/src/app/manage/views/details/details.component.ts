@@ -301,6 +301,7 @@ export class ViewDetailsComponent implements OnInit {
   remove(productId: string): void {
     this.viewService
       .removeProductFromView$(this.view().id, [productId])
+      .pipe(tap(console.log))
       .subscribe((res) => {
         console.log('removeProductFromView', res);
         this.ngOnInit();
