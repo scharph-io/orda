@@ -1,7 +1,6 @@
 import { NgStyle } from '@angular/common';
 import { Component, effect, inject, input } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { ViewProduct } from '../../shared/model/product';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LayoutModule } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
@@ -11,6 +10,7 @@ import { PlusMinusTileComponent } from './tiles/plus-minus-tile.component';
 import { ProductTileComponent } from './tiles/product-tile.component';
 // import { Category } from '../../shared/model/category';
 import { MatRippleModule } from '@angular/material/core';
+import { ViewProduct } from '../../shared/model/view';
 
 /**
  * @title Tab group with aligned labels

@@ -6,7 +6,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
-import { ViewProduct } from '../../../shared/model/product';
 import { MatDividerModule } from '@angular/material/divider';
 // import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
 
@@ -20,20 +19,14 @@ import {
 import { ViewProductComponent } from './view-product/view-product.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { CreateViewDialogComponent } from '../create-view-dialog.component';
-import { switchMap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 import { ViewService } from '../../../shared/services/view.service';
-import { group } from '@angular/animations';
-import { View } from '../../../shared/model/view';
+import { View, ViewProduct } from '../../../shared/model/view';
 import { TranslocoModule } from '@jsverse/transloco';
 import { ProductAppendDialogComponent } from './product-append-dialog.component';
-
-export interface ViewGroup {
-  id?: string;
-  name: string;
-  desc?: string;
-  position: number;
-  products: ViewProduct[];
-}
+import { JsonPipe, KeyValuePipe } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
 @Component({
   selector: 'orda-view-details',
@@ -67,6 +60,59 @@ export interface ViewGroup {
         </mat-menu>
       </div>
     </div>
+
+    <h3>Assortment</h3>
+
+    @for (a of view().assortment | keyvalue; track a.key) {
+      <h4>{{ a.value.name }}</h4>
+      <button mat-icon-button [routerLink]="['/assortment/group/', a.key]">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <button mat-icon-button>
+        <mat-icon>delete</mat-icon>
+      </button>
+      <div class="mat-elevation-z8">
+        <table
+          mat-table
+          [dataSource]="a.value.products"
+          class="mat-elevation-z8"
+        >
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Product</th>
+            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="desc">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="color">
+            <th mat-header-cell *matHeaderCellDef>Color</th>
+            <td mat-cell *matCellDef="let element">
+              <input
+                type="color"
+                id="favcolor"
+                name="favcolor"
+                [value]="element.color"
+              />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button (click)="remove(element.id)">
+                <mat-icon style="color: red;">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    }
 
     <!-- <div>
       @for (g of groups; track g) {
@@ -187,6 +233,12 @@ export interface ViewGroup {
     ViewProductComponent,
     MatMenuModule,
     TranslocoModule,
+    JsonPipe,
+    KeyValuePipe,
+    MatListModule,
+    MatTableModule,
+    OrdaCurrencyPipe,
+    RouterModule,
   ],
 })
 export class ViewDetailsComponent implements OnInit {
@@ -199,6 +251,8 @@ export class ViewDetailsComponent implements OnInit {
 
   view = signal<View>({ id: '' });
 
+  displayedColumns: string[] = ['name', 'desc', 'color', 'action'];
+
   ngOnInit(): void {
     this.route.params
       .pipe(switchMap((params) => this.viewService.getView$(params['id'])))
@@ -207,11 +261,18 @@ export class ViewDetailsComponent implements OnInit {
       });
   }
 
+  // asViewProductDataSource<T>(data: T[]) {
+  //   return new MatTableDataSource<T>(data);
+  // }
+
   openUpdateDialog(): void {
-    const dialogRef = this.dialog.open(CreateViewDialogComponent, {
-      data: this.view(),
-      minWidth: '30rem',
-    });
+    const dialogRef = this.dialog.open<CreateViewDialogComponent, View, any>(
+      CreateViewDialogComponent,
+      {
+        data: this.view(),
+        minWidth: '30rem',
+      },
+    );
     dialogRef.beforeClosed().subscribe((res) => {
       console.log('The dialog was started closed', res.data);
     });
@@ -237,15 +298,26 @@ export class ViewDetailsComponent implements OnInit {
     });
   }
 
+  remove(productId: string): void {
+    this.viewService
+      .removeProductFromView$(this.view().id, [productId])
+      .pipe(tap(console.log))
+      .subscribe((res) => {
+        console.log('removeProductFromView', res);
+        this.ngOnInit();
+      });
+  }
+
   openProductAppendDialog() {
     const dialogRef = this.dialog.open(ProductAppendDialogComponent, {
       data: this.view(),
-      minWidth: '30rem',
+      minWidth: '40rem',
     });
     dialogRef.beforeClosed().subscribe((res) => {
-      console.log('The dialog was started closed', res.data);
+      console.log('The dialog was closed', res);
+      this.ngOnInit();
     });
-    dialogRef.afterClosed().subscribe((result) => {});
+    // dialogRef.afterClosed().subscribe((result) => {});
   }
 
   //   drop(groupId: string, event: CdkDragDrop<ViewProduct>) {

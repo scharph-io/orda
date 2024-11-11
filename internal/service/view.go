@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/scharph/orda/internal/model"
 	"github.com/scharph/orda/internal/repository"
@@ -14,14 +16,20 @@ type ViewRequest struct {
 
 type ViewProductRequest struct {
 	ProductID string `json:"product_id"`
-	Color     string `json:"color"`
-	Position  uint   `json:"position"`
+	Color     string `json:"color,omitempty"`
+	Position  uint   `json:"position,omitempty"`
+}
+
+type ViewProductResponse struct {
+	ProductResponse
+	Position uint   `json:"position"`
+	Color    string `json:"color,omitempty"`
 }
 
 type ViewResponse struct {
-	Id         string                    `json:"id,omitempty"`
-	Name       string                    `json:"name"`
-	Assortment map[string]*GroupResponse `json:"assortment,omitempty"`
+	Id         string                        `json:"id"`
+	Name       string                        `json:"name"`
+	Assortment map[string]*ViewGroupResponse `json:"assortment,omitempty"`
 }
 
 // ProductView is a service that provides view functions for products.
@@ -73,46 +81,79 @@ func (s *ViewService) GetViews(ctx context.Context) ([]ViewResponse, error) {
 	return views, nil
 }
 
-// ReadByViewID returns a view by its viewID.
-func (s *ViewService) GetViewByID(ctx context.Context, id string) (*ViewResponse, error) {
+func (s *ViewService) GetViewById(ctx context.Context, id string) (*ViewResponse, error) {
 	res, err := s.repo.ReadById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
+	return &ViewResponse{Id: res.ID, Name: res.Name}, nil
+}
 
-	m := make(map[string]*GroupResponse)
+// ReadByViewID returns a view by its viewID.
+func (s *ViewService) GetViewByIdDetail(ctx context.Context, id string) (*ViewResponse, error) {
+
+	viewProducts, err := s.vpRepo.ReadByViewId(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 
 	groups, err := s.groupRepo.Read(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, g := range groups {
-		var products []ProductResponse
-		for _, p := range res.Products {
-			if p.GroupID == g.ID {
-				products = append(products, ProductResponse{
-					Id:        p.ID,
-					Name:      p.Name,
-					Desc:      p.Desc,
-					Price:     p.Price,
-					Active:    p.Active,
-					UpdatedAt: p.UpdatedAt.String()})
-				m[g.ID] = &GroupResponse{
-					Name:      g.Name,
-					Desc:      g.Desc,
-					Products:  products,
-					Deposit:   g.Deposit,
-					CreatedAt: g.CreatedAt.String(),
-				}
-			}
+	groupStrings := make([]string, len(groups))
+	for i, g := range groups {
+		groupStrings[i] = g.ID
+	}
+
+	m := make(map[string]*ViewGroupResponse)
+
+	var products []ViewProductResponse
+	for _, vp := range viewProducts {
+		n, found := slices.BinarySearchFunc(groupStrings, vp.Product.GroupID, func(a, b string) int {
+			return strings.Compare(a, b)
+		})
+
+		if !found {
+			continue
+		}
+
+		g := groups[n]
+
+		if vp.Product.Active {
+			products = append(products, ViewProductResponse{
+				ProductResponse: ProductResponse{
+					Id:        vp.Product.ID,
+					Name:      vp.Product.Name,
+					Desc:      vp.Product.Desc,
+					Price:     vp.Product.Price,
+					UpdatedAt: vp.Product.UpdatedAt.String()},
+				Position: vp.Position,
+				Color:    vp.Color,
+			})
+		}
+
+		m[g.ID] = &ViewGroupResponse{
+			GroupResponse: GroupResponse{
+				Name:      g.Name,
+				Desc:      g.Desc,
+				Deposit:   g.Deposit,
+				CreatedAt: g.CreatedAt.String()},
+			Products: products,
 		}
 	}
 
-	return &ViewResponse{Name: res.Name, Assortment: m}, nil
+	res, err := s.repo.ReadById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ViewResponse{Id: res.ID, Name: res.Name, Assortment: m}, nil
 }
 
 func (s *ViewService) AddProducts(ctx context.Context, viewId string, viewProduct *[]ViewProductRequest) error {
+
 	if _, err := s.repo.ReadById(ctx, viewId); err != nil {
 		return err
 	}
@@ -137,6 +178,29 @@ func (s *ViewService) AddProducts(ctx context.Context, viewId string, viewProduc
 	return s.vpRepo.Create(ctx, p...)
 }
 
+func (s *ViewService) RemoveProducts(ctx context.Context, viewId string, products *[]ViewProductRequest) error {
+
+	if _, err := s.repo.ReadById(ctx, viewId); err != nil {
+		return err
+	}
+	var p []model.ViewProduct
+	for _, vp := range *products {
+		if pr, err := s.vpRepo.ReadByViewAndProductId(ctx, viewId, vp.ProductID); pr.ProductID == "" || err != nil {
+			continue
+		}
+		p = append(p, model.ViewProduct{
+			ViewID:    viewId,
+			ProductID: vp.ProductID,
+		})
+	}
+
+	if len(p) == 0 {
+		return fmt.Errorf("no products to remove")
+	}
+
+	return s.vpRepo.Delete(ctx, p...)
+}
+
 func (s *ViewService) UpdateView(ctx context.Context, id string, view *ViewRequest) (*ViewResponse, error) {
 	res, err := s.repo.Update(ctx, &model.View{Name: view.Name, Base: model.Base{ID: id}})
 	if err != nil {
@@ -147,4 +211,8 @@ func (s *ViewService) UpdateView(ctx context.Context, id string, view *ViewReque
 
 func (s *ViewService) DeleteView(ctx context.Context, id string) (bool, error) {
 	return s.repo.Delete(ctx, id)
+}
+
+func (s *ViewService) GetUnappendedViewProducts(ctx context.Context, viewId string) ([]ProductResponse, error) {
+	return []ProductResponse{}, nil
 }

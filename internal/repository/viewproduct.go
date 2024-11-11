@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/model"
 	"gorm.io/gorm"
@@ -42,11 +41,13 @@ func (r *ViewProductRepo) ReadByProductId(ctx context.Context, id string) (views
 
 func (r *ViewProductRepo) ReadByViewAndProductId(ctx context.Context, viewId, productId string) (viewProduct model.ViewProduct, err error) {
 	res := r.db.WithContext(ctx).Model(&model.ViewProduct{}).Where("view_id = ? AND product_id = ?", viewId, productId).First(&viewProduct)
-
-	fmt.Println("viewProduct: ", viewProduct)
 	return viewProduct, res.Error
 }
 
 func (r *ViewProductRepo) Create(ctx context.Context, viewProduct ...model.ViewProduct) error {
 	return r.db.WithContext(ctx).Create(&viewProduct).Error
+}
+
+func (r *ViewProductRepo) Delete(ctx context.Context, viewProduct ...model.ViewProduct) error {
+	return r.db.WithContext(ctx).Delete(&viewProduct).Error
 }

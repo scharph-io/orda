@@ -12,7 +12,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { GroupsOverviewComponent } from './group/groups-overview.component';
 import { MatDialog } from '@angular/material/dialog';
 // import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
-import { CreateGroupDialogComponent } from './group/create-group-dialog.component';
+import {
+  ActionType,
+  CreateGroupDialogComponent,
+} from './group/create-group-dialog.component';
 import { AssortmentService } from '../../shared/services/assortment.service';
 import { Group } from '../../shared/model/product';
 import {
@@ -65,25 +68,26 @@ export class AssortmentOverviewComponent {
   assortmentService = inject(AssortmentService);
   messageService = inject(MessageService);
   dialog = inject(MatDialog);
-  private readonly injector = inject(Injector);
+  injector = inject(Injector);
   groups = toSignal(this.assortmentService.getGroups$(), { initialValue: [] });
 
   openGroupAddDialog(): void {
-    const dialogRef = this.dialog.open<CreateGroupDialogComponent, any, Group>(
+    const dialogRef = this.dialog.open<
       CreateGroupDialogComponent,
-      {
-        data: '',
-        minWidth: '30vw',
-      },
-    );
+      any,
+      { action: ActionType; group: Group }
+    >(CreateGroupDialogComponent, {
+      data: '',
+      minWidth: '30vw',
+    });
 
-    dialogRef.afterClosed().subscribe((group) => {
-      if (!group) {
+    dialogRef.afterClosed().subscribe((data) => {
+      if (!data?.group) {
         return;
       }
 
       this.assortmentService
-        .addGroup$(group)
+        .addGroup$(data?.group)
         .pipe(
           catchError((err) => {
             this.messageService.send(err.statusText);
@@ -92,7 +96,7 @@ export class AssortmentOverviewComponent {
         )
         .subscribe((res) => {
           this.messageService.send({
-            title: `Group ${group.name} added`,
+            title: `Group ${data.group.name} added`,
             severity: Severity.INFO,
           });
           this.groups = toSignal(this.assortmentService.getGroups$(), {

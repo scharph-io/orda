@@ -11,7 +11,7 @@ export class ProductService {
   constructor(
     private http: HttpClient,
     @Inject('ENDPOINT') private endpoint: String,
-  ) { }
+  ) {}
 
   getProductsBy(categoryId: string) {
     return this.http.get<Product[]>(

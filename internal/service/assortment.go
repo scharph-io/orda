@@ -32,8 +32,8 @@ type ProductRequest struct {
 }
 
 type ViewGroupResponse struct {
-	Name     string             `json:"name"`
-	Products []*ProductResponse `json:"products"`
+	GroupResponse
+	Products []ViewProductResponse `json:"products"`
 }
 
 type ProductResponse struct {

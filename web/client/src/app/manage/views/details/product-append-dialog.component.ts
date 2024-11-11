@@ -34,6 +34,8 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import { CommonModule } from '@angular/common';
 import { SelectionModel } from '@angular/cdk/collections';
 import { RouterModule } from '@angular/router';
+import { View } from '../../../shared/model/view';
+import { ViewService } from '../../../shared/services/view.service';
 
 //  https://material.angular.io/components/table/overview#selection
 @Component({
@@ -146,7 +148,7 @@ import { RouterModule } from '@angular/router';
         mat-button
         [disabled]="dataSource.data.length === 0"
         style="background-color: greenyellow;"
-        (click)="save()"
+        (click)="append()"
       >
         {{ 'dialog.append' | transloco }}
       </button>
@@ -193,6 +195,7 @@ import { RouterModule } from '@angular/router';
 })
 export class ProductAppendDialogComponent implements OnInit {
   assortment = inject(AssortmentService);
+  viewService = inject(ViewService);
   // dataSource: WritableSignal<Product[]> = signal([]);
   dataSource = new MatTableDataSource<Product>([]);
   selection = new SelectionModel<Product>(true, []);
@@ -203,16 +206,31 @@ export class ProductAppendDialogComponent implements OnInit {
 
   dialogRef = inject(MatDialogRef<ProductAppendDialogComponent>);
 
+  view = inject<View>(MAT_DIALOG_DATA);
+
   ngOnInit(): void {
+    console.log(this.view);
+
     this.assortment
       .getProducts$()
       .subscribe((res) => (this.dataSource.data = res));
   }
 
-  save() {
+  append() {
     this.selection.selected.forEach((product) => {
       console.log(product);
     });
+
+    const data = this.selection.selected
+      .map((p) => p.id)
+      .filter((p) => p !== undefined) as string[];
+
+    this.viewService
+      .appendProductsToView$(this.view.id, data)
+      .subscribe((res) => {
+        console.log(res);
+        this.dialogRef.close(res);
+      });
   }
 
   closeDialog() {
