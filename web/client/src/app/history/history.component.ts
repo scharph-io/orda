@@ -12,20 +12,19 @@ import { MatChipsModule } from '@angular/material/chips';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
-  selector: 'orda-history',
-  standalone: true,
-  imports: [
-    MatExpansionModule,
-    JsonPipe,
-    OrdaCurrencyPipe,
-    ItemsTableComponent,
-    DatePipe,
-    PaymentOptionPipe,
-    AccountTypePipe,
-    TranslocoModule,
-    MatChipsModule,
-  ],
-  template: `
+    selector: 'orda-history',
+    imports: [
+        MatExpansionModule,
+        JsonPipe,
+        OrdaCurrencyPipe,
+        ItemsTableComponent,
+        DatePipe,
+        PaymentOptionPipe,
+        AccountTypePipe,
+        TranslocoModule,
+        MatChipsModule,
+    ],
+    template: `
     <div class="container">
       <h2>{{ 'menu.history' | transloco }}</h2>
       <!-- <h3>{{ info }}</h3> -->
@@ -74,13 +73,13 @@ import { AuthService } from '../auth/auth.service';
       </mat-accordion>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .container {
         margin: 0.5em 1em;
       }
     `,
-  ],
+    ]
 })
 export class HistoryComponent {
   transactions?: Transaction[];

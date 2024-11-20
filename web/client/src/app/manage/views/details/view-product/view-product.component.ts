@@ -8,11 +8,10 @@ import {
 import { ViewProduct } from '../../../../shared/model/view';
 
 @Component({
-  selector: 'orda-view-product',
-  template: ` {{ product().name }} `,
-  standalone: true,
-  styles: [``],
-  imports: [],
+    selector: 'orda-view-product',
+    template: ` {{ product().name }} `,
+    styles: [``],
+    imports: []
 })
 export class ViewProductComponent implements AfterViewInit {
   ngAfterViewInit(): void {

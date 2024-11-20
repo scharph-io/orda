@@ -4,17 +4,16 @@ import { Product } from '../../../shared/model/product';
 import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
-  selector: 'orda-product-tile',
-  standalone: true,
-  imports: [OrdaCurrencyPipe, MatDividerModule],
-  template: `
+    selector: 'orda-product-tile',
+    imports: [OrdaCurrencyPipe, MatDividerModule],
+    template: `
     <div class="price">{{ product().price | ordaCurrency }}</div>
     <div class="divider"><mat-divider></mat-divider></div>
     <div class="desc">{{ product().desc }}</div>
     <div class="name">{{ product().name }}</div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: grid;
         grid-template-columns: 1fr;
@@ -48,7 +47,7 @@ import { MatDividerModule } from '@angular/material/divider';
         text-align: center;
       }
     `,
-  ],
+    ]
 })
 export class ProductTileComponent {
   product = input.required<Product>();

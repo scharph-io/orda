@@ -21,8 +21,8 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'orda-group-details',
-  template: `
+    selector: 'orda-group-details',
+    template: `
     <div class="container">
       <div class="header">
         <mat-card appearance="outlined">
@@ -57,8 +57,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .container {
         display: flex;
         flex-direction: column;
@@ -78,18 +78,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
         gap: 1em;
       }
     `,
-  ],
-  standalone: true,
-  imports: [
-    MatDialogModule,
-    MatListModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    ProductsOverviewComponent,
-    OrdaCurrencyPipe,
-    TranslocoModule,
-  ],
+    ],
+    imports: [
+        MatDialogModule,
+        MatListModule,
+        MatButtonModule,
+        MatIconModule,
+        MatCardModule,
+        ProductsOverviewComponent,
+        OrdaCurrencyPipe,
+        TranslocoModule,
+    ]
 })
 export class GroupDetailsComponent {
   route = inject(ActivatedRoute);

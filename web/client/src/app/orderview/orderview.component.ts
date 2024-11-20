@@ -24,21 +24,20 @@ import { AuthService } from '../auth/auth.service';
  * @title Tab group with aligned labels
  */
 @Component({
-  selector: 'orda-orderview',
-  templateUrl: 'orderview.component.html',
-  styleUrls: ['orderview.component.scss'],
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatTabsModule,
-    MatIconModule,
-    CommonModule,
-    OrderGridComponent,
-    CartComponent,
-    AsyncPipe,
-    CartFooterComponent,
-  ],
-  providers: [CartStore, CheckoutService],
+    selector: 'orda-orderview',
+    templateUrl: 'orderview.component.html',
+    styleUrls: ['orderview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        MatTabsModule,
+        MatIconModule,
+        CommonModule,
+        OrderGridComponent,
+        CartComponent,
+        AsyncPipe,
+        CartFooterComponent,
+    ],
+    providers: [CartStore, CheckoutService]
 })
 export class OrderViewComponent implements OnInit {
   // categoryService = inject(CategoryService);

@@ -10,21 +10,20 @@ import { DataService } from '../auth/data.service';
 import { OrderViewComponent } from '../orderview/orderview.component';
 
 @Component({
-  selector: 'orda-home',
-  standalone: true,
-  imports: [
-    MatCardModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    OrderViewComponent,
-  ],
-  providers: [DataService],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+    selector: 'orda-home',
+    imports: [
+        MatCardModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        OrderViewComponent,
+    ],
+    providers: [DataService],
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
   restrictedInfo?: string;

@@ -12,22 +12,21 @@ import { NotificationComponent } from './shared/notification/notification.compon
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'orda-root',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    CommonModule,
-    MatMenuModule,
-    RouterModule,
-    MatDividerModule,
-    NotificationComponent,
-    TranslocoModule,
-  ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+    selector: 'orda-root',
+    imports: [
+        RouterOutlet,
+        MatToolbarModule,
+        MatIconModule,
+        MatButtonModule,
+        CommonModule,
+        MatMenuModule,
+        RouterModule,
+        MatDividerModule,
+        NotificationComponent,
+        TranslocoModule,
+    ],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss'
 })
 export class AppComponent {
   appname = 'orda';

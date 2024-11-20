@@ -29,8 +29,8 @@ export enum ActionType {
 }
 
 @Component({
-  selector: 'orda-create-group-dialog',
-  template: `<form [formGroup]="groupForm">
+    selector: 'orda-create-group-dialog',
+    template: `<form [formGroup]="groupForm">
     <h2 mat-dialog-title>
       @if (isUpdate) {
         {{ 'group.edit' | transloco }}
@@ -90,8 +90,8 @@ export enum ActionType {
       }
     </mat-dialog-actions>
   </form>`,
-  styles: [
-    `
+    styles: [
+        `
       mat-dialog-content {
         display: flex;
         flex-direction: column;
@@ -101,17 +101,16 @@ export enum ActionType {
         color: red;
       }
     `,
-  ],
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    TranslocoModule,
-  ],
+    ],
+    imports: [
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatSlideToggleModule,
+        TranslocoModule,
+    ]
 })
 export class CreateGroupDialogComponent {
   groupForm = new FormGroup({

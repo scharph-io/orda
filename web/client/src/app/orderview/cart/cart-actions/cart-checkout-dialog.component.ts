@@ -39,27 +39,26 @@ import { PaymentOptionPipe } from '../../../shared/pipes/payment-option.pipe';
 import { AccountTypePipe } from '../../../shared/pipes/account-type.pipe';
 
 @Component({
-  selector: 'orda-checkout-dialog',
-  standalone: true,
-  imports: [
-    MatDialogTitle,
-    MatDialogContent,
-    OrdaCurrencyPipe,
-    FormsModule,
-    MatButtonToggleModule,
-    MatIconModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatDialogActions,
-    MatDialogClose,
-    MatButtonToggle,
-    ReactiveFormsModule,
-    TranslocoModule,
-  ],
-  providers: [OrdaCurrencyPipe, PaymentOptionPipe, AccountTypePipe],
-  template: `
+    selector: 'orda-checkout-dialog',
+    imports: [
+        MatDialogTitle,
+        MatDialogContent,
+        OrdaCurrencyPipe,
+        FormsModule,
+        MatButtonToggleModule,
+        MatIconModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatDialogActions,
+        MatDialogClose,
+        MatButtonToggle,
+        ReactiveFormsModule,
+        TranslocoModule,
+    ],
+    providers: [OrdaCurrencyPipe, PaymentOptionPipe, AccountTypePipe],
+    template: `
     <div mat-dialog-content class="container">
       <div class="total">
         <div class="total-container">
@@ -159,8 +158,8 @@ import { AccountTypePipe } from '../../../shared/pipes/account-type.pipe';
       }
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .container {
         display: grid;
         gap: 1em;
@@ -226,7 +225,7 @@ import { AccountTypePipe } from '../../../shared/pipes/account-type.pipe';
         color: #606b73;
       }
     `,
-  ],
+    ]
 })
 export class CheckoutDialogComponent {
   accountControl = new FormControl(AccountType.CASH, [Validators.required]);

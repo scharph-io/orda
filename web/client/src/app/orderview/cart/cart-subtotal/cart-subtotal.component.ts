@@ -4,14 +4,13 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'orda-cart-subtotal',
-  standalone: true,
-  imports: [OrdaCurrencyPipe, TranslocoModule],
-  template: `
+    selector: 'orda-cart-subtotal',
+    imports: [OrdaCurrencyPipe, TranslocoModule],
+    template: `
     <span>{{ 'cart.subtotal' | transloco }}:</span>
     <span class="subtotal">{{ subtotal() | ordaCurrency: 'EUR' }}</span>
   `,
-  styles: `
+    styles: `
     :host {
       display: flex;
       gap: 1em;
@@ -24,7 +23,7 @@ import { TranslocoModule } from '@jsverse/transloco';
       font-size: 1.2em;
       font-weight: bold;
     }
-  `,
+  `
 })
 export class CartSubtotalComponent {
   subtotal = input.required<number>();

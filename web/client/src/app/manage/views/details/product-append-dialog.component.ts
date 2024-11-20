@@ -39,8 +39,8 @@ import { ViewService } from '../../../shared/services/view.service';
 
 //  https://material.angular.io/components/table/overview#selection
 @Component({
-  selector: 'orda-create-product-dialog',
-  template: `
+    selector: 'orda-create-product-dialog',
+    template: `
     <h2 mat-dialog-title>
       {{ 'product.append' | transloco }}
     </h2>
@@ -154,8 +154,8 @@ import { ViewService } from '../../../shared/services/view.service';
       </button>
     </mat-dialog-actions>
   `,
-  styles: [
-    `
+    styles: [
+        `
       mat-dialog-content {
         display: flex;
         flex-direction: column;
@@ -174,24 +174,23 @@ import { ViewService } from '../../../shared/services/view.service';
         font-weight: bold;
       }
     `,
-  ],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    TranslocoModule,
-    MatInputModule,
-    MatTableModule,
-    MatCheckboxModule,
-    OrdaCurrencyPipe,
-    RouterModule,
-  ],
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatSlideToggleModule,
+        TranslocoModule,
+        MatInputModule,
+        MatTableModule,
+        MatCheckboxModule,
+        OrdaCurrencyPipe,
+        RouterModule,
+    ]
 })
 export class ProductAppendDialogComponent implements OnInit {
   assortment = inject(AssortmentService);

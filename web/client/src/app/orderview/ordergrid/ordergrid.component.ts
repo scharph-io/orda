@@ -16,19 +16,18 @@ import { ViewProduct } from '../../shared/model/view';
  * @title Tab group with aligned labels
  */
 @Component({
-  selector: 'orda-ordergrid',
-  standalone: true,
-  imports: [
-    MatGridListModule,
-    ScrollingModule,
-    LayoutModule,
-    MatRippleModule,
-    NgStyle,
-    PlusMinusTileComponent,
-    ProductTileComponent,
-    OrdaCurrencyPipe,
-  ],
-  template: `
+    selector: 'orda-ordergrid',
+    imports: [
+        MatGridListModule,
+        ScrollingModule,
+        LayoutModule,
+        MatRippleModule,
+        NgStyle,
+        PlusMinusTileComponent,
+        ProductTileComponent,
+        OrdaCurrencyPipe,
+    ],
+    template: `
     <mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
       <!-- @if (category().withDeposit) {
         <mat-grid-tile [colspan]="2"
@@ -53,15 +52,15 @@ import { ViewProduct } from '../../shared/model/view';
       } -->
     </mat-grid-list>
   `,
-  styles: [
-    `
+    styles: [
+        `
       mat-grid-tile {
         cursor: pointer;
         border-radius: 0.25em;
         background-color: lightgrey;
       }
     `,
-  ],
+    ]
 })
 export class OrderGridComponent {
   // category = input.required<Category>();

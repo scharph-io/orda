@@ -27,8 +27,8 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'orda-assortment-overview',
-  template: `
+    selector: 'orda-assortment-overview',
+    template: `
     <div class="toolbar">
       <h2>{{ 'assortment.title' | transloco }}</h2>
       <button mat-fab extended (click)="openGroupAddDialog()">
@@ -38,9 +38,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
     </div>
     <orda-groups-overview [groups]="groups()" />
   `,
-  standalone: true,
-  styles: [
-    `
+    styles: [
+        `
       .toolbar {
         display: flex;
         justify-content: space-between;
@@ -54,15 +53,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
         align-items: center;
       }
     `,
-  ],
-  imports: [
-    MatIconModule,
-    MatButtonModule,
-    DialogModule,
-    GroupsOverviewComponent,
-    CreateGroupDialogComponent,
-    TranslocoModule,
-  ],
+    ],
+    imports: [
+        MatIconModule,
+        MatButtonModule,
+        DialogModule,
+        GroupsOverviewComponent,
+        CreateGroupDialogComponent,
+        TranslocoModule,
+    ]
 })
 export class AssortmentOverviewComponent {
   assortmentService = inject(AssortmentService);

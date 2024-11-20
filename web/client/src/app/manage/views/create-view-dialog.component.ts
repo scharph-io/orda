@@ -29,8 +29,8 @@ export enum ActionType {
 }
 
 @Component({
-  selector: 'orda-create-view-dialog',
-  template: `<form [formGroup]="viewForm">
+    selector: 'orda-create-view-dialog',
+    template: `<form [formGroup]="viewForm">
     <h2 mat-dialog-title>
       @if (isUpdate) {
         {{ 'view.edit' | transloco }}
@@ -82,8 +82,8 @@ export enum ActionType {
       }
     </mat-dialog-actions>
   </form>`,
-  styles: [
-    `
+    styles: [
+        `
       mat-dialog-content {
         display: flex;
         flex-direction: column;
@@ -93,17 +93,16 @@ export enum ActionType {
         color: red;
       }
     `,
-  ],
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    TranslocoModule,
-  ],
+    ],
+    imports: [
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatSlideToggleModule,
+        TranslocoModule,
+    ]
 })
 export class CreateViewDialogComponent {
   viewForm = new FormGroup({

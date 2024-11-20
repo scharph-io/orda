@@ -34,8 +34,8 @@ import {
 import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
-  selector: 'orda-products-overview',
-  template: `
+    selector: 'orda-products-overview',
+    template: `
     <div class="toolbar">
       <h2>{{ 'product.title' | transloco }}</h2>
       <div style="display: flex; gap:0.5em; align-items: center">
@@ -155,9 +155,8 @@ import { MatMenuModule } from '@angular/material/menu';
       </div>
     }
   `,
-  standalone: true,
-  styles: [
-    `
+    styles: [
+        `
       table {
         width: 100%;
       }
@@ -181,19 +180,19 @@ import { MatMenuModule } from '@angular/material/menu';
         overflow-y: scroll;
       }
     `,
-  ],
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    MatTableModule,
-    MatSlideToggleModule,
-    MatIconModule,
-    MatButtonModule,
-    DialogModule,
-    TranslocoModule,
-    OrdaCurrencyPipe,
-    MatMenuModule,
-  ],
+    ],
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatSlideToggleModule,
+        MatIconModule,
+        MatButtonModule,
+        DialogModule,
+        TranslocoModule,
+        OrdaCurrencyPipe,
+        MatMenuModule,
+    ]
 })
 export class ProductsOverviewComponent implements OnInit {
   products = input.required<Product[]>();
