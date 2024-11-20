@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 
 import {
@@ -30,13 +30,13 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     public router: Router,
-    @Inject('ENDPOINT') private endpoint: String,
+    @Inject('ENDPOINT') private endpoint: string,
   ) {
     this.authState$.next(this.authenticated);
   }
   // Sign-in
   auth(username: string, password: string) {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('identity', username);
     formData.append('password', password);
     return this.http
@@ -62,7 +62,7 @@ export class AuthService {
   }
 
   logout() {
-    let removeToken = localStorage.removeItem(ACCESS_TOKEN_KEY);
+    const removeToken = localStorage.removeItem(ACCESS_TOKEN_KEY);
     this.authState$.next(false);
 
     if (removeToken == null) {
