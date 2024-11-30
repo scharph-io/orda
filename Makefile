@@ -37,7 +37,7 @@ help: ## This help dialog.
 run-ui: ## Run the app locally
 	npm --prefix web/client run start
 
-update-ui: 
+install-deps: 
 	npm --prefix web/client install
 
 update-ng:
