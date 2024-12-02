@@ -15,9 +15,11 @@
     "experimentalDecorators": true,
     "moduleResolution": "bundler",
     "paths": {
-      "shared": [
-        "./dist/shared"
-      ]
+      "@assortment-management": ["./dist/assortment-management"],
+      "@ordering": ["./dist/ordering"],
+      "@shared/*": ["./dist/shared"],
+      "@statistics": ["./dist/statistics"],
+      "@user-management": ["./dist/user-management"]
     },
     "importHelpers": true,
     "target": "ES2022",
