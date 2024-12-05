@@ -26,11 +26,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
   ],
   template: `<div class="login-container">
-    <mat-card class="login-card">
-      <mat-card-header>
-        <mat-card-title>Login</mat-card-title>
-      </mat-card-header>
-
+    <mat-card class="login-card" appearance="outlined">
       <mat-card-content>
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <!-- Email Input -->
@@ -106,7 +102,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     </mat-card>
   </div>`,
 
-  styleUrl: './login.component.css',
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);

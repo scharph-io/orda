@@ -17,13 +17,21 @@
     <mat-icon>logout</mat-icon>
     <span>Logout</span>
   </button>
-  <button mat-menu-item [routerLink]="['/login']">
+  <button mat-menu-item routerLink="login">
     <mat-icon>voicemail</mat-icon>
     <span>Login</span>
   </button>
-  <button mat-menu-item [routerLink]="['/order']">
+  <button mat-menu-item routerLink="order">
     <mat-icon>notifications_off</mat-icon>
     <span>Order</span>
+  </button>
+  <button mat-menu-item routerLink="manage">
+    <mat-icon>notifications_off</mat-icon>
+    <span>Manage</span>
+  </button>
+  <button mat-menu-item routerLink="statistics">
+    <mat-icon>notifications_off</mat-icon>
+    <span>Statistics</span>
   </button>
 </mat-menu>
 

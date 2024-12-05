@@ -25,8 +25,8 @@ BUILD_DATE := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
 LD_FLAGS := -X main.date=$(BUILD_DATE) -X main.version=$(VERSION)
 BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 
-
-PACKAGE_JSON=web/client/package.json
+CLIENT_PROJECT=web/client_v2
+PACKAGE_JSON=$(CLIENT_PROJECT)/package.json
  ##SSL_CERT_DIR=/etc/ssl/certs
 
 .PHONY: build-local
@@ -35,13 +35,13 @@ help: ## This help dialog.
 	@grep -F -h "##" $(MAKEFILE_LIST) | grep -F -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 run-ui: ## Run the app locally
-	npm --prefix web/client run start
+	npm --prefix $(CLIENT_PROJECT) run start
 
 install-deps: 
-	npm --prefix web/client install
+	npm --prefix $(CLIENT_PROJECT) install
 
 update-ng:
-	npm update --prefix web/client
+	npm update --prefix $(CLIENT_PROJECT) @angular/cli @angular/core
 
 run: ## Run the app locally
 	go run cmd/server/main.go
@@ -53,7 +53,7 @@ pre-build-ui:
 	cat $(PACKAGE_JSON) | jq --arg version "$(VERSION)" '.version |= $$version' | tee $(PACKAGE_JSON) > /dev/null
 
 build-ui:
-	npm --prefix web/client install && npm --prefix web/client run build
+	npm --prefix $(CLIENT_PROJECT) install && npm --prefix $(CLIENT_PROJECT) run build
 
 build-local: build-ui
 	GOOS=linux 	GOARCH=amd64 	go build $(BUILD_ARGS) -o build/${BINARY_NAME} 			$(MAIN)

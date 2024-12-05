@@ -19,7 +19,12 @@
       "@ordering": ["./dist/ordering"],
       "@shared/*": ["./dist/shared"],
       "@statistics": ["./dist/statistics"],
-      "@user-management": ["./dist/user-management"]
+      "@user-management": [
+        "./dist/user-management"
+      ],
+      "manage": [
+        "./dist/manage"
+      ]
     },
     "importHelpers": true,
     "target": "ES2022",

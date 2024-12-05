@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
   {
     path: 'login',
     loadComponent: () =>
@@ -15,5 +14,14 @@ export const routes: Routes = [
       import('../../projects/ordering/src/public-api').then(
         (c) => c.OrderingComponent
       ),
+  },
+  {
+    path: 'manage',
+    loadChildren: () => import('../../projects/manage/src/lib/manage.routes'),
+  },
+  {
+    path: 'statistics',
+    loadChildren: () =>
+      import('../../projects/statistics/src/lib/statistics.routes'),
   },
 ];
