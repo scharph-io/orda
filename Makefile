@@ -2,10 +2,6 @@ PROJECT=orda
 IMAGE=scharphio/orda
 
 
-BINARY_NAME=$(PROJECT)
-
-MAIN= cmd/server/main.go
-
 TAG_COMMIT := $(shell git rev-list --abbrev-commit --tags --max-count=1)
 TAG := $(shell git describe --abbrev=0 --tags ${TAG_COMMIT} 2>/dev/null || true)
 COMMIT := $(shell git rev-parse --short HEAD)
@@ -25,6 +21,9 @@ BUILD_DATE := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
 LD_FLAGS := -X main.date=$(BUILD_DATE) -X main.version=$(VERSION)
 BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 
+BINARY_NAME=$(PROJECT)
+MAIN=cmd/server/main.go
+
 CLIENT_PROJECT=web/client_v2
 PACKAGE_JSON=$(CLIENT_PROJECT)/package.json
  ##SSL_CERT_DIR=/etc/ssl/certs
@@ -37,10 +36,10 @@ help: ## This help dialog.
 run-ui: ## Run the app locally
 	npm --prefix $(CLIENT_PROJECT) run start
 
-install-deps: 
+install-ui: 
 	npm --prefix $(CLIENT_PROJECT) install
 
-update-ng:
+update-ui:
 	npm update --prefix $(CLIENT_PROJECT) @angular/cli @angular/core
 
 run: ## Run the app locally

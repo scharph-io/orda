@@ -21,6 +21,10 @@ import { MatMenuModule } from '@angular/material/menu';
       .spacer {
         flex: 1 1 auto;
       }
+
+      .content {
+        padding: 1rem;
+      }
     `,
   ],
 })

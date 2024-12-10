@@ -20,4 +20,11 @@ body {
       //   outlined-container-color: green
     )
   );
+
+  // @include mat.expansion-overrides(
+  //   (
+  //     container-background-color: white,
+  //     header-text-color: black,
+  //   )
+  // );
 }
