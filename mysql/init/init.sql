@@ -1,15 +1,14 @@
--- CREATE DATABASE IF NOT EXISTS orda;
+CREATE DATABASE IF NOT EXISTS casbin;
 
 -- -- create the users for each database
--- CREATE USER 'orda'@'%' IDENTIFIED BY 'orda';
--- GRANT CREATE, ALTER, INDEX, LOCK TABLES, REFERENCES, UPDATE, DELETE, DROP, SELECT, INSERT ON `orda`.* TO 'orda'@'%';
+GRANT CREATE, ALTER, INDEX, LOCK TABLES, REFERENCES, UPDATE, DELETE, DROP, SELECT, INSERT ON `casbin`.* TO 'orda'@'%';
 
--- FLUSH PRIVILEGES;
+FLUSH PRIVILEGES;
 
 -- Adminer 4.8.1 MySQL 9.0.1 dump
 
 SET NAMES utf8;
-SET time_zone = '+00:00';
+SET time_zone = '+02:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 

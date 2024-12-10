@@ -32,41 +32,39 @@ func SetupRoutes(app *fiber.App) {
 	// 	},
 	// }))
 
-	api.Get("/", handler.Hello)
-
 	// Auth
 	auth := api.Group("/auth")
 	auth.Post("/login", handler.Login)
 
 	// Assortment
-	assortment := api.Group("/assortment")
-	assortmentHandler := createAssortmentHandler()
+	// assortment := api.Group("/assortment")
+	// assortmentHandler := createAssortmentHandler()
 
-	group := assortment.Group("/groups")
-	group.Get("/", assortmentHandler.GetGroups)
-	group.Get("/:id", assortmentHandler.GetGroupById)
+	// group := assortment.Group("/groups")
+	// group.Get("/", assortmentHandler.GetGroups)
+	// group.Get("/:id", assortmentHandler.GetGroupById)
 
-	group.Post("/", assortmentHandler.CreateGroup)
-	group.Put("/:id", assortmentHandler.UpdateGroup)
-	group.Delete("/:id", assortmentHandler.DeleteGroup)
-	group.Delete("/:id/products", assortmentHandler.DeleteProductsByGroup)
+	// group.Post("/", assortmentHandler.CreateGroup)
+	// group.Put("/:id", assortmentHandler.UpdateGroup)
+	// group.Delete("/:id", assortmentHandler.DeleteGroup)
+	// group.Delete("/:id/products", assortmentHandler.DeleteProductsByGroup)
 
-	product := assortment.Group("/products")
-	product.Get("/", assortmentHandler.GetProducts)
-	product.Post("/", assortmentHandler.CreateProduct)
-	product.Put("/:id", assortmentHandler.UpdateProduct)
-	product.Delete("/:id", assortmentHandler.DeleteProduct)
+	// product := assortment.Group("/products")
+	// product.Get("/", assortmentHandler.GetProducts)
+	// product.Post("/", assortmentHandler.CreateProduct)
+	// product.Put("/:id", assortmentHandler.UpdateProduct)
+	// product.Delete("/:id", assortmentHandler.DeleteProduct)
 
-	views := api.Group("/views")
-	viewHandler := createViewHandler()
-	views.Get("/", viewHandler.GetViews)
-	views.Post("/", viewHandler.CreateView)
-	views.Get("/:id", viewHandler.GetViewById)
-	views.Put("/:id", viewHandler.UpdateView)
-	views.Delete("/:id", viewHandler.DeleteView)
-	// views.Get("/:id/products" /*TODO*/)
-	views.Post("/:id/products/add", viewHandler.AddProducts)
-	views.Post("/:id/products/remove", viewHandler.RemoveProducts)
+	// views := api.Group("/views")
+	// viewHandler := createViewHandler()
+	// views.Get("/", viewHandler.GetViews)
+	// views.Post("/", viewHandler.CreateView)
+	// views.Get("/:id", viewHandler.GetViewById)
+	// views.Put("/:id", viewHandler.UpdateView)
+	// views.Delete("/:id", viewHandler.DeleteView)
+	// // views.Get("/:id/products" /*TODO*/)
+	// views.Post("/:id/products/add", viewHandler.AddProducts)
+	// views.Post("/:id/products/remove", viewHandler.RemoveProducts)
 
 	// Category
 	// category := api.Group("/category")

@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
+	"github.com/scharph/orda/internal/casbin"
 	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/router"
@@ -26,6 +27,37 @@ func main() {
 
 	app := fiber.New()
 	database.ConnectDB()
+	e, err := casbin.Enforcer()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// ***
+
+	e.LoadPolicy()
+
+	e.AddRoleForUser("alice", "admin")
+	e.AddRoleForUser("bob", "user")
+
+	e.AddPolicy("user", "assortment", "read")
+	e.AddPolicy("admin", "assortment", "write")
+
+	fmt.Println(e.GetAllRoles())
+
+	// e.AddPermission
+
+	// e.AddPermissionForUser("alice", "assortment", "read")
+
+	x, err := e.Enforce("bob", "assortment", "write")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Enforce:", x)
+
+	// ***
 
 	port := config.Config("PORT")
 	if port == "" {

@@ -121,7 +121,7 @@ docker-dev-down:
 	docker compose -f docker-compose.yaml down -v
 
 docker-dev-logs:
-	docker compose -f docker-compose.yaml logs
+	docker compose -f docker-compose.yaml logs -f
 
 docker-build:
 	docker build -f ci/Dockerfile --build-arg="BUILD=$(VERSION)" -t $(IMAGE):$(VERSION) . --progress=plain
