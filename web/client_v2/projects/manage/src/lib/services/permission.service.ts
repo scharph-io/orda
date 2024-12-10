@@ -17,14 +17,6 @@ export class PermissionService {
   private permissionsSubject = new BehaviorSubject<Permission[]>([
     {
       id: 1,
-      module: 'Users',
-      create: true,
-      read: true,
-      update: false,
-      delete: false,
-    },
-    {
-      id: 2,
       module: 'Roles',
       create: false,
       read: true,
@@ -32,7 +24,7 @@ export class PermissionService {
       delete: false,
     },
     {
-      id: 3,
+      id: 2,
       module: 'Reports',
       create: false,
       read: true,

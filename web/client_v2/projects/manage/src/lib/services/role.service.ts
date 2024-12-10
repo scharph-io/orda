@@ -14,7 +14,12 @@ export class RoleService {
   getRoles(): Observable<Role[]> {
     return of([
       { id: 0, name: 'admin' },
-      { id: 1, name: 'user' },
+      { id: 1, name: 'kellner1' },
+      { id: 2, name: 'kellner2' },
+      { id: 3, name: 'essen1' },
+      { id: 4, name: 'essen2' },
+      { id: 5, name: 'bar1' },
+      { id: 6, name: 'bar2' },
     ]);
   }
 }

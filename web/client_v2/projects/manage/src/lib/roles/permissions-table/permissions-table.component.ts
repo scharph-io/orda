@@ -17,18 +17,36 @@ import { MatButtonModule } from '@angular/material/button';
 export class PermissionsTableComponent {
   role = input.required<string>();
 
-  displayedColumns: string[] = ['module', 'create', 'read', 'update', 'delete'];
+  mainDisplayedColumns: string[] = [
+    'module',
+    'create',
+    'read',
+    'update',
+    'delete',
+  ];
+  viewDisplayedColumns: string[] = ['view', 'read'];
+
   permService = inject(PermissionService);
 
-  permissions = [
-    { module: 'Users', create: true, read: true, update: true, delete: true },
+  mainPermissions = [
     { module: 'Roles', create: true, read: true, update: true, delete: true },
     {
-      module: 'Projects',
+      module: 'Assortment',
       create: true,
       read: true,
       update: true,
       delete: true,
+    },
+  ];
+
+  viewPermissions = [
+    {
+      view: 'A',
+      read: false,
+    },
+    {
+      view: 'B',
+      read: true,
     },
   ];
 

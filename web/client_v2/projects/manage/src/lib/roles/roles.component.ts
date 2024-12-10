@@ -9,6 +9,7 @@ import { PermissionsTableComponent } from './permissions-table/permissions-table
 import { RoleService } from '../services/role.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TitleCasePipe } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 
 export interface Role {
   id: number;
@@ -17,7 +18,12 @@ export interface Role {
 
 @Component({
   selector: 'lib-roles',
-  imports: [MatExpansionModule, PermissionsTableComponent, TitleCasePipe],
+  imports: [
+    MatExpansionModule,
+    PermissionsTableComponent,
+    TitleCasePipe,
+    MatButtonModule,
+  ],
   template: `
     <h2>Roles</h2>
     <p>Be careful what you do</p>
@@ -29,6 +35,8 @@ export interface Role {
         </mat-expansion-panel-header>
 
         <ng-template matExpansionPanelContent>
+          <h4>Manage</h4>
+          <button mat-button>Delete</button>
           <orda-permissions-table [role]="role.name" />
         </ng-template>
       </mat-expansion-panel>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { provideRouter, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'lib-manage',
@@ -8,7 +8,6 @@ import { provideRouter, RouterModule } from '@angular/router';
   template: `
     <p>
       manage overview!
-      <button mat-button [routerLink]="'users'">User</button>
       <button mat-button [routerLink]="'roles'">Roles</button>
       <button mat-button [routerLink]="'assortment'">Assortment</button>
     </p>
