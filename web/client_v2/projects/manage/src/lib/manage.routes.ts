@@ -18,4 +18,9 @@ export default [
     loadComponent: () =>
       import('./roles/roles.component').then((m) => m.RolesComponent),
   },
+  {
+    path: 'accounts',
+    loadComponent: () =>
+      import('./accounts/accounts.component').then((m) => m.AccountsComponent),
+  },
 ] satisfies Route[];

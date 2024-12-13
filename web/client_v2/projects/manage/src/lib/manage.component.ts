@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
       manage overview!
       <button mat-button [routerLink]="'roles'">Roles</button>
       <button mat-button [routerLink]="'assortment'">Assortment</button>
+      <button mat-button [routerLink]="'accounts'">Accounts</button>
     </p>
   `,
   styles: ``,
