@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 export interface Account {
@@ -27,6 +28,7 @@ const ELEMENT_DATA: Account[] = [
     MatCheckboxModule,
     JsonPipe,
     MatButtonModule,
+    MatMenuModule,
   ],
   templateUrl: './accounts.component.html',
   styleUrl: './accounts.component.scss',

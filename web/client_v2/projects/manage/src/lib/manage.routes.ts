@@ -12,6 +12,20 @@ export default [
       import('./assortment/assortment.component').then(
         (m) => m.AssortmentComponent
       ),
+    children: [
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('./products/products.component').then(
+            (m) => m.ProductsComponent
+          ),
+      },
+      {
+        path: 'groups',
+        loadComponent: () =>
+          import('./groups/groups.component').then((m) => m.GroupsComponent),
+      },
+    ],
   },
   {
     path: 'roles',
@@ -22,5 +36,10 @@ export default [
     path: 'accounts',
     loadComponent: () =>
       import('./accounts/accounts.component').then((m) => m.AccountsComponent),
+  },
+  {
+    path: 'products',
+    loadComponent: () =>
+      import('./products/products.component').then((m) => m.ProductsComponent),
   },
 ] satisfies Route[];

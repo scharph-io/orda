@@ -1,16 +1,13 @@
 <div class="toolbar">
   <div class="left">
-    <button mat-raised-button color="primary" (click)="openDialog()">
-      Add Account
-    </button>
-    <button mat-raised-button color="primary" (click)="openDialog()">
-      Create Group
-    </button>
+    <button mat-button>Add Balance</button>
   </div>
   <div>
-    <button mat-raised-button color="primary" (click)="openDialog()">
-      Create Group
-    </button>
+    <button mat-button [matMenuTriggerFor]="menu">Manage</button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>Add Account</button>
+      <button mat-menu-item>Import from file</button>
+    </mat-menu>
   </div>
 </div>
 <mat-form-field>
