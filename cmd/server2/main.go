@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
-	"github.com/scharph/orda/internal/casbin"
+	"github.com/scharph/orda/cmd/server2/policy"
+	"github.com/scharph/orda/internal/accesscontrol"
 	"github.com/scharph/orda/internal/database"
 )
 
@@ -19,10 +22,12 @@ func main() {
 		fmt.Println("INFO: No .env file found")
 	}
 
+	app := fiber.New()
+
 	// app := fiber.New()
 	database.ConnectDB()
 
-	e, err := casbin.Enforcer()
+	e, err := accesscontrol.CasbinEnforcer()
 
 	if err != nil {
 		fmt.Println(err)
@@ -31,35 +36,56 @@ func main() {
 	// ***
 	e.LoadPolicy()
 
-	e.AddRoleForUser("alice", "admin")
-	e.AddRoleForUser("bob", "user")
+	// e.AddRoleForUser("alice", "admin")
+	// e.AddRoleForUser("bob", "user")
 
-	e.AddPolicy("user", "assortment", "read")
+	// e.AddGroupingPolicy("alice", "admin")
+
+	e.AddPolicy("user", "role", "read")
 	e.AddPolicy("admin", "assortment", "read")
 	e.AddPolicy("admin", "assortment", "write")
+	e.AddPolicy("admin", "roles", "read")
+	e.AddPolicy("admin", "roles", "write")
+	e.AddPolicy("admin", "accounts", "read")
+	e.AddPolicy("admin", "accounts", "write")
+
+	// e.AddPolicy("admin", "assortment", "read")
+	// e.AddPolicy("admin", "assortment", "write")
 	// e.AddNamedPolicy("p", "admin", "assortment", "read")
 
-	e.AddPolicies(
-		[][]string{{
-			"admin", "users", "read",
-		}})
+	// e.AddPolicies(
+	// 	[][]string{{
+	// 		"admin", "users", "read",
+	// 	}})
 
-	x, _ := e.GetAllRoles()
-	fmt.Println(x)
+	// x, _ := e.GetAllRoles()
+	// fmt.Println(x)
 
-	f, _ := e.GetAllNamedActions("p")
-	fmt.Println(f)
+	// f, _ := e.GetAllNamedActions("p")
+	// fmt.Println(f)
 
-	// d, _ := e.GetAllNamedObjects("p")
-	// fmt.Println(d)
+	// // d, _ := e.GetAllNamedObjects("p")
+	// // fmt.Println(d)
 
-	t, _ := e.GetFilteredPolicy(1, "assortment")
-	fmt.Println(t)
+	// t, _ := e.GetFilteredPolicy(1, "assortment")
+	// fmt.Println(t)
 
-	g, _ := e.GetFilteredGroupingPolicy(1, "admin")
-	fmt.Println(g)
+	// g, _ := e.GetFilteredGroupingPolicy(1, "admin")
+	// fmt.Println(g)
 
-	allow, _ := e.Enforce("bob", "assortment", "read")
-	fmt.Println(allow)
+	// allow, _ := e.Enforce("user", "assortment:write")
+	// fmt.Println(allow)
 
+	// allow, _ = e.Enforce("admin", "assortment:write")
+	// fmt.Println(allow)
+
+	policySync := policy.NewPolicySync(e)
+	policyHandler := &policy.PolicyHandler{PolicySync: policySync}
+
+	app.Use(cors.New())
+
+	app.Get("/api/policies", policyHandler.HandleGetPolicies)
+	app.Get("/api/policies/:role", policyHandler.HandleGetRolePolicy)
+
+	app.Listen(":3000")
 }

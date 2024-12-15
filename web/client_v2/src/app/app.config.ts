@@ -12,13 +12,15 @@ import { URL_TOKEN } from '../../projects/shared/src/public-api';
 
 import localeDe from '@angular/common/locales/de';
 import { registerLocaleData } from '@angular/common';
+import { provideHttpClient } from '@angular/common/http';
 
 registerLocaleData(localeDe);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withDebugTracing()),
+    provideRouter(routes),
+    provideHttpClient(),
     provideAnimationsAsync(),
     {
       provide: URL_TOKEN,

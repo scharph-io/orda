@@ -1,4 +1,4 @@
-package casbin
+package accesscontrol
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ const (
 	casbin_model = "rbac_model.conf"
 )
 
-func Enforcer() (*casbin.Enforcer, error) {
+func CasbinEnforcer() (*casbin.Enforcer, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/",
 		config.Config("DB_USER"),
 		config.Config("DB_PASSWORD"),
