@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, computed, effect, inject, Signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 
 import { PermissionDirective } from '../../../shared/src/lib/permission/permission.directive';
 import { PolicyManagerComponent } from '../../../shared/src/lib/permission/permission-manager/permission-manager.component';
+import { PolicyStore } from '../../../shared/src/lib/policy/policy-store';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'lib-manage',
@@ -11,7 +13,8 @@ import { PolicyManagerComponent } from '../../../shared/src/lib/permission/permi
     RouterModule,
     MatButtonModule,
     PermissionDirective,
-    PolicyManagerComponent,
+    // PolicyManagerComponent,
+    JsonPipe,
   ],
   template: `
     manage overview!
@@ -38,8 +41,21 @@ import { PolicyManagerComponent } from '../../../shared/src/lib/permission/permi
       Roles
     </button>
 
-    <app-policy-manager />
+    <!-- <app-policy-manager /> -->
+
+    {{ isLoading() ? 'Loading...' : '' }}
+    {{ policies() | json }}
   `,
   styles: ``,
 })
-export class ManageComponent {}
+export class ManageComponent {
+  private policyStore = inject(PolicyStore);
+  isLoading = computed(() => this.policyStore.isLoading());
+  policies = computed(() => this.policyStore.getPolicies('user'));
+
+  constructor() {
+    // effect(() => {
+    //   this.policyStore.getPolicies('sd');
+    // });
+  }
+}
