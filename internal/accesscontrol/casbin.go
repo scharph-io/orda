@@ -13,7 +13,7 @@ const (
 	casbin_model = "rbac_model.conf"
 )
 
-func CasbinEnforcer() (*casbin.Enforcer, error) {
+func Enforcer() (*casbin.Enforcer, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/",
 		config.Config("DB_USER"),
 		config.Config("DB_PASSWORD"),
