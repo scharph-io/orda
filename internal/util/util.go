@@ -1,6 +1,6 @@
 package util
 
-import "github.com/scharph/orda/internal/config"
+import "os"
 
 type PaymentOption uint
 
@@ -23,7 +23,7 @@ const (
 )
 
 func GetPasswordFromEnv(key string) string {
-	pw := config.Config(key)
+	pw := os.Getenv(key)
 	if pw == "" {
 		return default_pw
 	}

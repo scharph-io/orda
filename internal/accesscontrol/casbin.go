@@ -2,26 +2,30 @@ package accesscontrol
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/scharph/orda/internal/config"
+	"github.com/gofiber/fiber/v2/log"
 )
 
 const (
 	casbin_model = "rbac_model.conf"
+	driver_name  = "mysql"
 )
 
-func Enforcer() (*casbin.Enforcer, error) {
+func enforcer() (*casbin.Enforcer, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/",
-		config.Config("DB_USER"),
-		config.Config("DB_PASSWORD"),
-		config.Config("DB_HOST"),
-		config.Config("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
 	)
 
-	a, err := gormadapter.NewAdapter("mysql", dsn) // Your driver and data source.
+	log.Info(dsn)
+
+	a, err := gormadapter.NewAdapter(driver_name, dsn) // Your driver and data source.
 	if err != nil {
 		return nil, err
 	}

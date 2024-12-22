@@ -8,7 +8,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/router"
 )
@@ -27,7 +26,7 @@ func main() {
 	app := fiber.New()
 	database.ConnectDB()
 
-	port := config.Config("PORT")
+	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}

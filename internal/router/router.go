@@ -36,7 +36,12 @@ func SetupRoutes(app *fiber.App) {
 	auth := api.Group("/auth")
 	auth.Post("/login", handler.Login)
 
-	// Assortment
+	// Policy
+	// policy := api.Group("/policy")
+	// policyHandler := handler.NewAssortmentHandler()
+	// policy.Get("/", handler.GetPolicies)
+
+	// // Assortment
 	// assortment := api.Group("/assortment")
 	// assortmentHandler := createAssortmentHandler()
 

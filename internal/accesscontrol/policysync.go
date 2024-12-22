@@ -1,16 +1,18 @@
 package accesscontrol
 
 import (
+	"fmt"
 	"log"
 	"sync"
 
 	"github.com/casbin/casbin/v2"
+	"github.com/joho/godotenv"
 )
 
 var PolicySyncInstance *PolicySync
 
 type PolicySync struct {
-	Enforcer *casbin.Enforcer
+	enforcer *casbin.Enforcer
 	mutex    sync.RWMutex
 }
 
@@ -18,13 +20,11 @@ type Policy struct {
 	Role     string `json:"role"`
 	Resource string `json:"resource"`
 	Action   string `json:"action"`
-	// Effect   string `json:"effect"`
 }
 
-// NewPolicySync creates a new policy synchronization manager
-func NewPolicySync(enforcer *casbin.Enforcer) *PolicySync {
+func newPolicySync(e *casbin.Enforcer) *PolicySync {
 	return &PolicySync{
-		Enforcer: enforcer,
+		enforcer: e,
 	}
 }
 
@@ -34,7 +34,7 @@ func (ps *PolicySync) GetPolicies() []Policy {
 	defer ps.mutex.RUnlock()
 
 	var policies []Policy
-	x, err := ps.Enforcer.GetPolicy()
+	x, err := ps.enforcer.GetPolicy()
 	if err != nil {
 		return policies
 	}
@@ -52,11 +52,11 @@ func (ps *PolicySync) GetPolicies() []Policy {
 	return policies
 }
 
-func (ps *PolicySync) GetRolePolicy(role string, enforcer *casbin.Enforcer) []Policy {
+func (ps *PolicySync) GetRolePolicy(role string) []Policy {
 	ps.mutex.RLock()
 	defer ps.mutex.RUnlock()
 	var policies []Policy
-	x, err := enforcer.GetFilteredPolicy(0, role)
+	x, err := ps.enforcer.GetFilteredPolicy(0, role)
 	if err != nil {
 		return policies
 	}
@@ -80,26 +80,28 @@ func (ps *PolicySync) UpdatePolicies(newPolicies []Policy) error {
 	defer ps.mutex.Unlock()
 
 	// Remove all existing policies
-	ps.Enforcer.DeletePermissionsForUser("*")
+	ps.enforcer.DeletePermissionsForUser("*")
 
 	// Add new policies
 	for _, policy := range newPolicies {
-		_, err := ps.Enforcer.AddPolicy(policy.Role, policy.Resource, policy.Action)
+		_, err := ps.enforcer.AddPolicy(policy.Role, policy.Resource, policy.Action)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Persist policies (optional - depends on your storage mechanism)
-	return ps.Enforcer.SavePolicy()
+	return ps.enforcer.SavePolicy()
 }
 
 func init() {
-	e, err := Enforcer()
-
+	if err := godotenv.Load(".env"); err != nil {
+		fmt.Println("INFO: No .env file found")
+	}
+	e, err := enforcer()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	PolicySyncInstance = NewPolicySync(e)
+	PolicySyncInstance = newPolicySync(e)
 }

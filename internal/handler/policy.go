@@ -12,6 +12,11 @@ type PolicyHandler struct {
 	PolicySync *accesscontrol.PolicySync
 }
 
+// NewPolicyHandler creates a new PolicyHandler
+func NewPolicyHandler(ps *accesscontrol.PolicySync) *PolicyHandler {
+	return &PolicyHandler{PolicySync: ps}
+}
+
 // HandleGetPolicies retrieves current policies
 func (ph *PolicyHandler) GetPolicies(c *fiber.Ctx) error {
 	// Implement authentication/authorization check here
@@ -20,7 +25,7 @@ func (ph *PolicyHandler) GetPolicies(c *fiber.Ctx) error {
 
 func (ph *PolicyHandler) GetRolePolicy(c *fiber.Ctx) error {
 	role := c.Params("role")
-	return c.JSON(ph.PolicySync.GetRolePolicy(role, ph.PolicySync.Enforcer))
+	return c.JSON(ph.PolicySync.GetRolePolicy(role))
 }
 
 // HandleUpdatePolicies updates policies
