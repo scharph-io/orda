@@ -11,9 +11,26 @@ import (
 
 var PolicySyncInstance *PolicySync
 
+var (
+	obj           = []string{"assortment", "roles", "accounts"}
+	act           = []string{"read", "write"}
+	admin         = "admin"
+	defaultPolicy = []Policy{
+		{Role: admin, Resource: obj[0], Action: act[0]},
+		{Role: admin, Resource: obj[0], Action: act[1]},
+	}
+)
+
 type PolicySync struct {
 	enforcer *casbin.Enforcer
 	mutex    sync.RWMutex
+}
+
+func (ps *PolicySync) GetSubjects() ([]string, error) {
+	ps.mutex.RLock()
+	defer ps.mutex.RUnlock()
+
+	return ps.enforcer.GetAllSubjects()
 }
 
 type Policy struct {
@@ -33,19 +50,18 @@ func (ps *PolicySync) GetPolicies() []Policy {
 	ps.mutex.RLock()
 	defer ps.mutex.RUnlock()
 
-	var policies []Policy
-	x, err := ps.enforcer.GetPolicy()
+	var policies []Policy = make([]Policy, 0)
+	p, err := ps.enforcer.GetPolicy()
 	if err != nil {
 		return policies
 	}
 
-	for _, policy := range x {
+	for _, policy := range p {
 		if len(policy) >= 3 {
 			policies = append(policies, Policy{
 				Role:     policy[0],
 				Resource: policy[1],
 				Action:   policy[2],
-				// Effect:   "allow", // Simplified for this example
 			})
 		}
 	}
@@ -67,7 +83,6 @@ func (ps *PolicySync) GetRolePolicy(role string) []Policy {
 				Role:     policy[0],
 				Resource: policy[1],
 				Action:   policy[2],
-				// Effect:   "allow", // Simplified for this example
 			})
 		}
 	}

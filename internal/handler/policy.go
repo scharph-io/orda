@@ -20,7 +20,16 @@ func NewPolicyHandler(ps *accesscontrol.PolicySync) *PolicyHandler {
 // HandleGetPolicies retrieves current policies
 func (ph *PolicyHandler) GetPolicies(c *fiber.Ctx) error {
 	// Implement authentication/authorization check here
+
 	return c.JSON(ph.PolicySync.GetPolicies())
+}
+
+func (ph *PolicyHandler) GetSubjects(c *fiber.Ctx) error {
+	s, err := ph.PolicySync.GetSubjects()
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get subjects"})
+	}
+	return c.JSON(s)
 }
 
 func (ph *PolicyHandler) GetRolePolicy(c *fiber.Ctx) error {

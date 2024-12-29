@@ -113,13 +113,13 @@ stop: ## Stop the container
 start: ## Start the container
 	docker start $(project_name)
 
-docker-dev-up:
+dev-up:
 	docker compose -f docker-compose.yaml up -d
 
-docker-dev-down:
+dev-down:
 	docker compose -f docker-compose.yaml down -v
 
-docker-dev-logs:
+dev-logs:
 	docker compose -f docker-compose.yaml logs -f
 
 docker-build:

@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/scharph/orda/internal/accesscontrol"
 	"github.com/scharph/orda/internal/handler"
 	"github.com/scharph/orda/web/client"
 )
@@ -37,9 +38,10 @@ func SetupRoutes(app *fiber.App) {
 	auth.Post("/login", handler.Login)
 
 	// Policy
-	// policy := api.Group("/policy")
-	// policyHandler := handler.NewAssortmentHandler()
-	// policy.Get("/", handler.GetPolicies)
+	policy := api.Group("/policy")
+	pHandler := handler.NewPolicyHandler(accesscontrol.PolicySyncInstance)
+	policy.Get("/", pHandler.GetPolicies)
+	policy.Get("/subjects", pHandler.GetSubjects)
 
 	// // Assortment
 	// assortment := api.Group("/assortment")

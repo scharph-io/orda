@@ -46,7 +46,7 @@ func ConnectDB() {
 		},
 	)
 
-	fmt.Println(dsn)
+	log.Println(dsn)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: newLogger,
 	})
@@ -61,7 +61,7 @@ func ConnectDB() {
 		}
 	}
 
-	fmt.Println("Connection Opened to Database")
+	log.Println("Connection Opened to Database")
 	// DB.AutoMigrate(&model.Category{}, &model.Product{}, &model.Transaction{}, &model.TransactionItem{})
 
 	if err := DB.SetupJoinTable(&model.View{}, "Products", &model.ViewProduct{}); err != nil {
@@ -80,6 +80,6 @@ func ConnectDB() {
 		log.Fatal("Failed to migrate database. \n", err)
 		return
 	}
-	fmt.Println("Database Migrated")
+	log.Println("Database Migrated")
 
 }
