@@ -1,27 +1,14 @@
-import {
-	Directive,
-	Input,
-	ElementRef,
-	viewChild,
-	input,
-	contentChild,
-	AfterContentChecked,
-	AfterViewChecked,
-	OnInit,
-	effect,
-	inject,
-	ChangeDetectorRef,
-} from '@angular/core';
+import { Directive, ElementRef, input, OnInit, inject } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { PolicyDTO, PolicySyncService } from '../policy/policy-sync.service';
 import { MatButton } from '@angular/material/button';
-import { filter, pipe, switchMap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 
 type PolicyReq = Pick<PolicyDTO, 'resource' | 'action'>;
 
 // Directive for permission-based element visibility
 @Directive({
-	selector: '[appPermission]',
+	selector: '[ordaPermission]',
 })
 export class PermissionDirective implements OnInit {
 	appPermission = input.required<PolicyReq>();
