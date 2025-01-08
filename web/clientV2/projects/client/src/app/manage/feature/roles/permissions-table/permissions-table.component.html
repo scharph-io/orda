@@ -1,88 +1,88 @@
 <div class="permission-table-container">
-  <h4>Permissions</h4>
-  <table mat-table [dataSource]="mainPermissions" class="mat-elevation-z8">
-    <!-- Module Column -->
-    <ng-container matColumnDef="module">
-      <th mat-header-cell *matHeaderCellDef>Module</th>
-      <td mat-cell *matCellDef="let element">{{ element.module }}</td>
-    </ng-container>
+	<h4>Permissions</h4>
+	<table mat-table [dataSource]="mainPermissions" class="mat-elevation-z8">
+		<!-- Module Column -->
+		<ng-container matColumnDef="module">
+			<th mat-header-cell *matHeaderCellDef>Module</th>
+			<td mat-cell *matCellDef="let element">{{ element.module }}</td>
+		</ng-container>
 
-    <!-- Permission Columns -->
-    <ng-container matColumnDef="create">
-      <th mat-header-cell *matHeaderCellDef>Create</th>
-      <td mat-cell *matCellDef="let element">
-        <mat-checkbox
-          [disabled]="isAdmin()"
-          [(ngModel)]="element.create"
-          (change)="onPermissionChange(element)"
-        >
-        </mat-checkbox>
-      </td>
-    </ng-container>
+		<!-- Permission Columns -->
+		<ng-container matColumnDef="create">
+			<th mat-header-cell *matHeaderCellDef>Create</th>
+			<td mat-cell *matCellDef="let element">
+				<mat-checkbox
+					[disabled]="isAdmin()"
+					[(ngModel)]="element.create"
+					(change)="onPermissionChange(element)"
+				>
+				</mat-checkbox>
+			</td>
+		</ng-container>
 
-    <ng-container matColumnDef="read">
-      <th mat-header-cell *matHeaderCellDef>Read</th>
-      <td mat-cell *matCellDef="let element">
-        <mat-checkbox
-          [disabled]="isAdmin()"
-          [(ngModel)]="element.read"
-          (change)="onPermissionChange(element)"
-        >
-        </mat-checkbox>
-      </td>
-    </ng-container>
+		<ng-container matColumnDef="read">
+			<th mat-header-cell *matHeaderCellDef>Read</th>
+			<td mat-cell *matCellDef="let element">
+				<mat-checkbox
+					[disabled]="isAdmin()"
+					[(ngModel)]="element.read"
+					(change)="onPermissionChange(element)"
+				>
+				</mat-checkbox>
+			</td>
+		</ng-container>
 
-    <ng-container matColumnDef="update">
-      <th mat-header-cell *matHeaderCellDef>Update</th>
-      <td mat-cell *matCellDef="let element">
-        <mat-checkbox
-          [disabled]="isAdmin()"
-          [(ngModel)]="element.update"
-          (change)="onPermissionChange(element)"
-        >
-        </mat-checkbox>
-      </td>
-    </ng-container>
+		<ng-container matColumnDef="update">
+			<th mat-header-cell *matHeaderCellDef>Update</th>
+			<td mat-cell *matCellDef="let element">
+				<mat-checkbox
+					[disabled]="isAdmin()"
+					[(ngModel)]="element.update"
+					(change)="onPermissionChange(element)"
+				>
+				</mat-checkbox>
+			</td>
+		</ng-container>
 
-    <ng-container matColumnDef="delete">
-      <th mat-header-cell *matHeaderCellDef>Delete</th>
-      <td mat-cell *matCellDef="let element">
-        <mat-checkbox
-          [disabled]="isAdmin()"
-          [(ngModel)]="element.delete"
-          (change)="onPermissionChange(element)"
-        >
-        </mat-checkbox>
-      </td>
-    </ng-container>
+		<ng-container matColumnDef="delete">
+			<th mat-header-cell *matHeaderCellDef>Delete</th>
+			<td mat-cell *matCellDef="let element">
+				<mat-checkbox
+					[disabled]="isAdmin()"
+					[(ngModel)]="element.delete"
+					(change)="onPermissionChange(element)"
+				>
+				</mat-checkbox>
+			</td>
+		</ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="mainDisplayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: mainDisplayedColumns"></tr>
-  </table>
+		<tr mat-header-row *matHeaderRowDef="mainDisplayedColumns"></tr>
+		<tr mat-row *matRowDef="let row; columns: mainDisplayedColumns"></tr>
+	</table>
 
-  <table mat-table [dataSource]="viewPermissions" class="mat-elevation-z8">
-    <!-- Module Column -->
-    <ng-container matColumnDef="view">
-      <th mat-header-cell *matHeaderCellDef>Module</th>
-      <td mat-cell *matCellDef="let element">{{ element.view }}</td>
-    </ng-container>
+	<table mat-table [dataSource]="viewPermissions" class="mat-elevation-z8">
+		<!-- Module Column -->
+		<ng-container matColumnDef="view">
+			<th mat-header-cell *matHeaderCellDef>Module</th>
+			<td mat-cell *matCellDef="let element">{{ element.view }}</td>
+		</ng-container>
 
-    <ng-container matColumnDef="read">
-      <th mat-header-cell *matHeaderCellDef>Read</th>
-      <td mat-cell *matCellDef="let element">
-        <mat-checkbox
-          [disabled]="isAdmin()"
-          [(ngModel)]="element.read"
-          (change)="onPermissionChange(element)"
-        >
-        </mat-checkbox>
-      </td>
-    </ng-container>
+		<ng-container matColumnDef="read">
+			<th mat-header-cell *matHeaderCellDef>Read</th>
+			<td mat-cell *matCellDef="let element">
+				<mat-checkbox
+					[disabled]="isAdmin()"
+					[(ngModel)]="element.read"
+					(change)="onPermissionChange(element)"
+				>
+				</mat-checkbox>
+			</td>
+		</ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="viewDisplayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: viewDisplayedColumns"></tr>
-  </table>
+		<tr mat-header-row *matHeaderRowDef="viewDisplayedColumns"></tr>
+		<tr mat-row *matRowDef="let row; columns: viewDisplayedColumns"></tr>
+	</table>
 </div>
-@if( !isAdmin() ) {
-<button mat-button>Save</button>
+@if (!isAdmin()) {
+	<button mat-button>Save</button>
 }

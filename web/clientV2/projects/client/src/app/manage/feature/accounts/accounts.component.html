@@ -1,73 +1,67 @@
 <div class="toolbar">
-  <div class="left">
-    <button mat-button>Add Balance</button>
-  </div>
-  <div>
-    <button mat-button [matMenuTriggerFor]="menu">Manage</button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item>Add Account</button>
-      <button mat-menu-item>Import from file</button>
-    </mat-menu>
-  </div>
+	<div class="left">
+		<button mat-button>Add Balance</button>
+	</div>
+	<div>
+		<button mat-button [matMenuTriggerFor]="menu">Manage</button>
+		<mat-menu #menu="matMenu">
+			<button mat-menu-item>Add Account</button>
+			<button mat-menu-item>Import from file</button>
+		</mat-menu>
+	</div>
 </div>
 <mat-form-field>
-  <mat-label>Filter</mat-label>
-  <input matInput (keyup)="applyFilter($event)" #input />
+	<mat-label>Filter</mat-label>
+	<input matInput (keyup)="applyFilter($event)" #input />
 </mat-form-field>
 
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-  <!-- Checkbox Column -->
-  <ng-container matColumnDef="select">
-    <th mat-header-cell *matHeaderCellDef>
-      <mat-checkbox
-        (change)="$event ? toggleAllRows() : null"
-        [checked]="selection.hasValue() && isAllSelected()"
-        [indeterminate]="selection.hasValue() && !isAllSelected()"
-      >
-      </mat-checkbox>
-    </th>
-    <td mat-cell *matCellDef="let row">
-      <mat-checkbox
-        (click)="$event.stopPropagation()"
-        (change)="$event ? selection.toggle(row) : null"
-        [checked]="selection.isSelected(row)"
-      >
-      </mat-checkbox>
-    </td>
-  </ng-container>
+	<!-- Checkbox Column -->
+	<ng-container matColumnDef="select">
+		<th mat-header-cell *matHeaderCellDef>
+			<mat-checkbox
+				(change)="$event ? toggleAllRows() : null"
+				[checked]="selection.hasValue() && isAllSelected()"
+				[indeterminate]="selection.hasValue() && !isAllSelected()"
+			>
+			</mat-checkbox>
+		</th>
+		<td mat-cell *matCellDef="let row">
+			<mat-checkbox
+				(click)="$event.stopPropagation()"
+				(change)="$event ? selection.toggle(row) : null"
+				[checked]="selection.isSelected(row)"
+			>
+			</mat-checkbox>
+		</td>
+	</ng-container>
 
-  <!-- Name Column -->
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef>Name</th>
-    <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-  </ng-container>
+	<!-- Name Column -->
+	<ng-container matColumnDef="name">
+		<th mat-header-cell *matHeaderCellDef>Name</th>
+		<td mat-cell *matCellDef="let element">{{ element.name }}</td>
+	</ng-container>
 
-  <!-- Weight Column -->
-  <ng-container matColumnDef="group">
-    <th mat-header-cell *matHeaderCellDef>Group</th>
-    <td mat-cell *matCellDef="let element">{{ element.group }}</td>
-  </ng-container>
+	<!-- Weight Column -->
+	<ng-container matColumnDef="group">
+		<th mat-header-cell *matHeaderCellDef>Group</th>
+		<td mat-cell *matCellDef="let element">{{ element.group }}</td>
+	</ng-container>
 
-  <!-- Symbol Column -->
-  <ng-container matColumnDef="balance">
-    <th mat-header-cell *matHeaderCellDef>Balance</th>
-    <td mat-cell *matCellDef="let element">{{ element.balance }}</td>
-  </ng-container>
+	<!-- Symbol Column -->
+	<ng-container matColumnDef="balance">
+		<th mat-header-cell *matHeaderCellDef>Balance</th>
+		<td mat-cell *matCellDef="let element">{{ element.balance }}</td>
+	</ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr
-    mat-row
-    *matRowDef="let row; columns: displayedColumns"
-    (click)="selection.toggle(row)"
-  >
-    <!-- Row shown when there is no matching data. -->
-  </tr>
+	<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+	<tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="selection.toggle(row)">
+		<!-- Row shown when there is no matching data. -->
+	</tr>
 
-  <tr class="mat-row" *matNoDataRow>
-    <td class="mat-cell" colspan="4">
-      No data matching the filter "{{ input.value }}"
-    </td>
-  </tr>
+	<tr class="mat-row" *matNoDataRow>
+		<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+	</tr>
 </table>
 
 {{ selection.selected | json }}
