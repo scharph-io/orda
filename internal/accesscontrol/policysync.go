@@ -1,12 +1,9 @@
 package accesscontrol
 
 import (
-	"fmt"
-	"log"
 	"sync"
 
 	"github.com/casbin/casbin/v2"
-	"github.com/joho/godotenv"
 )
 
 var PolicySyncInstance *PolicySync
@@ -110,13 +107,13 @@ func (ps *PolicySync) UpdatePolicies(newPolicies []Policy) error {
 }
 
 func init() {
-	if err := godotenv.Load(".env"); err != nil {
-		fmt.Println("INFO: No .env file found")
-	}
-	e, err := enforcer()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err := godotenv.Load(".env"); err != nil {
+	// 	fmt.Println("INFO: No .env file found")
+	// }
+	// e, err := enforcer()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	PolicySyncInstance = newPolicySync(e)
+	// PolicySyncInstance = newPolicySync(e)
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"github.com/scharph/orda/internal/database"
+	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/internal/router"
 )
 
@@ -24,7 +25,9 @@ func main() {
 	}
 
 	app := fiber.New()
+
 	database.ConnectDB()
+	middleware.AuthInit()
 
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -1,6 +1,11 @@
 package util
 
-import "os"
+import (
+	"math/rand"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type PaymentOption uint
 
@@ -22,10 +27,49 @@ const (
 	default_pw = "secret"
 )
 
-func GetPasswordFromEnv(key string) string {
-	pw := os.Getenv(key)
-	if pw == "" {
-		return default_pw
+func PasswordGenerator(passwordLength int) string {
+	// Character sets for generating passwords
+	lowerCase := "abcdefghijklmnopqrstuvwxyz" // lowercase
+	upperCase := "ABCDEFGHIJKLMNOPQRSTUVWXYZ" // uppercase
+	numbers := "0123456789"                   // numbers
+	specialChar := "!@#$%^&*()_-+={}[/?]"     // special characters
+
+	// Variable for storing password
+	password := ""
+
+	// Initialize the random number generator
+	source := rand.NewSource(time.Now().UnixNano())
+	rng := rand.New(source)
+
+	// Generate password character by character
+	for n := 0; n < passwordLength; n++ {
+		// Generate a random number to choose a character set
+		randNum := rng.Intn(4)
+
+		switch randNum {
+		case 0:
+			randCharNum := rng.Intn(len(lowerCase))
+			password += string(lowerCase[randCharNum])
+		case 1:
+			randCharNum := rng.Intn(len(upperCase))
+			password += string(upperCase[randCharNum])
+		case 2:
+			randCharNum := rng.Intn(len(numbers))
+			password += string(numbers[randCharNum])
+		case 3:
+			randCharNum := rng.Intn(len(specialChar))
+			password += string(specialChar[randCharNum])
+		}
 	}
-	return pw
+
+	return password
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func VerifyPassword(password, hash string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }

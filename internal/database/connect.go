@@ -70,10 +70,11 @@ func ConnectDB() {
 	}
 
 	if err := DB.AutoMigrate(
-		&model.Group{},
-		&model.Product{},
+		&model.User{},
+		// &model.Group{},
+		// &model.Product{},
 
-		&model.View{},
+		// &model.View{},
 		// &model.Transaction{},
 		// &model.TransactionItem{},
 	); err != nil {
