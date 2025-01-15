@@ -16,6 +16,11 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 }
 
 func (r *UserRepo) Create(ctx context.Context, user *model.User) (*model.User, error) {
+	_, err := r.ReadByUsername(ctx, user.Username)
+	if err == nil {
+		return nil, errResourceAlreadyExists
+	}
+
 	res := r.db.WithContext(ctx).Create(&user)
 	if res.Error != nil {
 		return nil, res.Error

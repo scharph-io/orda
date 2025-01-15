@@ -15,13 +15,23 @@ func AuthInit() {
 
 	var adminUser model.User
 	if db.Where("username = ?", "admin").First(&adminUser).RowsAffected == 0 {
-		initialPassword := util.PasswordGenerator(18)
-		log.Printf("Initial Password: %s", initialPassword)
-		db.Create(&model.User{
+		initialPassword := util.PasswordGenerator(30)
+
+		hashed, err := util.HashPassword(initialPassword)
+		if err != nil {
+			log.Fatalf("Error hashing password: %v", err)
+		}
+
+		if db.Create(&model.User{
 			Username: "admin",
-			Password: initialPassword,
+			Password: hashed,
 			Role:     "admin",
-		})
+		}).Error != nil {
+			log.Fatalf("Error creating admin user: %v", err)
+			panic(1)
+		}
+		log.Println("User 'admin' created")
+		log.Printf("Initial Password: '%s'", initialPassword)
 	}
 
 }

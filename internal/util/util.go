@@ -32,7 +32,6 @@ func PasswordGenerator(passwordLength int) string {
 	lowerCase := "abcdefghijklmnopqrstuvwxyz" // lowercase
 	upperCase := "ABCDEFGHIJKLMNOPQRSTUVWXYZ" // uppercase
 	numbers := "0123456789"                   // numbers
-	specialChar := "!@#$%^&*()_-+={}[/?]"     // special characters
 
 	// Variable for storing password
 	password := ""
@@ -44,7 +43,7 @@ func PasswordGenerator(passwordLength int) string {
 	// Generate password character by character
 	for n := 0; n < passwordLength; n++ {
 		// Generate a random number to choose a character set
-		randNum := rng.Intn(4)
+		randNum := rng.Intn(3)
 
 		switch randNum {
 		case 0:
@@ -56,9 +55,6 @@ func PasswordGenerator(passwordLength int) string {
 		case 2:
 			randCharNum := rng.Intn(len(numbers))
 			password += string(numbers[randCharNum])
-		case 3:
-			randCharNum := rng.Intn(len(specialChar))
-			password += string(specialChar[randCharNum])
 		}
 	}
 

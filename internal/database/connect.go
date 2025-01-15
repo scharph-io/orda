@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/model"
 )
 
@@ -20,14 +21,16 @@ var DB *gorm.DB
 func ConnectDB() {
 	var err error
 
+	c := config.GetConfig().Database
+
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
 	// "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		c.User,
+		c.Password,
+		c.Host,
+		c.Port,
+		c.Name,
 	)
 	/*
 		NOTE:
@@ -62,12 +65,12 @@ func ConnectDB() {
 	}
 
 	log.Println("Connection Opened to Database")
-	// DB.AutoMigrate(&model.Category{}, &model.Product{}, &model.Transaction{}, &model.TransactionItem{})
+	// // DB.AutoMigrate(&model.Category{}, &model.Product{}, &model.Transaction{}, &model.TransactionItem{})
 
-	if err := DB.SetupJoinTable(&model.View{}, "Products", &model.ViewProduct{}); err != nil {
-		log.Fatal("Failed to setup join table. \n", err)
-		return
-	}
+	// if err := DB.SetupJoinTable(&model.View{}, "Products", &model.ViewProduct{}); err != nil {
+	// 	log.Fatal("Failed to setup join table. \n", err)
+	// 	return
+	// }
 
 	if err := DB.AutoMigrate(
 		&model.User{},

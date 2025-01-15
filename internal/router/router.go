@@ -26,6 +26,14 @@ func SetupRoutes(app *fiber.App) {
 	auth := api.Group("/auth")
 	auth.Post("/login", handler.Login)
 
+	// User
+	user := api.Group("/user")
+	user.Get("/", handler.GetAllUsers)
+	// user.Post("/", handler.CreateUser)
+	// user.Get("/:id", handler.GetUserById)
+	// user.Put("/:id", handler.UpdateUser)
+	// user.Delete("/:id", handler.DeleteUser)
+
 	// // Policy
 	// policy := api.Group("/policy")
 	// pHandler := handler.NewPolicyHandler(accesscontrol.PolicySyncInstance)
