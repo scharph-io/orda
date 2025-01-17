@@ -21,15 +21,6 @@ type UserResponse struct {
 	Password string `json:"-"`
 }
 
-type IUserService interface {
-	GetAllUsers(ctx context.Context) ([]UserResponse, error)
-	GetUserById(ctx context.Context, id string) (UserResponse, error)
-	GetUserByUsername(ctx context.Context, username string) (UserResponse, error)
-	CreateUser(ctx context.Context, req UserRequest) (UserResponse, error)
-	UpdateUser(ctx context.Context, req UserRequest) (UserResponse, error)
-	DeleteUser(ctx context.Context, id string) error
-}
-
 type IUserRepository interface {
 	Create(ctx context.Context, user *domain.User) (*domain.User, error)
 	Read(ctx context.Context) ([]domain.User, error)
@@ -39,9 +30,17 @@ type IUserRepository interface {
 	Delete(ctx context.Context, id string) (bool, error)
 }
 
+type IUserService interface {
+	GetAllUsers(ctx context.Context) ([]UserResponse, error)
+	GetUserById(ctx context.Context, id string) (*UserResponse, error)
+	GetUserByUsername(ctx context.Context, username string) (*UserResponse, error)
+	Create(ctx context.Context, req UserRequest) (*UserResponse, error)
+	Update(ctx context.Context, req UserRequest) (*UserResponse, error)
+	Delete(ctx context.Context, id string) error
+}
+
 type IUserHandlers interface {
 	Register(c *fiber.Ctx) error
-	// Login(c *fiber.Ctx) error
 	GetAll(c *fiber.Ctx) error
 	GetOne(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error

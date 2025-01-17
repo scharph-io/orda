@@ -23,6 +23,16 @@ type PolicySync struct {
 	mutex    sync.RWMutex
 }
 
+// Init initializes the PolicySync instance
+func Init() {
+	e, err := enforcer()
+	if err != nil {
+		panic(err)
+	}
+
+	PolicySyncInstance = newPolicySync(e)
+}
+
 func (ps *PolicySync) GetSubjects() ([]string, error) {
 	ps.mutex.RLock()
 	defer ps.mutex.RUnlock()
@@ -104,16 +114,4 @@ func (ps *PolicySync) UpdatePolicies(newPolicies []Policy) error {
 
 	// Persist policies (optional - depends on your storage mechanism)
 	return ps.enforcer.SavePolicy()
-}
-
-func init() {
-	// if err := godotenv.Load(".env"); err != nil {
-	// 	fmt.Println("INFO: No .env file found")
-	// }
-	// e, err := enforcer()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// PolicySyncInstance = newPolicySync(e)
 }

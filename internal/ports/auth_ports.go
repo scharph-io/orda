@@ -12,4 +12,5 @@ type IAuthHandlers interface {
 	Logout(c *fiber.Ctx) error
 	RequireAuth(c *fiber.Ctx) error
 	RequireRole(role string) fiber.Handler
+	Policy(c *fiber.Ctx) error
 }

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/scharph/orda/internal/accesscontrol"
 	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/middleware"
@@ -21,8 +22,9 @@ func main() {
 
 	app := fiber.New()
 
-	database.ConnectDB()
+	database.Connect()
 	middleware.AuthInit()
+	accesscontrol.Init()
 
 	log.Println("server running on port", config.Port)
 

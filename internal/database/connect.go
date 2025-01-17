@@ -18,7 +18,7 @@ import (
 var DB *gorm.DB
 
 // ConnectDB connect to db
-func ConnectDB() {
+func Connect() {
 	var err error
 
 	c := config.GetConfig().Database
@@ -74,6 +74,7 @@ func ConnectDB() {
 
 	if err := DB.AutoMigrate(
 		&model.User{},
+		&model.Role{},
 		// &model.Group{},
 		// &model.Product{},
 

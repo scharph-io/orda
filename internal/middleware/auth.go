@@ -22,6 +22,15 @@ func AuthInit() {
 			log.Fatalf("Error hashing password: %v", err)
 		}
 
+		if db.Create(&model.Role{
+			Name: "admin",
+		}).Error != nil {
+			log.Fatalf("Error creating admin role: %v", err)
+			panic(1)
+		}
+
+		log.Println("Role 'admin' created")
+
 		if db.Create(&model.User{
 			Username: "admin",
 			Password: hashed,

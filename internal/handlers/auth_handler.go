@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/scharph/orda/internal/accesscontrol"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/util"
 )
@@ -12,12 +13,13 @@ const (
 )
 
 type AuthHandlers struct {
-	userService  ports.IUserService
-	sessionStore session.Store
+	userService   ports.IUserService
+	sessionStore  session.Store
+	psyncInstance *accesscontrol.PolicySync
 }
 
-func NewAuthHandlers(userService ports.IUserService, sessionStore session.Store) *AuthHandlers {
-	return &AuthHandlers{userService, sessionStore}
+func NewAuthHandlers(userService ports.IUserService, sessionStore session.Store, psyncInstance *accesscontrol.PolicySync) *AuthHandlers {
+	return &AuthHandlers{userService, sessionStore, psyncInstance}
 }
 
 var _ ports.IAuthHandlers = (*AuthHandlers)(nil)
@@ -106,21 +108,22 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 func (h *AuthHandlers) RequireRole(role string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		userID := c.Locals(session_user_id).(string)
-
 		user, err := h.userService.GetUserById(c.Context(), userID)
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"error": "User not found",
 			})
 		}
-
 		// Check if user has required role
 		if user.Role != role {
 			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 				"error": "Insufficient permissions",
 			})
 		}
-
 		return c.Next()
 	}
+}
+
+func (h *AuthHandlers) Policy(c *fiber.Ctx) error {
+	return c.JSON(h.psyncInstance.GetPolicies())
 }

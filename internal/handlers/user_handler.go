@@ -31,24 +31,11 @@ func (h *UserHandlers) Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
 	}
 
-	if req.Role == "admin" {
-		return c.Status(fiber.StatusMethodNotAllowed).JSON(fiber.Map{"error": "admin can not be created"})
-	} else if req.Role == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid role"})
-	} else if req.Role != "user" {
-		// TODO: add more roles via database
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid role"})
-	}
-
 	fmt.Printf("TODO: remove visible password from logs '%s'\n", req.Password)
 
-	if req.Username == "admin" {
-		return c.Status(fiber.StatusMethodNotAllowed).JSON(fiber.Map{"error": "admin can not be created"})
-	}
-
-	res, err := h.service.CreateUser(c.Context(), req)
+	res, err := h.service.Create(c.Context(), req)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to create user"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to create user: %s", err)})
 	}
 	return c.Status(fiber.StatusCreated).JSON(res)
 }
@@ -68,28 +55,18 @@ func (h *UserHandlers) Update(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
 	}
 	req.Id = c.Params("id")
-	current, _ := h.service.GetUserById(c.Context(), req.Id)
-	// Prevent username "admin" to be updated
-	if current.Username == "admin" && req.Username != "admin" {
-		return c.Status(fiber.StatusMethodNotAllowed).JSON(fiber.Map{"error": "admin can not be updated"})
-	}
-	res, err := h.service.UpdateUser(c.Context(), req)
+	res, err := h.service.Update(c.Context(), req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to update user"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Errorf("Failed to update user: %s", err)})
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 
 func (h *UserHandlers) Delete(c *fiber.Ctx) error {
 	id := c.Params("id")
-	u, _ := h.service.GetUserById(c.Context(), id)
-	if u.Username == "admin" {
-		return c.Status(fiber.StatusMethodNotAllowed).JSON(fiber.Map{"error": "admin can not be deleted"})
-	}
-
-	err := h.service.DeleteUser(c.Context(), id)
+	err := h.service.Delete(c.Context(), id)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to delete user"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Errorf("Failed to delete user: %s", err)})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "User deleted"})
 }

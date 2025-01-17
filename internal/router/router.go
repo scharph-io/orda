@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/scharph/orda/internal/accesscontrol"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/handlers"
 	"github.com/scharph/orda/internal/middleware"
@@ -15,6 +16,7 @@ import (
 type Server struct {
 	userHandlers ports.IUserHandlers
 	authHandlers ports.IAuthHandlers
+	roleHandlers ports.IRoleHandlers
 }
 
 func NewServer() *Server {
@@ -23,17 +25,21 @@ func NewServer() *Server {
 
 	// repositories
 	userRepo := repository.NewUserRepo(db)
+	roleRepo := repository.NewRoleRepo(db)
 
 	// services
-	userService := service.NewUserService(userRepo)
+	userService := service.NewUserService(userRepo, roleRepo)
+	roleService := service.NewRoleService(roleRepo)
 
 	// handlers
 	userHandlers := handlers.NewUserHandlers(userService)
-	authHandlers := handlers.NewAuthHandlers(userService, *middleware.Store)
+	roleHandlers := handlers.NewRoleHandlers(roleService)
+	authHandlers := handlers.NewAuthHandlers(userService, *middleware.Store, accesscontrol.PolicySyncInstance)
 
 	return &Server{
 		userHandlers,
 		authHandlers,
+		roleHandlers,
 	}
 }
 
@@ -54,23 +60,26 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	// Auth
 	auth := app.Group("/auth")
 	auth.Post("/login", s.authHandlers.Login)
-	auth.Post("/logout", s.authHandlers.Logout, s.authHandlers.RequireAuth)
+	auth.Post("/logout", s.authHandlers.RequireAuth, s.authHandlers.Logout)
+	auth.Get("/policy", s.authHandlers.RequireAuth, s.authHandlers.Policy)
 
-	api := app.Group("/api", logger.New(), s.authHandlers.RequireAuth)
+	api := app.Group("/api", logger.New(logger.Config{
+		Format: "[API] ${time} ${status} - ${latency} ${method} ${path}\n",
+	}), s.authHandlers.RequireAuth)
 
 	// User
-	user := api.Group("/user")
-	user.Get("/", s.userHandlers.GetAll, s.authHandlers.RequireRole("admin"))
+	user := api.Group("/user", s.authHandlers.RequireRole("admin"))
+	user.Get("/", s.userHandlers.GetAll)
 	user.Post("/", s.userHandlers.Register)
 	user.Get("/:id", s.userHandlers.GetOne)
 	user.Put("/:id", s.userHandlers.Update)
 	user.Delete("/:id", s.userHandlers.Delete)
 
-	// // Policy
-	// policy := api.Group("/policy")
-	// pHandler := handler.NewPolicyHandler(accesscontrol.PolicySyncInstance)
-	// policy.Get("/", pHandler.GetPolicies)
-	// policy.Get("/subjects", pHandler.GetSubjects)
+	// Role
+	role := api.Group("/role")
+	role.Get("/", s.roleHandlers.GetAll)
+	role.Post("/", s.authHandlers.RequireRole("admin"), s.roleHandlers.Create)
+	role.Get("/:id", s.roleHandlers.GetOne)
 
 	// // Assortment
 	// assortment := api.Group("/assortment")
