@@ -25,7 +25,9 @@ func main() {
 	middleware.AuthInit()
 
 	log.Println("server running on port", config.Port)
-	router.SetupRoutes(app)
+
+	server := router.NewServer()
+	server.SetupRoutes(app)
 	log.Fatal(app.Listen(fmt.Sprintf(":%d", config.Port)))
 
 	// https://github.com/gofiber/recipes/tree/master/auth-docker-postgres-jwt

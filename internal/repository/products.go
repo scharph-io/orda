@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/scharph/orda/internal/model"
+	"github.com/scharph/orda/internal/domain"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -16,7 +16,7 @@ func NewProductRepo(db *gorm.DB) *ProductRepo {
 	return &ProductRepo{db}
 }
 
-func (r *ProductRepo) Create(ctx context.Context, product *model.Product) (*model.Product, error) {
+func (r *ProductRepo) Create(ctx context.Context, product *domain.Product) (*domain.Product, error) {
 	res := r.db.WithContext(ctx).Create(&product)
 	if res.Error != nil {
 		return nil, res.Error
@@ -24,9 +24,9 @@ func (r *ProductRepo) Create(ctx context.Context, product *model.Product) (*mode
 	return product, nil
 }
 
-func (r *ProductRepo) Read(ctx context.Context) (products []model.Product, err error) {
+func (r *ProductRepo) Read(ctx context.Context) (products []domain.Product, err error) {
 	res := r.db.
-		WithContext(ctx).Model(&model.Product{}).
+		WithContext(ctx).Model(&domain.Product{}).
 		Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&products)
 	if res.Error != nil {
 		return nil, res.Error
@@ -34,7 +34,7 @@ func (r *ProductRepo) Read(ctx context.Context) (products []model.Product, err e
 	return products, nil
 }
 
-func (r *ProductRepo) ReadByID(ctx context.Context, id string) (product *model.Product, err error) {
+func (r *ProductRepo) ReadByID(ctx context.Context, id string) (product *domain.Product, err error) {
 	res := r.db.WithContext(ctx).Where("id = ?", id).First(&product)
 	if res.Error != nil {
 		return nil, res.Error
@@ -42,7 +42,7 @@ func (r *ProductRepo) ReadByID(ctx context.Context, id string) (product *model.P
 	return product, nil
 }
 
-func (r *ProductRepo) ReadByGroupId(ctx context.Context, group_id string) (products []model.Product, err error) {
+func (r *ProductRepo) ReadByGroupId(ctx context.Context, group_id string) (products []domain.Product, err error) {
 	res := r.db.WithContext(ctx).Where("group_id = ?", group_id).
 		Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}}).Find(&products)
 	if res.Error != nil {
@@ -51,7 +51,7 @@ func (r *ProductRepo) ReadByGroupId(ctx context.Context, group_id string) (produ
 	return products, nil
 }
 
-func (r *ProductRepo) ImportMany(ctx context.Context, products *[]model.Product, group_id string) ([]model.Product, error) {
+func (r *ProductRepo) ImportMany(ctx context.Context, products *[]domain.Product, group_id string) ([]domain.Product, error) {
 	for i := range *products {
 		(*products)[i].GroupID = group_id
 	}
@@ -62,9 +62,9 @@ func (r *ProductRepo) ImportMany(ctx context.Context, products *[]model.Product,
 	return *products, nil
 }
 
-func (r *ProductRepo) Update(ctx context.Context, id string, new *model.Product) (*model.Product, error) {
-	var product model.Product
-	res := r.db.WithContext(ctx).Model(&model.Product{}).Where("id = ?", id).Find(&product)
+func (r *ProductRepo) Update(ctx context.Context, id string, new *domain.Product) (*domain.Product, error) {
+	var product domain.Product
+	res := r.db.WithContext(ctx).Model(&domain.Product{}).Where("id = ?", id).Find(&product)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -82,7 +82,7 @@ func (r *ProductRepo) Update(ctx context.Context, id string, new *model.Product)
 }
 
 func (r *ProductRepo) Delete(ctx context.Context, id string) (bool, error) {
-	res := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.Product{})
+	res := r.db.WithContext(ctx).Where("id = ?", id).Delete(&domain.Product{})
 	if res.Error != nil {
 		return false, res.Error
 	}
@@ -90,7 +90,7 @@ func (r *ProductRepo) Delete(ctx context.Context, id string) (bool, error) {
 }
 
 func (r *ProductRepo) DeleteByGroupId(ctx context.Context, group_id string) (bool, error) {
-	res := r.db.WithContext(ctx).Where("group_id = ?", group_id).Delete(&model.Product{})
+	res := r.db.WithContext(ctx).Where("group_id = ?", group_id).Delete(&domain.Product{})
 	if res.Error != nil {
 		return false, res.Error
 	}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"slices"
 
-	"github.com/scharph/orda/internal/model"
+	model "github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/repository"
 )
 

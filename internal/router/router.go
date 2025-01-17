@@ -4,10 +4,37 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/scharph/orda/internal/handler"
+	"github.com/scharph/orda/internal/database"
+	"github.com/scharph/orda/internal/handlers"
+	"github.com/scharph/orda/internal/ports"
+	"github.com/scharph/orda/internal/repository"
+	"github.com/scharph/orda/internal/service"
 )
 
-func SetupRoutes(app *fiber.App) {
+type Server struct {
+	userHandlers ports.IUserHandlers
+}
+
+func NewServer() *Server {
+
+	db := database.DB
+
+	// repositories
+	userRepo := repository.NewUserRepo(db)
+
+	// services
+	userService := service.NewUserService(userRepo)
+
+	// handlers
+	userHandlers := handlers.NewUserHandlers(userService)
+
+	return &Server{
+		userHandlers,
+	}
+}
+
+func (s *Server) SetupRoutes(app *fiber.App) {
+
 	// app.Use("/", filesystem.New(filesystem.Config{
 	// 	Root:       http.FS(client.Assets),
 	// 	PathPrefix: "dist/client/browser",
@@ -24,15 +51,15 @@ func SetupRoutes(app *fiber.App) {
 
 	// Auth
 	auth := api.Group("/auth")
-	auth.Post("/login", handler.Login)
+	auth.Post("/login", handlers.Login)
 
 	// User
 	user := api.Group("/user")
-	user.Get("/", handler.GetAllUsers)
-	// user.Post("/", handler.CreateUser)
-	// user.Get("/:id", handler.GetUserById)
-	// user.Put("/:id", handler.UpdateUser)
-	// user.Delete("/:id", handler.DeleteUser)
+	user.Get("/", s.userHandlers.GetAll)
+	user.Post("/", s.userHandlers.Register)
+	user.Get("/:id", s.userHandlers.GetOne)
+	user.Put("/:id", s.userHandlers.Update)
+	user.Delete("/:id", s.userHandlers.Delete)
 
 	// // Policy
 	// policy := api.Group("/policy")

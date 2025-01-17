@@ -3,13 +3,16 @@ package repository
 import (
 	"context"
 
-	"github.com/scharph/orda/internal/model"
+	model "github.com/scharph/orda/internal/domain"
+	"github.com/scharph/orda/internal/ports"
 	"gorm.io/gorm"
 )
 
 type UserRepo struct {
 	db *gorm.DB
 }
+
+var _ ports.IUserRepository = (*UserRepo)(nil)
 
 func NewUserRepo(db *gorm.DB) *UserRepo {
 	return &UserRepo{db}
@@ -20,7 +23,6 @@ func (r *UserRepo) Create(ctx context.Context, user *model.User) (*model.User, e
 	if err == nil {
 		return nil, errResourceAlreadyExists
 	}
-
 	res := r.db.WithContext(ctx).Create(&user)
 	if res.Error != nil {
 		return nil, res.Error
@@ -38,6 +40,14 @@ func (r *UserRepo) Read(ctx context.Context) (users []model.User, err error) {
 
 func (r *UserRepo) ReadByUsername(ctx context.Context, username string) (user model.User, err error) {
 	res := r.db.WithContext(ctx).Where("username = ?", username).First(&user)
+	if res.Error != nil {
+		return model.User{}, res.Error
+	}
+	return user, nil
+}
+
+func (r *UserRepo) ReadById(ctx context.Context, id string) (user model.User, err error) {
+	res := r.db.WithContext(ctx).Where("id = ?", id).First(&user)
 	if res.Error != nil {
 		return model.User{}, res.Error
 	}

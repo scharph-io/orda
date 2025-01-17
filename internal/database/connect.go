@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	"github.com/scharph/orda/internal/config"
-	"github.com/scharph/orda/internal/model"
+	model "github.com/scharph/orda/internal/domain"
 )
 
 var DB *gorm.DB

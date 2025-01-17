@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/scharph/orda/internal/database"
-	"github.com/scharph/orda/internal/model"
+	model "github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/util"
 )
 

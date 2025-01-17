@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/scharph/orda/internal/model"
+	model "github.com/scharph/orda/internal/domain"
 	"gorm.io/gorm"
 )
 

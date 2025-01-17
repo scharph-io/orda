@@ -1,4 +1,4 @@
-package model
+package domain
 
 type View struct {
 	Base

@@ -1,11 +1,11 @@
-package handler
+package handlers
 
 // import (
 // 	"encoding/json"
 
 // 	"github.com/gofiber/fiber/v2"
 // 	"github.com/scharph/orda/internal/database"
-// 	"github.com/scharph/orda/internal/model"
+// 	"github.com/scharph/orda/internal/domain"
 // 	"gorm.io/gorm"
 // 	"gorm.io/gorm/clause"
 // )
