@@ -72,6 +72,7 @@ func (s *UserService) GetUserByUsername(ctx context.Context, username string) (p
 		Username: user.Username,
 		Role:     user.Role,
 		Id:       user.ID,
+		Password: user.Password,
 	}, nil
 }
 

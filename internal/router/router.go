@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/handlers"
+	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/repository"
 	"github.com/scharph/orda/internal/service"
@@ -13,6 +14,7 @@ import (
 
 type Server struct {
 	userHandlers ports.IUserHandlers
+	authHandlers ports.IAuthHandlers
 }
 
 func NewServer() *Server {
@@ -27,9 +29,11 @@ func NewServer() *Server {
 
 	// handlers
 	userHandlers := handlers.NewUserHandlers(userService)
+	authHandlers := handlers.NewAuthHandlers(userService, *middleware.Store)
 
 	return &Server{
 		userHandlers,
+		authHandlers,
 	}
 }
 
@@ -47,15 +51,16 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	// 	AllowOrigins: "*",
 	// 	AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH"}))
 
-	api := app.Group("/api", logger.New())
-
 	// Auth
-	auth := api.Group("/auth")
-	auth.Post("/login", handlers.Login)
+	auth := app.Group("/auth")
+	auth.Post("/login", s.authHandlers.Login)
+	auth.Post("/logout", s.authHandlers.Logout, s.authHandlers.RequireAuth)
+
+	api := app.Group("/api", logger.New(), s.authHandlers.RequireAuth)
 
 	// User
 	user := api.Group("/user")
-	user.Get("/", s.userHandlers.GetAll)
+	user.Get("/", s.userHandlers.GetAll, s.authHandlers.RequireRole("admin"))
 	user.Post("/", s.userHandlers.Register)
 	user.Get("/:id", s.userHandlers.GetOne)
 	user.Put("/:id", s.userHandlers.Update)
