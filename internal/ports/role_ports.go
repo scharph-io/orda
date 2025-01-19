@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	fiber "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/domain"
 )
 

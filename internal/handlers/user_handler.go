@@ -57,7 +57,7 @@ func (h *UserHandlers) Update(c *fiber.Ctx) error {
 	req.Id = c.Params("id")
 	res, err := h.service.Update(c.Context(), req)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Errorf("Failed to update user: %s", err)})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to update user: %s", err)})
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
 }
@@ -66,7 +66,7 @@ func (h *UserHandlers) Delete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	err := h.service.Delete(c.Context(), id)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Errorf("Failed to delete user: %s", err)})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to delete user: %s", err)})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "message": "User deleted"})
 }

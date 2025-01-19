@@ -10,13 +10,15 @@ import (
 	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/repository"
+	"github.com/scharph/orda/internal/repository/account"
 	"github.com/scharph/orda/internal/service"
 )
 
 type Server struct {
-	userHandlers ports.IUserHandlers
-	authHandlers ports.IAuthHandlers
-	roleHandlers ports.IRoleHandlers
+	userHandlers    ports.IUserHandlers
+	authHandlers    ports.IAuthHandlers
+	roleHandlers    ports.IRoleHandlers
+	accountHandlers ports.IAccountHandlers
 }
 
 func NewServer() *Server {
@@ -26,20 +28,26 @@ func NewServer() *Server {
 	// repositories
 	userRepo := repository.NewUserRepo(db)
 	roleRepo := repository.NewRoleRepo(db)
+	accountRepo := account.NewAccountRepo(db)
+	accountGroupRepo := account.NewAccountGroupRepo(db)
+	accountHistoryRepo := account.NewAccountHistoryRepo(db)
 
 	// services
 	userService := service.NewUserService(userRepo, roleRepo)
 	roleService := service.NewRoleService(roleRepo)
+	accountService := service.NewAccountService(accountRepo, accountGroupRepo, accountHistoryRepo)
 
 	// handlers
 	userHandlers := handlers.NewUserHandlers(userService)
 	roleHandlers := handlers.NewRoleHandlers(roleService)
 	authHandlers := handlers.NewAuthHandlers(userService, *middleware.Store, accesscontrol.PolicySyncInstance)
+	accountHandlers := handlers.NewAccountHandlers(accountService)
 
 	return &Server{
 		userHandlers,
 		authHandlers,
 		roleHandlers,
+		accountHandlers,
 	}
 }
 
@@ -80,6 +88,24 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	role.Get("/", s.roleHandlers.GetAll)
 	role.Post("/", s.authHandlers.RequireRole("admin"), s.roleHandlers.Create)
 	role.Get("/:id", s.roleHandlers.GetOne)
+
+	// Account
+	account := api.Group("/account")
+	account.Get("/", s.accountHandlers.GetAll)
+	account.Post("/", s.accountHandlers.Create)
+	account.Post("/:id/deposit", s.accountHandlers.Deposit)
+	// account.Get("/:id", s.accountHandlers.GetOne)
+	// account.Put("/:id", s.accountHandlers.Update)
+	//
+	// Account Group
+	accountGroup := account.Group("/group")
+	accountGroup.Get("/", s.accountHandlers.GetAllGroups)
+	accountGroup.Post("/", s.accountHandlers.CreateGroup)
+	accountGroup.Get("/:id", s.accountHandlers.GetGroupAccounts)
+	accountGroup.Post("/:id/deposit", s.accountHandlers.DepositGroup)
+
+	accountHistory := account.Group("/history")
+	accountHistory.Get("/", s.accountHandlers.GetHistory)
 
 	// // Assortment
 	// assortment := api.Group("/assortment")

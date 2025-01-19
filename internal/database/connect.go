@@ -75,6 +75,11 @@ func Connect() {
 	if err := DB.AutoMigrate(
 		&model.User{},
 		&model.Role{},
+		&model.AccountGroup{},
+		&model.Account{},
+		&model.Transaction{},
+		&model.AccountHistory{},
+
 		// &model.Group{},
 		// &model.Product{},
 
@@ -86,5 +91,18 @@ func Connect() {
 		return
 	}
 	log.Println("Database Migrated")
+	DatabaseInit(DB)
+}
 
+func DatabaseInit(db *gorm.DB) {
+	defaultAccountGroup := &model.AccountGroup{
+		Name: "Default",
+	}
+	if db.Where("name = ?", defaultAccountGroup.Name).First(defaultAccountGroup).RowsAffected == 0 {
+		if db.Create(defaultAccountGroup).Error != nil {
+			log.Fatalln("Error creating default account group")
+			panic(1)
+		}
+		log.Printf("Account group '%s' created", defaultAccountGroup.Name)
+	}
 }

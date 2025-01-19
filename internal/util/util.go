@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type PaymentOption uint
+type PaymentOption uint8
 
 const (
 	PaymentOptionNone PaymentOption = iota
@@ -15,16 +15,12 @@ const (
 	PaymentOptionCard               // 2
 )
 
-type AccountType uint
+type AccountType uint8
 
 const (
 	AccountTypeCash    AccountType = iota
 	AccountTypeFree                // 1
 	AccountTypePremium             // 2
-)
-
-const (
-	default_pw = "secret"
 )
 
 func PasswordGenerator(passwordLength int) string {

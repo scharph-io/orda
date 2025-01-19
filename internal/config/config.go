@@ -21,6 +21,13 @@ type Config struct {
 		User     string
 		Password string
 	}
+	Account struct {
+		InitialBalance int32
+		MaxDeposit     int
+		NegativeLimit  int
+		Limit          int
+		TopUpFactor    int
+	}
 }
 
 var (
@@ -36,8 +43,16 @@ func loadConfig() *Config {
 	// Set default values
 	v.SetDefault("server.port", 3000)
 	v.SetDefault("server.host", "localhost")
+	v.SetDefault("server.timezone", "UTC")
+
 	v.SetDefault("database.host", "localhost")
 	v.SetDefault("database.port", 3306)
+
+	v.SetDefault("account.initialBalance", 0)
+	v.SetDefault("account.maxDeposit", 1000)
+	v.SetDefault("account.negativeLimit", 0)
+	v.SetDefault("account.limit", 10000)
+	v.SetDefault("account.topUpFactor", 0)
 
 	// Config file setup
 	v.SetConfigName("config") // config file name without extension
