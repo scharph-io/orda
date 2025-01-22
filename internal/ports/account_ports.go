@@ -32,7 +32,7 @@ type AccountResponse struct {
 	Firstname       string             `json:"firstname"`
 	Lastname        string             `json:"lastname"`
 	Balance         int32              `json:"balance"`
-	Group           string             `json:"group"`
+	Group           string             `json:"group,omitempty"`
 	LastDeposit     int32              `json:"last_deposit"`
 	LastDepostType  domain.DepositType `json:"last_deposit_type"`
 	LastDepositTime string             `json:"last_deposit_time"`
@@ -66,7 +66,7 @@ type IAccountGroupRepository interface {
 	ReadByName(ctx context.Context, name string) (*domain.AccountGroup, error)
 	Delete(ctx context.Context, id string) (bool, error)
 	Update(ctx context.Context, id string, account domain.AccountGroup) (*domain.AccountGroup, error)
-	GetAccounts(ctx context.Context, id string) ([]domain.Account, error)
+	GetAccountsByGroupId(ctx context.Context, id string) ([]domain.Account, error)
 }
 
 type IAccountService interface {

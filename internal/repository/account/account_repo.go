@@ -52,8 +52,18 @@ func (r *AccountRepo) Update(ctx context.Context, id string, account domain.Acco
 }
 
 func (r *AccountRepo) UpdateMany(ctx context.Context, accounts []domain.Account) ([]domain.Account, error) {
-	if err := r.db.Model(&domain.Account{}).Save(&accounts).Error; err != nil {
-		return nil, err
+
+	for _, acc := range accounts {
+		if err := r.db.Model(&acc).
+			Updates(domain.Account{
+				LastDeposit:     acc.LastDeposit,
+				Balance:         acc.Balance,
+				LastBalance:     acc.LastBalance,
+				LastDepositType: acc.LastDepositType,
+				LastDepositTime: acc.LastDepositTime,
+			}).Error; err != nil {
+			return nil, err
+		}
 	}
 	return accounts, nil
 }

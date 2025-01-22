@@ -35,7 +35,7 @@ func (r *AccountGroupRepository) Read(ctx context.Context) ([]domain.AccountGrou
 
 func (r *AccountGroupRepository) ReadById(ctx context.Context, id string) (*domain.AccountGroup, error) {
 	var accountGroup domain.AccountGroup
-	if err := r.db.Model(&domain.AccountGroup{}).Where("id = ?", id).Find(&accountGroup).Error; err != nil {
+	if err := r.db.First(&accountGroup, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &accountGroup, nil
@@ -63,7 +63,7 @@ func (r *AccountGroupRepository) Delete(ctx context.Context, id string) (bool, e
 	return true, nil
 }
 
-func (r *AccountGroupRepository) GetAccounts(ctx context.Context, id string) ([]domain.Account, error) {
+func (r *AccountGroupRepository) GetAccountsByGroupId(ctx context.Context, id string) ([]domain.Account, error) {
 	var accountGroup domain.AccountGroup
 	if err := r.db.Model(&domain.AccountGroup{}).Where("id = ?", id).Preload("Accounts").Find(&accountGroup).Error; err != nil {
 		return nil, err

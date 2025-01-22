@@ -112,7 +112,7 @@ func (s *AccountService) GetGroupAccounts(ctx context.Context, id string) ([]por
 	if err != nil {
 		return nil, err
 	}
-	accounts, err := s.groupRepo.GetAccounts(ctx, id)
+	accounts, err := s.groupRepo.GetAccountsByGroupId(ctx, group.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -168,49 +168,54 @@ func (s *AccountService) DepositAmount(ctx context.Context, id string, req ports
 }
 
 func (s *AccountService) DepositAmountGroup(ctx context.Context, id string, req ports.DepositGroupRequest) (*ports.AccountGroupResponse, error) {
+
 	group, err := s.groupRepo.ReadById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	accounts, err := s.groupRepo.GetAccounts(ctx, group.ID)
-	if err != nil {
-		return nil, err
+
+	for i := range group.Accounts {
+		group.Accounts[i].LastBalance = group.Accounts[i].Balance
+		group.Accounts[i].Balance += req.Amount
+		group.Accounts[i].LastDeposit = req.Amount
+		group.Accounts[i].LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
 	}
 
-	for _, account := range accounts {
-		account.LastBalance = account.Balance
-		account.Balance += req.Amount
-		account.LastDeposit = req.Amount
-		account.LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
+	fmt.Println("group", group.ToString())
 
+	accounts, err := s.groupRepo.GetAccountsByGroupId(ctx, group.ID)
+
+	for i := range accounts {
+		accounts[i].LastBalance = accounts[i].Balance
+		accounts[i].Balance += req.Amount
+		accounts[i].LastDeposit = req.Amount
+		accounts[i].LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
 	}
 
 	accs, err := s.repo.UpdateMany(ctx, accounts)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
-
-	fmt.Println("group", group.ID)
 
 	// Log deposit action
-	if err := s.accountHistoryService.LogGroupDeposit(ports.AccountHistoryRequest{
-		Amount:         req.Amount,
-		AccountGroupId: group.ID,
-		DepositType:    domain.DepositTypeFree,
-		HistoryAction:  domain.HistoryDepositAction,
-		// UserId:         req.UserId,
-	}); err != nil {
-		return nil, err
-	}
+	// if err := s.accountHistoryService.LogGroupDeposit(ports.AccountHistoryRequest{
+	// 	Amount:         req.Amount,
+	// 	AccountGroupId: group.ID,
+	// 	DepositType:    domain.DepositTypeFree,
+	// 	HistoryAction:  domain.HistoryDepositAction,
+	// 	// UserId:         req.UserId,
+	// }); err != nil {
+	// 	return nil, err
+	// }
 
 	var res []ports.AccountResponse
 	for _, account := range accs {
 		res = append(res, ports.AccountResponse{
-			Id:        account.ID,
-			Firstname: account.Firstname,
-			Lastname:  account.Lastname,
-			Balance:   account.Balance,
-			// Group:           group.Name,
+			Id:              account.ID,
+			Firstname:       account.Firstname,
+			Lastname:        account.Lastname,
+			Balance:         account.Balance,
 			LastDeposit:     account.LastDeposit,
 			LastDepostType:  account.LastDepositType,
 			LastDepositTime: account.LastDepositTime.Time.Format(time.RFC3339),
