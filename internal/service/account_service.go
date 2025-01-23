@@ -135,7 +135,7 @@ func (s *AccountService) DepositAmount(ctx context.Context, id string, req ports
 	account.LastDepositType = req.DepositType
 	account.LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
 
-	updatedAccount, err := s.repo.Update(ctx, account.ID, *account)
+	updatedAccount, err := s.repo.Update(ctx, *account)
 	if err != nil {
 		return nil, err
 	}

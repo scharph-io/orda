@@ -54,7 +54,7 @@ type IAccountRepository interface {
 	Create(ctx context.Context, account domain.Account) (*domain.Account, error)
 	Read(ctx context.Context) ([]domain.Account, error)
 	ReadById(ctx context.Context, id string) (*domain.Account, error)
-	Update(ctx context.Context, id string, account domain.Account) (*domain.Account, error)
+	Update(ctx context.Context, account domain.Account) (*domain.Account, error)
 	UpdateMany(ctx context.Context, accounts []domain.Account) ([]domain.Account, error)
 	Delete(ctx context.Context, id string) (bool, error)
 }
@@ -65,7 +65,7 @@ type IAccountGroupRepository interface {
 	ReadById(ctx context.Context, id string) (*domain.AccountGroup, error)
 	ReadByName(ctx context.Context, name string) (*domain.AccountGroup, error)
 	Delete(ctx context.Context, id string) (bool, error)
-	Update(ctx context.Context, id string, account domain.AccountGroup) (*domain.AccountGroup, error)
+	Update(ctx context.Context, account domain.AccountGroup) (*domain.AccountGroup, error)
 	GetAccountsByGroupId(ctx context.Context, id string) ([]domain.Account, error)
 }
 

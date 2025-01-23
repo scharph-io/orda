@@ -18,7 +18,7 @@ type AccountHistory struct {
 	AccountID      sql.NullString `gorm:"size:36"`
 	Account        Account
 	AccountGroupID sql.NullString `gorm:"size:36"`
-	AccountGroup   Group
+	AccountGroup   AccountGroup
 	HistoryAction  HistoryAction
 	DepositType    DepositType
 	TransactionID  sql.NullString `gorm:"size:36"`

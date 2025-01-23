@@ -1,6 +1,10 @@
 package domain
 
-// User model
+type Role struct {
+	Base
+	Name string `json:"name"`
+}
+
 type User struct {
 	Base
 	Username string `gorm:"uniqueIndex;not null;size:50;" validate:"required,min=3,max=50" json:"username"`

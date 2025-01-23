@@ -1,19 +1,27 @@
 package domain
 
-type Group struct {
+import "fmt"
+
+type ProductGroup struct {
 	Base
-	Name     string    `json:"name"`
-	Desc     string    `json:"desc"`
-	Deposit  uint      `json:"deposit"`
-	Products []Product `json:"products"`
+	Name     string
+	Desc     string
+	Deposit  uint
+	VAT      uint
+	Products []Product
 }
 
 // Product is the model for the product
 type Product struct {
 	Base
-	Name    string `json:"name"`
-	Desc    string `json:"desc"`
-	Price   int32  `json:"price"`
-	GroupID string `json:"groupId" gorm:"size:36"`
-	Active  bool   `json:"active"`
+	Name           string
+	Desc           string
+	NetPrice       int32
+	VAT            uint
+	ProductGroupID string `gorm:"size:36"`
+	Active         bool
+}
+
+func (p Product) ToString() string {
+	return fmt.Sprintf("[ProductID] ID: %s Name: %s NetPrice: %d", p.ID, p.Name, p.NetPrice)
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/database"
-	model "github.com/scharph/orda/internal/domain"
+	domain "github.com/scharph/orda/internal/domain"
 	"gorm.io/gorm"
 )
 
@@ -18,14 +18,14 @@ func NewGroupDB(db *gorm.DB) *GroupDB {
 }
 
 func (d *GroupDB) GetAll(c *fiber.Ctx) error {
-	var groups []model.Group
-	d.Model(&model.Group{}).Find(&groups)
+	var groups []domain.ProductGroup
+	d.Model(&domain.ProductGroup{}).Find(&groups)
 	return c.Status(fiber.StatusOK).JSON(groups)
 }
 
 func CreateGroup(c *fiber.Ctx) error {
 	db := database.DB
-	group := &model.Group{}
+	group := &domain.ProductGroup{}
 	if err := c.BodyParser(group); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't create group", "data": err.Error()})
 	}
@@ -48,7 +48,7 @@ func UpdateGroup(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't update group", "data": err.Error()})
 	}
 
-	var group model.Group
+	var group domain.ProductGroup
 	db.First(&group, id)
 	group.Name = input.Name
 	db.Save(&group)
@@ -70,14 +70,14 @@ func DeleteGroup(c *fiber.Ctx) error {
 func GetGroupProducts(c *fiber.Ctx) error {
 	id := c.Params("id")
 	db := database.DB
-	var group model.Group
-	db.Model(&model.Group{}).Preload("Products").First(&group, id)
+	var group domain.ProductGroup
+	db.Model(&domain.ProductGroup{}).Preload("Products").First(&group, id)
 	return c.Status(fiber.StatusOK).JSON(group.Products)
 }
 
-func getGroup(id string) (*model.Group, error) {
+func getGroup(id string) (*domain.ProductGroup, error) {
 	db := database.DB
-	var group model.Group
+	var group domain.ProductGroup
 	db.Where("id = ?", id).First(&group, id)
 	if group.Name == "" {
 		return nil, fmt.Errorf("no product found with ID")

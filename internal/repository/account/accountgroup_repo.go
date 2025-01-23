@@ -49,8 +49,8 @@ func (r *AccountGroupRepository) ReadByName(ctx context.Context, name string) (*
 	return &accountGroup, nil
 }
 
-func (r *AccountGroupRepository) Update(ctx context.Context, id string, accountGroup domain.AccountGroup) (*domain.AccountGroup, error) {
-	if err := r.db.Model(&domain.AccountGroup{}).Where("id = ?", id).Updates(accountGroup).Error; err != nil {
+func (r *AccountGroupRepository) Update(ctx context.Context, accountGroup domain.AccountGroup) (*domain.AccountGroup, error) {
+	if err := r.db.Model(&accountGroup).Updates(accountGroup).Error; err != nil {
 		return nil, err
 	}
 	return &accountGroup, nil

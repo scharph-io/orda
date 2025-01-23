@@ -1,31 +1,33 @@
 package domain
 
+import "database/sql"
+
+type PaymentOption int8
+type AccountType int8
+
+const (
+	PaymentMethodNone PaymentOption = 0
+	PaymentMethodCash PaymentOption = 1
+	PaymentOptionCard PaymentOption = 2
+
+	AccountTypeAnonymous AccountType = 0
+	AccountTypePool      AccountType = 1
+)
+
 type Transaction struct {
 	Base
-	// Items         []TransactionItem `json:"items" gorm:"constraint:OnDelete:CASCADE"`
-	PaymentOption int8  `json:"payment_option"`
-	AccountType   int8  `json:"account_type"`
-	Total         int32 `json:"total"`
-	// UserID        string            `json:"user_id"`
-	// User          User              `json:"user"`
+	Items         []TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
+	PaymentOption PaymentOption
+	AccountType   AccountType
+	Total         int32
+	UserID        string         `gorm:"size:36"`
+	AccountID     sql.NullString `gorm:"size:36"`
 }
 
-// func (t *Transaction) AfterCreate(tx *gorm.DB) (err error) {
-
-// 	t.TransactionNr = fmt.Sprintf("%s.%d", t.CreatedAt.Format("20060102"), t.ID)
-// 	if err := tx.Save(t).Error; err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-// type TransactionItem struct {
-// 	gorm.Model
-// 	ID            uint   `gorm:"primarykey;autoIncrement:false"`
-// 	TransactionID string `gorm:"primaryKey"`
-// 	Description   string
-// 	Qty           int32
-// 	Price         int32
-// 	ProductID     string `gorm:"index" json:"product_id"`
-// }
+type TransactionItem struct {
+	TransactionID string `gorm:"primaryKey,size:36"`
+	ProductID     string `gorm:"index"`
+	Description   string
+	Qty           int8
+	Price         int32
+}

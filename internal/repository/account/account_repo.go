@@ -42,17 +42,15 @@ func (r *AccountRepo) ReadById(ctx context.Context, id string) (*domain.Account,
 	return &account, nil
 }
 
-func (r *AccountRepo) Update(ctx context.Context, id string, account domain.Account) (*domain.Account, error) {
-	fmt.Printf("[Repo] Deposit to %s %s \n", id, account.ID)
-
-	if err := r.db.Model(&domain.Account{}).Where("id = ?", id).Updates(&account).Error; err != nil {
+func (r *AccountRepo) Update(ctx context.Context, account domain.Account) (*domain.Account, error) {
+	fmt.Printf("[Repo] Deposit to %s \n", account.ToString())
+	if err := r.db.Model(&account).Updates(account).Error; err != nil {
 		return nil, err
 	}
 	return &account, nil
 }
 
 func (r *AccountRepo) UpdateMany(ctx context.Context, accounts []domain.Account) ([]domain.Account, error) {
-
 	for _, acc := range accounts {
 		if err := r.db.Model(&acc).
 			Updates(domain.Account{

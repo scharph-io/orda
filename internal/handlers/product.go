@@ -75,7 +75,7 @@ func UpdateProduct(c *fiber.Ctx) error {
 
 	product.Name = input.Name
 	product.Desc = input.Desc
-	product.Price = input.Price
+	product.NetPrice = input.Price
 	// product.Active = input.Active
 	db.Save(&product)
 	return c.JSON(fiber.Map{"status": "success", "message": "Product successfully updated", "data": product})
