@@ -68,7 +68,7 @@ func (r *AccountRepo) UpdateMany(ctx context.Context, accounts []domain.Account)
 }
 
 func (r *AccountRepo) Delete(ctx context.Context, id string) (bool, error) {
-	if err := r.db.Delete(&domain.Account{}, id).Error; err != nil {
+	if err := r.db.Delete(&domain.Account{}, "id = ?", id).Error; err != nil {
 		return false, err
 	}
 	return true, nil

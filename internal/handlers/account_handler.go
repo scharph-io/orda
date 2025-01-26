@@ -124,3 +124,21 @@ func (h *AccountHandlers) GetHistory(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(history)
 }
+
+func (h *AccountHandlers) DeleteGroup(c *fiber.Ctx) error {
+	id := c.Params("id")
+	res, err := h.service.DeleteGroup(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to delete group"})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}
+
+func (h *AccountHandlers) DeleteAccount(c *fiber.Ctx) error {
+	id := c.Params("id")
+	res, err := h.service.DeleteAccount(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to delete account"})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}

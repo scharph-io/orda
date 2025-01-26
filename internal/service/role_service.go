@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	model "github.com/scharph/orda/internal/domain"
+	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 )
 
@@ -27,7 +27,7 @@ func (s *RoleService) Create(ctx context.Context, role ports.RoleRequest) (*port
 		return nil, errors.New("role name cannot be admin")
 	}
 
-	res, err := s.repo.Create(ctx, &model.Role{Name: role.Name})
+	res, err := s.repo.Create(ctx, &domain.Role{Name: role.Name})
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (s *RoleService) Create(ctx context.Context, role ports.RoleRequest) (*port
 }
 
 func (s *RoleService) Update(ctx context.Context, id string, role ports.RoleRequest) (*ports.RoleResponse, error) {
-	res, err := s.repo.Update(ctx, id, &model.Role{Name: role.Name})
+	res, err := s.repo.Update(ctx, id, &domain.Role{Name: role.Name})
 	if err != nil {
 		return nil, err
 	}
@@ -67,16 +67,12 @@ func (s *RoleService) GetAll(ctx context.Context) ([]ports.RoleResponse, error) 
 	if err != nil {
 		return nil, err
 	}
-
 	var roles []ports.RoleResponse
-
 	if len(res) == 0 {
 		return []ports.RoleResponse{}, nil
 	}
-
 	for _, r := range res {
 		roles = append(roles, ports.RoleResponse{Id: r.ID, Name: r.Name})
 	}
-
 	return roles, nil
 }

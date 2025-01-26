@@ -94,6 +94,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	account.Get("/", s.accountHandlers.GetAll)
 	account.Post("/", s.accountHandlers.Create)
 	account.Post("/:id/deposit", s.accountHandlers.Deposit)
+	account.Delete("/:id", s.accountHandlers.DeleteAccount)
 	// account.Get("/:id", s.accountHandlers.GetOne)
 	// account.Put("/:id", s.accountHandlers.Update)
 	//
@@ -103,6 +104,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	accountGroup.Post("/", s.accountHandlers.CreateGroup)
 	accountGroup.Get("/:id", s.accountHandlers.GetGroupAccounts)
 	accountGroup.Post("/:id/deposit", s.accountHandlers.DepositGroup)
+	accountGroup.Delete("/:id", s.accountHandlers.DeleteGroup)
 
 	accountHistory := account.Group("/history")
 	accountHistory.Get("/", s.accountHandlers.GetHistory)

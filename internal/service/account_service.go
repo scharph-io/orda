@@ -185,15 +185,6 @@ func (s *AccountService) DepositAmountGroup(ctx context.Context, groupId string,
 		return nil, err
 	}
 
-	// for i := range group.Accounts {
-	// 	group.Accounts[i].LastBalance = group.Accounts[i].CreditBalance + group.Accounts[i].MainBalance
-	// 	group.Accounts[i].CreditBalance += req.Amount
-	// 	group.Accounts[i].LastDeposit = req.Amount
-	// 	group.Accounts[i].LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
-	// }
-
-	// fmt.Println("group", group.ToString())
-
 	accounts, err := s.groupRepo.GetAccountsByGroupId(ctx, group.ID)
 
 	for i := range accounts {
@@ -233,4 +224,12 @@ func (s *AccountService) GetAccountHistory(ctx context.Context, accountid string
 
 func (s *AccountService) GetAccountGroupHistory(ctx context.Context, groupid string) ([]ports.AccountHistoryResponse, error) {
 	return s.accountHistoryService.Get(ports.HistoryTypeGroup, groupid)
+}
+
+func (s *AccountService) DeleteGroup(ctx context.Context, id string) (bool, error) {
+	return s.groupRepo.Delete(ctx, id)
+}
+
+func (s *AccountService) DeleteAccount(ctx context.Context, id string) (bool, error) {
+	return s.repo.Delete(ctx, id)
 }

@@ -57,7 +57,7 @@ func (r *AccountGroupRepository) Update(ctx context.Context, accountGroup domain
 }
 
 func (r *AccountGroupRepository) Delete(ctx context.Context, id string) (bool, error) {
-	if err := r.db.Delete(&domain.AccountGroup{}, id).Error; err != nil {
+	if err := r.db.Delete(&domain.AccountGroup{}, "id = ?", id).Error; err != nil {
 		return false, err
 	}
 	return true, nil

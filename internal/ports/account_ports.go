@@ -32,7 +32,7 @@ type AccountResponse struct {
 	Id              string             `json:"id"`
 	Firstname       string             `json:"firstname"`
 	Lastname        string             `json:"lastname"`
-	MainBalance     int32              `json:"balance"`
+	MainBalance     int32              `json:"main_balance"`
 	CreditBalance   int32              `json:"credit_balance"`
 	Group           string             `json:"group,omitempty"`
 	LastDeposit     int32              `json:"last_deposit"`
@@ -40,21 +40,6 @@ type AccountResponse struct {
 	LastDepositTime string             `json:"last_deposit_time"`
 	LastBalance     int32              `json:"last_balance"`
 }
-
-// func (a *AccountResponse) ToDomain() domain.Account {
-// 	return domain.Account{
-// 		Base:            domain.Base{ID: a.Id},
-// 		Firstname:       a.Firstname,
-// 		Lastname:        a.Lastname,
-// 		MainBalance:     a.MainBalance,
-// 		CreditBalance:   a.CreditBalance,
-// 		LastDeposit:     a.LastDeposit,
-// 		LastDepositType: a.LastDepostType,
-// 		LastBalance:     a.LastBalance,
-// 	}
-// }
-
-// func ()
 
 type AccountGroupRequest struct {
 	Id   string `json:"id,omitempty"`
@@ -96,6 +81,8 @@ type IAccountService interface {
 	DepositAmountGroup(ctx context.Context, groupId string, req DepositGroupRequest) (*AccountGroupResponse, error)
 	GetAccountHistory(ctx context.Context, accountid string) ([]AccountHistoryResponse, error)
 	GetAccountGroupHistory(ctx context.Context, groupid string) ([]AccountHistoryResponse, error)
+	DeleteAccount(ctx context.Context, id string) (bool, error)
+	DeleteGroup(ctx context.Context, id string) (bool, error)
 }
 
 type IAccountHandlers interface {
@@ -107,4 +94,6 @@ type IAccountHandlers interface {
 	Deposit(c *fiber.Ctx) error
 	DepositGroup(c *fiber.Ctx) error
 	GetHistory(c *fiber.Ctx) error
+	DeleteGroup(c *fiber.Ctx) error
+	DeleteAccount(c *fiber.Ctx) error
 }
