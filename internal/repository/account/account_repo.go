@@ -55,7 +55,8 @@ func (r *AccountRepo) UpdateMany(ctx context.Context, accounts []domain.Account)
 		if err := r.db.Model(&acc).
 			Updates(domain.Account{
 				LastDeposit:     acc.LastDeposit,
-				Balance:         acc.Balance,
+				MainBalance:     acc.MainBalance,
+				CreditBalance:   acc.CreditBalance,
 				LastBalance:     acc.LastBalance,
 				LastDepositType: acc.LastDepositType,
 				LastDepositTime: acc.LastDepositTime,

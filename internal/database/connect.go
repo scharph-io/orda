@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	"github.com/scharph/orda/internal/config"
-	model "github.com/scharph/orda/internal/domain"
+	"github.com/scharph/orda/internal/domain"
 )
 
 var DB *gorm.DB
@@ -71,21 +71,30 @@ func Connect() {
 	// 	log.Fatal("Failed to setup join table. \n", err)
 	// 	return
 	// }
+	//
+	// if err := DB.SetupJoinTable(&domain.View{}, "Roles", &domain.Role{}); err != nil {
+	// 	log.Fatal("Failed to setup join table. \n", err)
+	// 	return
+	// }
 
 	if err := DB.AutoMigrate(
-		&model.User{},
-		&model.Role{},
-		&model.AccountGroup{},
-		&model.Account{},
-		&model.Transaction{},
-		&model.AccountHistory{},
+		&domain.User{},
+		&domain.Role{},
 
-		// &model.Group{},
-		// &model.Product{},
+		&domain.Transaction{},
+		&domain.TransactionItem{},
 
-		// &model.View{},
-		// &model.Transaction{},
-		// &model.TransactionItem{},
+		&domain.AccountGroup{},
+		&domain.Account{},
+
+		&domain.AccountHistory{},
+
+		&domain.ProductGroup{},
+		&domain.Product{},
+
+		&domain.View{},
+		&domain.ViewRole{},
+		&domain.ViewProduct{},
 	); err != nil {
 		log.Fatal("Failed to migrate database. \n", err)
 		return
@@ -95,7 +104,7 @@ func Connect() {
 }
 
 func DatabaseInit(db *gorm.DB) {
-	defaultAccountGroup := &model.AccountGroup{
+	defaultAccountGroup := &domain.AccountGroup{
 		Name: "Default",
 	}
 	if db.Where("name = ?", defaultAccountGroup.Name).First(defaultAccountGroup).RowsAffected == 0 {

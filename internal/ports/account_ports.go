@@ -8,6 +8,7 @@ import (
 )
 
 type DepositRequest struct {
+	AccountId     string               `json:"account_id"`
 	Amount        int32                `json:"amount"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
 	HistoryAction domain.HistoryAction `json:"history_type"`
@@ -31,13 +32,29 @@ type AccountResponse struct {
 	Id              string             `json:"id"`
 	Firstname       string             `json:"firstname"`
 	Lastname        string             `json:"lastname"`
-	Balance         int32              `json:"balance"`
+	MainBalance     int32              `json:"balance"`
+	CreditBalance   int32              `json:"credit_balance"`
 	Group           string             `json:"group,omitempty"`
 	LastDeposit     int32              `json:"last_deposit"`
 	LastDepostType  domain.DepositType `json:"last_deposit_type"`
 	LastDepositTime string             `json:"last_deposit_time"`
 	LastBalance     int32              `json:"last_balance"`
 }
+
+// func (a *AccountResponse) ToDomain() domain.Account {
+// 	return domain.Account{
+// 		Base:            domain.Base{ID: a.Id},
+// 		Firstname:       a.Firstname,
+// 		Lastname:        a.Lastname,
+// 		MainBalance:     a.MainBalance,
+// 		CreditBalance:   a.CreditBalance,
+// 		LastDeposit:     a.LastDeposit,
+// 		LastDepositType: a.LastDepostType,
+// 		LastBalance:     a.LastBalance,
+// 	}
+// }
+
+// func ()
 
 type AccountGroupRequest struct {
 	Id   string `json:"id,omitempty"`
@@ -75,8 +92,8 @@ type IAccountService interface {
 	GetAll(ctx context.Context) ([]AccountResponse, error)
 	GetAllGroups(ctx context.Context) ([]AccountGroupResponse, error)
 	GetGroupAccounts(ctx context.Context, id string) ([]AccountResponse, error)
-	DepositAmount(ctx context.Context, id string, req DepositRequest) (*AccountResponse, error)
-	DepositAmountGroup(ctx context.Context, id string, req DepositGroupRequest) (*AccountGroupResponse, error)
+	DepositAmount(ctx context.Context, accountId string, req DepositRequest) (*AccountResponse, error)
+	DepositAmountGroup(ctx context.Context, groupId string, req DepositGroupRequest) (*AccountGroupResponse, error)
 	GetAccountHistory(ctx context.Context, accountid string) ([]AccountHistoryResponse, error)
 	GetAccountGroupHistory(ctx context.Context, groupid string) ([]AccountHistoryResponse, error)
 }

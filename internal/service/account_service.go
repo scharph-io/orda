@@ -9,6 +9,7 @@ import (
 	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
+	"github.com/scharph/orda/internal/util"
 )
 
 type AccountService struct {
@@ -47,12 +48,13 @@ func (s *AccountService) Create(ctx context.Context, req ports.AccountRequest) (
 		}
 	}
 
-	account, err := s.repo.Create(ctx,
+	acc, err := s.repo.Create(ctx,
 		domain.Account{
 			Firstname:      req.Firstname,
 			Lastname:       req.Lastname,
 			AccountGroupID: group.ID,
-			Balance:        c.InitialBalance,
+			CreditBalance:  c.InitialBalance,
+			MainBalance:    0,
 			LastBalance:    0,
 		})
 	if err != nil {
@@ -61,8 +63,8 @@ func (s *AccountService) Create(ctx context.Context, req ports.AccountRequest) (
 
 	// Log deposit action
 	if err := s.accountHistoryService.LogDeposit(ports.AccountHistoryRequest{
-		Amount:        account.Balance,
-		AccountId:     account.ID,
+		Amount:        acc.CreditBalance,
+		AccountId:     acc.ID,
 		DepositType:   domain.DepositTypeFree,
 		HistoryAction: domain.HistoryDepositAction,
 		UserId:        "",
@@ -71,7 +73,7 @@ func (s *AccountService) Create(ctx context.Context, req ports.AccountRequest) (
 		return nil, err
 	}
 
-	return &ports.AccountResponse{Id: account.ID, Firstname: account.Firstname, Lastname: account.Lastname, Balance: account.Balance, Group: group.Name}, nil
+	return &ports.AccountResponse{Id: acc.ID, Firstname: acc.Firstname, Lastname: acc.Lastname, MainBalance: acc.MainBalance, CreditBalance: acc.CreditBalance, Group: group.Name}, nil
 }
 
 func (s *AccountService) GetAll(ctx context.Context) ([]ports.AccountResponse, error) {
@@ -81,8 +83,14 @@ func (s *AccountService) GetAll(ctx context.Context) ([]ports.AccountResponse, e
 		return nil, err
 	}
 	var res []ports.AccountResponse
-	for _, account := range accounts {
-		res = append(res, ports.AccountResponse{Id: account.ID, Firstname: account.Firstname, Lastname: account.Lastname, Balance: account.Balance, Group: getGroupName(groups, account.AccountGroupID)})
+	for _, a := range accounts {
+		res = append(res, ports.AccountResponse{
+			Id:            a.ID,
+			Firstname:     a.Firstname,
+			Lastname:      a.Lastname,
+			MainBalance:   a.MainBalance,
+			CreditBalance: a.CreditBalance,
+			Group:         getGroupName(groups, a.AccountGroupID)})
 	}
 	return res, nil
 }
@@ -117,35 +125,49 @@ func (s *AccountService) GetGroupAccounts(ctx context.Context, id string) ([]por
 		return nil, err
 	}
 	var res []ports.AccountResponse
-	for _, account := range accounts {
-		res = append(res, ports.AccountResponse{Id: account.ID, Firstname: account.Firstname, Lastname: account.Lastname, Balance: account.Balance, Group: group.Name})
+	for _, a := range accounts {
+		res = append(res, ports.AccountResponse{
+			Id:            a.ID,
+			Firstname:     a.Firstname,
+			Lastname:      a.Lastname,
+			MainBalance:   a.MainBalance,
+			CreditBalance: a.CreditBalance,
+			Group:         group.Name,
+		})
 	}
 	return res, nil
 }
 
-func (s *AccountService) DepositAmount(ctx context.Context, id string, req ports.DepositRequest) (*ports.AccountResponse, error) {
-	account, err := s.repo.ReadById(ctx, id)
+func (s *AccountService) DepositAmount(ctx context.Context, accountId string, req ports.DepositRequest) (*ports.AccountResponse, error) {
+	account, err := s.repo.ReadById(ctx, accountId)
 	if err != nil {
 		return nil, err
 	}
 
-	account.LastBalance = account.Balance
-	account.Balance += req.Amount
+	account.LastBalance = account.MainBalance + account.CreditBalance
+	if req.DepositType == domain.DepositTypePaid {
+		account.MainBalance += req.Amount
+	} else if req.DepositType == domain.DepositTypeFree {
+		account.CreditBalance += req.Amount
+	} else {
+		return nil, fmt.Errorf("invalid deposit type")
+	}
+
 	account.LastDeposit = req.Amount
 	account.LastDepositType = req.DepositType
 	account.LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
 
-	updatedAccount, err := s.repo.Update(ctx, *account)
+	updatedAcc, err := s.repo.Update(ctx, *account)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Printf("[Service] Deposit amount %d to %s\n", req.Amount, updatedAccount.Lastname)
+	fmt.Printf("[Service] Deposit amount %d to %s\n", req.Amount, updatedAcc.Lastname)
 
 	// Log deposit action
 	if err := s.accountHistoryService.LogDeposit(ports.AccountHistoryRequest{
 		Amount:        req.Amount,
-		AccountId:     updatedAccount.ID,
+		AccountId:     updatedAcc.ID,
 		DepositType:   req.DepositType,
 		HistoryAction: req.HistoryAction,
 		UserId:        req.UserId,
@@ -153,41 +175,30 @@ func (s *AccountService) DepositAmount(ctx context.Context, id string, req ports
 	}); err != nil {
 		return nil, err
 	}
-
-	return &ports.AccountResponse{
-		Id:              updatedAccount.ID,
-		Firstname:       updatedAccount.Firstname,
-		Lastname:        updatedAccount.Lastname,
-		Balance:         updatedAccount.Balance,
-		Group:           updatedAccount.AccountGroupID,
-		LastDeposit:     updatedAccount.LastDeposit,
-		LastDepostType:  updatedAccount.LastDepositType,
-		LastDepositTime: updatedAccount.LastDepositTime.Time.Format(time.RFC3339),
-		LastBalance:     updatedAccount.LastBalance,
-	}, err
+	return util.ToAccountResponse(updatedAcc), err
 }
 
-func (s *AccountService) DepositAmountGroup(ctx context.Context, id string, req ports.DepositGroupRequest) (*ports.AccountGroupResponse, error) {
+func (s *AccountService) DepositAmountGroup(ctx context.Context, groupId string, req ports.DepositGroupRequest) (*ports.AccountGroupResponse, error) {
 
-	group, err := s.groupRepo.ReadById(ctx, id)
+	group, err := s.groupRepo.ReadById(ctx, groupId)
 	if err != nil {
 		return nil, err
 	}
 
-	for i := range group.Accounts {
-		group.Accounts[i].LastBalance = group.Accounts[i].Balance
-		group.Accounts[i].Balance += req.Amount
-		group.Accounts[i].LastDeposit = req.Amount
-		group.Accounts[i].LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
-	}
+	// for i := range group.Accounts {
+	// 	group.Accounts[i].LastBalance = group.Accounts[i].CreditBalance + group.Accounts[i].MainBalance
+	// 	group.Accounts[i].CreditBalance += req.Amount
+	// 	group.Accounts[i].LastDeposit = req.Amount
+	// 	group.Accounts[i].LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
+	// }
 
-	fmt.Println("group", group.ToString())
+	// fmt.Println("group", group.ToString())
 
 	accounts, err := s.groupRepo.GetAccountsByGroupId(ctx, group.ID)
 
 	for i := range accounts {
-		accounts[i].LastBalance = accounts[i].Balance
-		accounts[i].Balance += req.Amount
+		accounts[i].LastBalance = accounts[i].MainBalance + accounts[i].CreditBalance
+		accounts[i].CreditBalance += req.Amount
 		accounts[i].LastDeposit = req.Amount
 		accounts[i].LastDepositTime = sql.NullTime{Time: time.Now(), Valid: true}
 	}
@@ -211,16 +222,7 @@ func (s *AccountService) DepositAmountGroup(ctx context.Context, id string, req 
 
 	var res []ports.AccountResponse
 	for _, account := range accs {
-		res = append(res, ports.AccountResponse{
-			Id:              account.ID,
-			Firstname:       account.Firstname,
-			Lastname:        account.Lastname,
-			Balance:         account.Balance,
-			LastDeposit:     account.LastDeposit,
-			LastDepostType:  account.LastDepositType,
-			LastDepositTime: account.LastDepositTime.Time.Format(time.RFC3339),
-			LastBalance:     account.LastBalance,
-		})
+		res = append(res, *util.ToAccountResponse(&account))
 	}
 	return &ports.AccountGroupResponse{Id: group.ID, Name: group.Name, Accounts: res}, nil
 }

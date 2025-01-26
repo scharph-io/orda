@@ -1,18 +1,23 @@
 package ports
 
-import "github.com/scharph/orda/internal/domain"
+import (
+	"context"
+
+	"github.com/scharph/orda/internal/domain"
+)
 
 type IViewRepository interface {
-	Create(view domain.View) (*domain.View, error)
-	Read() ([]domain.View, error)
-	ReadByID(id string) (*domain.View, error)
-	Update(view domain.View) (*domain.View, error)
-	Delete(view domain.View) error
+	Create(ctx context.Context, view domain.View) (*domain.View, error)
+	Read(ctx context.Context) ([]domain.View, error)
+	ReadByID(ctx context.Context, id string) (*domain.View, error)
+	Update(ctx context.Context, view domain.View) (*domain.View, error)
+	Delete(ctx context.Context, view domain.View) error
+	AppendProduct(ctx context.Context, id string, product domain.Product) error
+	RemoveProduct(ctx context.Context, id, productId string) error
 }
 
 type IViewProductRepository interface {
-	Create(viewProduct domain.ViewProduct) (*domain.ViewProduct, error)
-	ReadByID(viewID string, productID string) (*domain.ViewProduct, error)
-	Update(viewProduct domain.ViewProduct) (*domain.ViewProduct, error)
-	Delete(viewProduct domain.ViewProduct) error
+	ReadByViewID(ctx context.Context, viewID string) ([]*domain.ViewProduct, error)
+	Update(ctx context.Context, viewProduct domain.ViewProduct) (*domain.ViewProduct, error)
+	Delete(ctx context.Context, viewProduct domain.ViewProduct) error
 }

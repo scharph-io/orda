@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/scharph/orda/internal/domain"
+	"github.com/scharph/orda/internal/ports"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -64,4 +66,19 @@ func HashPassword(password string) (string, error) {
 
 func VerifyPassword(password, hash string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
+}
+
+func ToAccountResponse(account *domain.Account) *ports.AccountResponse {
+	return &ports.AccountResponse{
+		Id:              account.ID,
+		Firstname:       account.Firstname,
+		Lastname:        account.Lastname,
+		MainBalance:     account.MainBalance,
+		CreditBalance:   account.CreditBalance,
+		Group:           account.AccountGroupID,
+		LastDeposit:     account.LastDeposit,
+		LastDepostType:  domain.DepositType(account.LastDepositType),
+		LastDepositTime: account.LastDepositTime.Time.Format(time.RFC3339),
+		LastBalance:     account.LastBalance,
+	}
 }

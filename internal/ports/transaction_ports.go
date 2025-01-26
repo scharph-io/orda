@@ -9,3 +9,9 @@ type ITransactionRepository interface {
 	Update(transaction domain.Transaction) (*domain.Transaction, error)
 	Delete(transaction domain.Transaction) error
 }
+
+type ITransactionItemRepository interface {
+	// Create(transactionItem domain.TransactionItem) (*domain.TransactionItem, error)
+	// CreateMany(transactionItems []domain.TransactionItem) ([]domain.TransactionItem, error)
+	ReadByTransactionID(transactionID string) ([]domain.TransactionItem, error)
+}

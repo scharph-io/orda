@@ -1,10 +1,11 @@
-package repository
+package user
 
 import (
 	"context"
 
 	model "github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
+	"github.com/scharph/orda/internal/repository"
 	"gorm.io/gorm"
 )
 
@@ -21,7 +22,7 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 func (r *UserRepo) Create(ctx context.Context, user *model.User) (*model.User, error) {
 	_, err := r.ReadByUsername(ctx, user.Username)
 	if err == nil {
-		return nil, errResourceAlreadyExists
+		return nil, repository.ErrResourceAlreadyExists
 	}
 	res := r.db.WithContext(ctx).Create(&user)
 	if res.Error != nil {
@@ -31,7 +32,7 @@ func (r *UserRepo) Create(ctx context.Context, user *model.User) (*model.User, e
 }
 
 func (r *UserRepo) Read(ctx context.Context) (users []model.User, err error) {
-	res := r.db.WithContext(ctx).Find(&users)
+	res := r.db.WithContext(ctx).Preload("Role").Find(&users)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -39,7 +40,7 @@ func (r *UserRepo) Read(ctx context.Context) (users []model.User, err error) {
 }
 
 func (r *UserRepo) ReadByUsername(ctx context.Context, username string) (user model.User, err error) {
-	res := r.db.WithContext(ctx).Where("username = ?", username).First(&user)
+	res := r.db.WithContext(ctx).Where("username = ?", username).Preload("Role").First(&user)
 	if res.Error != nil {
 		return model.User{}, res.Error
 	}
@@ -47,7 +48,7 @@ func (r *UserRepo) ReadByUsername(ctx context.Context, username string) (user mo
 }
 
 func (r *UserRepo) ReadById(ctx context.Context, id string) (user model.User, err error) {
-	res := r.db.WithContext(ctx).Where("id = ?", id).First(&user)
+	res := r.db.WithContext(ctx).Where("id = ?", id).Preload("Role").First(&user)
 	if res.Error != nil {
 		return model.User{}, res.Error
 	}

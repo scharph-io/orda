@@ -25,8 +25,8 @@ type Transaction struct {
 }
 
 type TransactionItem struct {
-	TransactionID string `gorm:"primaryKey,size:36"`
-	ProductID     string `gorm:"index"`
+	TransactionID string `gorm:"primaryKey"`
+	ProductID     string `gorm:"primaryKey,index"`
 	Description   string
 	Qty           int8
 	Price         int32

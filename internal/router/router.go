@@ -9,8 +9,8 @@ import (
 	"github.com/scharph/orda/internal/handlers"
 	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/internal/ports"
-	"github.com/scharph/orda/internal/repository"
 	"github.com/scharph/orda/internal/repository/account"
+	"github.com/scharph/orda/internal/repository/user"
 	"github.com/scharph/orda/internal/service"
 )
 
@@ -26,8 +26,8 @@ func NewServer() *Server {
 	db := database.DB
 
 	// repositories
-	userRepo := repository.NewUserRepo(db)
-	roleRepo := repository.NewRoleRepo(db)
+	userRepo := user.NewUserRepo(db)
+	roleRepo := user.NewRoleRepo(db)
 	accountRepo := account.NewAccountRepo(db)
 	accountGroupRepo := account.NewAccountGroupRepo(db)
 	accountHistoryRepo := account.NewAccountHistoryRepo(db)

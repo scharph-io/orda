@@ -34,7 +34,8 @@ type Account struct {
 	Base
 	Firstname       string
 	Lastname        string
-	Balance         int32
+	MainBalance     int32
+	CreditBalance   int32
 	AccountGroupID  string `gorm:"size:36"`
 	LastDeposit     int32
 	LastDepositType DepositType
@@ -45,5 +46,5 @@ type Account struct {
 }
 
 func (a *Account) ToString() string {
-	return fmt.Sprintf("[Account] ID: %s, Name: %s %s, Balance: %d Time: %s", a.ID, a.Firstname, a.Lastname, a.Balance, a.LastDepositTime.Time.String())
+	return fmt.Sprintf("[Account] ID: %s, Name: %s %s, MainBalance: %d (Credit: %d) Time: %s", a.ID, a.Firstname, a.Lastname, a.MainBalance, a.CreditBalance, a.LastDepositTime.Time.String())
 }

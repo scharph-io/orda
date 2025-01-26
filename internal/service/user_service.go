@@ -10,8 +10,8 @@ import (
 )
 
 type UserService struct {
-	repo  ports.IUserRepository
-	roles ports.IRoleRepository
+	repo     ports.IUserRepository
+	roleRepo ports.IRoleRepository
 }
 
 var _ ports.IUserService = (*UserService)(nil)
@@ -29,7 +29,7 @@ func (s *UserService) GetAllUsers(ctx context.Context) ([]ports.UserResponse, er
 	for _, user := range res {
 		users = append(users, ports.UserResponse{
 			Username: user.Username,
-			Role:     user.Role,
+			Role:     user.Role.Name,
 			Id:       user.ID,
 		})
 	}
@@ -43,7 +43,7 @@ func (s *UserService) Create(ctx context.Context, req ports.UserRequest) (*ports
 		return nil, fmt.Errorf("invalid input")
 	}
 
-	_, err := s.roles.ReadByName(ctx, req.Role)
+	role, err := s.roleRepo.ReadByName(ctx, req.Role)
 	if err != nil {
 		return nil, fmt.Errorf("role not found")
 	}
@@ -53,13 +53,13 @@ func (s *UserService) Create(ctx context.Context, req ports.UserRequest) (*ports
 		return nil, err
 	}
 
-	user, err := s.repo.Create(ctx, &domain.User{Username: req.Username, Password: pw, Role: req.Role})
+	user, err := s.repo.Create(ctx, &domain.User{Username: req.Username, Password: pw, RoleId: role.ID})
 	if err != nil {
 		return nil, err
 	}
 	return &ports.UserResponse{
 		Username: user.Username,
-		Role:     user.Role,
+		Role:     user.Role.Name,
 		Id:       user.ID,
 	}, nil
 }
@@ -71,7 +71,7 @@ func (s *UserService) GetUserById(ctx context.Context, id string) (*ports.UserRe
 	}
 	return &ports.UserResponse{
 		Username: user.Username,
-		Role:     user.Role,
+		Role:     user.Role.Name,
 		Id:       user.ID,
 	}, nil
 }
@@ -83,7 +83,7 @@ func (s *UserService) GetUserByUsername(ctx context.Context, username string) (*
 	}
 	return &ports.UserResponse{
 		Username: user.Username,
-		Role:     user.Role,
+		Role:     user.Role.Name,
 		Id:       user.ID,
 		Password: user.Password,
 	}, nil
