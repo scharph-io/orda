@@ -10,15 +10,17 @@ import (
 	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/repository/account"
+	"github.com/scharph/orda/internal/repository/product"
 	"github.com/scharph/orda/internal/repository/user"
 	"github.com/scharph/orda/internal/service"
 )
 
 type Server struct {
-	userHandlers    ports.IUserHandlers
-	authHandlers    ports.IAuthHandlers
-	roleHandlers    ports.IRoleHandlers
-	accountHandlers ports.IAccountHandlers
+	userHandlers       ports.IUserHandlers
+	authHandlers       ports.IAuthHandlers
+	roleHandlers       ports.IRoleHandlers
+	accountHandlers    ports.IAccountHandlers
+	assortmentHandlers ports.IAssortmentHandlers
 }
 
 func NewServer() *Server {
@@ -32,22 +34,28 @@ func NewServer() *Server {
 	accountGroupRepo := account.NewAccountGroupRepo(db)
 	accountHistoryRepo := account.NewAccountHistoryRepo(db)
 
+	productGroupRepo := product.NewProductGroupRepo(db)
+	productRepo := product.NewProductRepo(db)
+
 	// services
 	userService := service.NewUserService(userRepo, roleRepo)
 	roleService := service.NewRoleService(roleRepo)
 	accountService := service.NewAccountService(accountRepo, accountGroupRepo, accountHistoryRepo)
+	assortmentService := service.NewAssortmentService(productRepo, productGroupRepo)
 
 	// handlers
 	userHandlers := handlers.NewUserHandlers(userService)
 	roleHandlers := handlers.NewRoleHandlers(roleService)
 	authHandlers := handlers.NewAuthHandlers(userService, *middleware.Store, accesscontrol.PolicySyncInstance)
 	accountHandlers := handlers.NewAccountHandlers(accountService)
+	assortmentHandlers := handlers.NewAssortmentHandler(assortmentService)
 
 	return &Server{
 		userHandlers,
 		authHandlers,
 		roleHandlers,
 		accountHandlers,
+		assortmentHandlers,
 	}
 }
 
@@ -95,9 +103,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	account.Post("/", s.accountHandlers.Create)
 	account.Post("/:id/deposit", s.accountHandlers.Deposit)
 	account.Delete("/:id", s.accountHandlers.DeleteAccount)
-	// account.Get("/:id", s.accountHandlers.GetOne)
-	// account.Put("/:id", s.accountHandlers.Update)
-	//
+
 	// Account Group
 	accountGroup := account.Group("/group")
 	accountGroup.Get("/", s.accountHandlers.GetAllGroups)
@@ -109,24 +115,21 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	accountHistory := account.Group("/history")
 	accountHistory.Get("/", s.accountHandlers.GetHistory)
 
-	// // Assortment
-	// assortment := api.Group("/assortment")
-	// assortmentHandler := createAssortmentHandler()
+	// Assortment
+	assortment := api.Group("/assortment")
 
-	// group := assortment.Group("/groups")
-	// group.Get("/", assortmentHandler.GetGroups)
-	// group.Get("/:id", assortmentHandler.GetGroupById)
+	group := assortment.Group("/groups")
+	group.Get("/", s.assortmentHandlers.ReadGroups)
+	group.Post("/", s.assortmentHandlers.CreateGroup)
+	group.Put("/:id", s.assortmentHandlers.UpdateGroup)
+	group.Delete("/:id", s.assortmentHandlers.DeleteGroup)
+	group.Get("/:id/products", s.assortmentHandlers.ReadProducts)
+	group.Post("/:id/products", s.assortmentHandlers.AddProducts)
+	group.Delete("/:id/products/:product", s.assortmentHandlers.RemoveProduct)
 
-	// group.Post("/", assortmentHandler.CreateGroup)
-	// group.Put("/:id", assortmentHandler.UpdateGroup)
-	// group.Delete("/:id", assortmentHandler.DeleteGroup)
-	// group.Delete("/:id/products", assortmentHandler.DeleteProductsByGroup)
-
-	// product := assortment.Group("/products")
-	// product.Get("/", assortmentHandler.GetProducts)
-	// product.Post("/", assortmentHandler.CreateProduct)
-	// product.Put("/:id", assortmentHandler.UpdateProduct)
-	// product.Delete("/:id", assortmentHandler.DeleteProduct)
+	products := assortment.Group("/products")
+	products.Put("/:id", s.assortmentHandlers.UpdateProduct)
+	products.Put("/:id/toggle", s.assortmentHandlers.ToggleProduct)
 
 	// views := api.Group("/views")
 	// viewHandler := createViewHandler()
@@ -138,32 +141,6 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	// // views.Get("/:id/products" /*TODO*/)
 	// views.Post("/:id/products/add", viewHandler.AddProducts)
 	// views.Post("/:id/products/remove", viewHandler.RemoveProducts)
-
-	// Category
-	// category := api.Group("/category")
-	// category.Get("/", middleware.Protected(), handler.GetAllCategories)
-	// category.Post("/", middleware.Protected(), handler.CreateCategory)
-	// category.Put("/:id", middleware.Protected(), handler.UpdateCategory)
-	// category.Delete("/:id", middleware.Protected(), handler.DeleteCategory)
-	// category.Get("/:id/product", middleware.Protected(), handler.GetAllCategoryProducts)
-	// category.Get("export/:id/product", middleware.Protected(), handler.GetAllCategoryProductsAsFile)
-
-	// // Group
-	// group := api.Group("/group")
-
-	// // group.Get("/", middleware.Protected(), handler.GetAllGroups)
-	// group.Post("/", middleware.Protected(), handler.CreateGroup)
-	// group.Put("/:id", middleware.Protected(), handler.UpdateGroup)
-	// group.Delete("/:id", middleware.Protected(), handler.DeleteGroup)
-
-	// // Product
-	// product := api.Group("/product")
-	// product.Get("/", middleware.Protected(), handler.GetAllProducts)
-	// product.Post("/", middleware.Protected(), handler.CreateProduct)
-	// product.Post("/import", middleware.Protected(), handler.ImportProducts)
-	// // product.Get("/:id", middleware.Protected(), handler.GetProduct)
-	// product.Put("/:id", middleware.Protected(), handler.UpdateProduct)
-	// product.Delete("/:id", middleware.Protected(), handler.DeleteProduct)
 
 	// // Checkout
 	// checkout := api.Group("/checkout")

@@ -18,7 +18,7 @@ type Product struct {
 	Name           string
 	Desc           string
 	Price          int32
-	ProductGroupID string `gorm:"size:36"`
+	ProductGroupID string `gorm:"size:36;not null"`
 	Active         bool
 }
 
