@@ -39,7 +39,7 @@ type ProductResponse struct {
 
 type IProductGroupRepository interface {
 	Create(ctx context.Context, productGroup domain.ProductGroup) (*domain.ProductGroup, error)
-	Read(ctx context.Context) ([]domain.ProductGroup, error)
+	Read(ctx context.Context) ([]*domain.ProductGroup, error)
 	Update(ctx context.Context, productGroup domain.ProductGroup) (*domain.ProductGroup, error)
 	Delete(ctx context.Context, productGroup domain.ProductGroup) error
 }

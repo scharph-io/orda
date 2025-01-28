@@ -27,7 +27,7 @@ func (r *ViewProductRepo) Create(ctx context.Context, viewProduct domain.ViewPro
 
 func (r *ViewProductRepo) ReadByViewID(ctx context.Context, viewID string) ([]*domain.ViewProduct, error) {
 	var viewProducts []*domain.ViewProduct
-	if err := r.db.Model(&domain.ViewProduct{}).Where("view_id = ?", viewID).Find(&viewProducts).Error; err != nil {
+	if err := r.db.Model(&domain.ViewProduct{}).Where("view_id = ?", viewID).Preload("Product").Find(&viewProducts).Error; err != nil {
 		return nil, err
 	}
 	return viewProducts, nil

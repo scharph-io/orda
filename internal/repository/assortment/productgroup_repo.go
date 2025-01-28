@@ -1,4 +1,4 @@
-package product
+package assortment
 
 import (
 	"context"
@@ -25,8 +25,8 @@ func (r *ProductGroupRepo) Create(ctx context.Context, productGroup domain.Produ
 	return &productGroup, nil
 }
 
-func (r *ProductGroupRepo) Read(ctx context.Context) ([]domain.ProductGroup, error) {
-	var productGroups []domain.ProductGroup
+func (r *ProductGroupRepo) Read(ctx context.Context) ([]*domain.ProductGroup, error) {
+	var productGroups []*domain.ProductGroup
 	if err := r.db.WithContext(ctx).Find(&productGroups).Error; err != nil {
 		return nil, err
 	}
