@@ -12,7 +12,7 @@ type ViewProductRepo struct {
 	db *gorm.DB
 }
 
-func NewViewItemRepo(db *gorm.DB) *ViewProductRepo {
+func NewViewProductRepo(db *gorm.DB) *ViewProductRepo {
 	return &ViewProductRepo{db}
 }
 
