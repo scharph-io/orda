@@ -60,8 +60,8 @@ func (r *RoleRepo) ReadByName(ctx context.Context, name string) (*domain.Role, e
 	return role, nil
 }
 
-func (r *RoleRepo) Read(ctx context.Context) ([]domain.Role, error) {
-	var roles []domain.Role
+func (r *RoleRepo) Read(ctx context.Context) ([]*domain.Role, error) {
+	var roles []*domain.Role
 	res := r.db.WithContext(ctx).Find(&roles)
 	if res.Error != nil {
 		return nil, res.Error

@@ -3,15 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
+	"runtime/debug"
 
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/repository/assortment"
+	"github.com/scharph/orda/internal/repository/user"
 	"github.com/scharph/orda/internal/repository/view"
 )
 
 var (
+	r ports.IRoleRepository
+
 	pr ports.IProductRepository
 	gr ports.IProductGroupRepository
 
@@ -23,9 +27,16 @@ var (
 
 func main() {
 
+	info, _ := debug.ReadBuildInfo()
+
+	fmt.Println(info.Main.Path, info.Main.Version)
+	fmt.Println(info.GoVersion)
+
 	database.Connect()
 
 	db := database.DB
+
+	r = user.NewRoleRepo(db)
 
 	vr = view.NewViewRepository(db)
 	vpr = view.NewViewProductRepo(db)
@@ -87,10 +98,16 @@ func main() {
 
 	if len(vps) == 0 {
 		fmt.Println("Append", products[0].Name, "to", views[0].Name)
-		AppendProduct(views[0].ID, domain.ViewProduct{
+		AppendProduct(views[0].ID, &domain.ViewProduct{
 			Position:  0,
 			Color:     "red",
 			ProductID: products[0].ID,
+		})
+
+		AppendProduct(views[1].ID, &domain.ViewProduct{
+			Position:  1,
+			Color:     "blue",
+			ProductID: products[1].ID,
 		})
 		vps = GetViewProductsByViewId(views[0].ID)
 	}
@@ -131,12 +148,20 @@ func GetViews() []*domain.View {
 	return v
 }
 
-func AppendProduct(viewID string, product domain.ViewProduct) error {
-	return vr.AppendProduct(ctx, viewID, product)
+func GetRoles() []*domain.Role {
+	r, err := r.Read(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return r
+}
+
+func AppendProduct(viewID string, product *domain.ViewProduct) error {
+	return vpr.AppendProducts(ctx, viewID, product)
 }
 
 func RemoveProduct(viewID, productID string) error {
-	return vr.RemoveProduct(ctx, viewID, productID)
+	return vpr.RemoveProduct(ctx, viewID, productID)
 }
 
 func GetViewProductsByViewId(id string) []*domain.ViewProduct {

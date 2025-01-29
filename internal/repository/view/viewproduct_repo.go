@@ -18,13 +18,6 @@ func NewViewProductRepo(db *gorm.DB) *ViewProductRepo {
 
 var _ ports.IViewProductRepository = (*ViewProductRepo)(nil)
 
-func (r *ViewProductRepo) Create(ctx context.Context, viewProduct domain.ViewProduct) (*domain.ViewProduct, error) {
-	if err := r.db.Create(&viewProduct).Error; err != nil {
-		return nil, err
-	}
-	return &viewProduct, nil
-}
-
 func (r *ViewProductRepo) ReadByViewID(ctx context.Context, viewID string) ([]*domain.ViewProduct, error) {
 	var viewProducts []*domain.ViewProduct
 	if err := r.db.Model(&domain.ViewProduct{}).Where("view_id = ?", viewID).Preload("Product").Find(&viewProducts).Error; err != nil {
@@ -40,6 +33,15 @@ func (r *ViewProductRepo) Update(ctx context.Context, viewProduct domain.ViewPro
 	return &viewProduct, nil
 }
 
-func (r *ViewProductRepo) Delete(ctx context.Context, viewProduct domain.ViewProduct) error {
-	return r.db.Delete(&viewProduct).Error
+func (r *ViewProductRepo) AppendProducts(ctx context.Context, viewId string, products ...*domain.ViewProduct) error {
+	for i := range products {
+		if products[i].ViewID == "" {
+			products[i].ViewID = viewId
+		}
+	}
+	return r.db.Model(domain.ViewProduct{}).Create(products).Error
+}
+
+func (r *ViewProductRepo) RemoveProduct(ctx context.Context, viewId, productId string) error {
+	return r.db.Model(domain.ViewProduct{}).Delete(&domain.ViewProduct{ViewID: viewId, ProductID: productId}).Error
 }
