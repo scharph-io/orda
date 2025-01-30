@@ -16,7 +16,7 @@ const (
 
 type Transaction struct {
 	Base
-	Items         []TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
+	Items         []*TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
 	PaymentOption PaymentOption
 	AccountType   AccountType
 	Total         int32
@@ -25,8 +25,8 @@ type Transaction struct {
 }
 
 type TransactionItem struct {
-	TransactionID string `gorm:"primaryKey"`
-	ProductID     string `gorm:"primaryKey,index"`
+	TransactionID string `gorm:"primaryKey;index;size:36"`
+	ProductID     string `gorm:"primaryKey;index;size:36"`
 	Qty           int8
 	Price         int32
 }

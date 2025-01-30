@@ -19,7 +19,7 @@ type RoleResponse struct {
 
 type IRoleRepository interface {
 	Create(ctx context.Context, role *domain.Role) (*domain.Role, error)
-	Read(ctx context.Context) ([]domain.Role, error)
+	Read(ctx context.Context) ([]*domain.Role, error)
 	ReadById(ctx context.Context, id string) (*domain.Role, error)
 	ReadByName(ctx context.Context, name string) (*domain.Role, error)
 	Delete(ctx context.Context, id string) (bool, error)

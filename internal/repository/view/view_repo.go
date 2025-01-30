@@ -56,10 +56,11 @@ func (r *ViewRepo) Delete(ctx context.Context, view domain.View) error {
 	return r.db.Delete(&view).Error
 }
 
-func (r *ViewRepo) AddRoles(ctx context.Context, id, roleIds []string) error {
-	return nil
+func (r *ViewRepo) AddRoles(ctx context.Context, id string, roleIds ...string) error {
+	return r.db.Model(&domain.View{}).Where("id = ?", id).Association("Roles").Append(roleIds)
+
 }
 
-func (r *ViewRepo) RemoveRoles(ctx context.Context, id, roleIds []string) error {
+func (r *ViewRepo) RemoveRoles(ctx context.Context, id string, roleIds []string) error {
 	return nil
 }

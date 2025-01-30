@@ -32,8 +32,8 @@ type TransactionResponse struct {
 }
 
 type ITransactionRepository interface {
-	Create(ctx context.Context, transaction domain.Transaction) (*domain.Transaction, error)
-	Read(ctx context.Context) ([]domain.Transaction, error)
+	Create(ctx context.Context, transaction *domain.Transaction) (*domain.Transaction, error)
+	Read(ctx context.Context) ([]*domain.Transaction, error)
 	ReadByID(ctx context.Context, id string) (*domain.Transaction, error)
 	Update(ctx context.Context, transaction domain.Transaction) (*domain.Transaction, error)
 	Delete(ctx context.Context, transaction domain.Transaction) error

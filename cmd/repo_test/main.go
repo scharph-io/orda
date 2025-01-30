@@ -9,6 +9,7 @@ import (
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/repository/assortment"
+	"github.com/scharph/orda/internal/repository/transaction"
 	"github.com/scharph/orda/internal/repository/user"
 	"github.com/scharph/orda/internal/repository/view"
 )
@@ -21,6 +22,9 @@ var (
 
 	vr  ports.IViewRepository
 	vpr ports.IViewProductRepository
+
+	tr  ports.ITransactionRepository
+	tir ports.ITransactionItemRepository
 
 	ctx = context.Background()
 )
@@ -44,11 +48,35 @@ func main() {
 	pr = assortment.NewProductRepo(db)
 	gr = assortment.NewProductGroupRepo(db)
 
-	views := GetViews()
+	tr = transaction.NewTransactionRepository(db)
+	tir = transaction.NewTransactionItemRepository(db)
 
+	roles := GetRoles()
+
+	if len(roles) == 0 {
+		r.Create(ctx, &domain.Role{
+			Name: "admin",
+		})
+		r.Create(ctx, &domain.Role{
+			Name: "user",
+		})
+
+		roles = GetRoles()
+	}
+
+	fmt.Println("Roles:")
+	for _, r := range roles {
+		fmt.Println(r.ID, r.Name)
+	}
+
+	fmt.Println("-------------------------------")
+	fmt.Println("Views:")
+	views := GetViews()
 	if len(views) == 0 {
-		CreateView("Test")
-		CreateView("Test2")
+		v1 := CreateView("Test")
+		vr.AddRoles(ctx, v1.ID, roles[0].ID)
+		v2 := CreateView("Test2")
+		vr.AddRoles(ctx, v2.ID, roles[1].ID)
 		views = GetViews()
 	}
 
@@ -68,6 +96,7 @@ func main() {
 		groups, _ = gr.Read(ctx)
 	}
 
+	fmt.Println("-------------------------------")
 	fmt.Println("Groups")
 	for _, g := range groups {
 		fmt.Println(g.ID, g.Name)
@@ -104,7 +133,7 @@ func main() {
 			ProductID: products[0].ID,
 		})
 
-		AppendProduct(views[1].ID, &domain.ViewProduct{
+		AppendProduct(views[0].ID, &domain.ViewProduct{
 			Position:  1,
 			Color:     "blue",
 			ProductID: products[1].ID,
@@ -112,10 +141,48 @@ func main() {
 		vps = GetViewProductsByViewId(views[0].ID)
 	}
 
-	// RemoveProduct(views[0].ID, products[0].ID)
-	//
+	fmt.Println("ViewProducts in view", views[0].Name)
 	for _, vp := range vps {
 		fmt.Println(vp.Product.Name, vp.Color, vp.Product.Price)
+	}
+
+	transactions := GetTransactions()
+
+	if len(transactions) == 0 {
+		fmt.Println("Create Transaction")
+		transaction := &domain.Transaction{
+			Items: []*domain.TransactionItem{
+				{
+					ProductID: vps[1].ProductID,
+					Qty:       1,
+					Price:     210,
+				},
+				{
+					ProductID: vps[0].ProductID,
+					Qty:       2,
+					Price:     100,
+				},
+			},
+			UserID:        "bla",
+			Total:         310,
+			PaymentOption: domain.PaymentMethodCash,
+			AccountType:   domain.AccountTypeAnonymous,
+		}
+
+		_, err := tr.Create(ctx, transaction)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		transactions = GetTransactions()
+	}
+
+	fmt.Println("Print Transactions: ")
+	for _, t := range transactions {
+		fmt.Println("- Transaction", t.ID, t.Total)
+		for i := range t.Items {
+			fmt.Println("		Item", i, " ", t.Items[i].ProductID, t.Items[i].Qty, t.Items[i].Price)
+		}
 	}
 
 }
@@ -154,6 +221,14 @@ func GetRoles() []*domain.Role {
 		fmt.Println(err)
 	}
 	return r
+}
+
+func GetTransactions() []*domain.Transaction {
+	t, err := tr.Read(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return t
 }
 
 func AppendProduct(viewID string, product *domain.ViewProduct) error {

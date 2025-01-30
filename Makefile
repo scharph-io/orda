@@ -36,7 +36,7 @@ help: ## This help dialog.
 run-ui: ## Run the app locally
 	npm --prefix $(CLIENT_PROJECT) run start
 
-install-ui: 
+install-ui:
 	npm --prefix $(CLIENT_PROJECT) install
 
 update-ui:
@@ -74,8 +74,8 @@ build-local: build-ui
 	GOOS=darwin GOARCH=arm64 	go build $(BUILD_ARGS) -o build/$(BINARY_NAME)_darwin_arm 	$(MAIN)
 	chmod +x build/$(BINARY_NAME)_darwin_arm
 	tar -czf build/$(BINARY_NAME)_$(VERSION)_darwin_arm64.tar.gz -C build ${BINARY_NAME}_darwin_arm
-	
-ci-build: pre-build-ui build-ui build-local 
+
+ci-build: pre-build-ui build-ui build-local
 
 requirements: ## Generate go.mod & go.sum files
 	go mod tidy
@@ -130,3 +130,6 @@ docker-push:
 
 docker-login:
 	docker login -u scharphio
+
+test:
+	go run cmd/repo_test/main.go

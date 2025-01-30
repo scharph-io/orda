@@ -2,9 +2,9 @@ package domain
 
 type View struct {
 	Base
-	Name         string
-	ViewProducts []ViewProduct `gorm:"many2many:view_products;"`
-	Roles        []Role        `gorm:"many2many:view_roles;"`
+	Name     string
+	Products []ViewProduct `gorm:"many2many:view_products;"`
+	Roles    []Role        `gorm:"many2many:view_roles;"`
 }
 
 type ViewRole struct {

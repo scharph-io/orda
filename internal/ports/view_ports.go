@@ -12,8 +12,8 @@ type IViewRepository interface {
 	ReadByID(ctx context.Context, id string) (*domain.View, error)
 	Update(ctx context.Context, view domain.View) (*domain.View, error)
 	Delete(ctx context.Context, view domain.View) error
-	AddRoles(ctx context.Context, id, roleIds []string) error
-	RemoveRoles(ctx context.Context, id, roleIds []string) error
+	AddRoles(ctx context.Context, id string, roleIds ...string) error
+	RemoveRoles(ctx context.Context, id string, roleIds []string) error
 }
 
 type IViewProductRepository interface {

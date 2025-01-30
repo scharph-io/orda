@@ -18,38 +18,39 @@ func NewTransactionRepository(db *gorm.DB) *TransactionRepository {
 	return &TransactionRepository{db}
 }
 
-func (r *TransactionRepository) Create(ctx context.Context, transaction domain.Transaction) (*domain.Transaction, error) {
+func (r *TransactionRepository) Create(ctx context.Context, transaction *domain.Transaction) (*domain.Transaction, error) {
+
 	if err := r.db.WithContext(ctx).Create(&transaction).Error; err != nil {
 		return nil, err
 	}
-	return &transaction, nil
+	return transaction, nil
 }
 
-func (r *TransactionRepository) Read(ctx context.Context) ([]domain.Transaction, error) {
-	var transactions []domain.Transaction
-	if err := r.db.WithContext(ctx).Find(&transactions).Error; err != nil {
+func (r *TransactionRepository) Read(ctx context.Context) ([]*domain.Transaction, error) {
+	var t []*domain.Transaction
+	if err := r.db.WithContext(ctx).Preload("Items").Find(&t).Error; err != nil {
 		return nil, err
 	}
-	return transactions, nil
+	return t, nil
 }
 
 func (r *TransactionRepository) ReadByID(ctx context.Context, id string) (*domain.Transaction, error) {
-	var transaction domain.Transaction
-	if err := r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("id = ?", id).Preload("Items").Find(&transaction).Error; err != nil {
+	var t domain.Transaction
+	if err := r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("id = ?", id).Preload("Items").Find(&t).Error; err != nil {
 		return nil, err
 	}
-	return &transaction, nil
+	return &t, nil
 }
 
-func (r *TransactionRepository) Update(ctx context.Context, transaction domain.Transaction) (*domain.Transaction, error) {
-	if err := r.db.WithContext(ctx).Model(&transaction).Updates(transaction).Error; err != nil {
+func (r *TransactionRepository) Update(ctx context.Context, t domain.Transaction) (*domain.Transaction, error) {
+	if err := r.db.WithContext(ctx).Model(&t).Updates(t).Error; err != nil {
 		return nil, err
 	}
-	return &transaction, nil
+	return &t, nil
 }
 
-func (r *TransactionRepository) Delete(ctx context.Context, transaction domain.Transaction) error {
-	if err := r.db.WithContext(ctx).Delete(&transaction).Error; err != nil {
+func (r *TransactionRepository) Delete(ctx context.Context, t domain.Transaction) error {
+	if err := r.db.WithContext(ctx).Delete(&t).Error; err != nil {
 		return err
 	}
 	return nil
@@ -66,9 +67,9 @@ func NewTransactionItemRepository(db *gorm.DB) *TransactionItemRepository {
 }
 
 func (r *TransactionItemRepository) ReadByTransactionID(ctx context.Context, transactionID string) ([]*domain.TransactionItem, error) {
-	var transactionItems []*domain.TransactionItem
-	if err := r.db.WithContext(ctx).Where("transaction_id = ?", transactionID).Find(&transactionItems).Error; err != nil {
+	var items []*domain.TransactionItem
+	if err := r.db.WithContext(ctx).Where("transaction_id = ?", transactionID).Find(&items).Error; err != nil {
 		return nil, err
 	}
-	return transactionItems, nil
+	return items, nil
 }
