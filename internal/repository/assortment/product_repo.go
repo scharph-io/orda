@@ -19,7 +19,7 @@ func NewProductRepo(db *gorm.DB) *ProductRepo {
 var _ ports.IProductRepository = (*ProductRepo)(nil)
 
 func (r *ProductRepo) Create(ctx context.Context, product domain.Product) (*domain.Product, error) {
-	if err := r.db.Create(&product).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(&product).Error; err != nil {
 		return nil, err
 	}
 	return &product, nil
@@ -27,10 +27,18 @@ func (r *ProductRepo) Create(ctx context.Context, product domain.Product) (*doma
 
 func (r *ProductRepo) ReadById(ctx context.Context, id string) (*domain.Product, error) {
 	var product domain.Product
-	if err := r.db.Where("id = ?", id).Find(&product).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("id = ?", id).Find(&product).Error; err != nil {
 		return nil, err
 	}
 	return &product, nil
+}
+
+func (r *ProductRepo) ReadByIds(ctx context.Context, ids []string) (domain.Products, error) {
+	var p domain.Products
+	if err := r.db.WithContext(ctx).Find(&p, ids).Error; err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 func (r *ProductRepo) CreateMany(ctx context.Context, products []domain.Product) error {
