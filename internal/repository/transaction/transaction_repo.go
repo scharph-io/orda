@@ -28,7 +28,7 @@ func (r *TransactionRepository) Create(ctx context.Context, transaction *domain.
 
 func (r *TransactionRepository) Read(ctx context.Context) ([]*domain.Transaction, error) {
 	var t []*domain.Transaction
-	if err := r.db.WithContext(ctx).Preload("Items").Find(&t).Error; err != nil {
+	if err := r.db.WithContext(ctx).Preload("Items").Preload("Account").Find(&t).Error; err != nil {
 		return nil, err
 	}
 	return t, nil

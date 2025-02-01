@@ -25,12 +25,12 @@ type TransactionRequest struct {
 type TransactionResponse struct {
 	TransactionID string `json:"transaction_id"`
 	// Items         []Item `json:"items"`
-	ItemsLength int `json:"items_length"`
-	// Account       string `json:"account_id,omitempty"`
-	// User          string `json:"user_id"`
-	// PaymentOption int    `json:"payment_option"`
-	// AccountType   int    `json:"account_type"`
-	Total int32 `json:"total"`
+	ItemsLength   int    `json:"items_length"`
+	Account       string `json:"account_id,omitempty"`
+	User          string `json:"user_id,omitempty"`
+	PaymentOption int    `json:"payment_option,omitempty"`
+	AccountType   int    `json:"account_type,omitempty"`
+	Total         int32  `json:"total"`
 }
 
 type ITransactionRepository interface {

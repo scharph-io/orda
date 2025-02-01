@@ -3,61 +3,9 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/scharph/orda/internal/accesscontrol"
-	"github.com/scharph/orda/internal/database"
-	"github.com/scharph/orda/internal/handlers"
-	"github.com/scharph/orda/internal/middleware"
-	"github.com/scharph/orda/internal/ports"
-	"github.com/scharph/orda/internal/repository/account"
-	"github.com/scharph/orda/internal/repository/assortment"
-	"github.com/scharph/orda/internal/repository/user"
-	"github.com/scharph/orda/internal/service"
 )
-
-type Server struct {
-	userHandlers       ports.IUserHandlers
-	authHandlers       ports.IAuthHandlers
-	roleHandlers       ports.IRoleHandlers
-	accountHandlers    ports.IAccountHandlers
-	assortmentHandlers ports.IAssortmentHandlers
-}
-
-func NewServer() *Server {
-
-	db := database.DB
-
-	// repositories
-	userRepo := user.NewUserRepo(db)
-	roleRepo := user.NewRoleRepo(db)
-	accountRepo := account.NewAccountRepo(db)
-	accountGroupRepo := account.NewAccountGroupRepo(db)
-	accountHistoryRepo := account.NewAccountHistoryRepo(db)
-
-	productGroupRepo := assortment.NewProductGroupRepo(db)
-	productRepo := assortment.NewProductRepo(db)
-
-	// services
-	userService := service.NewUserService(userRepo, roleRepo)
-	roleService := service.NewRoleService(roleRepo)
-	accountService := service.NewAccountService(accountRepo, accountGroupRepo, accountHistoryRepo)
-	assortmentService := service.NewAssortmentService(productRepo, productGroupRepo)
-
-	// handlers
-	userHandlers := handlers.NewUserHandlers(userService)
-	roleHandlers := handlers.NewRoleHandlers(roleService)
-	authHandlers := handlers.NewAuthHandlers(userService, *middleware.Store, accesscontrol.PolicySyncInstance)
-	accountHandlers := handlers.NewAccountHandlers(accountService)
-	assortmentHandlers := handlers.NewAssortmentHandler(assortmentService)
-
-	return &Server{
-		userHandlers,
-		authHandlers,
-		roleHandlers,
-		accountHandlers,
-		assortmentHandlers,
-	}
-}
 
 func (s *Server) SetupRoutes(app *fiber.App) {
 
@@ -68,10 +16,29 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	// 	Index:      "index.html",
 	// }))
 
+	// app.Use(requestid.New(requestid.Config{
+	// 	Header: "X-Custom-Header",
+	// 	Generator: func() string {
+	// 		return "static-id"
+	// 	},
+	// }))
+
 	app.Use(cors.New())
 	// app.Use(cors.New(cors.Config{
 	// 	AllowOrigins: "*",
 	// 	AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH"}))
+	//
+
+	app.Use(healthcheck.New(healthcheck.Config{
+		LivenessProbe: func(c *fiber.Ctx) bool {
+			return true
+		},
+		LivenessEndpoint: "/live",
+		ReadinessProbe: func(c *fiber.Ctx) bool {
+			return true
+		},
+		ReadinessEndpoint: "/ready",
+	}))
 
 	// Auth
 	auth := app.Group("/auth")
@@ -83,8 +50,15 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 		Format: "[API] ${time} ${status} - ${latency} ${method} ${path}\n",
 	}), s.authHandlers.RequireAuth)
 
+	v1 := api.Group("/v1", func(c *fiber.Ctx) error { // middleware for /api/v1
+		c.Set("Version", "v1")
+		return c.Next()
+	})
+
 	// User
-	user := api.Group("/user", s.authHandlers.RequireRole("admin"))
+	user := v1.Group("/user", logger.New(logger.Config{
+		Format: "[USER] ${time} ${status} - ${latency} ${method} ${path}\n",
+	}), s.authHandlers.RequireRole("admin"))
 	user.Get("/", s.userHandlers.GetAll)
 	user.Post("/", s.userHandlers.Register)
 	user.Get("/:id", s.userHandlers.GetOne)
@@ -130,6 +104,22 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	products := assortment.Group("/products")
 	products.Put("/:id", s.assortmentHandlers.UpdateProduct)
 	products.Put("/:id/toggle", s.assortmentHandlers.ToggleProduct)
+
+	transactions := api.Group("/transaction")
+	transactions.Get("/", s.transactionHandlers.ReadLimit)
+	transactions.Post("/", s.transactionHandlers.Create)
+	transactions.Get("/:id", s.transactionHandlers.ReadById)
+	transactions.Delete("/:id", s.transactionHandlers.Delete)
+
+	views := api.Group("/views")
+	views.Get("/", s.viewHandlers.Read)
+	views.Post("/", s.viewHandlers.Create)
+	views.Get("/:id", s.viewHandlers.ReadByID)
+	views.Put("/:id", s.viewHandlers.Update)
+	views.Delete("/:id", s.viewHandlers.Delete)
+	views.Put("/:id/products", s.viewHandlers.AddProducts)
+	views.Delete("/:id/products", s.viewHandlers.RemoveProduct)
+	views.Put("/:id/roles", s.viewHandlers.AddRoles)
 
 	// views := api.Group("/views")
 	// viewHandler := createViewHandler()

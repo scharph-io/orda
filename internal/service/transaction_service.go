@@ -3,22 +3,23 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 )
 
 type TransactionService struct {
-	TransactionRepository     ports.ITransactionRepository
-	TransactionItemRepository ports.ITransactionItemRepository
-	ProductRepository         ports.IProductRepository
+	repo        ports.ITransactionRepository
+	itemRepo    ports.ITransactionItemRepository
+	productRepo ports.IProductRepository
 }
 
 func NewTransactionService(tr ports.ITransactionRepository, tir ports.ITransactionItemRepository, p ports.IProductRepository) *TransactionService {
 	return &TransactionService{
-		TransactionRepository:     tr,
-		TransactionItemRepository: tir,
-		ProductRepository:         p,
+		repo:        tr,
+		itemRepo:    tir,
+		productRepo: p,
 	}
 }
 
@@ -31,7 +32,7 @@ func (s *TransactionService) Create(ctx context.Context, t ports.TransactionRequ
 		pIds = append(pIds, item.ProductID)
 	}
 
-	products, err := s.ProductRepository.ReadByIds(ctx, pIds)
+	products, err := s.productRepo.ReadByIds(ctx, pIds)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +62,7 @@ func (s *TransactionService) Create(ctx context.Context, t ports.TransactionRequ
 		Items:         items,
 	}
 
-	transaction, err = s.TransactionRepository.Create(ctx, transaction)
+	transaction, err = s.repo.Create(ctx, transaction)
 
 	return &ports.TransactionResponse{
 		TransactionID: transaction.ID,
@@ -69,18 +70,62 @@ func (s *TransactionService) Create(ctx context.Context, t ports.TransactionRequ
 		ItemsLength:   len(transaction.Items),
 	}, nil
 }
+
 func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResponse, error) {
-	return nil, nil
+	t, err := s.repo.Read(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var res []*ports.TransactionResponse
+	for _, v := range t {
+		res = append(res, &ports.TransactionResponse{
+			TransactionID: v.ID,
+			Total:         v.Total,
+			ItemsLength:   len(v.Items),
+			AccountType:   int(v.AccountType),
+			PaymentOption: int(v.PaymentOption),
+			User:          v.User.Username,
+			Account:       fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname),
+		})
+	}
+	return res, nil
+
 }
+
 func (s *TransactionService) ReadByID(ctx context.Context, id string) (*ports.TransactionResponse, error) {
-	return nil, nil
+
+	t, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &ports.TransactionResponse{
+		TransactionID: t.ID,
+		Total:         t.Total,
+		ItemsLength:   len(t.Items),
+		AccountType:   int(t.AccountType),
+		PaymentOption: int(t.PaymentOption),
+		User:          t.User.Username,
+		Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
+	}, nil
 }
+
 func (s *TransactionService) ReadItemsByTransactionID(ctx context.Context, transactionID string) ([]*ports.TransactionResponse, error) {
-	return nil, nil
+
+	// items, err := s.TransactionItemRepository.ReadByTransactionID(ctx, transactionID)
+	// if err != nil {
+	// 	return nil, err
+
+	// }
+	// var res []*ports.TransactionResponse
+	//
+
+	return nil, fmt.Errorf("Not implemented")
 }
+
 func (s *TransactionService) Update(ctx context.Context, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
-	return nil, nil
+	return nil, fmt.Errorf("Not implemented")
 }
+
 func (s *TransactionService) Delete(ctx context.Context, id string) error {
-	return nil
+	return s.repo.Delete(ctx, domain.Transaction{Base: domain.Base{ID: id}})
 }

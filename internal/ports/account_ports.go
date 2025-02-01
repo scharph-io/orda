@@ -8,11 +8,11 @@ import (
 )
 
 type DepositRequest struct {
-	AccountId     string               `json:"account_id"`
-	Amount        int32                `json:"amount"`
+	AccountId     string               `json:"account_id" validate:"required"`
+	Amount        int32                `json:"amount" validate:"required gt=0"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
-	HistoryAction domain.HistoryAction `json:"history_type"`
-	UserId        string               `json:"user_id,omitempty"`
+	HistoryAction domain.HistoryAction `json:"history_type" validate:"required"`
+	UserId        string               `json:"user_id" validate:"required"`
 	TransactionId string               `json:"transaction_id,omitempty"`
 }
 
