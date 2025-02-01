@@ -3,13 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
+	"github.com/scharph/orda/internal/accesscontrol"
 	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/database"
+	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/internal/router"
 )
 
@@ -19,31 +18,19 @@ var (
 )
 
 func main() {
-
-	if err := godotenv.Load(".env"); err != nil {
-		fmt.Println("INFO: No .env file found")
-	}
+	config := config.GetConfig().Server
 
 	app := fiber.New()
-	database.ConnectDB()
 
-	port := config.Config("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	database.Connect()
+	middleware.AuthInit()
+	accesscontrol.Init()
 
-	if tz := os.Getenv("TZ"); tz != "" {
-		var err error
-		log.Printf("setting time zone from ENV to '%s'", tz)
-		time.Local, err = time.LoadLocation(tz)
-		if err != nil {
-			log.Printf("error loading location '%s': %v\n", tz, err)
-		}
-	}
+	log.Println("server running on port", config.Port)
 
-	log.Println("server running on port", port)
-	router.SetupRoutes(app)
-	log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
+	server := router.NewServer()
+	server.SetupRoutes(app)
+	log.Fatal(app.Listen(fmt.Sprintf(":%d", config.Port)))
 
 	// https://github.com/gofiber/recipes/tree/master/auth-docker-postgres-jwt
 

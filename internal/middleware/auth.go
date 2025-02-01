@@ -1,29 +1,38 @@
 package middleware
 
 import (
-	jwtware "github.com/gofiber/contrib/jwt"
-	"github.com/gofiber/fiber/v2"
+	"log"
+
+	"github.com/scharph/orda/internal/database"
+	"github.com/scharph/orda/internal/domain"
+	"github.com/scharph/orda/internal/util"
 )
 
-const (
-	// SecretKey is the key for signing the JWT
-	Secret_key = "orda_secret_key"
-)
+func AuthInit() {
+	initSessionConfig()
 
-// Protected protect routes
-func Protected() func(*fiber.Ctx) error {
-	return jwtware.New(jwtware.Config{
-		SigningKey:   jwtware.SigningKey{Key: []byte(Secret_key)},
-		ErrorHandler: jwtError,
-	})
-}
+	db := database.DB
 
-func jwtError(c *fiber.Ctx, err error) error {
-	if err.Error() == "Missing or malformed JWT" {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{"status": "error", "message": "Missing or malformed JWT", "data": nil})
-	} else {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{"status": "error", "message": "Invalid or expired JWT", "data": nil})
+	var adminUser domain.User
+	if db.Where("username = ?", "admin").First(&adminUser).RowsAffected == 0 {
+		initialPassword := util.PasswordGenerator(30)
+
+		hashed, err := util.HashPassword(initialPassword)
+		if err != nil {
+			log.Fatalf("Error hashing password: %v\n", err)
+		}
+
+		if db.Create(&domain.User{
+			Username: "admin",
+			Password: hashed,
+			Role: domain.Role{
+				Name: "admin",
+			},
+		}).Error != nil {
+			log.Fatalf("Error creating admin user: %v\n", err)
+			panic(1)
+		}
+		log.Println("User and Role 'admin' created")
+		log.Printf("Initial Password: '%s'", initialPassword)
 	}
 }

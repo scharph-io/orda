@@ -29,8 +29,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 
 @Component({
-  selector: 'orda-view-details',
-  template: `
+    selector: 'orda-view-details',
+    template: `
     <div class="toolbar">
       <h2>{{ view().name }}</h2>
       <div>
@@ -143,9 +143,8 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
       }
     </div> -->
   `,
-  standalone: true,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -219,27 +218,27 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
         transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
       }
     `,
-  ],
-  imports: [
-    MatIconModule,
-    MatButtonModule,
-    DialogModule,
-    MatGridListModule,
-    MatListModule,
-    MatDividerModule,
-    CdkDropList,
-    CdkDrag,
-    CdkDragPlaceholder,
-    ViewProductComponent,
-    MatMenuModule,
-    TranslocoModule,
-    JsonPipe,
-    KeyValuePipe,
-    MatListModule,
-    MatTableModule,
-    OrdaCurrencyPipe,
-    RouterModule,
-  ],
+    ],
+    imports: [
+        MatIconModule,
+        MatButtonModule,
+        DialogModule,
+        MatGridListModule,
+        MatListModule,
+        MatDividerModule,
+        CdkDropList,
+        CdkDrag,
+        CdkDragPlaceholder,
+        ViewProductComponent,
+        MatMenuModule,
+        TranslocoModule,
+        JsonPipe,
+        KeyValuePipe,
+        MatListModule,
+        MatTableModule,
+        OrdaCurrencyPipe,
+        RouterModule,
+    ]
 })
 export class ViewDetailsComponent implements OnInit {
   dialog = inject(MatDialog);

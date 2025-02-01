@@ -21,9 +21,8 @@ import { MatTableModule } from '@angular/material/table';
 import { StatCardComponent } from '../stat-card.component';
 
 @Component({
-  selector: 'orda-stat-daily',
-  standalone: true,
-  template: `
+    selector: 'orda-stat-daily',
+    template: `
     <h2>{{ 'statistic.income' | transloco }}</h2>
     <mat-form-field>
       <mat-label>{{ 'statistic.choose_date' | transloco }}</mat-label>
@@ -103,8 +102,8 @@ import { StatCardComponent } from '../stat-card.component';
       </table>
     </section>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: block;
         padding: 1rem;
@@ -116,19 +115,19 @@ import { StatCardComponent } from '../stat-card.component';
         gap: 1rem;
       }
     `,
-  ],
-  providers: [provideNativeDateAdapter()],
-  imports: [
-    OrdaCurrencyPipe,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    TranslocoModule,
-    ReactiveFormsModule,
-    DatePipe,
-    MatTableModule,
-    StatCardComponent,
-  ],
+    ],
+    providers: [provideNativeDateAdapter()],
+    imports: [
+        OrdaCurrencyPipe,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDatepickerModule,
+        TranslocoModule,
+        ReactiveFormsModule,
+        DatePipe,
+        MatTableModule,
+        StatCardComponent,
+    ]
 })
 export class StatisticDailyComponent implements OnInit {
   statisticsService = inject(StatisticService);

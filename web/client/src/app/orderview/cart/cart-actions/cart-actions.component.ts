@@ -8,10 +8,9 @@ import { CheckoutDialogComponent } from './cart-checkout-dialog.component';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
-  selector: 'orda-cart-actions',
-  standalone: true,
-  imports: [MatButtonModule, MatIconModule, TranslocoModule],
-  template: `
+    selector: 'orda-cart-actions',
+    imports: [MatButtonModule, MatIconModule, TranslocoModule],
+    template: `
     @if (items().length > 0) {
       <button class="item-0" mat-icon-button color="warn" (click)="clearCart()">
         <mat-icon>delete_forever</mat-icon>
@@ -28,7 +27,7 @@ import { TranslocoModule } from '@jsverse/transloco';
       {{ 'cart.checkout' | transloco }}
     </button>
   `,
-  styles: `
+    styles: `
     :host {
       display: flex;
       flex-direction: row;
@@ -46,7 +45,7 @@ import { TranslocoModule } from '@jsverse/transloco';
     // mat-icon button {
     //   font-size: 0.5em;
     // }
-  `,
+  `
 })
 export class CartActionsComponent {
   items = input.required<CartItem[]>();

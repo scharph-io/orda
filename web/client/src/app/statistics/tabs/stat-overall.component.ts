@@ -18,9 +18,8 @@ import { MatTableModule } from '@angular/material/table';
 import { StatCardComponent } from '../stat-card.component';
 
 @Component({
-  selector: 'orda-stat-overall',
-  standalone: true,
-  template: `
+    selector: 'orda-stat-overall',
+    template: `
     <h2>{{ 'statistic.income' | transloco }}</h2>
     <div class="dashboard">
       <orda-stat-card
@@ -86,8 +85,8 @@ import { StatCardComponent } from '../stat-card.component';
       </table>
     </section>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: block;
         padding: 1rem;
@@ -99,18 +98,18 @@ import { StatCardComponent } from '../stat-card.component';
         gap: 1rem;
       }
     `,
-  ],
-  providers: [provideNativeDateAdapter()],
-  imports: [
-    OrdaCurrencyPipe,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    TranslocoModule,
-    ReactiveFormsModule,
-    MatTableModule,
-    StatCardComponent,
-  ],
+    ],
+    providers: [provideNativeDateAdapter()],
+    imports: [
+        OrdaCurrencyPipe,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDatepickerModule,
+        TranslocoModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        StatCardComponent,
+    ]
 })
 export class StatisticOverallComponent implements OnInit {
   statisticsService = inject(StatisticService);

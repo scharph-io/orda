@@ -13,8 +13,8 @@ import { MatMenu, MatMenuModule } from '@angular/material/menu';
 // import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
 
 @Component({
-  selector: 'orda-details-overview',
-  template: `
+    selector: 'orda-details-overview',
+    template: `
     <div class="toolbar">
       <h2>views</h2>
       <div>
@@ -53,9 +53,8 @@ import { MatMenu, MatMenuModule } from '@angular/material/menu';
       </mat-grid-list>
     }
   `,
-  standalone: true,
-  styles: [
-    `
+    styles: [
+        `
       mat-grid-tile {
         background: grey;
         border: 1px solid red;
@@ -67,15 +66,15 @@ import { MatMenu, MatMenuModule } from '@angular/material/menu';
         margin: 0 1em;
       }
     `,
-  ],
-  imports: [
-    MatIconModule,
-    MatButtonModule,
-    DialogModule,
-    MatGridListModule,
-    RouterModule,
-    MatMenuModule,
-  ],
+    ],
+    imports: [
+        MatIconModule,
+        MatButtonModule,
+        DialogModule,
+        MatGridListModule,
+        RouterModule,
+        MatMenuModule,
+    ]
 })
 export class ViewsOverviewComponent implements OnInit {
   dialog = inject(MatDialog);

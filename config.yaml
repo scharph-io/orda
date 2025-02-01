@@ -1,0 +1,10 @@
+server:
+  port: 3000
+  timezone: Europe/Vienna
+
+database:
+  host: localhost
+  port: 3306
+  name: orda
+  user: orda
+  password: orda

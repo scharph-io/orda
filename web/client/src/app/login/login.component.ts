@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, isDevMode } from '@angular/core';
+import { Component, isDevMode } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -12,24 +12,23 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { AuthService, Claims } from '../auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { JsonPipe } from '@angular/common';
 
 @Component({
-  selector: 'orda-login',
-  standalone: true,
-  imports: [
-    MatCardModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    JsonPipe,
-  ],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+    selector: 'orda-login',
+    imports: [
+        MatCardModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatButtonModule,
+        JsonPipe,
+    ],
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
   hide = true;

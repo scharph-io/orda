@@ -7,8 +7,8 @@ import { ClientsTableComponent } from './clients-table/clients-table.component';
 // import { CreateProductDialogComponent } from '../products/create-product-dialog.component';
 
 @Component({
-  selector: 'orda-clients-overview',
-  template: `
+    selector: 'orda-clients-overview',
+    template: `
     <div class="toolbar">
       <h2>clients</h2>
       <button mat-fab extended (click)="openClientAddUpdateDialog()">
@@ -18,9 +18,8 @@ import { ClientsTableComponent } from './clients-table/clients-table.component';
     </div>
     <orda-clients-table />
   `,
-  standalone: true,
-  styles: [
-    `
+    styles: [
+        `
       .toolbar {
         display: flex;
         justify-content: space-between;
@@ -28,13 +27,13 @@ import { ClientsTableComponent } from './clients-table/clients-table.component';
         margin: 0 1em;
       }
     `,
-  ],
-  imports: [
-    MatIconModule,
-    MatButtonModule,
-    DialogModule,
-    ClientsTableComponent,
-  ],
+    ],
+    imports: [
+        MatIconModule,
+        MatButtonModule,
+        DialogModule,
+        ClientsTableComponent,
+    ]
 })
 export class ClientsOverviewComponent {
   dialog = inject(MatDialog);

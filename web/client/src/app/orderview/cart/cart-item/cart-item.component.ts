@@ -6,10 +6,9 @@ import { OrdaCurrencyPipe } from '../../../shared/currency.pipe';
 import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
-  selector: 'orda-cart-item',
-  standalone: true,
-  imports: [OrdaCurrencyPipe, MatButtonModule, MatIconModule, MatDividerModule],
-  template: `
+    selector: 'orda-cart-item',
+    imports: [OrdaCurrencyPipe, MatButtonModule, MatIconModule, MatDividerModule],
+    template: `
     <div
       [class]="{
         container: true,
@@ -32,7 +31,7 @@ import { MatDividerModule } from '@angular/material/divider';
     </div>
     <mat-divider></mat-divider>
   `,
-  styles: `
+    styles: `
     .container {
       display: grid;
       gap: 0px 0.25em;
@@ -84,7 +83,7 @@ import { MatDividerModule } from '@angular/material/divider';
       justify-content: center;
       align-items: center;
     }
-  `,
+  `
 })
 export class CartItemComponent {
   item = input.required<CartItem>();

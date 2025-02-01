@@ -12,18 +12,17 @@ import { TranslocoModule } from '@jsverse/transloco';
  * @title Tab group with aligned labels
  */
 @Component({
-  selector: 'orda-cart',
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    CurrencyPipe,
-    CartItemComponent,
-    CartSubtotalComponent,
-    CartActionsComponent,
-    TranslocoModule,
-  ],
-  template: `
+    selector: 'orda-cart',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        AsyncPipe,
+        CurrencyPipe,
+        CartItemComponent,
+        CartSubtotalComponent,
+        CartActionsComponent,
+        TranslocoModule,
+    ],
+    template: `
     <div class="cart">
       @for (item of items$ | async; track $index) {
         <orda-cart-item [item]="item"></orda-cart-item>
@@ -39,8 +38,8 @@ import { TranslocoModule } from '@jsverse/transloco';
       [subtotal]="(subtotal$ | async) ?? 0"
     />
   `,
-  styles: [
-    `
+    styles: [
+        `
       // :host {
       //   display: grid;
       //   gap: 0px 0px;
@@ -97,7 +96,7 @@ import { TranslocoModule } from '@jsverse/transloco';
         justify-content: center;
       }
     `,
-  ],
+    ]
 })
 export class CartComponent {
   constructor(private cart: CartStore) {}

@@ -4,8 +4,8 @@ import { RouterModule } from '@angular/router';
 import { Group } from '../../../shared/model/product';
 
 @Component({
-  selector: 'orda-groups-overview',
-  template: `
+    selector: 'orda-groups-overview',
+    template: `
     <mat-grid-list cols="7" rowHeight="4:3" gutterSize="1em">
       @if (groups().length === 0) {
         <div>No groups found</div>
@@ -23,9 +23,8 @@ import { Group } from '../../../shared/model/product';
       }
     </mat-grid-list>
   `,
-  standalone: true,
-  styles: [
-    `
+    styles: [
+        `
       mat-grid-list {
         margin: 0 1em;
       }
@@ -57,8 +56,8 @@ import { Group } from '../../../shared/model/product';
         }
       }
     `,
-  ],
-  imports: [MatGridListModule, RouterModule],
+    ],
+    imports: [MatGridListModule, RouterModule]
 })
 export class GroupsOverviewComponent {
   groups = input.required<Group[]>();

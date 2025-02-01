@@ -23,8 +23,8 @@ import { Product } from '../../../shared/model/product';
 import { AssortmentService } from '../../../shared/services/assortment.service';
 
 @Component({
-  selector: 'orda-create-product-dialog',
-  template: `<form [formGroup]="productForm">
+    selector: 'orda-create-product-dialog',
+    template: `<form [formGroup]="productForm">
     <h2 mat-dialog-title>
       @if (isUpdate) {
         {{ 'product.edit' | transloco }}
@@ -85,24 +85,23 @@ import { AssortmentService } from '../../../shared/services/assortment.service';
       }
     </mat-dialog-actions>
   </form>`,
-  styles: [
-    `
+    styles: [
+        `
       mat-dialog-content {
         display: flex;
         flex-direction: column;
       }
     `,
-  ],
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    TranslocoModule,
-  ],
+    ],
+    imports: [
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatSlideToggleModule,
+        TranslocoModule,
+    ]
 })
 export class CreateProductDialogComponent {
   productForm = new FormGroup({

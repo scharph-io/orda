@@ -13,9 +13,8 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'orda-cart-dialog',
-  standalone: true,
-  template: `
+    selector: 'orda-cart-dialog',
+    template: `
     <h2 mat-dialog-title>{{ 'cart.title' | transloco }}</h2>
     <mat-dialog-content>
       @for (item of data; track $index) {
@@ -30,15 +29,15 @@ import { MatButtonModule } from '@angular/material/button';
       </button>
     </mat-dialog-actions>
   `,
-  imports: [
-    MatDialogTitle,
-    MatDialogContent,
-    CartItemComponent,
-    TranslocoModule,
-    MatDialogActions,
-    MatDialogClose,
-    MatButtonModule,
-  ],
+    imports: [
+        MatDialogTitle,
+        MatDialogContent,
+        CartItemComponent,
+        TranslocoModule,
+        MatDialogActions,
+        MatDialogClose,
+        MatButtonModule,
+    ]
 })
 export class CartDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: CartItem[]) {}

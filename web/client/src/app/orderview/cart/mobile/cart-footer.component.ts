@@ -12,9 +12,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { CartDialogComponent } from './cart-dialog.component';
 
 @Component({
-  selector: 'orda-cart-footer',
-  standalone: true,
-  template: `
+    selector: 'orda-cart-footer',
+    template: `
     @if (totalQty$ | async) {
       <button class="item-0" mat-icon-button color="warn" (click)="clearCart()">
         <mat-icon>delete_forever</mat-icon>
@@ -47,8 +46,8 @@ import { CartDialogComponent } from './cart-dialog.component';
       {{ 'cart.checkout' | transloco }}
     </button>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: flex;
         justify-content: space-around;
@@ -57,16 +56,16 @@ import { CartDialogComponent } from './cart-dialog.component';
         border-top: 1px solid black;
       }
     `,
-  ],
-  imports: [
-    CartSubtotalComponent,
-    AsyncPipe,
-    MatButtonModule,
-    MatBadgeModule,
-    MatIconModule,
-    TranslocoModule,
-    CartDialogComponent,
-  ],
+    ],
+    imports: [
+        CartSubtotalComponent,
+        AsyncPipe,
+        MatButtonModule,
+        MatBadgeModule,
+        MatIconModule,
+        TranslocoModule,
+        CartDialogComponent,
+    ]
 })
 export class CartFooterComponent {
   cartStore = inject(CartStore);

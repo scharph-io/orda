@@ -6,9 +6,8 @@ import { StatisticDailyComponent } from './tabs/stat-daily.component';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
-  selector: 'orda-statistic',
-  standalone: true,
-  template: `<mat-tab-group>
+    selector: 'orda-statistic',
+    template: `<mat-tab-group>
     <mat-tab [label]="'statistic.daily' | transloco">
       <ng-template matTabContent>
         <orda-stat-daily />
@@ -20,18 +19,18 @@ import { AuthService } from '../auth/auth.service';
       </ng-template>
     </mat-tab>
   </mat-tab-group>`,
-  styles: [
-    `
+    styles: [
+        `
       :host {
       }
     `,
-  ],
-  imports: [
-    MatTabsModule,
-    TranslocoModule,
-    StatisticOverallComponent,
-    StatisticDailyComponent,
-  ],
+    ],
+    imports: [
+        MatTabsModule,
+        TranslocoModule,
+        StatisticOverallComponent,
+        StatisticDailyComponent,
+    ]
 })
 export class StatisticComponent implements OnInit {
   ngOnInit(): void {}

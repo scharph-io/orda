@@ -5,9 +5,8 @@ import { TranslocoModule } from '@jsverse/transloco';
 import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
 
 @Component({
-  selector: 'orda-items-table',
-  standalone: true,
-  template: `<table mat-table [dataSource]="items()" class="mat-elevation-z8">
+    selector: 'orda-items-table',
+    template: `<table mat-table [dataSource]="items()" class="mat-elevation-z8">
     <!-- Position Column -->
     <ng-container matColumnDef="position">
       <th mat-header-cell *matHeaderCellDef>#</th>
@@ -60,8 +59,8 @@ import { OrdaCurrencyPipe } from '../../shared/currency.pipe';
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>`,
-  styles: ``,
-  imports: [MatTableModule, TranslocoModule, OrdaCurrencyPipe],
+    styles: ``,
+    imports: [MatTableModule, TranslocoModule, OrdaCurrencyPipe]
 })
 export class ItemsTableComponent implements OnInit {
   items = input.required<TransactionItem[]>();

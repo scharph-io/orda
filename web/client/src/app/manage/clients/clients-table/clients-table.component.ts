@@ -61,17 +61,16 @@ const CLIENTS: Client[] = [
  * @title Data table with sorting, pagination, and filtering.
  */
 @Component({
-  selector: 'orda-clients-table',
-  styleUrl: 'clients-table.component.scss',
-  templateUrl: 'clients-table.component.html',
-  standalone: true,
-  imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-  ],
+    selector: 'orda-clients-table',
+    styleUrl: 'clients-table.component.scss',
+    templateUrl: 'clients-table.component.html',
+    imports: [
+        MatFormFieldModule,
+        MatInputModule,
+        MatTableModule,
+        MatSortModule,
+        MatPaginatorModule,
+    ]
 })
 export class ClientsTableComponent implements AfterViewInit {
   // displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];

@@ -1,12 +1,14 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
+	"github.com/scharph/orda/cmd/server2/policy"
+	"github.com/scharph/orda/internal/accesscontrol"
 	"github.com/scharph/orda/internal/database"
-	"github.com/scharph/orda/internal/repository"
 )
 
 var (
@@ -20,89 +22,70 @@ func main() {
 		fmt.Println("INFO: No .env file found")
 	}
 
+	app := fiber.New()
+
 	// app := fiber.New()
 	database.ConnectDB()
 
-	groupRepo := repository.NewGroupRepo(database.DB)
-	// g, err := groupRepo.Create(context.TODO(), &model.Group{
-	// 	Name: "Test Product",
-	// })
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	e, err := accesscontrol.CasbinEnforcer()
 
-	// fmt.Println(g)
-
-	productRepo := repository.NewProductRepo(database.DB)
-	// p, err := productRepo.Create(context.TODO(), &model.Product{
-	// 	Name:    "Test Productasdasdasdasd",
-	// 	GroupID: g.ID,
-	// 	Price:   100,
-	// 	Desc:    "Test Product",
-	// })
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// fmt.Println(p.ID)
-
-	g, err := groupRepo.Read(context.TODO())
 	if err != nil {
 		fmt.Println(err)
-
 	}
 
-	// x, err := productRepo.ImportMany(context.TODO(), g[0].ID, &[]model.Product{
-	// 	{
-	// 		Name:  "Test A",
-	// 		Price: 110,
-	// 		Desc:  "Test Product",
-	// 	},
-	// 	{
-	// 		Name:  "Test B",
-	// 		Price: 120,
-	// 		Desc:  "Test Product",
-	// 	},
-	// 	{
-	// 		Name:  "Test C",
-	// 		Price: 130,
-	// 		Desc:  "Test Product",
+	// ***
+	e.LoadPolicy()
+
+	// e.AddRoleForUser("alice", "admin")
+	// e.AddRoleForUser("bob", "user")
+
+	// e.AddGroupingPolicy("alice", "admin")
+
+	e.AddPolicy("user", "role", "read")
+	e.AddPolicy("admin", "assortment", "read")
+	e.AddPolicy("admin", "assortment", "write")
+	e.AddPolicy("admin", "roles", "read")
+	e.AddPolicy("admin", "roles", "write")
+	e.AddPolicy("admin", "accounts", "read")
+	e.AddPolicy("admin", "accounts", "write")
+
+	// e.AddPolicy("admin", "assortment", "read")
+	// e.AddPolicy("admin", "assortment", "write")
+	// e.AddNamedPolicy("p", "admin", "assortment", "read")
+
+	// e.AddPolicies(
+	// 	[][]string{{
+	// 		"admin", "users", "read",
 	// 	}})
 
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
+	// x, _ := e.GetAllRoles()
+	// fmt.Println(x)
 
-	// fmt.Println(len(x))
+	// f, _ := e.GetAllNamedActions("p")
+	// fmt.Println(f)
 
-	d, err := productRepo.ReadByGroupID(context.TODO(), g[0].ID)
+	// // d, _ := e.GetAllNamedObjects("p")
+	// // fmt.Println(d)
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	// t, _ := e.GetFilteredPolicy(1, "assortment")
+	// fmt.Println(t)
 
-	for _, v := range d {
-		fmt.Println(v.Name, v.Desc, v.Price)
-	}
+	// g, _ := e.GetFilteredGroupingPolicy(1, "admin")
+	// fmt.Println(g)
 
-	// port := config.Config("PORT")
-	// if port == "" {
-	// 	port = "8080"
-	// }
+	// allow, _ := e.Enforce("user", "assortment:write")
+	// fmt.Println(allow)
 
-	// if tz := os.Getenv("TZ"); tz != "" {
-	// 	var err error
-	// 	log.Printf("setting time zone from ENV to '%s'", tz)
-	// 	time.Local, err = time.LoadLocation(tz)
-	// 	if err != nil {
-	// 		log.Printf("error loading location '%s': %v\n", tz, err)
-	// 	}
-	// }
+	// allow, _ = e.Enforce("admin", "assortment:write")
+	// fmt.Println(allow)
 
-	// log.Println("server running on port", port)
-	// router.SetupRoutes(app)
-	// log.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
+	policySync := policy.NewPolicySync(e)
+	policyHandler := &policy.PolicyHandler{PolicySync: policySync}
 
-	// // https://github.com/gofiber/recipes/tree/master/auth-docker-postgres-jwt
+	app.Use(cors.New())
 
+	app.Get("/api/policies", policyHandler.HandleGetPolicies)
+	app.Get("/api/policies/:role", policyHandler.HandleGetRolePolicy)
+
+	app.Listen(":3000")
 }

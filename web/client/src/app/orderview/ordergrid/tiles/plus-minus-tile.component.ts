@@ -6,10 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 const DEFAULT_DEPOSIT = 100;
 
 @Component({
-  selector: 'orda-plus-minus-tile',
-  standalone: true,
-  imports: [TranslocoModule, MatIconModule],
-  template: `
+    selector: 'orda-plus-minus-tile',
+    imports: [TranslocoModule, MatIconModule],
+    template: `
     <div class="item add" (click)="addToCart(1)" [title]="value()">
       {{ key() | transloco }} <mat-icon>add</mat-icon>
     </div>
@@ -17,8 +16,8 @@ const DEFAULT_DEPOSIT = 100;
       {{ key() | transloco }} <mat-icon>remove</mat-icon>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: flex;
         flex-direction: row;
@@ -45,7 +44,7 @@ const DEFAULT_DEPOSIT = 100;
         color: white;
       }
     `,
-  ],
+    ]
 })
 export class PlusMinusTileComponent {
   key = input.required<string>();
