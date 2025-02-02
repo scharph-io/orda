@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/scharph/orda/internal/middleware"
 )
 
 func (s *Server) SetupRoutes(app *fiber.App) {
@@ -23,11 +24,23 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	// 	},
 	// }))
 
-	app.Use(cors.New())
-	// app.Use(cors.New(cors.Config{
-	// 	AllowOrigins: "*",
-	// 	AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH"}))
-	//
+	// app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:4200",
+		AllowCredentials: true,
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
+		AllowHeaders:     "Origin, Content-Type, Accept",
+	},
+	))
+
+	app.Use(func(c *fiber.Ctx) error {
+		sess, err := middleware.Store.Get(c)
+		if err != nil {
+			return err
+		}
+		c.Locals("session", sess)
+		return c.Next()
+	})
 
 	app.Use(healthcheck.New(healthcheck.Config{
 		LivenessProbe: func(c *fiber.Ctx) bool {
@@ -44,19 +57,20 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	auth := app.Group("/auth")
 	auth.Post("/login", s.authHandlers.Login)
 	auth.Post("/logout", s.authHandlers.RequireAuth, s.authHandlers.Logout)
+	auth.Get("/check", s.authHandlers.Check)
 	auth.Get("/policy", s.authHandlers.RequireAuth, s.authHandlers.Policy)
 
-	api := app.Group("/api", logger.New(logger.Config{
+	api := app.Group("/api/v1", logger.New(logger.Config{
 		Format: "[API] ${time} ${status} - ${latency} ${method} ${path}\n",
 	}), s.authHandlers.RequireAuth)
 
-	v1 := api.Group("/v1", func(c *fiber.Ctx) error { // middleware for /api/v1
-		c.Set("Version", "v1")
-		return c.Next()
-	})
+	// v1 := api.Group("/v1", func(c *fiber.Ctx) error { // middleware for /api/v1
+	// 	c.Set("Version", "v1")
+	// 	return c.Next()
+	// })
 
 	// User
-	user := v1.Group("/user", logger.New(logger.Config{
+	user := api.Group("/user", logger.New(logger.Config{
 		Format: "[USER] ${time} ${status} - ${latency} ${method} ${path}\n",
 	}), s.authHandlers.RequireRole("admin"))
 	user.Get("/", s.userHandlers.GetAll)

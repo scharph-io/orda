@@ -38,11 +38,10 @@ func initSessionConfig() {
 	})
 
 	Store = session.New(session.Config{
-		Expiration:     time.Hour * 24,
+		Expiration:     time.Minute * 10,
 		Storage:        storage,
 		CookieHTTPOnly: true,
-		CookieSecure:   true,
-		KeyLookup:      "cookie:session_id",
+		CookieSecure:   false,
 		KeyGenerator:   uuid.New().String,
 	})
 }

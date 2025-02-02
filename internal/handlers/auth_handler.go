@@ -53,7 +53,8 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	sess.Set(session_user_id, user.Id)
+	sess.Set("session_user_name", user.Username)
+	sess.Set("session_user_role", user.Role)
 	if err := sess.Save(); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to save session",
@@ -62,7 +63,22 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"message": "Logged in successfully",
-		"user":    user,
+		"data":    user,
+	})
+}
+
+func (h *AuthHandlers) Check(c *fiber.Ctx) error {
+	sess, err := h.sessionStore.Get(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Session not found",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message":  "Session active",
+		"username": sess.Get("session_user_name"),
+		"role":     sess.Get("session_user_role"),
 	})
 }
 

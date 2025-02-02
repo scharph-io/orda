@@ -1,49 +1,66 @@
 {
-	"compileOnSave": false,
-	"compilerOptions": {
-		"outDir": "./dist/out-tsc",
-		"strict": true,
-		"strictNullChecks": true,
-		"strictPropertyInitialization": true,
-		"noImplicitAny": true,
-		"noImplicitThis": true,
-		"noImplicitOverride": true,
-		"noPropertyAccessFromIndexSignature": true,
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noEmitOnError": true,
-		"skipLibCheck": true,
-		"isolatedModules": true,
-		"esModuleInterop": true,
-		"experimentalDecorators": true,
-		"forceConsistentCasingInFileNames": true,
-		"moduleResolution": "bundler",
-		"importHelpers": true,
-		"target": "ES2022",
-		"module": "ES2022",
-		"incremental": true,
-		"disableReferencedProjectLoad": true,
-		"sourceMap": true,
-		"inlineSources": true,
-		"typeRoots": ["node_modules/@types"],
-		"baseUrl": ".", // root of your "paths" below. Required if "paths" is defined
-		"paths": {
-			"@shared/*": ["projects/client/src/app/shared/*"],
-			"@manage/*": ["projects/client/src/app/manage/*"]
-		}
-	},
-	"angularCompilerOptions": {
-		"enableI18nLegacyMessageIdFormat": false,
-		"strictInjectionParameters": true,
-		"strictInputAccessModifiers": true,
-		"strictTemplates": true,
-		"fullTemplateTypeCheck": true,
-		"strictOutputEventTypes": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true
-	},
-	"include": ["projects/**/*.ts", "projects/**/*.html", "projects/**/*.scss"],
-	"exclude": ["node_modules", "dist", "e2e"]
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "incremental": true,
+    "disableReferencedProjectLoad": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "baseUrl": ".",
+    // root of your "paths" below. Required if "paths" is defined
+    "paths": {
+      "@core/*": [
+        "projects/client/src/app/core/*"
+      ],
+      "@shared/*": [
+        "projects/client/src/app/shared/*"
+      ],
+      "@features/*": [
+        "projects/client/src/app/features/*"
+      ]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true,
+    "fullTemplateTypeCheck": true,
+    "strictOutputEventTypes": true,
+    "experimentalDecorators": true
+  },
+  "include": [
+    "projects/**/*.ts",
+    "projects/**/*.html",
+    "projects/**/*.scss"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "e2e"
+  ]
 }
