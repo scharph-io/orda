@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+
 	"github.com/scharph/orda/internal/middleware"
 )
 
@@ -33,6 +34,8 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	},
 	))
 
+	// app.Use(csrf.New())
+
 	app.Use(func(c *fiber.Ctx) error {
 		sess, err := middleware.Store.Get(c)
 		if err != nil {
@@ -54,14 +57,16 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	}))
 
 	// Auth
-	auth := app.Group("/auth")
+	auth := app.Group("/auth", logger.New(logger.Config{
+		Format: "[auth] ${time} ${status} - ${latency} ${method} ${path}\n",
+	}))
 	auth.Post("/login", s.authHandlers.Login)
 	auth.Post("/logout", s.authHandlers.RequireAuth, s.authHandlers.Logout)
-	auth.Get("/check", s.authHandlers.Check)
+	auth.Get("/session", s.authHandlers.Session)
 	auth.Get("/policy", s.authHandlers.RequireAuth, s.authHandlers.Policy)
 
 	api := app.Group("/api/v1", logger.New(logger.Config{
-		Format: "[API] ${time} ${status} - ${latency} ${method} ${path}\n",
+		Format: "[api] ${time} ${status} - ${latency} ${method} ${path}\n",
 	}), s.authHandlers.RequireAuth)
 
 	// v1 := api.Group("/v1", func(c *fiber.Ctx) error { // middleware for /api/v1

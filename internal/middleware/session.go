@@ -31,17 +31,18 @@ func initSessionConfig() {
 		Port:       config.Port,
 		Username:   config.User,
 		Password:   config.Password,
-		Database:   "fiber",
-		Table:      "fiber_sessions",
 		Reset:      false,
 		GCInterval: 10 * time.Second,
 	})
 
 	Store = session.New(session.Config{
-		Expiration:     time.Minute * 10,
+		Expiration:     time.Minute * 30,
 		Storage:        storage,
 		CookieHTTPOnly: true,
-		CookieSecure:   false,
+		CookieSecure:   true,
 		KeyGenerator:   uuid.New().String,
+		KeyLookup:      "cookie:__Host-orda-session", // Recommended to use the __Host- prefix when serving the app over TLS
 	})
+
+
 }

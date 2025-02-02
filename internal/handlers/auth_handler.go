@@ -9,7 +9,9 @@ import (
 )
 
 const (
-	session_user_id = "session_user_id"
+	session_user_id  = "user_id"
+	session_username = "username"
+	session_role     = "role"
 )
 
 type AuthHandlers struct {
@@ -53,8 +55,10 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	sess.Set("session_user_name", user.Username)
-	sess.Set("session_user_role", user.Role)
+	sess.Set(session_user_id, user.Id)
+	sess.Set(session_username, user.Username)
+	sess.Set(session_role, user.Role)
+
 	if err := sess.Save(); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to save session",
@@ -67,7 +71,7 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 	})
 }
 
-func (h *AuthHandlers) Check(c *fiber.Ctx) error {
+func (h *AuthHandlers) Session(c *fiber.Ctx) error {
 	sess, err := h.sessionStore.Get(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -75,30 +79,30 @@ func (h *AuthHandlers) Check(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"message":  "Session active",
-		"username": sess.Get("session_user_name"),
-		"role":     sess.Get("session_user_role"),
+	userID := sess.Get(session_user_id)
+	if userID == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"authenticated": false})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"username": sess.Get(session_username),
+		"role":     sess.Get(session_role),
 	})
 }
 
 func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
-	sess, err := h.sessionStore.Get(c)
+	session, err := h.sessionStore.Get(c)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Session error",
-		})
+		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	if err := sess.Destroy(); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to destroy session",
-		})
+	// Revoke users authentication
+	if err := session.Destroy(); err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "Logged out successfully",
-	})
+	// Redirect to the login page
+	return c.Redirect("/login")
 }
 
 func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
@@ -109,7 +113,7 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	userID := sess.Get("session_user_id")
+	userID := sess.Get(session_user_id)
 	if userID == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Unauthorized",

@@ -19,12 +19,12 @@
     <mat-icon>login</mat-icon>
     <span>Login</span>
   </button>
-  @if (hasSession()) {
-    <button mat-menu-item (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      <span>Logout</span>
-    </button>
-  }
+  <!--  @if (hasSession()) {-->
+  <!--    <button mat-menu-item (click)="logout()">-->
+  <!--      <mat-icon>logout</mat-icon>-->
+  <!--      <span>Logout</span>-->
+  <!--    </button>-->
+  <!--  }-->
   <button mat-menu-item routerLink="manage">
     <mat-icon>notifications_off</mat-icon>
     <span>Manage</span>
@@ -36,5 +36,6 @@
 </mat-menu>
 
 <div class="content">
+  has session: {{ hasSession() }}
   <router-outlet />
 </div>
