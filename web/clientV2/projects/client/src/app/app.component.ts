@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -23,23 +23,11 @@ export class AppComponent {
 	authService = inject(AuthService);
 	router = inject(Router);
 
-	isAuthenticated = signal(false);
-
-	constructor() {
-		// this.authService.getSession().subscribe({
-		// 	next: () => {
-		// 		this.isAuthenticated.set(true);
-		// 	},
-		// 	error: () => {
-		// 		this.isAuthenticated.set(false);
-		// 	},
-		// });
-	}
-
 	logout() {
 		this.authService.logout().subscribe({
-			next: (data) => {
-				console.log(data.message);
+			next: () => {
+				console.log('logout');
+				this.router.navigate(['/login']);
 			},
 			error: (err) => {
 				console.error(err);
@@ -47,7 +35,13 @@ export class AppComponent {
 		});
 	}
 
-	hasSession() {
-		return this.authService.hasSession();
+	protected get isAuthenticated() {
+		return this.authService.isAuthenticated;
 	}
+
+	// protected get userdata() {
+	// 	return this.authService.userData;
+	// }
+
+	// protected readonly ResourceStatus = ResourceStatus;
 }

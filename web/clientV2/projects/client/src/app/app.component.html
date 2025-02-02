@@ -1,17 +1,19 @@
-<script src="app.component.ts"></script>
 <mat-toolbar>
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <mat-icon>menu</mat-icon>
   </button>
   <span>{{ title }}</span>
   <span class="spacer"></span>
-  @if (hasSession()) {
-    <button mat-icon-button (click)="logout()">
-      <mat-icon>logout</mat-icon>
-    </button>
-  }
+  <!--  @if (authService.userData.status() === ResourceStatus.Resolved) {-->
+  <!--    <button mat-icon-button (click)="logout()">-->
+  <!--      <mat-icon>logout</mat-icon>-->
+  <!--    </button>-->
+  <!--  }-->
+
 
 </mat-toolbar>
+
+{{ isAuthenticated() }}
 
 <mat-menu #menu="matMenu">
 
@@ -19,7 +21,7 @@
     <mat-icon>login</mat-icon>
     <span>Login</span>
   </button>
-  <!--  @if (hasSession()) {-->
+  <!--  @if (authService.userData.status() === ResourceStatus.Resolved) {-->
   <!--    <button mat-menu-item (click)="logout()">-->
   <!--      <mat-icon>logout</mat-icon>-->
   <!--      <span>Logout</span>-->
@@ -36,6 +38,6 @@
 </mat-menu>
 
 <div class="content">
-  has session: {{ hasSession() }}
+  <!--  has session: {{ hasSession() | async }}-->
   <router-outlet />
 </div>

@@ -107,7 +107,6 @@ export class LoginComponent {
 				.login(this.loginForm.value.username!, this.loginForm.value.password!)
 				.subscribe({
 					next: () => {
-						console.log('login success');
 						this.router.navigate(['/']).catch((err) => console.error(err));
 					},
 					error: (err) => {

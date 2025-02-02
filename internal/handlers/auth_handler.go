@@ -102,7 +102,7 @@ func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
 	}
 
 	// Redirect to the login page
-	return c.Redirect("/login")
+	return c.SendStatus(fiber.StatusNoContent)
 }
 
 func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
