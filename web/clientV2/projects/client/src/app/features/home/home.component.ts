@@ -7,7 +7,7 @@ import { AuthService } from '@core/services/auth.service';
 	template: `
 		<p>
 			Welcome,
-			<!--      {{ authService.userData.value()?.username | titlecase }}-->
+			{{ authService.authenticatedUser.username }}
 		</p>
 	`,
 	styles: ``,
