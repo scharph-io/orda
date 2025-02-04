@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/scharph/orda/internal/accesscontrol"
@@ -65,6 +67,17 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
+	out, err := json.Marshal(user)
+	if err != nil {
+		panic(err)
+	}
+
+	c.Cookie(&fiber.Cookie{
+		Name:  "orda_user",
+		Value: string(out),
+		Path:  "/auth",
+	})
+
 	return c.JSON(fiber.Map{
 		"message": "Logged in successfully",
 		"data":    user,
@@ -101,6 +114,7 @@ func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
+	c.ClearCookie("orda_userid")
 	// Redirect to the login page
 	return c.SendStatus(fiber.StatusNoContent)
 }
