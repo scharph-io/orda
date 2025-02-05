@@ -23,23 +23,26 @@ type Session struct {
 
 func initSessionConfig() {
 
-	config := config.GetConfig().Database
+	c := config.GetConfig()
+	database := c.Database
+	server := c.Server
 
 	// Initialize custom config
 	storage := mysql.New(mysql.Config{
-		Host:       config.Host,
-		Port:       config.Port,
-		Username:   config.User,
-		Password:   config.Password,
+		Host:       database.Host,
+		Port:       database.Port,
+		Username:   database.User,
+		Password:   database.Password,
 		Reset:      false,
 		GCInterval: 10 * time.Second,
 	})
 
 	Store = session.New(session.Config{
-		Expiration:     time.Minute * 30,
+		Expiration:     time.Minute * 1,
 		Storage:        storage,
 		CookieHTTPOnly: true,
-		CookieSecure:   true,
+		CookieSecure:   server.SSL, // Set to true in production
+		CookieSameSite: config.Cookie_sameSite,
 		KeyGenerator:   uuid.New().String,
 		KeyLookup:      "cookie:session-id",
 		// KeyLookup:    "cookie:__Host-orda-session", // Recommended to use the __Host- prefix when serving the app over TLS

@@ -3,18 +3,14 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/scharph/orda/internal/accesscontrol"
+	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/util"
-)
-
-const (
-	session_user_id  = "user_id"
-	session_username = "username"
-	session_role     = "role"
 )
 
 type AuthHandlers struct {
@@ -29,7 +25,7 @@ func NewAuthHandlers(userService ports.IUserService, sessionStore session.Store,
 
 var _ ports.IAuthHandlers = (*AuthHandlers)(nil)
 
-// Login get user and password
+// Login
 func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 	var req ports.LoginRequest
 	if err := c.BodyParser(&req); err != nil {
@@ -58,9 +54,9 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	sess.Set(session_user_id, user.Id)
-	sess.Set(session_username, user.Username)
-	sess.Set(session_role, user.Role)
+	sess.Set(config.Session_userid, user.Id)
+	sess.Set(config.Session_username, user.Username)
+	sess.Set(config.Session_userrole, user.Role)
 
 	if err := sess.Save(); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -68,21 +64,11 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	out, err := json.Marshal(fiber.Map{
+	out, _ := json.Marshal(map[string]interface{}{
 		"user": user.Username,
 		"role": user.Role,
 	})
-	if err != nil {
-		panic(err)
-	}
-
-	c.Cookie(&fiber.Cookie{
-		Name:        "orda_user",
-		Value:       string(out),
-		Path:        "/auth",
-		SameSite:    "Strict",
-		SessionOnly: true,
-	})
+	c.Cookie(cookieConfig(string(out)))
 
 	return c.JSON(fiber.Map{
 		"message": "Logged in successfully",
@@ -95,27 +81,16 @@ func (h *AuthHandlers) Session(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusNoContent)
 	}
 
-	userID := sess.Get(session_user_id)
+	userID := sess.Get(config.Session_userid)
 	if userID == nil {
-		return c.SendStatus(fiber.StatusNoContent)
-		// return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"authenticated": false})
+		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	// out, err := json.Marshal(fiber.Map{
-	// 	"user": sess.Get(session_username),
-	// 	"role": sess.Get(session_role),
-	// })
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// c.Cookie(&fiber.Cookie{
-	// 	Name:  "orda_user",
-	// 	Value: string(out),
-	// 	Path:  "/auth",
-	// 	// Secure: true,
-	// 	SameSite: "Strict",
-	// })
+	out, _ := json.Marshal(map[string]interface{}{
+		"user": sess.Get(config.Session_username),
+		"role": sess.Get(config.Session_userrole),
+	})
+	c.Cookie(cookieConfig(string(out)))
 
 	return c.SendStatus(fiber.StatusOK)
 }
@@ -125,14 +100,11 @@ func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
-
 	// Revoke users authentication
 	if err := session.Destroy(); err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
-
-	c.ClearCookie("orda_userid")
-	// Redirect to the login page
+	c.ClearCookie()
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
@@ -144,7 +116,7 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	userID := sess.Get(session_user_id)
+	userID := sess.Get(config.Session_userid)
 	if userID == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Unauthorized",
@@ -152,14 +124,14 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 	}
 
 	// Add user to context
-	c.Locals(session_user_id, userID)
+	c.Locals(config.Session_userid, userID)
 	return c.Next()
 }
 
 func (h *AuthHandlers) RequireRole(role string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		userID := c.Locals(session_user_id).(string)
+		userID := c.Locals(config.Session_userid).(string)
 		user, err := h.userService.GetUserById(c.Context(), userID)
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -180,4 +152,14 @@ func (h *AuthHandlers) RequireRole(role string) fiber.Handler {
 
 func (h *AuthHandlers) Policy(c *fiber.Ctx) error {
 	return c.JSON(h.psyncInstance.GetPolicies())
+}
+
+func cookieConfig(value string) *fiber.Cookie {
+	return &fiber.Cookie{
+		Name:     config.Session_cookie,
+		Secure:   config.GetConfig().Server.SSL,
+		Value:    value,
+		SameSite: config.Cookie_sameSite,
+		Expires:  time.Now().Add(time.Minute * 1),
+	}
 }

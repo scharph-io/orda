@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
 	selector: 'orda-login',
@@ -17,6 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 		MatFormFieldModule,
 		MatCardModule,
 		MatCheckboxModule,
+		MatProgressSpinnerModule,
 	],
 	template: `
 		<mat-card>
@@ -56,14 +58,25 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 					@if (errorMsg() !== '') {
 						<mat-error>{{ errorMsg() }}</mat-error>
 					}
-					<button mat-button color="primary" [disabled]="loginForm.invalid" type="submit">
-						Login
-					</button>
+					<div class="container">
+						@if (!isLoading) {
+							<button mat-button color="primary" [disabled]="loginForm.invalid" type="submit">
+								Login
+							</button>
+						} @else {
+							<mat-spinner diameter="30" />
+						}
+					</div>
 				</form>
 			</mat-card-content>
 		</mat-card>
 	`,
 	styles: `
+		.container {
+			display: flex;
+			justify-content: center;
+		}
+
 		section {
 			margin: 12px 0;
 		}
@@ -89,6 +102,8 @@ export class LoginComponent {
 	private authService = inject(AuthService);
 	private router = inject(Router);
 
+	protected isLoading = false;
+
 	errorMsg = signal('');
 
 	protected loginForm = new FormGroup({
@@ -101,6 +116,7 @@ export class LoginComponent {
 	});
 
 	onSubmit() {
+		this.isLoading = true;
 		this.errorMsg.set('');
 
 		if (!this.loginForm.valid) {
@@ -112,9 +128,11 @@ export class LoginComponent {
 				.login(this.loginForm.value.username!, this.loginForm.value.password!)
 				.subscribe({
 					next: () => {
-						this.router.navigate(['/']).catch((err) => console.error(err));
+						this.isLoading = false;
+						this.router.navigate(['/home']).catch((err) => console.error(err));
 					},
 					error: (err) => {
+						this.isLoading = false;
 						this.errorMsg.set('Login failed. Please check your username and password.');
 						console.error(err);
 					},

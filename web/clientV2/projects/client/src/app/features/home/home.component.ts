@@ -5,9 +5,10 @@ import { AuthService } from '@core/services/auth.service';
 	selector: 'orda-home',
 	imports: [],
 	template: `
+		Auth {{ authService.isAuthenticated() }}
 		<p>
 			Welcome,
-			<!-- {{ authService.authenticatedUser.username }} -->
+			{{ authService.getAuthenticatedUser().user }} ({{ authService.getAuthenticatedUser().role }})
 		</p>
 	`,
 	styles: ``,

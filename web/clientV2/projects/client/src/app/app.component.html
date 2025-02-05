@@ -1,40 +1,33 @@
 <mat-toolbar>
-	<button mat-icon-button [matMenuTriggerFor]="menu">
-		<mat-icon>menu</mat-icon>
-	</button>
-	<span>{{ title }}</span>
-	<span class="spacer"></span>
-	<!--  @if (authService.userData.status() === ResourceStatus.Resolved) {-->
-	<!--    <button mat-icon-button (click)="logout()">-->
-	<!--      <mat-icon>logout</mat-icon>-->
-	<!--    </button>-->
-	<!--  }-->
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>{{ title }}</span>
+  <span class="spacer"></span>
+  {{ authService.getAuthenticatedUser().user }}
+  @if (authService.isAuthenticated()) {
+    <button mat-icon-button (click)="logout()">
+      <mat-icon>logout</mat-icon>
+    </button>
+  }
 </mat-toolbar>
 
-auth: {{ isAuthenticated() }}
-
 <mat-menu #menu="matMenu">
-	<button mat-menu-item routerLink="login">
-		<mat-icon>login</mat-icon>
-		<span>Login</span>
-	</button>
-	<!--  @if (authService.userData.status() === ResourceStatus.Resolved) {-->
-	<!--    <button mat-menu-item (click)="logout()">-->
-	<!--      <mat-icon>logout</mat-icon>-->
-	<!--      <span>Logout</span>-->
-	<!--    </button>-->
-	<!--  }-->
-	<button mat-menu-item routerLink="manage">
-		<mat-icon>notifications_off</mat-icon>
-		<span>Manage</span>
-	</button>
-	<!--  <button mat-menu-item routerLink="statistics">-->
-	<!--    <mat-icon>notifications_off</mat-icon>-->
-	<!--    <span>Statistics</span>-->
-	<!--  </button>-->
+
+  @if (authService.isAuthenticated()) {
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  }
+
+  <button mat-menu-item routerLink="manage">
+    <mat-icon>notifications_off</mat-icon>
+    <span>Manage</span>
+  </button>
+
 </mat-menu>
 
 <div class="content">
-	<!--  has session: {{ hasSession() | async }}-->
-	<router-outlet />
+  <router-outlet />
 </div>

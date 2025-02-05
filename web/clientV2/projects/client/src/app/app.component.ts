@@ -1,4 +1,4 @@
-import { Component, inject, ResourceStatus } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -35,14 +35,7 @@ export class AppComponent {
 		});
 	}
 
-	protected get isAuthenticated() {
-		return this.authService.isAuthenticated;
+	isLoggedIn() {
+		return this.authService.isAuthenticated();
 	}
-
-	// protected get userdata() {
-	// 	return this.authService.userData;
-	// }
-
-	// protected readonly ResourceStatus = ResourceStatus;
-	protected readonly ResourceStatus = ResourceStatus;
 }
