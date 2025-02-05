@@ -86,7 +86,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 
 	// Role
 	role := api.Group("/role")
-	role.Get("/", s.roleHandlers.GetAll)
+	role.Get("/", s.authHandlers.RequireRole("admin"), s.roleHandlers.GetAll)
 	role.Post("/", s.authHandlers.RequireRole("admin"), s.roleHandlers.Create)
 	role.Get("/:id", s.roleHandlers.GetOne)
 

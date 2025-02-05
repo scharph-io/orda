@@ -7,7 +7,7 @@ import { AuthService } from '@core/services/auth.service';
 	template: `
 		<p>
 			Welcome,
-			{{ authService.authenticatedUser.username }}
+			<!-- {{ authService.authenticatedUser.username }} -->
 		</p>
 	`,
 	styles: ``,

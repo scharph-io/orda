@@ -24,7 +24,7 @@ BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 BINARY_NAME=$(PROJECT)
 MAIN=cmd/server/main.go
 
-CLIENT_PROJECT=web/client_v2
+CLIENT_PROJECT=web/clientV2
 PACKAGE_JSON=$(CLIENT_PROJECT)/package.json
  ##SSL_CERT_DIR=/etc/ssl/certs
 

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -67,40 +68,56 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	out, err := json.Marshal(user)
+	out, err := json.Marshal(fiber.Map{
+		"user": user.Username,
+		"role": user.Role,
+	})
 	if err != nil {
 		panic(err)
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Name:  "orda_user",
-		Value: string(out),
-		Path:  "/auth",
+		Name:        "orda_user",
+		Value:       string(out),
+		Path:        "/auth",
+		SameSite:    "Strict",
+		SessionOnly: true,
 	})
 
 	return c.JSON(fiber.Map{
 		"message": "Logged in successfully",
-		"data":    user,
 	})
 }
 
 func (h *AuthHandlers) Session(c *fiber.Ctx) error {
 	sess, err := h.sessionStore.Get(c)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Session not found",
-		})
+		return c.SendStatus(fiber.StatusNoContent)
 	}
 
 	userID := sess.Get(session_user_id)
 	if userID == nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"authenticated": false})
+		return c.SendStatus(fiber.StatusNoContent)
+		// return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"authenticated": false})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"username": sess.Get(session_username),
-		"role":     sess.Get(session_role),
-	})
+	// out, err := json.Marshal(fiber.Map{
+	// 	"user": sess.Get(session_username),
+	// 	"role": sess.Get(session_role),
+	// })
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// c.Cookie(&fiber.Cookie{
+	// 	Name:  "orda_user",
+	// 	Value: string(out),
+	// 	Path:  "/auth",
+	// 	// Secure: true,
+	// 	SameSite: "Strict",
+	// })
+
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
@@ -141,6 +158,7 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 
 func (h *AuthHandlers) RequireRole(role string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+
 		userID := c.Locals(session_user_id).(string)
 		user, err := h.userService.GetUserById(c.Context(), userID)
 		if err != nil {
@@ -154,6 +172,8 @@ func (h *AuthHandlers) RequireRole(role string) fiber.Handler {
 				"error": "Insufficient permissions",
 			})
 		}
+
+		fmt.Printf("User %s (%s) has required role %s\n", user.Username, user.Role, role)
 		return c.Next()
 	}
 }

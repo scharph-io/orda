@@ -41,8 +41,8 @@ func initSessionConfig() {
 		CookieHTTPOnly: true,
 		CookieSecure:   true,
 		KeyGenerator:   uuid.New().String,
-		KeyLookup:      "cookie:__Host-orda-session", // Recommended to use the __Host- prefix when serving the app over TLS
+		KeyLookup:      "cookie:session-id",
+		// KeyLookup:    "cookie:__Host-orda-session", // Recommended to use the __Host- prefix when serving the app over TLS
 	})
-
 
 }

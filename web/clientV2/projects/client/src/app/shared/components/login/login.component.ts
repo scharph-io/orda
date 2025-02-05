@@ -25,6 +25,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 					<mat-form-field appearance="fill">
 						<mat-label>Email</mat-label>
 						<input
+							name="username"
+							autocomplete="username email"
 							matInput
 							formControlName="username"
 							type="username"
@@ -37,7 +39,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 
 					<mat-form-field appearance="fill">
 						<mat-label>Password</mat-label>
+						<input hidden type="text" name="username" value="..." autocomplete="username email" />
 						<input
+							name="password"
+							autocomplete="current-password"
 							matInput
 							formControlName="password"
 							type="password"

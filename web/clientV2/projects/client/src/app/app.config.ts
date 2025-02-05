@@ -8,7 +8,7 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { DATE_PIPE_DEFAULT_OPTIONS, HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { API, DEV_HOST, HOST, PROD_HOST, toUrl } from '@core/config/config';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
 		provideZoneChangeDetection({ eventCoalescing: true }),
 		provideRouter(routes),
 		provideAnimationsAsync(),
-		provideHttpClient(withInterceptors([credentialInterceptor, authInterceptor, errorInterceptor])),
+		provideHttpClient(withInterceptors([errorInterceptor, credentialInterceptor, authInterceptor])),
 		{
 			provide: API,
 			useValue: isDevMode()
@@ -33,7 +33,7 @@ export const appConfig: ApplicationConfig = {
 			provide: HOST,
 			useValue: isDevMode() ? toUrl(DEV_HOST) : toUrl(DEV_HOST),
 		},
-		{ provide: LocationStrategy, useClass: HashLocationStrategy },
+		// { provide: LocationStrategy, useClass: HashLocationStrategy },
 		{
 			provide: LOCALE_ID,
 			useValue: 'de',
