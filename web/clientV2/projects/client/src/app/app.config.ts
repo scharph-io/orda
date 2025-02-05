@@ -13,7 +13,6 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { API, DEV_HOST, HOST, PROD_HOST, toUrl } from '@core/config/config';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { authInterceptor } from '@core/interceptors/auth.interceptor';
 import { errorInterceptor } from '@core/interceptors/error.interceptor';
 import { credentialInterceptor } from '@core/interceptors/credential.interceptor';
 
@@ -22,7 +21,7 @@ export const appConfig: ApplicationConfig = {
 		provideZoneChangeDetection({ eventCoalescing: true }),
 		provideRouter(routes),
 		provideAnimationsAsync(),
-		provideHttpClient(withInterceptors([errorInterceptor, credentialInterceptor, authInterceptor])),
+		provideHttpClient(withInterceptors([errorInterceptor, credentialInterceptor])),
 		{
 			provide: API,
 			useValue: isDevMode()

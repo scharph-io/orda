@@ -36,13 +36,13 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 
 	user, err := h.userService.GetUserByUsername(c.Context(), req.Username)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid credentials",
 		})
 	}
 
 	if !util.VerifyPassword(req.Password, user.Password) {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid credentials",
 		})
 	}

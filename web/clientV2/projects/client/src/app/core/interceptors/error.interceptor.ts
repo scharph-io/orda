@@ -11,7 +11,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 		catchError((error) => {
 			if (error instanceof HttpErrorResponse && error.status === 401) {
 				router.navigate(['/login']).catch((err) => console.error(err));
-				console.log('Error interceptor');
 				return EMPTY;
 			}
 

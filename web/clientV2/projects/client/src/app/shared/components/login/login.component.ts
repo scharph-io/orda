@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { catchError } from 'rxjs';
 
 @Component({
 	selector: 'orda-login',
@@ -25,7 +26,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 			<mat-card-content>
 				<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 					<mat-form-field appearance="fill">
-						<mat-label>Email</mat-label>
+						<mat-label>Username</mat-label>
 						<input
 							name="username"
 							autocomplete="username email"
@@ -35,7 +36,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 							placeholder="Enter your username"
 						/>
 						@if (loginForm.get('username')?.hasError('required')) {
-							<mat-error> Username is required</mat-error>
+							<mat-error> required</mat-error>
 						}
 					</mat-form-field>
 
@@ -51,7 +52,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 							placeholder="Enter your password"
 						/>
 						@if (loginForm.get('password')?.hasError('required')) {
-							<mat-error>Password is required</mat-error>
+							<mat-error>required</mat-error>
 						}
 					</mat-form-field>
 					<mat-checkbox formControlName="saveLogin">Save Login?</mat-checkbox>
@@ -126,15 +127,20 @@ export class LoginComponent {
 		if (this.loginForm.value.username !== '' && this.loginForm.value.password !== '') {
 			this.authService
 				.login(this.loginForm.value.username!, this.loginForm.value.password!)
+				.pipe(
+					catchError((err) => {
+						this.errorMsg.set('Login failed. Please check your username and password.');
+						return err;
+					}),
+				)
 				.subscribe({
 					next: () => {
 						this.isLoading = false;
-						this.router.navigate(['/home']).catch((err) => console.error(err));
+						this.router.navigate(['/home']);
 					},
-					error: (err) => {
+					error: () => {
 						this.isLoading = false;
 						this.errorMsg.set('Login failed. Please check your username and password.');
-						console.error(err);
 					},
 				});
 		}
