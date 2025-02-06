@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -54,9 +53,9 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	sess.Set(config.Session_userid, user.Id)
-	sess.Set(config.Session_username, user.Username)
-	sess.Set(config.Session_userrole, user.Role)
+	sess.Set("userid", user.Id)
+	sess.Set("username", user.Username)
+	sess.Set("role", user.Role)
 
 	if err := sess.Save(); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -64,11 +63,7 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	out, _ := json.Marshal(map[string]interface{}{
-		"user": user.Username,
-		"role": user.Role,
-	})
-	c.Cookie(cookieConfig(string(out)))
+	c.Cookie(cookieConfig(user.Id))
 
 	return c.JSON(fiber.Map{
 		"message": "Logged in successfully",
@@ -81,18 +76,15 @@ func (h *AuthHandlers) Session(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusNoContent)
 	}
 
-	userID := sess.Get(config.Session_userid)
+	userID := sess.Get(config.Session_cookie)
 	if userID == nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	out, _ := json.Marshal(map[string]interface{}{
-		"user": sess.Get(config.Session_username),
-		"role": sess.Get(config.Session_userrole),
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"username": sess.Get("username"),
+		"role":     sess.Get("role"),
 	})
-	c.Cookie(cookieConfig(string(out)))
-
-	return c.SendStatus(fiber.StatusOK)
 }
 
 func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
@@ -116,7 +108,7 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	userID := sess.Get(config.Session_userid)
+	userID := sess.Get("userid")
 	if userID == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Unauthorized",
@@ -124,14 +116,14 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 	}
 
 	// Add user to context
-	c.Locals(config.Session_userid, userID)
+	c.Locals("userid", userID)
 	return c.Next()
 }
 
 func (h *AuthHandlers) RequireRole(role string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
-		userID := c.Locals(config.Session_userid).(string)
+		userID := c.Locals("userid").(string)
 		user, err := h.userService.GetUserById(c.Context(), userID)
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

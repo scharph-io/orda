@@ -5,7 +5,7 @@ import {
 	LOCALE_ID,
 	provideZoneChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withHashLocation } from '@angular/router';
 
 import { routes } from './app.routes';
 import { DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
@@ -19,7 +19,7 @@ import { credentialInterceptor } from '@core/interceptors/credential.interceptor
 export const appConfig: ApplicationConfig = {
 	providers: [
 		provideZoneChangeDetection({ eventCoalescing: true }),
-		provideRouter(routes),
+		provideRouter(routes, withHashLocation()),
 		provideAnimationsAsync(),
 		provideHttpClient(withInterceptors([errorInterceptor, credentialInterceptor])),
 		{
@@ -32,7 +32,6 @@ export const appConfig: ApplicationConfig = {
 			provide: HOST,
 			useValue: isDevMode() ? toUrl(DEV_HOST) : toUrl(DEV_HOST),
 		},
-		// { provide: LocationStrategy, useClass: HashLocationStrategy },
 		{
 			provide: LOCALE_ID,
 			useValue: 'de',

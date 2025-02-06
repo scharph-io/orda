@@ -10,11 +10,7 @@ import (
 
 const (
 	Cookie_sameSite = "Strict"
-
-	Session_userid   = "userid"
-	Session_username = "username"
-	Session_userrole = "userrole"
-	Session_cookie   = "session-user"
+	Session_cookie  = "session-user"
 )
 
 type Config struct {

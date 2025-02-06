@@ -10,6 +10,9 @@ import { AuthService } from '@core/services/auth.service';
 			Welcome,
 			{{ authService.getAuthenticatedUser().user }} ({{ authService.getAuthenticatedUser().role }})
 		</p>
+
+		https://lucide.dev/guide/packages/lucide-angular
+		https://sebastianviereck.de/httponly-und-secure-cookies-in-angular/
 	`,
 	styles: ``,
 })
