@@ -1,15 +1,10 @@
-import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { inject, Injectable, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { HOST } from '@core/config/config';
-import { LoginResponse } from '@core/models/login-response';
+import { LoginResponse, UserData } from '@core/models/login-response';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-
-export interface UserData {
-	user?: string;
-	role?: string;
-}
 
 @Injectable({
 	providedIn: 'root',
@@ -20,54 +15,47 @@ export class AuthService {
 	router = inject(Router);
 	cookieService = inject(CookieService);
 
-	isAuthenticatedNew = new BehaviorSubject<boolean>(false);
+	public user = signal<UserData>({});
 
 	constructor() {
 		if (this.cookieService.check('session-user')) {
-			this.checkSession().subscribe({
-				next: (data) => {
-					console.log(data);
-					this.isAuthenticatedNew.next(true);
+			this.getSessionData().subscribe({
+				next: (res) => {
+					this.user.set(res.data);
 				},
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				error: (_error) => {
-					this.isAuthenticatedNew.next(false);
+					this.user.set({});
 				},
 			});
 		}
 	}
 
 	login(username: string, password: string): Observable<LoginResponse<UserData>> {
-		return this.httpClient.post<LoginResponse<UserData>>(`${this.host}/auth/login`, {
-			username,
-			password,
-		});
+		return this.httpClient
+			.post<LoginResponse<UserData>>(`${this.host}/auth/login`, {
+				username,
+				password,
+			})
+			.pipe(
+				tap((res) => {
+					this.user.set(res.data);
+				}),
+			);
 	}
 
 	logout(): Observable<void> {
-		return this.httpClient
-			.post<void>(`${this.host}/auth/logout`, {})
-			.pipe(tap(() => this.cookieService.deleteAll()));
-	}
-
-	refreshSession() {
-		return this.httpClient.get<LoginResponse<UserData>>(`${this.host}/auth/session`);
+		return this.httpClient.post<void>(`${this.host}/auth/logout`, {}).pipe(
+			tap(() => this.cookieService.deleteAll()),
+			tap(() => this.user.set({})),
+		);
 	}
 
 	isAuthenticated() {
 		return this.cookieService.check('session-user');
 	}
 
-	get isAuthenticated$() {
-		return this.isAuthenticatedNew.asObservable();
-	}
-
-	getAuthenticatedUser(): UserData {
-		const userData = this.cookieService.get('session-user');
-		return userData !== '' ? (JSON.parse(userData) as UserData) : {};
-	}
-
-	checkSession() {
+	private getSessionData() {
 		return this.httpClient.get<LoginResponse<UserData>>(`${this.host}/auth/session`);
 	}
 }

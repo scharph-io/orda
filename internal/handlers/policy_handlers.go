@@ -19,7 +19,7 @@ func NewPolicyHandler(ps *accesscontrol.PolicySync) *PolicyHandler {
 
 // HandleGetPolicies retrieves current policies
 func (ph *PolicyHandler) GetPolicies(c *fiber.Ctx) error {
-	// Implement authentication/authorization check here
+	// Implement authenticationorization check here
 
 	return c.JSON(ph.PolicySync.GetPolicies())
 }

@@ -4,7 +4,7 @@
   </button>
   <span>{{ title }}</span>
   <span class="spacer"></span>
-  {{ authService.getAuthenticatedUser().user }}
+ 
   @if (authService.isAuthenticated()) {
     <button mat-icon-button (click)="logout()">
       <mat-icon>logout</mat-icon>

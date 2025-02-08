@@ -53,7 +53,7 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	sess.Set("userid", user.Id)
+	sess.Set(config.Session_cookie, user.Id)
 	sess.Set("username", user.Username)
 	sess.Set("role", user.Role)
 
@@ -67,6 +67,7 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"message": "Logged in successfully",
+		"data":    user,
 	})
 }
 
@@ -96,7 +97,7 @@ func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
 	if err := session.Destroy(); err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
-	c.ClearCookie()
+	c.ClearCookie(config.Session_cookie)
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
@@ -108,7 +109,7 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	userID := sess.Get("userid")
+	userID := sess.Get(config.Session_cookie)
 	if userID == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Unauthorized",

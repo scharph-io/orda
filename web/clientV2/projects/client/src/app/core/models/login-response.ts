@@ -4,6 +4,6 @@ export interface LoginResponse<T> {
 }
 
 export interface UserData {
-	username: string;
-	role: string;
+	username?: string;
+	role?: string;
 }

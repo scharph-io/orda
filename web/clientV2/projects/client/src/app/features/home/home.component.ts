@@ -8,22 +8,14 @@ import { AuthService } from '@core/services/auth.service';
 		Auth {{ authService.isAuthenticated() }}
 		<p>
 			Welcome,
-			{{ authService.getAuthenticatedUser().user }} ({{ authService.getAuthenticatedUser().role }})
+			{{ authService.user().username }} ({{ authService.user().role }})
 		</p>
 
-		https://lucide.dev/guide/packages/lucide-angular
-		https://sebastianviereck.de/httponly-und-secure-cookies-in-angular/
+		<!--		https://lucide.dev/guide/packages/lucide-angular-->
+		<!--		https://sebastianviereck.de/httponly-und-secure-cookies-in-angular/-->
 	`,
 	styles: ``,
 })
 export class HomeComponent {
 	authService = inject(AuthService);
-
-	constructor() {
-		// this.authService.session.subscribe({
-		// 	next: (data) => {
-		// 		this.user.set(data.username);
-		// 	},
-		// });
-	}
 }
