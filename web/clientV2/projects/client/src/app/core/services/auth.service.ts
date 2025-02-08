@@ -1,8 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { HOST } from '@core/config/config';
-import { LoginResponse, UserData } from '@core/models/login-response';
+import { LoginResponse, SessionInfo } from '@core/models/login-response';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -15,47 +15,43 @@ export class AuthService {
 	router = inject(Router);
 	cookieService = inject(CookieService);
 
-	public user = signal<UserData>({});
+	public user = signal<SessionInfo>({});
 
 	constructor() {
-		if (this.cookieService.check('session-user')) {
+		if (this.hasSessionUser()) {
 			this.getSessionData().subscribe({
 				next: (res) => {
-					this.user.set(res.data);
+					this.user.set(res);
 				},
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				error: (_error) => {
+				error: () => {
 					this.user.set({});
 				},
 			});
 		}
 	}
 
-	login(username: string, password: string): Observable<LoginResponse<UserData>> {
-		return this.httpClient
-			.post<LoginResponse<UserData>>(`${this.host}/auth/login`, {
-				username,
-				password,
-			})
-			.pipe(
-				tap((res) => {
-					this.user.set(res.data);
-				}),
-			);
+	login(username: string, password: string) {
+		return this.httpClient.post<LoginResponse<SessionInfo>>(`${this.host}/auth/login`, {
+			username,
+			password,
+		});
 	}
 
-	logout(): Observable<void> {
-		return this.httpClient.post<void>(`${this.host}/auth/logout`, {}).pipe(
-			tap(() => this.cookieService.deleteAll()),
-			tap(() => this.user.set({})),
-		);
+	logout() {
+		return this.httpClient
+			.post<void>(`${this.host}/auth/logout`, {})
+			.pipe(tap(() => this.cookieService.deleteAll()));
 	}
 
 	isAuthenticated() {
 		return this.cookieService.check('session-user');
 	}
 
-	private getSessionData() {
-		return this.httpClient.get<LoginResponse<UserData>>(`${this.host}/auth/session`);
+	public getSessionData() {
+		return this.httpClient.get<SessionInfo>(`${this.host}/auth/session`);
+	}
+
+	public hasSessionUser() {
+		return this.cookieService.check('session-user');
 	}
 }

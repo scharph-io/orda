@@ -8,7 +8,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { catchError } from 'rxjs';
 
 @Component({
 	selector: 'orda-login',
@@ -112,7 +111,7 @@ export class LoginComponent {
 			Validators.required,
 			Validators.pattern('^[a-zA-Z0-9_-]+$'),
 		]),
-		password: new FormControl('', [Validators.required]),
+		password: new FormControl('HzH2T8W4kggNUzebz6uAlhhADR242Y', [Validators.required]),
 		saveLogin: new FormControl({ value: true, disabled: true }, {}),
 	});
 
@@ -127,15 +126,10 @@ export class LoginComponent {
 		if (this.loginForm.value.username !== '' && this.loginForm.value.password !== '') {
 			this.authService
 				.login(this.loginForm.value.username!, this.loginForm.value.password!)
-				.pipe(
-					catchError((err) => {
-						this.errorMsg.set('Login failed. Please check your username and password.');
-						return err;
-					}),
-				)
 				.subscribe({
-					next: () => {
+					next: (res) => {
 						this.isLoading = false;
+						this.authService.user.set(res.data);
 						this.router.navigate(['/home']);
 					},
 					error: () => {

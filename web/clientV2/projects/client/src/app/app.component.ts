@@ -26,7 +26,6 @@ export class AppComponent {
 	logout() {
 		this.authService.logout().subscribe({
 			next: () => {
-				console.log('logout');
 				this.router.navigate(['/login']);
 			},
 			error: (err) => {

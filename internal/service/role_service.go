@@ -43,6 +43,13 @@ func (s *RoleService) Update(ctx context.Context, id string, role ports.RoleRequ
 }
 
 func (s *RoleService) Delete(ctx context.Context, id string) (bool, error) {
+	res, err := s.repo.ReadById(ctx, id)
+	if err != nil {
+		return false, err
+	}
+	if res.Name == "admin" {
+		return false, errors.New("role admin cannot be deleted")
+	}
 	return s.repo.Delete(ctx, id)
 }
 

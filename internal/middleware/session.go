@@ -38,7 +38,7 @@ func initSessionConfig() {
 	})
 
 	Store = session.New(session.Config{
-		Expiration:     time.Minute * 1,
+		Expiration:     time.Hour * 24,
 		Storage:        storage,
 		CookieHTTPOnly: true,
 		CookieSecure:   server.SSL, // Set to true in production

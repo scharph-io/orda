@@ -153,6 +153,6 @@ func cookieConfig(value string) *fiber.Cookie {
 		Secure:   config.GetConfig().Server.SSL,
 		Value:    value,
 		SameSite: config.Cookie_sameSite,
-		Expires:  time.Now().Add(time.Minute * 1),
+		Expires:  time.Now().Add(time.Hour * 24),
 	}
 }

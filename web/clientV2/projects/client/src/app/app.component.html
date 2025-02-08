@@ -4,7 +4,7 @@
   </button>
   <span>{{ title }}</span>
   <span class="spacer"></span>
- 
+
   @if (authService.isAuthenticated()) {
     <button mat-icon-button (click)="logout()">
       <mat-icon>logout</mat-icon>
@@ -14,17 +14,23 @@
 
 <mat-menu #menu="matMenu">
 
+
+  <button mat-menu-item routerLink="home">
+    <mat-icon>home</mat-icon>
+    <span>Home</span>
+  </button>
+
+  <button mat-menu-item routerLink="manage">
+    <mat-icon>notifications_off</mat-icon>
+    <span>Manage</span>
+  </button>
+
   @if (authService.isAuthenticated()) {
     <button mat-menu-item (click)="logout()">
       <mat-icon>logout</mat-icon>
       <span>Logout</span>
     </button>
   }
-
-  <button mat-menu-item routerLink="manage">
-    <mat-icon>notifications_off</mat-icon>
-    <span>Manage</span>
-  </button>
 
 </mat-menu>
 

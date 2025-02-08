@@ -35,20 +35,18 @@ func (r *RoleRepo) Update(ctx context.Context, id string, role *domain.Role) (*d
 }
 
 func (r *RoleRepo) Delete(ctx context.Context, id string) (bool, error) {
-	res := r.db.WithContext(ctx).Where("id = ?", id).Delete(&domain.Role{})
-	if res.Error != nil {
-		return false, res.Error
+	if err := r.db.WithContext(ctx).Delete(&domain.Role{}, "id = ?", id).Error; err != nil {
+		return false, err
 	}
-	return !(res.RowsAffected == 0), nil
+	return true, nil
 }
 
 func (r *RoleRepo) ReadById(ctx context.Context, id string) (*domain.Role, error) {
-	role := &domain.Role{}
-	res := r.db.WithContext(ctx).First(&role, id)
-	if res.Error != nil {
-		return nil, res.Error
+	var role domain.Role
+	if err := r.db.Model(&domain.Role{}).Where("id = ?", id).Find(&role).Error; err != nil {
+		return nil, err
 	}
-	return role, nil
+	return &role, nil
 }
 
 func (r *RoleRepo) ReadByName(ctx context.Context, name string) (*domain.Role, error) {
