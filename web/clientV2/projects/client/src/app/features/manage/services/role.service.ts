@@ -33,4 +33,8 @@ export class RoleService {
 				.pipe(catchError((_) => EMPTY))
 		);
 	}
+
+	public updateRole(id: string, role: Role) {
+		return this.httpClient.put(`${this.host}/role/${id}`, role);
+	}
 }

@@ -26,3 +26,17 @@ body {
     active-indicator-color: blue,
   ));
 }
+
+.content {
+  margin: 0.5rem 0.5rem;
+}
+
+.red-btn {
+  @include mat.icon-button-overrides((
+    icon-color: #da2525
+  ));
+  @include mat.button-overrides((
+    filled-container-color: orange,
+    filled-label-text-color: red,
+  ));
+}

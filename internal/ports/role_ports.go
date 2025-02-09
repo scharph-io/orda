@@ -40,4 +40,5 @@ type IRoleHandlers interface {
 	GetAll(c *fiber.Ctx) error
 	GetOne(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
+	Update(c *fiber.Ctx) error
 }

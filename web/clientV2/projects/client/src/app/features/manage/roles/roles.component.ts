@@ -1,55 +1,121 @@
 import { Component, inject } from '@angular/core';
-import { RoleService } from '../services/role.service';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { TitleCasePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { Role } from '@core/models/role';
+import { MatListModule } from '@angular/material/list';
+import { MatIcon } from '@angular/material/icon';
+import { TitleCasePipe } from '@angular/common';
+import {
+	ConfirmDialogComponent,
+	ConfirmDialogData,
+} from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { RoleDialogComponent } from '@features/manage/roles/role-dialog/role-dialog.component';
+import { filter, switchMap } from 'rxjs';
+import { RoleService } from '@features/manage/services/role.service';
 
 @Component({
 	selector: 'orda-roles',
-	imports: [MatExpansionModule, TitleCasePipe, MatButtonModule],
+	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe],
 	template: `
-		{{ roleService.rolesResource.isLoading() }}
-		@for (role of roleService.rolesResource.value(); track role.id) {
-			<mat-accordion class="role">
-				<mat-expansion-panel>
-					<mat-expansion-panel-header>
-						<mat-panel-title>{{ role.id }} {{ role.name | titlecase }}</mat-panel-title>
-					</mat-expansion-panel-header>
+		<div class="title-toolbar">
+			<h2>Roles</h2>
+			<button mat-button (click)="create()">New</button>
+		</div>
 
-					<ng-template matExpansionPanelContent>
-						<h4>Manage</h4>
-						@if (role.id) {
-							<button mat-button (click)="delete(role.id)">Delete</button>
-						}
-						<!--            <orda-permissions-table [role]="role.name" />-->
-					</ng-template>
-				</mat-expansion-panel>
-			</mat-accordion>
+		<mat-list role="list">
+			@for (role of roleService.rolesResource.value(); track role.id) {
+				<mat-list-item role="listitem">
+					<div class="item">
+						<p>{{ role.name | titlecase }}</p>
+						<div>
+							<button class="red-btn" mat-icon-button (click)="delete(role)">
+								<mat-icon>delete</mat-icon>
+							</button>
+							<button mat-icon-button (click)="edit(role)">
+								<mat-icon>edit</mat-icon>
+							</button>
+						</div>
+					</div>
+				</mat-list-item>
+			}
+		</mat-list>
+	`,
+	styles: `
+		.item {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
 		}
 
-		<button (click)="createNewRole()">Reload</button>
+		/*mat-list {*/
+		/*	width: 50%;*/
+		/*}*/
+
+		.title-toolbar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
 	`,
-	styles: ``,
 })
 export class RolesComponent {
 	roleService = inject(RoleService);
+	dialog = inject(MatDialog);
 
-	// protected roles = toSignal(this.#roleService.getRoles(), { initialValue: [] });
-
-	createNewRole() {
-		this.roleService.createRole({ name: 'waiter' }).subscribe({
-			next: () => {
-				this.roleService.rolesResource.reload();
-			},
-		});
+	delete(role: Role) {
+		this.dialog
+			.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+				data: {
+					message: role.name,
+				} as ConfirmDialogData,
+			})
+			.afterClosed()
+			.pipe(
+				filter((res) => res !== undefined),
+				switchMap(() => this.roleService.deleteRole(role.id ?? '')),
+			)
+			.subscribe({
+				next: () => {
+					this.roleService.rolesResource.reload();
+				},
+				error: (err) => {
+					console.log(err.message);
+				},
+			});
 	}
 
-	delete(id: string) {
-		this.roleService.deleteRole(id).subscribe({
-			next: () => {
-				console.log('deleted');
-				this.roleService.rolesResource.reload();
-			},
-		});
+	edit(role: Role) {
+		this.dialog
+			.open<RoleDialogComponent, Role, Role>(RoleDialogComponent, {
+				data: role,
+			})
+			.afterClosed()
+			.pipe(
+				filter((res) => res !== undefined),
+				switchMap((res) => this.roleService.updateRole(role.id ?? '', res)),
+			)
+			.subscribe({
+				next: () => this.roleService.rolesResource.reload(),
+				error: (err) => {
+					console.log(err.message);
+				},
+			});
+	}
+
+	create() {
+		this.dialog
+			.open<RoleDialogComponent, undefined, Role>(RoleDialogComponent)
+			.afterClosed()
+			.pipe(
+				filter((res) => res !== undefined),
+				switchMap((res) => this.roleService.createRole(res)),
+			)
+			.subscribe({
+				next: () => this.roleService.rolesResource.reload(),
+				error: (err) => {
+					console.log(err);
+				},
+			});
 	}
 }
