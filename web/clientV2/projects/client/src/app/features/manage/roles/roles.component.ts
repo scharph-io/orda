@@ -28,11 +28,14 @@ import { RoleService } from '@features/manage/services/role.service';
 					<div class="item">
 						<p>{{ role.name | titlecase }}</p>
 						<div>
-							<button class="red-btn" mat-icon-button (click)="delete(role)">
+							<button title="delete role" class="red-btn" mat-icon-button (click)="delete(role)">
 								<mat-icon>delete</mat-icon>
 							</button>
-							<button mat-icon-button (click)="edit(role)">
+							<button title="edit role" mat-icon-button (click)="edit(role)">
 								<mat-icon>edit</mat-icon>
+							</button>
+							<button title="update role policy" mat-icon-button (click)="updatePolicy(role)">
+								<mat-icon>policy</mat-icon>
 							</button>
 						</div>
 					</div>
@@ -117,5 +120,9 @@ export class RolesComponent {
 					console.log(err);
 				},
 			});
+	}
+
+	updatePolicy(role: Role) {
+		console.log('update policy for ' + role.name);
 	}
 }
