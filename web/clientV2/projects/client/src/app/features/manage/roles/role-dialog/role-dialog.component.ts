@@ -42,9 +42,10 @@ import { MatInput } from '@angular/material/input';
 			</form>
 		</mat-dialog-content>
 		<mat-dialog-actions>
-			<button mat-button (click)="cancelClick()">Cancel</button>
+			<button mat-button mat-dialog-close (click)="cancelClick()">Cancel</button>
 			<button
 				mat-button
+				mat-dialog-close
 				[disabled]="this.formGroup.invalid || !this.formGroup.dirty"
 				(click)="submitClick()"
 			>

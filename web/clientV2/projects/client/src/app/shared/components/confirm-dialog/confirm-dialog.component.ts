@@ -19,8 +19,10 @@ export interface ConfirmDialogData {
 	template: ` <h2 mat-dialog-title>Confirm</h2>
 		<mat-dialog-content> Are you sure to delete {{ data.message }}?</mat-dialog-content>
 		<mat-dialog-actions>
-			<button mat-button (click)="cancelClick()">Cancel</button>
-			<button class="red-btn" mat-button (click)="confirmClick()">Yes</button>
+			<button mat-button mat-dialog-close (click)="cancelClick()">Cancel</button>
+			<button class="red-btn" mat-button mat-dialog-close cdkFocusInitial (click)="confirmClick()">
+				Yes
+			</button>
 		</mat-dialog-actions>`,
 	styles: ``,
 })
