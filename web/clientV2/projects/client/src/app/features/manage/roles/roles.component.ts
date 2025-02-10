@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { Role } from '@core/models/role';
 import { MatListModule } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
@@ -10,8 +9,9 @@ import {
 	ConfirmDialogData,
 } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import { RoleDialogComponent } from '@features/manage/roles/role-dialog/role-dialog.component';
-import { filter, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 import { RoleService } from '@features/data-access/services/role.service';
+import { AbstractDialog } from '@shared/utils/abstract-dialog';
 
 @Component({
 	selector: 'orda-roles',
@@ -62,64 +62,30 @@ import { RoleService } from '@features/data-access/services/role.service';
 		}
 	`,
 })
-export class RolesComponent {
+export class RolesComponent extends AbstractDialog<Role> {
 	roleService = inject(RoleService);
-	dialog = inject(MatDialog);
 
 	delete(role: Role) {
-		this.dialog
-			.open<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-				data: {
-					message: role.name,
-				} as ConfirmDialogData,
-			})
-			.afterClosed()
-			.pipe(
-				filter((res) => res !== undefined),
-				switchMap(() => this.roleService.deleteRole(role.id ?? '')),
-			)
-			.subscribe({
-				next: () => {
-					this.roleService.rolesResource.reload();
-				},
-				error: (err) => {
-					console.log(err.message);
-				},
-			});
+		this.dialogAfterClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
+			ConfirmDialogComponent,
+			{
+				message: role.name,
+			},
+		)
+			.pipe(switchMap(() => this.roleService.deleteRole(role.id ?? '')))
+			.subscribe(this.fnObserver(() => this.roleService.rolesResource.reload()));
 	}
 
 	edit(role: Role) {
-		this.dialog
-			.open<RoleDialogComponent, Role, Role>(RoleDialogComponent, {
-				data: role,
-			})
-			.afterClosed()
-			.pipe(
-				filter((res) => res !== undefined),
-				switchMap((res) => this.roleService.updateRole(role.id ?? '', res)),
-			)
-			.subscribe({
-				next: () => this.roleService.rolesResource.reload(),
-				error: (err) => {
-					console.log(err.message);
-				},
-			});
+		this.dialogAfterClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, role)
+			.pipe(switchMap((res) => this.roleService.updateRole(role.id ?? '', res)))
+			.subscribe(this.fnObserver(() => this.roleService.rolesResource.reload()));
 	}
 
 	create() {
-		this.dialog
-			.open<RoleDialogComponent, undefined, Role>(RoleDialogComponent)
-			.afterClosed()
-			.pipe(
-				filter((res) => res !== undefined),
-				switchMap((res) => this.roleService.createRole(res)),
-			)
-			.subscribe({
-				next: () => this.roleService.rolesResource.reload(),
-				error: (err) => {
-					console.log(err);
-				},
-			});
+		this.dialogAfterClosed<RoleDialogComponent, undefined, Role>(RoleDialogComponent, undefined)
+			.pipe(switchMap((res) => this.roleService.createRole(res)))
+			.subscribe(this.fnObserver(() => this.roleService.rolesResource.reload()));
 	}
 
 	updatePolicy(role: Role) {

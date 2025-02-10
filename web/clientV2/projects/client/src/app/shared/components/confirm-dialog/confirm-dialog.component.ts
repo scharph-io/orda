@@ -17,7 +17,7 @@ export interface ConfirmDialogData {
 	selector: 'orda-confirm-dialog',
 	imports: [MatButton, MatDialogTitle, MatDialogContent, ReactiveFormsModule, MatDialogActions],
 	template: ` <h2 mat-dialog-title>Confirm</h2>
-		<mat-dialog-content> Are you sure? This cannot be reverted</mat-dialog-content>
+		<mat-dialog-content> Are you sure to delete {{ data.message }}?</mat-dialog-content>
 		<mat-dialog-actions>
 			<button mat-button (click)="cancelClick()">Cancel</button>
 			<button class="red-btn" mat-button (click)="confirmClick()">Yes</button>
