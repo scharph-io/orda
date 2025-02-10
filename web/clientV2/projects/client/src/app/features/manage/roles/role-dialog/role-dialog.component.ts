@@ -59,7 +59,11 @@ export class RoleDialogComponent {
 	dialogRef: MatDialogRef<RoleDialogComponent, Role> = inject(MatDialogRef);
 
 	protected formGroup = new FormGroup({
-		name: new FormControl('', [Validators.required, Validators.maxLength(10)]),
+		name: new FormControl('', [
+			Validators.required,
+			Validators.maxLength(10),
+			Validators.minLength(3),
+		]),
 	});
 
 	constructor() {

@@ -11,7 +11,7 @@ import {
 } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import { RoleDialogComponent } from '@features/manage/roles/role-dialog/role-dialog.component';
 import { filter, switchMap } from 'rxjs';
-import { RoleService } from '@features/manage/services/role.service';
+import { RoleService } from '@features/data-access/services/role.service';
 
 @Component({
 	selector: 'orda-roles',

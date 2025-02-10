@@ -67,8 +67,8 @@ export class HomeComponent {
 	private readonly router = inject(Router);
 
 	primaryTiles = signal<Tile[]>([
-		{ title: 'Role', path: '/manage/roles' },
-		{ title: 'User', path: '/manage/users' },
+		{ title: 'Roles', path: '/manage/roles' },
+		{ title: 'Users', path: '/manage/users' },
 	]);
 
 	secondaryTiles = signal<Tile[]>([
