@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { filter, Observer } from 'rxjs';
 
-export abstract class AbstractDialog<T> {
+export abstract class EntityManager<T> {
 	dialog = inject(MatDialog);
 
 	public abstract create(): void;

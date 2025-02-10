@@ -11,7 +11,7 @@ import {
 import { RoleDialogComponent } from '@features/manage/roles/role-dialog/role-dialog.component';
 import { switchMap } from 'rxjs';
 import { RoleService } from '@features/data-access/services/role.service';
-import { AbstractDialog } from '@shared/utils/abstract-dialog';
+import { EntityManager } from '@shared/utils/entity-manager';
 
 @Component({
 	selector: 'orda-roles',
@@ -62,7 +62,7 @@ import { AbstractDialog } from '@shared/utils/abstract-dialog';
 		}
 	`,
 })
-export class RolesComponent extends AbstractDialog<Role> {
+export class RolesComponent extends EntityManager<Role> {
 	roleService = inject(RoleService);
 
 	delete(role: Role) {
