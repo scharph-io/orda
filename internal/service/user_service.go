@@ -37,15 +37,15 @@ func (s *UserService) GetAllUsers(ctx context.Context) ([]ports.UserResponse, er
 }
 
 func (s *UserService) Create(ctx context.Context, req ports.UserRequest) (*ports.UserResponse, error) {
-	if req.Username == "admin" || req.Role == "admin" {
-		return nil, fmt.Errorf("admin can not be created")
+	if req.Username == "admin" {
+		return nil, fmt.Errorf("user admin can not be created")
 	} else if req.Username == "" || req.Password == "" || req.Role == "" {
 		return nil, fmt.Errorf("invalid input")
 	}
 
-	role, err := s.roleRepo.ReadByName(ctx, req.Role)
+	role, err := s.roleRepo.ReadById(ctx, req.Role)
 	if err != nil {
-		return nil, fmt.Errorf("role not found")
+		return nil, err
 	}
 
 	pw, err := util.HashPassword(req.Password)

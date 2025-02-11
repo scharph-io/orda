@@ -33,6 +33,8 @@ func (h *UserHandlers) Register(c *fiber.Ctx) error {
 
 	fmt.Printf("TODO: remove visible password from logs '%v'\n", req)
 
+	fmt.Printf("Try to create user: %+v\n", req)
+
 	res, err := h.service.Create(c.Context(), req)
 	if err != nil {
 		fmt.Printf("Failed to create user: %s\n", err)
