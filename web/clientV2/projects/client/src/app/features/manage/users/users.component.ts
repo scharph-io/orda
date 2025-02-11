@@ -1,5 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, InjectionToken } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+	FormControl,
+	FormGroup,
+	FormsModule,
+	ReactiveFormsModule,
+	Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatLabel, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -12,8 +18,9 @@ import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@shared/components/confirm-dialog/confirm-dialog.component';
-
-export const FORM = new InjectionToken<FormGroup>('form');
+import { RoleService } from '@features/data-access/services/role.service';
+import { MatSelectModule } from '@angular/material/select';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
 	selector: 'orda-users',
@@ -36,6 +43,7 @@ export const FORM = new InjectionToken<FormGroup>('form');
 })
 export class UsersComponent extends EntityManager<User> {
 	userService = inject(UserService);
+
 	create(): void {
 		this.dialogAfterClosed<UserDialogComponent, undefined, User>(UserDialogComponent, undefined)
 			.pipe(
@@ -76,10 +84,13 @@ export class UsersComponent extends EntityManager<User> {
 					<mat-label>Name</mat-label>
 					<input matInput formControlName="name" />
 				</mat-form-field>
-
 				<mat-form-field>
 					<mat-label>Role</mat-label>
-					<input matInput formControlName="role" />
+					<mat-select formControlName="role" name="role">
+						@for (role of roleService.resource.value(); track role.id) {
+							<mat-option [value]="role.id">{{ role.name | titlecase }}</mat-option>
+						}
+					</mat-select>
 				</mat-form-field>
 			</form>
 		</ng-template>
@@ -92,14 +103,22 @@ export class UsersComponent extends EntityManager<User> {
 		MatLabel,
 		MatFormField,
 		MatInput,
+		MatSelectModule,
+		TitleCasePipe,
 	],
 	providers: [],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDialogComponent extends DialogTemplateComponent<User> {
+	roleService = inject(RoleService);
+
 	formGroup = new FormGroup({
-		name: new FormControl<string>(''),
-		role: new FormControl<string>(''),
+		name: new FormControl<string>('', [
+			Validators.required,
+			Validators.minLength(3),
+			Validators.maxLength(15),
+		]),
+		role: new FormControl<string>('', Validators.required),
 	});
 
 	constructor() {

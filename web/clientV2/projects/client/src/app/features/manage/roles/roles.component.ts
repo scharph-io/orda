@@ -23,7 +23,7 @@ import { EntityManager } from '@shared/utils/entity-manager';
 		</div>
 
 		<mat-list role="list">
-			@for (role of roleService.rolesResource.value(); track role.id) {
+			@for (role of roleService.resource.value(); track role.id) {
 				<mat-list-item role="listitem">
 					<div class="item">
 						<p>{{ role.name | titlecase }}</p>
@@ -73,19 +73,19 @@ export class RolesComponent extends EntityManager<Role> {
 			},
 		)
 			.pipe(switchMap(() => this.roleService.deleteRole(role.id ?? '')))
-			.subscribe(this.fnObserver(() => this.roleService.rolesResource.reload()));
+			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
 	}
 
 	edit(role: Role) {
 		this.dialogAfterClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, role)
 			.pipe(switchMap((res) => this.roleService.updateRole(role.id ?? '', res)))
-			.subscribe(this.fnObserver(() => this.roleService.rolesResource.reload()));
+			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
 	}
 
 	create() {
 		this.dialogAfterClosed<RoleDialogComponent, undefined, Role>(RoleDialogComponent, undefined)
 			.pipe(switchMap((res) => this.roleService.createRole(res)))
-			.subscribe(this.fnObserver(() => this.roleService.rolesResource.reload()));
+			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
 	}
 
 	// updatePolicy(role: Role) {

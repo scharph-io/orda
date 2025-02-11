@@ -13,7 +13,7 @@ export class RoleService {
 	private readonly host = inject<string>(API);
 
 	// Reactive resource for roles
-	rolesResource = rxResource({
+	resource = rxResource({
 		loader: () => this.httpClient.get<Role[]>(`${this.host}/role`),
 	});
 
