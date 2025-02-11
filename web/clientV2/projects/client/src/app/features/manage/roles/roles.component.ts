@@ -34,9 +34,9 @@ import { EntityManager } from '@shared/utils/entity-manager';
 							<button title="edit role" mat-icon-button (click)="edit(role)">
 								<mat-icon>edit</mat-icon>
 							</button>
-							<button title="update role policy" mat-icon-button (click)="updatePolicy(role)">
+							<!-- <button title="update role policy" mat-icon-button (click)="updatePolicy(role)">
 								<mat-icon>policy</mat-icon>
-							</button>
+							</button> -->
 						</div>
 					</div>
 				</mat-list-item>
@@ -88,7 +88,7 @@ export class RolesComponent extends EntityManager<Role> {
 			.subscribe(this.fnObserver(() => this.roleService.rolesResource.reload()));
 	}
 
-	updatePolicy(role: Role) {
-		console.log('update policy for ' + role.name);
-	}
+	// updatePolicy(role: Role) {
+	// 	console.log('update policy for ' + role.name);
+	// }
 }

@@ -51,6 +51,7 @@ interface Tile {
 
 		<!--		https://lucide.dev/guide/packages/lucide-angular-->
 		<!--		https://sebastianviereck.de/httponly-und-secure-cookies-in-angular/-->
+		<!-- https://taiga-ui.dev/utils/tokens -->
 	`,
 	styles: `
 		.container {
