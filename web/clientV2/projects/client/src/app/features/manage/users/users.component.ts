@@ -7,7 +7,7 @@ import {
 	Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatLabel, MatFormField } from '@angular/material/form-field';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { User } from '@core/models/user';
 import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
@@ -64,6 +64,7 @@ export class UsersComponent extends EntityManager<User> {
 			.pipe(switchMap(() => this.userService.delete(u.id ?? '')))
 			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
 	}
+
 	edit(u: User): void {
 		this.dialogAfterClosed<UserDialogComponent, User, User>(UserDialogComponent, u)
 			.pipe(switchMap((res) => this.userService.update(u.id ?? '', res)))
@@ -86,7 +87,7 @@ export class UsersComponent extends EntityManager<User> {
 				</mat-form-field>
 				<mat-form-field>
 					<mat-label>Role</mat-label>
-					<mat-select formControlName="role" name="role">
+					<mat-select formControlName="role">
 						@for (role of roleService.resource.value(); track role.id) {
 							<mat-option [value]="role.id">{{ role.name | titlecase }}</mat-option>
 						}
