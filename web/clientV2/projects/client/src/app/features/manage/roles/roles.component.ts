@@ -8,10 +8,20 @@ import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@shared/components/confirm-dialog/confirm-dialog.component';
-import { RoleDialogComponent } from '@features/manage/roles/role-dialog/role-dialog.component';
 import { switchMap } from 'rxjs';
 import { RoleService } from '@features/data-access/services/role.service';
 import { EntityManager } from '@shared/utils/entity-manager';
+import {
+	FormsModule,
+	ReactiveFormsModule,
+	FormGroup,
+	FormControl,
+	Validators,
+} from '@angular/forms';
+
+import { MatLabel, MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
 
 @Component({
 	selector: 'orda-roles',
@@ -66,29 +76,79 @@ export class RolesComponent extends EntityManager<Role> {
 	roleService = inject(RoleService);
 
 	delete(role: Role) {
-		this.dialogAfterClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
-			ConfirmDialogComponent,
-			{
-				message: role.name,
-			},
-		)
-			.pipe(switchMap(() => this.roleService.deleteRole(role.id ?? '')))
+		this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+			message: role.name,
+		})
+			.pipe(switchMap(() => this.roleService.delete(role.id ?? '')))
 			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
 	}
 
 	edit(role: Role) {
-		this.dialogAfterClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, role)
-			.pipe(switchMap((res) => this.roleService.updateRole(role.id ?? '', res)))
+		this.dialogClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, role)
+			.pipe(switchMap((res) => this.roleService.update(role.id ?? '', res)))
 			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
 	}
 
 	create() {
-		this.dialogAfterClosed<RoleDialogComponent, undefined, Role>(RoleDialogComponent, undefined)
-			.pipe(switchMap((res) => this.roleService.createRole(res)))
+		this.dialogClosed<RoleDialogComponent, undefined, Role>(RoleDialogComponent, undefined)
+			.pipe(switchMap((res) => this.roleService.create(res)))
 			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
 	}
 
 	// updatePolicy(role: Role) {
 	// 	console.log('update policy for ' + role.name);
 	// }
+}
+
+@Component({
+	selector: 'orda-role-dialog',
+	imports: [
+		FormsModule,
+		ReactiveFormsModule,
+		DialogTemplateComponent,
+		MatLabel,
+		MatFormField,
+		MatInput,
+	],
+	template: `
+		<orda-dialog-template
+			[customTemplate]="template"
+			[form]="formGroup"
+			(submitClick)="submit()"
+		></orda-dialog-template>
+		<ng-template #template>
+			<form [formGroup]="formGroup">
+				<mat-form-field>
+					<mat-label>Name</mat-label>
+					<input matInput formControlName="name" />
+				</mat-form-field>
+			</form>
+		</ng-template>
+	`,
+	styles: ``,
+})
+class RoleDialogComponent extends DialogTemplateComponent<Role> {
+	formGroup = new FormGroup({
+		name: new FormControl('', [
+			Validators.required,
+			Validators.maxLength(10),
+			Validators.minLength(3),
+		]),
+	});
+
+	constructor() {
+		super();
+
+		this.formGroup.patchValue({
+			name: this.data?.name,
+		});
+	}
+
+	public submit = () => {
+		if (this.formGroup.dirty) {
+			this.dialogRef.close({
+				name: this.formGroup.value.name ?? '',
+			});
+		}
+	};
 }

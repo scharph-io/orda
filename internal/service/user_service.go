@@ -30,6 +30,7 @@ func (s *UserService) GetAllUsers(ctx context.Context) ([]ports.UserResponse, er
 		users = append(users, ports.UserResponse{
 			Username: user.Username,
 			Role:     user.Role.Name,
+			RoleId:   user.Role.ID,
 			Id:       user.ID,
 		})
 	}
@@ -39,11 +40,11 @@ func (s *UserService) GetAllUsers(ctx context.Context) ([]ports.UserResponse, er
 func (s *UserService) Create(ctx context.Context, req ports.UserRequest) (*ports.UserResponse, error) {
 	if req.Username == "admin" {
 		return nil, fmt.Errorf("user admin can not be created")
-	} else if req.Username == "" || req.Password == "" || req.Role == "" {
+	} else if req.Username == "" || req.Password == "" || req.RoleId == "" {
 		return nil, fmt.Errorf("invalid input")
 	}
 
-	role, err := s.roleRepo.ReadById(ctx, req.Role)
+	role, err := s.roleRepo.ReadById(ctx, req.RoleId)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +60,8 @@ func (s *UserService) Create(ctx context.Context, req ports.UserRequest) (*ports
 	}
 	return &ports.UserResponse{
 		Username: user.Username,
-		Role:     user.Role.Name,
+		Role:     role.Name,
+		RoleId:   role.ID,
 		Id:       user.ID,
 	}, nil
 }
@@ -72,6 +74,7 @@ func (s *UserService) GetUserById(ctx context.Context, id string) (*ports.UserRe
 	return &ports.UserResponse{
 		Username: user.Username,
 		Role:     user.Role.Name,
+		RoleId:   user.Role.ID,
 		Id:       user.ID,
 	}, nil
 }
@@ -84,8 +87,8 @@ func (s *UserService) GetUserByUsername(ctx context.Context, username string) (*
 	return &ports.UserResponse{
 		Username: user.Username,
 		Role:     user.Role.Name,
+		RoleId:   user.Role.ID,
 		Id:       user.ID,
-		Password: user.Password,
 	}, nil
 }
 
@@ -95,7 +98,28 @@ func (s *UserService) Update(ctx context.Context, req ports.UserRequest) (*ports
 	if current.Username == "admin" && req.Username != "admin" {
 		return nil, fmt.Errorf("admin can not be updated")
 	}
-	return nil, fmt.Errorf("Not implemented")
+
+	role, err := s.roleRepo.ReadById(ctx, req.RoleId)
+	if err != nil {
+		return nil, err
+	}
+
+	pw, err := util.HashPassword(req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := s.repo.Update(ctx, req.Id, &domain.User{Username: req.Username, Password: pw, RoleId: role.ID})
+	if err != nil {
+		return nil, err
+	}
+	return &ports.UserResponse{
+		Username: user.Username,
+		Role:     user.Role.Name,
+		RoleId:   user.Role.ID,
+		Id:       user.ID,
+	}, nil
+
 }
 
 func (s *UserService) Delete(ctx context.Context, id string) error {

@@ -1,7 +1,7 @@
 import { ComponentType } from '@angular/cdk/portal';
 import { inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { filter, Observer } from 'rxjs';
+import { EMPTY, filter, Observer } from 'rxjs';
 
 export abstract class EntityManager<T> {
 	dialog = inject(MatDialog);
@@ -12,7 +12,7 @@ export abstract class EntityManager<T> {
 
 	public abstract edit(t: T): void;
 
-	protected dialogAfterClosed<T, D = unknown, R = unknown>(c: ComponentType<T>, data: D) {
+	protected dialogClosed<T, D = unknown, R = unknown>(c: ComponentType<T>, data: D) {
 		return this.dialog
 			.open<T, D, R>(c, {
 				data,
@@ -29,9 +29,7 @@ export abstract class EntityManager<T> {
 			error: (err) => {
 				console.log(err.message);
 			},
-			complete: () => {
-				console.log('complete');
-			},
+			complete: () => EMPTY,
 		};
 	}
 }

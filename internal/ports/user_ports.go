@@ -11,13 +11,14 @@ type UserRequest struct {
 	Id       string `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Role     string `json:"role"`
+	RoleId   string `json:"roleid"`
 }
 
 type UserResponse struct {
 	Id       string `json:"id,omitempty"`
 	Username string `json:"username"`
-	Role     string `json:"role"`
+	Role     string `json:"role,omitempty"`
+	RoleId   string `json:"roleid"`
 	Password string `json:"-"`
 }
 

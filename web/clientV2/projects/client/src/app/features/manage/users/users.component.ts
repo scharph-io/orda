@@ -45,28 +45,21 @@ export class UsersComponent extends EntityManager<User> {
 	userService = inject(UserService);
 
 	create(): void {
-		this.dialogAfterClosed<UserDialogComponent, undefined, User>(UserDialogComponent, undefined)
-			.pipe(
-				switchMap((res) => {
-					return this.userService.create(res);
-				}),
-			)
+		this.dialogClosed<UserDialogComponent, undefined, User>(UserDialogComponent, undefined)
+			.pipe(switchMap((res) => this.userService.create(res)))
 			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
 	}
 
 	delete(u: User): void {
-		this.dialogAfterClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
-			ConfirmDialogComponent,
-			{
-				message: u.username,
-			},
-		)
+		this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
+			message: u.username,
+		})
 			.pipe(switchMap(() => this.userService.delete(u.id ?? '')))
 			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
 	}
 
 	edit(u: User): void {
-		this.dialogAfterClosed<UserDialogComponent, User, User>(UserDialogComponent, u)
+		this.dialogClosed<UserDialogComponent, User, User>(UserDialogComponent, u)
 			.pipe(switchMap((res) => this.userService.update(u.id ?? '', res)))
 			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
 	}
@@ -110,7 +103,7 @@ export class UsersComponent extends EntityManager<User> {
 	providers: [],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserDialogComponent extends DialogTemplateComponent<User> {
+class UserDialogComponent extends DialogTemplateComponent<User> {
 	roleService = inject(RoleService);
 
 	formGroup = new FormGroup({
@@ -126,7 +119,7 @@ export class UserDialogComponent extends DialogTemplateComponent<User> {
 		super();
 		this.formGroup.patchValue({
 			name: this.data?.username,
-			role: this.data?.role,
+			role: this.data?.roleid,
 		});
 	}
 
@@ -134,7 +127,7 @@ export class UserDialogComponent extends DialogTemplateComponent<User> {
 		if (this.formGroup.dirty) {
 			this.dialogRef.close({
 				username: this.formGroup.value.name ?? '',
-				role: this.formGroup.value.role ?? '',
+				roleid: this.formGroup.value.role ?? '',
 				password: 'test123',
 			});
 		}

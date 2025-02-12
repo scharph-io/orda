@@ -7,6 +7,7 @@ import {
 	InjectionToken,
 	input,
 	output,
+	signal,
 	TemplateRef,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -45,7 +46,7 @@ export const FORM = new InjectionToken<FormGroup>('form');
 				[disabled]="this.form().invalid || !this.form().dirty"
 				(click)="onSubmit()"
 			>
-				{{ data ? 'Update' : 'Save' }}
+				{{ data ? 'Update' : 'Save' }} {{ isLoading() }}
 			</button>
 		</mat-dialog-actions>
 	`,
@@ -57,10 +58,25 @@ export class DialogTemplateComponent<T> {
 	form = input.required<FormGroup>();
 	submitClick = output();
 
+	isLoading = signal(false);
+
 	protected readonly data = inject<T>(MAT_DIALOG_DATA);
 	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<T>, T> = inject(MatDialogRef);
 
 	protected cancelClick = () => this.dialogRef.close();
+
+	// constructor() {
+	// 	this.dialogRef.beforeClosed().subscribe({
+	// 		next: () => {
+	// 			this.isLoading.set(true);
+	// 		},
+	// 	});
+	// 	this.dialogRef.afterClosed().subscribe({
+	// 		next: () => {
+	// 			this.isLoading.set(false);
+	// 		},
+	// 	});
+	// }
 
 	onSubmit() {
 		this.submitClick.emit();

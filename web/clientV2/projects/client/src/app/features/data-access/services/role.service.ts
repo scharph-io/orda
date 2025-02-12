@@ -1,40 +1,36 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { API } from '@core/config/config';
+import { Injectable } from '@angular/core';
 import { Role } from '@core/models/role';
 import { catchError, EMPTY } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { EntityService } from '@shared/utils/entity-service';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class RoleService {
-	private readonly httpClient = inject(HttpClient);
-	private readonly host = inject<string>(API);
-
-	// Reactive resource for roles
+export class RoleService extends EntityService<Role> {
+	constructor() {
+		super();
+	}
 	resource = rxResource({
-		loader: () => this.httpClient.get<Role[]>(`${this.host}/role`),
+		loader: () => this.read(),
 	});
 
-	public getRoles() {
+	public read() {
 		return this.httpClient.get<Role[]>(`${this.host}/role`).pipe(catchError(() => EMPTY));
 	}
 
-	public createRole(role: Role) {
-		return this.httpClient.post(`${this.host}/role`, role).pipe(catchError(() => EMPTY));
+	public create(r: Role) {
+		this.logger.debug('Create', r, this.constructor.name);
+		return this.httpClient.post<Role>(`${this.host}/role`, r);
 	}
 
-	public deleteRole(id: string) {
-		return (
-			this.httpClient
-				.delete(`${this.host}/role/${id}`)
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				.pipe(catchError((_) => EMPTY))
-		);
+	public update(id: string, r: Role) {
+		this.logger.debug(`Update ${id} to`, r, this.constructor.name);
+		return this.httpClient.put<Role>(`${this.host}/role/${id}`, r);
 	}
 
-	public updateRole(id: string, role: Role) {
-		return this.httpClient.put(`${this.host}/role/${id}`, role);
+	public delete(id: string) {
+		this.logger.debug('Delete', id, this.constructor.name);
+		return this.httpClient.delete(`${this.host}/role/${id}`).pipe(catchError(() => EMPTY));
 	}
 }

@@ -58,6 +58,8 @@ func (h *UserHandlers) Update(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
 	}
 	req.Id = c.Params("id")
+
+	fmt.Printf("Try to update user: %+v\n", req)
 	res, err := h.service.Update(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to update user: %s", err)})

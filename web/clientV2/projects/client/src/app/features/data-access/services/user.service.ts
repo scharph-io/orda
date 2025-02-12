@@ -1,35 +1,33 @@
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { API } from '@core/config/config';
+import { Injectable } from '@angular/core';
 import { User } from '@core/models/user';
 import { catchError, EMPTY } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { Repository } from '@shared/utils/repository';
+import { EntityService } from '@shared/utils/entity-service';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class UserService implements Repository<User> {
-	private readonly httpClient = inject(HttpClient);
-	private readonly host = inject<string>(API);
+export class UserService extends EntityService<User> {
+	constructor() {
+		super();
+	}
 
 	resource = rxResource({
 		loader: () => this.read(),
 	});
-
 	public read() {
 		return this.httpClient.get<User[]>(`${this.host}/user`).pipe(catchError(() => EMPTY));
 	}
-
 	public create(u: User) {
+		this.logger.debug('Create', u, this.constructor.name);
 		return this.httpClient.post<User>(`${this.host}/user`, u);
 	}
-
 	public update(id: string, u: User) {
+		this.logger.debug(`Update ${id} to`, u, this.constructor.name);
 		return this.httpClient.put<User>(`${this.host}/user/${id}`, u);
 	}
-
 	public delete(id: string) {
+		this.logger.debug('Delete', id, this.constructor.name);
 		return this.httpClient.delete(`${this.host}/user/${id}`).pipe(catchError(() => EMPTY));
 	}
 }
