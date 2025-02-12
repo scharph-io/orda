@@ -40,7 +40,10 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
+	fmt.Println("User found: ", user)
+
 	if !util.VerifyPassword(req.Password, user.Password) {
+		fmt.Println("not matching")
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid credentials",
 		})

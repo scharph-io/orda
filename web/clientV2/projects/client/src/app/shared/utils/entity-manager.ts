@@ -15,16 +15,16 @@ export abstract class EntityManager<T> {
 	protected dialogClosed<T, D = unknown, R = unknown>(c: ComponentType<T>, data: D) {
 		return this.dialog
 			.open<T, D, R>(c, {
-				data,
+				data: data,
 			})
 			.afterClosed()
-			.pipe(filter((res) => res !== undefined));
+			.pipe(filter((r) => r !== undefined));
 	}
 
-	protected fnObserver(fn: () => void): Observer<unknown> {
+	protected fnObserver<T>(fn: (t: T) => void): Observer<T> {
 		return {
-			next: () => {
-				fn();
+			next: (v) => {
+				fn(v);
 			},
 			error: (err) => {
 				console.log(err.message);

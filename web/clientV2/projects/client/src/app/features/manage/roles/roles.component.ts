@@ -2,26 +2,25 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { Role } from '@core/models/role';
 import { MatListModule } from '@angular/material/list';
+import { RoleService } from '@features/data-access/services/role.service';
+import { EntityManager } from '@shared/utils/entity-manager';
+import {
+	FormControl,
+	FormGroup,
+	FormsModule,
+	ReactiveFormsModule,
+	Validators,
+} from '@angular/forms';
+import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { TitleCasePipe } from '@angular/common';
+import { MatInput } from '@angular/material/input';
+import { Observable, switchMap } from 'rxjs';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@shared/components/confirm-dialog/confirm-dialog.component';
-import { switchMap } from 'rxjs';
-import { RoleService } from '@features/data-access/services/role.service';
-import { EntityManager } from '@shared/utils/entity-manager';
-import {
-	FormsModule,
-	ReactiveFormsModule,
-	FormGroup,
-	FormControl,
-	Validators,
-} from '@angular/forms';
-
-import { MatLabel, MatFormField } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
-import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
 
 @Component({
 	selector: 'orda-roles',
@@ -45,8 +44,8 @@ import { DialogTemplateComponent } from '@shared/components/dialog/dialog-templa
 								<mat-icon>edit</mat-icon>
 							</button>
 							<!-- <button title="update role policy" mat-icon-button (click)="updatePolicy(role)">
-								<mat-icon>policy</mat-icon>
-							</button> -->
+                <mat-icon>policy</mat-icon>
+              </button> -->
 						</div>
 					</div>
 				</mat-list-item>
@@ -76,6 +75,8 @@ export class RolesComponent extends EntityManager<Role> {
 	roleService = inject(RoleService);
 
 	delete(role: Role) {
+		console.log(role);
+
 		this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
 			message: role.name,
 		})
@@ -84,15 +85,24 @@ export class RolesComponent extends EntityManager<Role> {
 	}
 
 	edit(role: Role) {
-		this.dialogClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, role)
-			.pipe(switchMap((res) => this.roleService.update(role.id ?? '', res)))
-			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
+		this.dialogClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, role).subscribe(
+			this.fnObserver<Role>((r) => {
+				console.log('Update role', r.name);
+				this.roleService.resource.reload();
+			}),
+		);
 	}
 
 	create() {
-		this.dialogClosed<RoleDialogComponent, undefined, Role>(RoleDialogComponent, undefined)
-			.pipe(switchMap((res) => this.roleService.create(res)))
-			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
+		this.dialogClosed<RoleDialogComponent, undefined, Role>(
+			RoleDialogComponent,
+			undefined,
+		).subscribe(
+			this.fnObserver<Role>((r) => {
+				console.log('Created role', r.name);
+				this.roleService.resource.reload();
+			}),
+		);
 	}
 
 	// updatePolicy(role: Role) {
@@ -128,6 +138,8 @@ export class RolesComponent extends EntityManager<Role> {
 	styles: ``,
 })
 class RoleDialogComponent extends DialogTemplateComponent<Role> {
+	roleService = inject(RoleService);
+
 	formGroup = new FormGroup({
 		name: new FormControl('', [
 			Validators.required,
@@ -138,17 +150,28 @@ class RoleDialogComponent extends DialogTemplateComponent<Role> {
 
 	constructor() {
 		super();
-
 		this.formGroup.patchValue({
-			name: this.data?.name,
+			name: this.inputData?.name,
 		});
 	}
 
 	public submit = () => {
-		if (this.formGroup.dirty) {
-			this.dialogRef.close({
+		this.isLoading.set(true);
+		let req$: Observable<Role>;
+		if (this.inputData) {
+			req$ = this.roleService.update(this.inputData.id ?? '', {
+				name: this.formGroup.value.name ?? '',
+			});
+		} else {
+			req$ = this.roleService.create({
 				name: this.formGroup.value.name ?? '',
 			});
 		}
+		req$.subscribe({
+			next: (data) => {
+				this.isLoading.set(false);
+				this.dialogRef.close(data);
+			},
+		});
 	};
 }

@@ -85,10 +85,11 @@ func (s *UserService) GetUserByUsername(ctx context.Context, username string) (*
 		return nil, err
 	}
 	return &ports.UserResponse{
+		Id:       user.ID,
 		Username: user.Username,
+		Password: user.Password,
 		Role:     user.Role.Name,
 		RoleId:   user.Role.ID,
-		Id:       user.ID,
 	}, nil
 }
 

@@ -46,7 +46,7 @@ export class UsersComponent extends EntityManager<User> {
 
 	create(): void {
 		this.dialogClosed<UserDialogComponent, undefined, User>(UserDialogComponent, undefined)
-			.pipe(switchMap((res) => this.userService.create(res)))
+			.pipe(switchMap((res) => this.userService.create(res!)))
 			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
 	}
 
@@ -60,7 +60,7 @@ export class UsersComponent extends EntityManager<User> {
 
 	edit(u: User): void {
 		this.dialogClosed<UserDialogComponent, User, User>(UserDialogComponent, u)
-			.pipe(switchMap((res) => this.userService.update(u.id ?? '', res)))
+			.pipe(switchMap((res) => this.userService.update(u.id ?? '', res!)))
 			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
 	}
 }

@@ -20,6 +20,7 @@ import {
 	MatDialogRef,
 	MatDialogTitle,
 } from '@angular/material/dialog';
+import { data } from 'autoprefixer';
 
 export const FORM = new InjectionToken<FormGroup>('form');
 
@@ -46,7 +47,7 @@ export const FORM = new InjectionToken<FormGroup>('form');
 				[disabled]="this.form().invalid || !this.form().dirty"
 				(click)="onSubmit()"
 			>
-				{{ data ? 'Update' : 'Save' }} {{ isLoading() }}
+				{{ inputData ? 'Update' : 'Save' }} {{ isLoading() }}
 			</button>
 		</mat-dialog-actions>
 	`,
@@ -60,25 +61,14 @@ export class DialogTemplateComponent<T> {
 
 	isLoading = signal(false);
 
-	protected readonly data = inject<T>(MAT_DIALOG_DATA);
+	protected readonly inputData = inject<T>(MAT_DIALOG_DATA);
 	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<T>, T> = inject(MatDialogRef);
 
 	protected cancelClick = () => this.dialogRef.close();
 
-	// constructor() {
-	// 	this.dialogRef.beforeClosed().subscribe({
-	// 		next: () => {
-	// 			this.isLoading.set(true);
-	// 		},
-	// 	});
-	// 	this.dialogRef.afterClosed().subscribe({
-	// 		next: () => {
-	// 			this.isLoading.set(false);
-	// 		},
-	// 	});
-	// }
-
 	onSubmit() {
 		this.submitClick.emit();
 	}
+
+	protected readonly data = data;
 }
