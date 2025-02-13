@@ -7,7 +7,6 @@ import {
 	InjectionToken,
 	input,
 	output,
-	signal,
 	TemplateRef,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -20,7 +19,9 @@ import {
 	MatDialogRef,
 	MatDialogTitle,
 } from '@angular/material/dialog';
-import { data } from 'autoprefixer';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { OrdaLogger } from '@shared/services/logger.service';
+import { Observer } from 'rxjs';
 
 export const FORM = new InjectionToken<FormGroup>('form');
 
@@ -33,21 +34,21 @@ export const FORM = new InjectionToken<FormGroup>('form');
 		MatDialogContent,
 		CommonModule,
 		MatButton,
+		MatProgressSpinnerModule,
 	],
 	template: `
-		<h2 mat-dialog-title>{{ data ? 'Update' : 'Create' }}</h2>
+		<h2 mat-dialog-title>{{ inputData ? 'Update' : 'Create' }}</h2>
 		<mat-dialog-content>
 			<ng-container *ngTemplateOutlet="customTemplate()"></ng-container>
 		</mat-dialog-content>
 		<mat-dialog-actions>
-			<button mat-button mat-dialog-close (click)="cancelClick()">Cancel</button>
+			<button mat-button mat-dialog-close>Cancel</button>
 			<button
 				mat-button
-				mat-dialog-close
 				[disabled]="this.form().invalid || !this.form().dirty"
-				(click)="onSubmit()"
+				(click)="submitClick.emit()"
 			>
-				{{ inputData ? 'Update' : 'Save' }} {{ isLoading() }}
+				{{ inputData ? 'Update' : 'Save' }}
 			</button>
 		</mat-dialog-actions>
 	`,
@@ -55,20 +56,20 @@ export const FORM = new InjectionToken<FormGroup>('form');
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogTemplateComponent<T> {
+	logger = inject(OrdaLogger);
 	customTemplate = input.required<TemplateRef<ElementRef>>();
 	form = input.required<FormGroup>();
 	submitClick = output();
 
-	isLoading = signal(false);
-
 	protected readonly inputData = inject<T>(MAT_DIALOG_DATA);
 	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<T>, T> = inject(MatDialogRef);
 
-	protected cancelClick = () => this.dialogRef.close();
-
-	onSubmit() {
-		this.submitClick.emit();
-	}
-
-	protected readonly data = data;
+	protected closeObserver: Partial<Observer<T>> = {
+		next: (value) => {
+			this.dialogRef.close(value);
+		},
+		error: (error) => {
+			this.logger.error('Error:', error, this.constructor.name);
+		},
+	};
 }

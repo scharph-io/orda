@@ -111,7 +111,7 @@ export class LoginComponent {
 			Validators.required,
 			Validators.pattern('^[a-zA-Z0-9_-]+$'),
 		]),
-		password: new FormControl('HzH2T8W4kggNUzebz6uAlhhADR242Y', [Validators.required]),
+		password: new FormControl('mLt1WFw593WUpvdehEr1Gbe7ZWFs35', [Validators.required]),
 		saveLogin: new FormControl({ value: true, disabled: true }, {}),
 	});
 

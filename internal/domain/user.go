@@ -2,7 +2,8 @@ package domain
 
 type Role struct {
 	Base
-	Name string `json:"name"`
+	Name  string
+	Users []User `gorm:"foreignKey:RoleId;constraint:OnDelete:CASCADE;"`
 }
 
 type User struct {

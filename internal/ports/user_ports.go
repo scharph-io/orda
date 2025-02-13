@@ -18,7 +18,7 @@ type UserResponse struct {
 	Id       string `json:"id,omitempty"`
 	Username string `json:"username"`
 	Role     string `json:"role,omitempty"`
-	RoleId   string `json:"roleid"`
+	RoleId   string `json:"roleid,omitempty"`
 	Password string `json:"-"`
 }
 

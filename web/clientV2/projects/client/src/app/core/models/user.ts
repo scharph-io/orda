@@ -3,5 +3,5 @@ export interface User {
 	username: string;
 	role?: string;
 	roleid: string;
-	password: string;
+	password?: string;
 }

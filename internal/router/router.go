@@ -75,9 +75,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	// })
 
 	// User
-	user := api.Group("/user", logger.New(logger.Config{
-		Format: "[USER] ${time} ${status} - ${latency} ${method} ${path}\n",
-	}), s.authHandlers.RequireRole("admin"))
+	user := api.Group("/user", s.authHandlers.RequireRole("admin"))
 	user.Get("/", s.userHandlers.GetAll)
 	user.Post("/", s.userHandlers.Register)
 	user.Get("/:id", s.userHandlers.GetOne)

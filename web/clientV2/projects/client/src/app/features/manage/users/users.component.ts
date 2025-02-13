@@ -13,14 +13,14 @@ import { User } from '@core/models/user';
 import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
 import { EntityManager } from '@shared/utils/entity-manager';
 import { UserService } from '@features/data-access/services/user.service';
-import { switchMap } from 'rxjs';
+import { RoleService } from '@features/data-access/services/role.service';
+import { MatSelectModule } from '@angular/material/select';
+import { TitleCasePipe } from '@angular/common';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@shared/components/confirm-dialog/confirm-dialog.component';
-import { RoleService } from '@features/data-access/services/role.service';
-import { MatSelectModule } from '@angular/material/select';
-import { TitleCasePipe } from '@angular/common';
+import { switchMap } from 'rxjs';
 
 @Component({
 	selector: 'orda-users',
@@ -38,16 +38,23 @@ import { TitleCasePipe } from '@angular/common';
 			}
 		</div>
 	`,
-	styleUrl: './users.component.scss',
+	styles: ``,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersComponent extends EntityManager<User> {
 	userService = inject(UserService);
 
 	create(): void {
-		this.dialogClosed<UserDialogComponent, undefined, User>(UserDialogComponent, undefined)
-			.pipe(switchMap((res) => this.userService.create(res!)))
-			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
+		this.dialogClosed<UserDialogComponent, undefined, User>(
+			UserDialogComponent,
+			undefined,
+		).subscribe(() => this.userService.resource.reload());
+	}
+
+	edit(u: User): void {
+		this.dialogClosed<UserDialogComponent, User, User>(UserDialogComponent, u).subscribe(() =>
+			this.userService.resource.reload(),
+		);
 	}
 
 	delete(u: User): void {
@@ -55,13 +62,7 @@ export class UsersComponent extends EntityManager<User> {
 			message: u.username,
 		})
 			.pipe(switchMap(() => this.userService.delete(u.id ?? '')))
-			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
-	}
-
-	edit(u: User): void {
-		this.dialogClosed<UserDialogComponent, User, User>(UserDialogComponent, u)
-			.pipe(switchMap((res) => this.userService.update(u.id ?? '', res!)))
-			.subscribe(this.fnObserver(() => this.userService.resource.reload()));
+			.subscribe(() => this.userService.resource.reload());
 	}
 }
 
@@ -105,6 +106,7 @@ export class UsersComponent extends EntityManager<User> {
 })
 class UserDialogComponent extends DialogTemplateComponent<User> {
 	roleService = inject(RoleService);
+	userSerivce = inject(UserService);
 
 	formGroup = new FormGroup({
 		name: new FormControl<string>('', [
@@ -118,18 +120,27 @@ class UserDialogComponent extends DialogTemplateComponent<User> {
 	constructor() {
 		super();
 		this.formGroup.patchValue({
-			name: this.data?.username,
-			role: this.data?.roleid,
+			name: this.inputData?.username,
+			role: this.inputData?.roleid,
 		});
 	}
 
 	public submit = () => {
-		if (this.formGroup.dirty) {
-			this.dialogRef.close({
-				username: this.formGroup.value.name ?? '',
-				roleid: this.formGroup.value.role ?? '',
-				password: 'test123',
-			});
+		if (this.inputData) {
+			this.userSerivce
+				.update(this.inputData.id ?? '', {
+					username: this.formGroup.value.name ?? '',
+					roleid: this.formGroup.value.role ?? '',
+				})
+				.subscribe(this.closeObserver);
+		} else {
+			this.userSerivce
+				.create({
+					username: this.formGroup.value.name ?? '',
+					roleid: this.formGroup.value.role ?? '',
+					password: 'test123',
+				})
+				.subscribe(this.closeObserver);
 		}
 	};
 }

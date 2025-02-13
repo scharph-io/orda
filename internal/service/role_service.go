@@ -58,7 +58,13 @@ func (s *RoleService) GetById(ctx context.Context, id string) (*ports.RoleRespon
 	if err != nil {
 		return nil, err
 	}
-	return &ports.RoleResponse{Id: res.ID, Name: res.Name}, nil
+
+	var users []ports.UserResponse
+	for _, u := range res.Users {
+		users = append(users, ports.UserResponse{Id: u.ID, Username: u.Username})
+	}
+
+	return &ports.RoleResponse{Id: res.ID, Name: res.Name, Users: users}, nil
 }
 
 func (s *RoleService) GetByName(ctx context.Context, name string) (*ports.RoleResponse, error) {

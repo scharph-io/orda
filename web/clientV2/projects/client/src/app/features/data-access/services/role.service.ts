@@ -19,12 +19,16 @@ export class RoleService extends EntityService<Role> {
 		return this.httpClient.get<Role[]>(`${this.host}/role`).pipe(catchError(() => EMPTY));
 	}
 
-	public create(r: Role) {
+	public readById(id: string) {
+		return this.httpClient.get<Role>(`${this.host}/role/${id}`).pipe(catchError(() => EMPTY));
+	}
+
+	public create(r: Partial<Role>) {
 		this.logger.debug('Create', r, this.constructor.name);
 		return this.httpClient.post<Role>(`${this.host}/role`, r);
 	}
 
-	public update(id: string, r: Role) {
+	public update(id: string, r: Partial<Role>) {
 		this.logger.debug(`Update ${id} to`, r, this.constructor.name);
 		return this.httpClient.put<Role>(`${this.host}/role/${id}`, r);
 	}

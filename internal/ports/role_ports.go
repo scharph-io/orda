@@ -13,8 +13,9 @@ type RoleRequest struct {
 }
 
 type RoleResponse struct {
-	Id   string `json:"id,omitempty"`
-	Name string `json:"name"`
+	Id    string         `json:"id,omitempty"`
+	Name  string         `json:"name"`
+	Users []UserResponse `json:"users,omitempty"`
 }
 
 type IRoleRepository interface {

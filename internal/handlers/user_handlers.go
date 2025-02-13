@@ -33,8 +33,6 @@ func (h *UserHandlers) Register(c *fiber.Ctx) error {
 
 	fmt.Printf("TODO: remove visible password from logs '%v'\n", req)
 
-	fmt.Printf("Try to create user: %+v\n", req)
-
 	res, err := h.service.Create(c.Context(), req)
 	if err != nil {
 		fmt.Printf("Failed to create user: %s\n", err)
@@ -59,7 +57,6 @@ func (h *UserHandlers) Update(c *fiber.Ctx) error {
 	}
 	req.Id = c.Params("id")
 
-	fmt.Printf("Try to update user: %+v\n", req)
 	res, err := h.service.Update(c.Context(), req)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to update user: %s", err)})

@@ -16,7 +16,8 @@ import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { TitleCasePipe } from '@angular/common';
 import { MatInput } from '@angular/material/input';
-import { Observable, switchMap } from 'rxjs';
+import { OrdaLogger } from '@shared/services/logger.service';
+import { filter, switchMap } from 'rxjs';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
@@ -73,36 +74,45 @@ import {
 })
 export class RolesComponent extends EntityManager<Role> {
 	roleService = inject(RoleService);
-
-	delete(role: Role) {
-		console.log(role);
-
-		this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-			message: role.name,
-		})
-			.pipe(switchMap(() => this.roleService.delete(role.id ?? '')))
-			.subscribe(this.fnObserver(() => this.roleService.resource.reload()));
-	}
-
-	edit(role: Role) {
-		this.dialogClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, role).subscribe(
-			this.fnObserver<Role>((r) => {
-				console.log('Update role', r.name);
-				this.roleService.resource.reload();
-			}),
-		);
-	}
+	logger = inject(OrdaLogger);
 
 	create() {
 		this.dialogClosed<RoleDialogComponent, undefined, Role>(
 			RoleDialogComponent,
 			undefined,
-		).subscribe(
-			this.fnObserver<Role>((r) => {
-				console.log('Created role', r.name);
-				this.roleService.resource.reload();
-			}),
+		).subscribe(() => this.roleService.resource.reload());
+	}
+
+	edit(r: Role) {
+		this.dialogClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, r).subscribe(() =>
+			this.roleService.resource.reload(),
 		);
+	}
+
+	delete(r: Role) {
+		this.roleService
+			.readById(r.id ?? '')
+			.pipe(
+				switchMap((role) =>
+					this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
+						ConfirmDialogComponent,
+						{
+							message: (role.users ?? []).length === 0 ? role.name : 'role is in use',
+							// disableSubmit: (role.users ?? []).length !== 0,
+						},
+					),
+				),
+			)
+			.pipe(
+				filter((res) => res),
+				switchMap(() => this.roleService.delete(r.id)),
+			)
+			.subscribe({
+				next: () => {
+					this.roleService.resource.reload();
+				},
+				error: (err) => this.logger.error(err),
+			});
 	}
 
 	// updatePolicy(role: Role) {
@@ -156,22 +166,18 @@ class RoleDialogComponent extends DialogTemplateComponent<Role> {
 	}
 
 	public submit = () => {
-		this.isLoading.set(true);
-		let req$: Observable<Role>;
 		if (this.inputData) {
-			req$ = this.roleService.update(this.inputData.id ?? '', {
-				name: this.formGroup.value.name ?? '',
-			});
+			this.roleService
+				.update(this.inputData?.id ?? '', {
+					name: this.formGroup.value.name ?? '',
+				})
+				.subscribe(this.closeObserver);
 		} else {
-			req$ = this.roleService.create({
-				name: this.formGroup.value.name ?? '',
-			});
+			this.roleService
+				.create({
+					name: this.formGroup.value.name ?? '',
+				})
+				.subscribe(this.closeObserver);
 		}
-		req$.subscribe({
-			next: (data) => {
-				this.isLoading.set(false);
-				this.dialogRef.close(data);
-			},
-		});
 	};
 }

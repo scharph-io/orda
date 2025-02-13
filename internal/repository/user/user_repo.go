@@ -56,7 +56,8 @@ func (r *UserRepo) ReadById(ctx context.Context, id string) (user model.User, er
 }
 
 func (r *UserRepo) Update(ctx context.Context, id string, user *model.User) (*model.User, error) {
-	res := r.db.WithContext(ctx).Model(&model.User{}).Where("id = ?", id).Updates(&user)
+	user.ID = id
+	res := r.db.WithContext(ctx).Model(&user).Updates(&user)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -64,7 +65,7 @@ func (r *UserRepo) Update(ctx context.Context, id string, user *model.User) (*mo
 }
 
 func (r *UserRepo) Delete(ctx context.Context, id string) (bool, error) {
-	res := r.db.WithContext(ctx).Where("id = ?", id).Delete(&model.User{})
+	res := r.db.WithContext(ctx).Where("id = ?", id).Unscoped().Delete(&model.User{})
 	if res.Error != nil {
 		return false, res.Error
 	}

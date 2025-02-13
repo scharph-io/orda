@@ -11,11 +11,13 @@ export abstract class EntityService<T> {
 
 	public abstract resource: ResourceRef<T[] | undefined>;
 
-	public abstract create(t: T): Observable<T>;
+	public abstract create(t: Partial<T>): Observable<T>;
 
 	public abstract read(): Observable<T[]>;
 
-	public abstract update(id: string, t: T): Observable<T>;
+	public abstract readById(id: string): Observable<T>;
+
+	public abstract update(id: string, t: Partial<T>): Observable<T>;
 
 	public abstract delete(id: string): Observable<unknown>;
 }

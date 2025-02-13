@@ -35,7 +35,7 @@ func (r *RoleRepo) Update(ctx context.Context, id string, role *domain.Role) (*d
 }
 
 func (r *RoleRepo) Delete(ctx context.Context, id string) (bool, error) {
-	if err := r.db.WithContext(ctx).Delete(&domain.Role{}, "id = ?", id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Unscoped().Delete(&domain.Role{}, "id = ?", id).Error; err != nil {
 		return false, err
 	}
 	return true, nil
@@ -43,7 +43,7 @@ func (r *RoleRepo) Delete(ctx context.Context, id string) (bool, error) {
 
 func (r *RoleRepo) ReadById(ctx context.Context, id string) (*domain.Role, error) {
 	var role domain.Role
-	if err := r.db.Model(&domain.Role{}).Where("id = ?", id).Find(&role).Error; err != nil {
+	if err := r.db.Model(&domain.Role{}).Preload("Users").Where("id = ?", id).Find(&role).Error; err != nil {
 		return nil, err
 	}
 	return &role, nil

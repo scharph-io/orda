@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import {
 	MAT_DIALOG_DATA,
 	MatDialogActions,
+	MatDialogClose,
 	MatDialogContent,
-	MatDialogRef,
 	MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
@@ -11,25 +11,35 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 export interface ConfirmDialogData {
 	message: string;
+	disableSubmit?: boolean;
 }
 
 @Component({
 	selector: 'orda-confirm-dialog',
-	imports: [MatButton, MatDialogTitle, MatDialogContent, ReactiveFormsModule, MatDialogActions],
-	template: ` <h2 mat-dialog-title>Confirm</h2>
-		<mat-dialog-content> Are you sure to delete {{ data.message }}?</mat-dialog-content>
+	imports: [
+		MatButton,
+		MatDialogClose,
+		MatDialogTitle,
+		MatDialogContent,
+		ReactiveFormsModule,
+		MatDialogActions,
+	],
+	template: ` @let blocked = inputData.disableSubmit ?? false;
+		<h2 mat-dialog-title>{{ !blocked ? 'Confirm' : 'Blocked' }}</h2>
+		@if (!blocked) {
+			<mat-dialog-content> Are you sure to delete {{ inputData.message }}?</mat-dialog-content>
+		} @else {
+			<mat-dialog-content> {{ inputData.message }}</mat-dialog-content>
+		}
 		<mat-dialog-actions>
-			<button mat-button mat-dialog-close (click)="cancelClick()">Cancel</button>
-			<button class="red-btn" mat-button mat-dialog-close cdkFocusInitial (click)="confirmClick()">
-				Yes
-			</button>
+			<button mat-button [mat-dialog-close]="false">Cancel</button>
+			@if (!blocked) {
+				<button mat-button [mat-dialog-close]="true">Yes</button>
+			}
 		</mat-dialog-actions>`,
 	styles: ``,
 })
 export class ConfirmDialogComponent {
-	data = inject<ConfirmDialogData>(MAT_DIALOG_DATA);
-	dialogRef: MatDialogRef<ConfirmDialogComponent, boolean> = inject(MatDialogRef);
-
-	protected cancelClick = () => this.dialogRef.close();
-	protected confirmClick = () => this.dialogRef.close(true);
+	inputData = inject<ConfirmDialogData>(MAT_DIALOG_DATA);
+	// dialogRef: MatDialogRef<ConfirmDialogComponent, boolean> = inject(MatDialogRef);
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from '@core/models/user';
-import { catchError, EMPTY } from 'rxjs';
+import { catchError, EMPTY, Observable } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityService } from '@shared/utils/entity-service';
 
@@ -16,7 +16,11 @@ export class UserService extends EntityService<User> {
 		loader: () => this.read(),
 	});
 	public read() {
-		return this.httpClient.get<User[]>(`${this.host}/user`).pipe(catchError(() => EMPTY));
+		return this.httpClient.get<User[]>(`${this.host}/user`);
+	}
+
+	public override readById(id: string): Observable<User> {
+		return this.httpClient.get<User>(`${this.host}/user/${id}`);
 	}
 	public create(u: User) {
 		this.logger.debug('Create', u, this.constructor.name);

@@ -1,7 +1,7 @@
 import { ComponentType } from '@angular/cdk/portal';
 import { inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EMPTY, filter, Observer } from 'rxjs';
+import { filter } from 'rxjs';
 
 export abstract class EntityManager<T> {
 	dialog = inject(MatDialog);
@@ -19,17 +19,5 @@ export abstract class EntityManager<T> {
 			})
 			.afterClosed()
 			.pipe(filter((r) => r !== undefined));
-	}
-
-	protected fnObserver<T>(fn: (t: T) => void): Observer<T> {
-		return {
-			next: (v) => {
-				fn(v);
-			},
-			error: (err) => {
-				console.log(err.message);
-			},
-			complete: () => EMPTY,
-		};
 	}
 }
