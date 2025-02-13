@@ -7,6 +7,7 @@ import {
 	InjectionToken,
 	input,
 	output,
+	signal,
 	TemplateRef,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -43,13 +44,10 @@ export const FORM = new InjectionToken<FormGroup>('form');
 		</mat-dialog-content>
 		<mat-dialog-actions>
 			<button mat-button mat-dialog-close>Cancel</button>
-			<button
-				mat-button
-				[disabled]="this.form().invalid || !this.form().dirty"
-				(click)="submitClick.emit()"
-			>
+			<button mat-button [disabled]="!canSubmit()" (click)="submitClick.emit()">
 				{{ inputData ? 'Update' : 'Save' }}
 			</button>
+			<!-- {{ canSubmit() }} -->
 		</mat-dialog-actions>
 	`,
 	styleUrl: './dialog-template.component.css',
@@ -60,6 +58,7 @@ export class DialogTemplateComponent<T> {
 	customTemplate = input.required<TemplateRef<ElementRef>>();
 	form = input.required<FormGroup>();
 	submitClick = output();
+	canSubmit = signal<boolean>(true);
 
 	protected readonly inputData = inject<T>(MAT_DIALOG_DATA);
 	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<T>, T> = inject(MatDialogRef);

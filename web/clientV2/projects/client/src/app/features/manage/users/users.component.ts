@@ -44,6 +44,11 @@ import { switchMap } from 'rxjs';
 export class UsersComponent extends EntityManager<User> {
 	userService = inject(UserService);
 
+	constructor() {
+		super();
+		this.userService.resource.reload();
+	}
+
 	create(): void {
 		this.dialogClosed<UserDialogComponent, undefined, User>(
 			UserDialogComponent,
@@ -106,7 +111,7 @@ export class UsersComponent extends EntityManager<User> {
 })
 class UserDialogComponent extends DialogTemplateComponent<User> {
 	roleService = inject(RoleService);
-	userSerivce = inject(UserService);
+	userService = inject(UserService);
 
 	formGroup = new FormGroup({
 		name: new FormControl<string>('', [
@@ -127,14 +132,14 @@ class UserDialogComponent extends DialogTemplateComponent<User> {
 
 	public submit = () => {
 		if (this.inputData) {
-			this.userSerivce
+			this.userService
 				.update(this.inputData.id ?? '', {
 					username: this.formGroup.value.name ?? '',
 					roleid: this.formGroup.value.role ?? '',
 				})
 				.subscribe(this.closeObserver);
 		} else {
-			this.userSerivce
+			this.userService
 				.create({
 					username: this.formGroup.value.name ?? '',
 					roleid: this.formGroup.value.role ?? '',

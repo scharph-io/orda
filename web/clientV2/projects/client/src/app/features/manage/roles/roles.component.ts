@@ -12,7 +12,7 @@ import {
 	Validators,
 } from '@angular/forms';
 import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { TitleCasePipe } from '@angular/common';
 import { MatInput } from '@angular/material/input';
@@ -22,6 +22,7 @@ import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@shared/components/confirm-dialog/confirm-dialog.component';
+// import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
 	selector: 'orda-roles',
@@ -76,6 +77,11 @@ export class RolesComponent extends EntityManager<Role> {
 	roleService = inject(RoleService);
 	logger = inject(OrdaLogger);
 
+	constructor() {
+		super();
+		this.roleService.resource.reload();
+	}
+
 	create() {
 		this.dialogClosed<RoleDialogComponent, undefined, Role>(
 			RoleDialogComponent,
@@ -97,8 +103,11 @@ export class RolesComponent extends EntityManager<Role> {
 					this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
 						ConfirmDialogComponent,
 						{
-							message: (role.users ?? []).length === 0 ? role.name : 'role is in use',
-							// disableSubmit: (role.users ?? []).length !== 0,
+							message:
+								(role.users ?? []).length === 0
+									? role.name
+									: `Role '${role.name}' is in use by ${(role.users ?? []).length} users`,
+							disableSubmit: (role.users ?? []).length !== 0,
 						},
 					),
 				),
@@ -127,7 +136,7 @@ export class RolesComponent extends EntityManager<Role> {
 		ReactiveFormsModule,
 		DialogTemplateComponent,
 		MatLabel,
-		MatFormField,
+		MatFormFieldModule,
 		MatInput,
 	],
 	template: `
@@ -143,6 +152,7 @@ export class RolesComponent extends EntityManager<Role> {
 					<input matInput formControlName="name" />
 				</mat-form-field>
 			</form>
+			<!-- can save {{ canSubmit() }} -->
 		</ng-template>
 	`,
 	styles: ``,
@@ -163,6 +173,14 @@ class RoleDialogComponent extends DialogTemplateComponent<Role> {
 		this.formGroup.patchValue({
 			name: this.inputData?.name,
 		});
+
+		// this.formGroup.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+		// 	this.canSubmit.set(
+		// 		!(this.roleService.resource.value() ?? []).some(
+		// 			(role) => role.name === this.formGroup.value.name,
+		// 		),
+		// 	);
+		// });
 	}
 
 	public submit = () => {
