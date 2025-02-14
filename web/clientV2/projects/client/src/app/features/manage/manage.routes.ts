@@ -20,6 +20,6 @@ export default [
 	{
 		path: 'assortment',
 		loadComponent: () =>
-			import('./assortment/assortment.component').then((m) => m.AssortmentComponent),
+			import('./assortment/assortment.component').then((m) => m.AssortmentGroupsComponent),
 	},
 ] satisfies Routes;

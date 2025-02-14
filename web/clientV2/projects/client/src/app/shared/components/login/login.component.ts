@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, isDevMode, signal } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -111,7 +111,7 @@ export class LoginComponent {
 			Validators.required,
 			Validators.pattern('^[a-zA-Z0-9_-]+$'),
 		]),
-		password: new FormControl('mLt1WFw593WUpvdehEr1Gbe7ZWFs35', [Validators.required]),
+		password: new FormControl(isDevMode() ? 'admin' : '', [Validators.required]),
 		saveLogin: new FormControl({ value: true, disabled: true }, {}),
 	});
 
