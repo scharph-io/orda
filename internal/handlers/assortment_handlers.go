@@ -42,6 +42,18 @@ func (h *AssortmentHandlers) ReadGroups(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 
+func (h *AssortmentHandlers) ReadGroup(c *fiber.Ctx) error {
+	id := c.Params("id")
+	res, err := h.assortmentService.ReadProductGroup(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get group"})
+	}
+	if res == nil {
+		return c.Status(fiber.StatusNoContent).JSON([]string{})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}
+
 func (h *AssortmentHandlers) UpdateGroup(c *fiber.Ctx) error {
 	req := ports.ProductGroupRequest{}
 	if err := c.BodyParser(&req); err != nil {

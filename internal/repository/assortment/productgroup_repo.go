@@ -33,6 +33,14 @@ func (r *ProductGroupRepo) Read(ctx context.Context) ([]*domain.ProductGroup, er
 	return productGroups, nil
 }
 
+func (r *ProductGroupRepo) ReadByID(ctx context.Context, id string) (*domain.ProductGroup, error) {
+	var productGroup domain.ProductGroup
+	if err := r.db.WithContext(ctx).Model(&domain.ProductGroup{}).Where("id = ?", id).Find(&productGroup).Error; err != nil {
+		return nil, err
+	}
+	return &productGroup, nil
+}
+
 func (r *ProductGroupRepo) Update(ctx context.Context, productGroup domain.ProductGroup) (*domain.ProductGroup, error) {
 	if err := r.db.WithContext(ctx).Model(&productGroup).Updates(productGroup).Error; err != nil {
 		return nil, err
@@ -45,20 +53,4 @@ func (r *ProductGroupRepo) Delete(ctx context.Context, productGroup domain.Produ
 		return err
 	}
 	return nil
-}
-
-func (r *ProductGroupRepo) ReadByID(ctx context.Context, id string) (*domain.ProductGroup, error) {
-	var productGroup domain.ProductGroup
-	if err := r.db.WithContext(ctx).Model(&domain.ProductGroup{}).Where("id = ?", id).Find(&productGroup).Error; err != nil {
-		return nil, err
-	}
-	return &productGroup, nil
-}
-
-func (r *ProductGroupRepo) ReadByGroupID(ctx context.Context, groupID string) ([]domain.ProductGroup, error) {
-	var productGroups []domain.ProductGroup
-	if err := r.db.WithContext(ctx).Where("product_group_id = ?", groupID).Find(&productGroups).Error; err != nil {
-		return nil, err
-	}
-	return productGroups, nil
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AssortmentGroup } from '@core/models/assortment-group';
+import { AssortmentGroup, AssortmentProduct } from '@core/models/assortment';
 import { catchError, EMPTY, Observable } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { EntityService } from '@shared/utils/entity-service';
@@ -38,6 +38,28 @@ export class AssortmentGroupService extends EntityService<AssortmentGroup> {
 		this.logger.debug('Delete', id, this.constructor.name);
 		return this.httpClient
 			.delete(`${this.host}/assortment/groups/${id}`)
+			.pipe(catchError(() => EMPTY));
+	}
+
+	public readProductsByGroup(id: string): Observable<AssortmentProduct[]> {
+		return this.httpClient
+			.get<AssortmentProduct[]>(`${this.host}/assortment/groups/${id}/products`)
+			.pipe(catchError(() => EMPTY));
+	}
+
+	public addNewProductToGroup(
+		id: string,
+		ap: Partial<AssortmentProduct>,
+	): Observable<AssortmentProduct> {
+		return this.httpClient.post<AssortmentProduct>(
+			`${this.host}/assortment/groups/${id}/products`,
+			ap,
+		);
+	}
+
+	public deleteProductFromGroup(id: string, productId: string): Observable<unknown> {
+		return this.httpClient
+			.delete(`${this.host}/assortment/groups/${id}/products/${productId}`)
 			.pipe(catchError(() => EMPTY));
 	}
 }

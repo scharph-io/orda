@@ -113,6 +113,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 
 	group := assortment.Group("/groups")
 	group.Get("/", s.assortmentHandlers.ReadGroups)
+	group.Get("/:id", s.assortmentHandlers.ReadGroup)
 	group.Post("/", s.assortmentHandlers.CreateGroup)
 	group.Put("/:id", s.assortmentHandlers.UpdateGroup)
 	group.Delete("/:id", s.assortmentHandlers.DeleteGroup)
@@ -124,12 +125,14 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	products.Put("/:id", s.assortmentHandlers.UpdateProduct)
 	products.Put("/:id/toggle", s.assortmentHandlers.ToggleProduct)
 
+	//Transactions
 	transactions := api.Group("/transaction")
 	transactions.Get("/", s.transactionHandlers.ReadLimit)
 	transactions.Post("/", s.transactionHandlers.Create)
 	transactions.Get("/:id", s.transactionHandlers.ReadById)
 	transactions.Delete("/:id", s.transactionHandlers.Delete)
 
+	// Views
 	views := api.Group("/views")
 	views.Get("/", s.viewHandlers.Read)
 	views.Post("/", s.viewHandlers.Create)

@@ -56,6 +56,20 @@ func (s *AssortmentService) ReadProductGroups(ctx context.Context) ([]ports.Prod
 	return response, nil
 }
 
+func (s *AssortmentService) ReadProductGroup(ctx context.Context, id string) (*ports.ProductGroupResponse, error) {
+	group, err := s.groups.ReadByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ports.ProductGroupResponse{
+		ID:      group.ID,
+		Name:    group.Name,
+		Desc:    group.Desc,
+		Deposit: group.Deposit,
+	}, nil
+}
+
 func (s *AssortmentService) ReadProductsGroupById(ctx context.Context, id string) ([]ports.ProductResponse, error) {
 
 	products, err := s.products.ReadByGroupID(ctx, id)
@@ -163,6 +177,10 @@ func (s *AssortmentService) UpdateProduct(ctx context.Context, product ports.Pro
 
 func (s *AssortmentService) ToggleProduct(ctx context.Context, productID string) error {
 	p, err := s.products.ReadById(ctx, productID)
+
+	if err != nil {
+		return err
+	}
 
 	fmt.Printf("set from %v to %v\n", p.Active, !p.Active)
 	p.Active = !p.Active

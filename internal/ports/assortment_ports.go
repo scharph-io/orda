@@ -40,6 +40,7 @@ type ProductResponse struct {
 type IProductGroupRepository interface {
 	Create(ctx context.Context, productGroup domain.ProductGroup) (*domain.ProductGroup, error)
 	Read(ctx context.Context) ([]*domain.ProductGroup, error)
+	ReadByID(ctx context.Context, id string) (*domain.ProductGroup, error)
 	Update(ctx context.Context, productGroup domain.ProductGroup) (*domain.ProductGroup, error)
 	Delete(ctx context.Context, productGroup domain.ProductGroup) error
 }
@@ -57,6 +58,7 @@ type IProductRepository interface {
 type IAssortmentService interface {
 	CreateProductGroup(ctx context.Context, productGroup ProductGroupRequest) (*ProductGroupResponse, error)
 	ReadProductGroups(ctx context.Context) ([]ProductGroupResponse, error)
+	ReadProductGroup(ctx context.Context, id string) (*ProductGroupResponse, error)
 	UpdateProductGroup(ctx context.Context, id string, productGroup ProductGroupRequest) (*ProductGroupResponse, error)
 	DeleteProductGroup(ctx context.Context, id string) error
 	ReadProductsGroupById(ctx context.Context, id string) ([]ProductResponse, error)
@@ -70,6 +72,7 @@ type IAssortmentService interface {
 type IAssortmentHandlers interface {
 	CreateGroup(c *fiber.Ctx) error
 	ReadGroups(c *fiber.Ctx) error
+	ReadGroup(c *fiber.Ctx) error
 	UpdateGroup(c *fiber.Ctx) error
 	DeleteGroup(c *fiber.Ctx) error
 	ReadProducts(c *fiber.Ctx) error
