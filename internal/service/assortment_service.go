@@ -118,19 +118,7 @@ func (s *AssortmentService) DeleteProductGroup(ctx context.Context, id string) e
 	return s.groups.Delete(ctx, group)
 }
 
-func (s *AssortmentService) AddProduct(ctx context.Context, groupID string, product ports.ProductRequest) error {
-	p := domain.Product{
-		Name:           product.Name,
-		Desc:           product.Desc,
-		Price:          product.Price,
-		Active:         product.Active,
-		ProductGroupID: groupID,
-	}
-	_, err := s.products.Create(ctx, p)
-	return err
-}
-
-func (s *AssortmentService) AddProducts(ctx context.Context, groupID string, products []ports.ProductRequest) error {
+func (s *AssortmentService) AddProductsToGroup(ctx context.Context, id string, products []ports.ProductRequest) error {
 	var p []domain.Product
 	for _, product := range products {
 		p = append(p, domain.Product{
@@ -138,16 +126,15 @@ func (s *AssortmentService) AddProducts(ctx context.Context, groupID string, pro
 			Desc:           product.Desc,
 			Price:          product.Price,
 			Active:         product.Active,
-			ProductGroupID: groupID,
+			ProductGroupID: id,
 		})
 	}
 	return s.products.CreateMany(ctx, p)
 }
 
-func (s *AssortmentService) RemoveProduct(ctx context.Context, groupID, productID string) error {
+func (s *AssortmentService) RemoveProduct(ctx context.Context, id string) error {
 	p := domain.Product{
-		Base:           domain.Base{ID: productID},
-		ProductGroupID: groupID,
+		Base: domain.Base{ID: id},
 	}
 	return s.products.Delete(ctx, p)
 }

@@ -1,5 +1,5 @@
 import { Component, inject, isDevMode, signal } from '@angular/core';
-import { AuthService } from '@core/services/auth.service';
+import { AuthService } from '@orda.core/services/auth.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';

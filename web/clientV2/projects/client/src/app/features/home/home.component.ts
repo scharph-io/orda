@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { AuthService } from '@core/services/auth.service';
+import { AuthService } from '@orda.core/services/auth.service';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { Router } from '@angular/router';
 
@@ -21,7 +21,7 @@ interface Tile {
 			<h3>Main</h3>
 			<mat-grid-list
 				style="width: 50%"
-				[cols]="secondaryTiles().length * 2"
+				[cols]="secondaryTiles().length"
 				rowHeight="5rem"
 				[gutterSize]="'0.5rem'"
 			>
@@ -37,7 +37,7 @@ interface Tile {
 			<h3>Assortment</h3>
 			<mat-grid-list
 				style="width: 50%"
-				[cols]="secondaryTiles().length * 2"
+				[cols]="secondaryTiles().length"
 				rowHeight="5rem"
 				[gutterSize]="'0.5rem'"
 			>
@@ -75,6 +75,8 @@ export class HomeComponent {
 	secondaryTiles = signal<Tile[]>([
 		{ title: 'Assortment', path: '/manage/assortment' },
 		{ title: 'Views', path: '/manage/views' },
+		{ title: 'Account', path: '/manage/accounts' },
+		{ title: 'History', path: '/manage/history' },
 	]);
 
 	navigateTo(path: string) {

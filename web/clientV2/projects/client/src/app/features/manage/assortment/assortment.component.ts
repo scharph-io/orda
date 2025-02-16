@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
-import { AssortmentGroupService } from '@features/data-access/services/assortment.service';
-import { OrdaLogger } from '@shared/services/logger.service';
+import { AssortmentGroupService } from '@orda.features/data-access/services/assortment/assortment-group.service';
+import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { RouterModule } from '@angular/router';
 import { AssortmentGroupsComponent } from './groups/groups.component';
 
@@ -18,7 +18,7 @@ import { AssortmentGroupsComponent } from './groups/groups.component';
 	styles: ``,
 })
 export class AssortmentComponent {
-	assortmentGroupService = inject(AssortmentGroupService);
+	groupService = inject(AssortmentGroupService);
 	logger = inject(OrdaLogger);
 
 	create(): void {

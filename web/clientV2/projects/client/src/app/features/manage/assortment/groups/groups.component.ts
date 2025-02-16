@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { AssortmentGroup } from '@core/models/assortment';
+import { AssortmentGroup } from '@orda.core/models/assortment';
 import { MatListModule } from '@angular/material/list';
-import { AssortmentGroupService } from '@features/data-access/services/assortment.service';
-import { EntityManager } from '@shared/utils/entity-manager';
+import { AssortmentGroupService } from '@orda.features/data-access/services/assortment/assortment-group.service';
+import { EntityManager } from '@orda.shared/utils/entity-manager';
 import {
 	FormControl,
 	FormGroup,
@@ -11,17 +11,17 @@ import {
 	ReactiveFormsModule,
 	Validators,
 } from '@angular/forms';
-import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
+import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { TitleCasePipe } from '@angular/common';
 import { MatInput } from '@angular/material/input';
-import { OrdaLogger } from '@shared/services/logger.service';
+import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { filter, switchMap } from 'rxjs';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
-} from '@shared/components/confirm-dialog/confirm-dialog.component';
+} from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -34,7 +34,7 @@ import { RouterModule } from '@angular/router';
 		</div>
 
 		<mat-list role="list">
-			@for (assortmentGroup of assortmentService.resource.value(); track assortmentGroup.id) {
+			@for (assortmentGroup of groupService.entityResource.value(); track assortmentGroup.id) {
 				<mat-list-item role="listitem">
 					<div class="item">
 						<p [routerLink]="[assortmentGroup.id]" routerLinkActive="router-link-active">
@@ -74,30 +74,30 @@ import { RouterModule } from '@angular/router';
 	`,
 })
 export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
-	assortmentService = inject(AssortmentGroupService);
+	groupService = inject(AssortmentGroupService);
 	logger = inject(OrdaLogger);
 
 	constructor() {
 		super();
-		this.assortmentService.resource.reload();
+		this.groupService.entityResource.reload();
 	}
 
 	create() {
 		this.dialogClosed<AssortmentGroupDialogComponent, undefined, AssortmentGroup>(
 			AssortmentGroupDialogComponent,
 			undefined,
-		).subscribe(() => this.assortmentService.resource.reload());
+		).subscribe(() => this.groupService.entityResource.reload());
 	}
 
 	edit(ag: AssortmentGroup) {
 		this.dialogClosed<AssortmentGroupDialogComponent, AssortmentGroup, AssortmentGroup>(
 			AssortmentGroupDialogComponent,
 			ag,
-		).subscribe(() => this.assortmentService.resource.reload());
+		).subscribe(() => this.groupService.entityResource.reload());
 	}
 
 	delete(ag: AssortmentGroup) {
-		this.assortmentService
+		this.groupService
 			.readById(ag.id ?? '')
 			.pipe(
 				switchMap((assortmentGroup) =>
@@ -111,11 +111,11 @@ export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
 			)
 			.pipe(
 				filter((res) => res),
-				switchMap(() => this.assortmentService.delete(ag.id)),
+				switchMap(() => this.groupService.delete(ag.id)),
 			)
 			.subscribe({
 				next: () => {
-					this.assortmentService.resource.reload();
+					this.groupService.entityResource.reload();
 				},
 				error: (err) => this.logger.error(err),
 			});

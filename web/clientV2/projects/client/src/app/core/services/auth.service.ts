@@ -1,8 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { HOST } from '@core/config/config';
-import { LoginResponse, SessionInfo } from '@core/models/login-response';
+import { HOST } from '@orda.core/config/config';
+import { LoginResponse, SessionInfo } from '@orda.core/models/login-response';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 

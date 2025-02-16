@@ -1,4 +1,4 @@
-import { User } from '@core/models/user';
+import { User } from '@orda.core/models/user';
 
 export interface LoginResponse<T> {
 	message: string;

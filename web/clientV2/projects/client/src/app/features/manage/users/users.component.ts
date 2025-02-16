@@ -9,17 +9,17 @@ import {
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { User } from '@core/models/user';
-import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
-import { EntityManager } from '@shared/utils/entity-manager';
-import { UserService } from '@features/data-access/services/user.service';
-import { RoleService } from '@features/data-access/services/role.service';
+import { User } from '@orda.core/models/user';
+import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
+import { EntityManager } from '@orda.shared/utils/entity-manager';
+import { UserService } from '@orda.features/data-access/services/user.service';
+import { RoleService } from '@orda.features/data-access/services/role.service';
 import { MatSelectModule } from '@angular/material/select';
 import { TitleCasePipe } from '@angular/common';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
-} from '@shared/components/confirm-dialog/confirm-dialog.component';
+} from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
 import { switchMap } from 'rxjs';
 
 @Component({
@@ -30,7 +30,7 @@ import { switchMap } from 'rxjs';
 			<h2>Users</h2>
 			<button mat-button (click)="create()">New</button>
 			<br />
-			@for (user of userService.resource.value(); track user.id) {
+			@for (user of userService.entityResource.value(); track user.id) {
 				{{ user.username }} ({{ user.role }})
 				<button mat-button (click)="edit(user)">Edit</button>
 				<button mat-button (click)="delete(user)">Delete</button>
@@ -46,19 +46,19 @@ export class UsersComponent extends EntityManager<User> {
 
 	constructor() {
 		super();
-		this.userService.resource.reload();
+		this.userService.entityResource.reload();
 	}
 
 	create(): void {
 		this.dialogClosed<UserDialogComponent, undefined, User>(
 			UserDialogComponent,
 			undefined,
-		).subscribe(() => this.userService.resource.reload());
+		).subscribe(() => this.userService.entityResource.reload());
 	}
 
 	edit(u: User): void {
 		this.dialogClosed<UserDialogComponent, User, User>(UserDialogComponent, u).subscribe(() =>
-			this.userService.resource.reload(),
+			this.userService.entityResource.reload(),
 		);
 	}
 
@@ -67,7 +67,7 @@ export class UsersComponent extends EntityManager<User> {
 			message: u.username,
 		})
 			.pipe(switchMap(() => this.userService.delete(u.id ?? '')))
-			.subscribe(() => this.userService.resource.reload());
+			.subscribe(() => this.userService.entityResource.reload());
 	}
 }
 
@@ -87,7 +87,7 @@ export class UsersComponent extends EntityManager<User> {
 				<mat-form-field>
 					<mat-label>Role</mat-label>
 					<mat-select formControlName="role">
-						@for (role of roleService.resource.value(); track role.id) {
+						@for (role of roleService.entityResource.value(); track role.id) {
 							<mat-option [value]="role.id">{{ role.name | titlecase }}</mat-option>
 						}
 					</mat-select>

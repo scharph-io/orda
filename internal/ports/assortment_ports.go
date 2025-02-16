@@ -61,10 +61,11 @@ type IAssortmentService interface {
 	ReadProductGroup(ctx context.Context, id string) (*ProductGroupResponse, error)
 	UpdateProductGroup(ctx context.Context, id string, productGroup ProductGroupRequest) (*ProductGroupResponse, error)
 	DeleteProductGroup(ctx context.Context, id string) error
+
 	ReadProductsGroupById(ctx context.Context, id string) ([]ProductResponse, error)
-	AddProduct(ctx context.Context, groupID string, product ProductRequest) error
-	AddProducts(ctx context.Context, groupID string, products []ProductRequest) error
-	RemoveProduct(ctx context.Context, groupID, productID string) error
+	AddProductsToGroup(ctx context.Context, id string, products []ProductRequest) error
+
+	RemoveProduct(ctx context.Context, id string) error
 	UpdateProduct(ctx context.Context, product ProductRequest) (*ProductResponse, error)
 	ToggleProduct(ctx context.Context, productID string) error
 }

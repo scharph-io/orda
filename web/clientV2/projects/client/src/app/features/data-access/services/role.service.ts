@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Role } from '@core/models/role';
+import { Role } from '@orda.core/models/role';
 import { catchError, EMPTY } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { EntityService } from '@shared/utils/entity-service';
+import { EntityService } from '@orda.shared/utils/entity-service';
 
 @Injectable({
 	providedIn: 'root',
@@ -11,7 +11,8 @@ export class RoleService extends EntityService<Role> {
 	constructor() {
 		super();
 	}
-	resource = rxResource({
+
+	entityResource = rxResource({
 		loader: () => this.read(),
 	});
 

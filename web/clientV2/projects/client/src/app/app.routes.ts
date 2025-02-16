@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from '@shared/components/login/login.component';
-import { HomeComponent } from '@features/home/home.component';
-import { authGuard } from '@core/guards/auth.guard';
+import { LoginComponent } from '@orda.shared/components/login/login.component';
+import { HomeComponent } from '@orda.features/home/home.component';
+import { authGuard } from '@orda.core/guards/auth.guard';
 
 export const routes: Routes = [
 	{
@@ -16,7 +16,7 @@ export const routes: Routes = [
 	{
 		path: 'manage',
 		canActivate: [authGuard],
-		loadChildren: () => import('@features/manage/manage.routes'),
+		loadChildren: () => import('@orda.features/manage/manage.routes'),
 	},
 	{ path: '', redirectTo: 'home', pathMatch: 'full' },
 	{ path: '**', redirectTo: 'home' },

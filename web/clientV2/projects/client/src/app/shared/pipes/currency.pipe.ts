@@ -5,7 +5,7 @@ import { CurrencyPipe } from '@angular/common';
 	name: 'currency',
 })
 export class OrdaCurrencyPipe extends CurrencyPipe implements PipeTransform {
-	override transform(value: never, args?: never): any {
+	override transform(value: any, args?: any): any {
 		return super.transform(value / 100, args);
 	}
 }

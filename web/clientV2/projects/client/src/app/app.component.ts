@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
+import { AuthService } from '@orda.core/services/auth.service';
 
 @Component({
 	selector: 'orda-root',

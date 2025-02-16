@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, ResourceRef } from '@angular/core';
-import { API } from '@core/config/config';
-import { OrdaLogger } from '@shared/services/logger.service';
+import { API } from '@orda.core/config/config';
+import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { Observable } from 'rxjs';
 
 export abstract class EntityService<T> {
@@ -9,7 +9,7 @@ export abstract class EntityService<T> {
 	host = inject<string>(API);
 	logger = inject(OrdaLogger);
 
-	public abstract resource: ResourceRef<T[] | undefined>;
+	public abstract entityResource: ResourceRef<T[] | undefined>;
 
 	public abstract create(t: Partial<T>): Observable<T>;
 

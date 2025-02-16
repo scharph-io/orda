@@ -18,7 +18,15 @@ export default [
 		loadComponent: () => import('./views/views.component').then((m) => m.ViewsComponent),
 	},
 	{
+		path: 'history',
+		loadComponent: () => import('./history/history.component').then((m) => m.HistoryComponent),
+	},
+	{
 		path: 'assortment',
 		loadChildren: () => import('./assortment/assortment.routes'),
+	},
+	{
+		path: 'accounts',
+		loadChildren: () => import('./account/account.routes'),
 	},
 ] satisfies Routes;

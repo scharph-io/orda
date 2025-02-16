@@ -21,7 +21,7 @@ import {
 	MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { OrdaLogger } from '@shared/services/logger.service';
+import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { Observer } from 'rxjs';
 
 export const FORM = new InjectionToken<FormGroup>('form');

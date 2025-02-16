@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { Role } from '@core/models/role';
+import { Role } from '@orda.core/models/role';
 import { MatListModule } from '@angular/material/list';
-import { RoleService } from '@features/data-access/services/role.service';
-import { EntityManager } from '@shared/utils/entity-manager';
+import { RoleService } from '@orda.features/data-access/services/role.service';
+import { EntityManager } from '@orda.shared/utils/entity-manager';
 import {
 	FormControl,
 	FormGroup,
@@ -11,18 +11,17 @@ import {
 	ReactiveFormsModule,
 	Validators,
 } from '@angular/forms';
-import { DialogTemplateComponent } from '@shared/components/dialog/dialog-template.component';
+import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { TitleCasePipe } from '@angular/common';
 import { MatInput } from '@angular/material/input';
-import { OrdaLogger } from '@shared/services/logger.service';
+import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { filter, switchMap } from 'rxjs';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
-} from '@shared/components/confirm-dialog/confirm-dialog.component';
-// import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+} from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
 	selector: 'orda-roles',
@@ -34,7 +33,7 @@ import {
 		</div>
 
 		<mat-list role="list">
-			@for (role of roleService.resource.value(); track role.id) {
+			@for (role of roleService.entityResource.value(); track role.id) {
 				<mat-list-item role="listitem">
 					<div class="item">
 						<p>{{ role.name | titlecase }}</p>
@@ -79,19 +78,19 @@ export class RolesComponent extends EntityManager<Role> {
 
 	constructor() {
 		super();
-		this.roleService.resource.reload();
+		this.roleService.entityResource.reload();
 	}
 
 	create() {
 		this.dialogClosed<RoleDialogComponent, undefined, Role>(
 			RoleDialogComponent,
 			undefined,
-		).subscribe(() => this.roleService.resource.reload());
+		).subscribe(() => this.roleService.entityResource.reload());
 	}
 
 	edit(r: Role) {
 		this.dialogClosed<RoleDialogComponent, Role, Role>(RoleDialogComponent, r).subscribe(() =>
-			this.roleService.resource.reload(),
+			this.roleService.entityResource.reload(),
 		);
 	}
 
@@ -118,7 +117,7 @@ export class RolesComponent extends EntityManager<Role> {
 			)
 			.subscribe({
 				next: () => {
-					this.roleService.resource.reload();
+					this.roleService.entityResource.reload();
 				},
 				error: (err) => this.logger.error(err),
 			});

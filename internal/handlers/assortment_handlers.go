@@ -88,31 +88,22 @@ func (h *AssortmentHandlers) ReadProducts(c *fiber.Ctx) error {
 func (h *AssortmentHandlers) AddProducts(c *fiber.Ctx) error {
 	groupID := c.Params("id")
 
-	singleProduct := ports.ProductRequest{}
-	multipleProducts := []ports.ProductRequest{}
+	products := []ports.ProductRequest{}
 	result := 0
-	if err := c.BodyParser(&singleProduct); err == nil {
-		err := h.assortmentService.AddProduct(c.Context(), groupID, singleProduct)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to add product"})
-		}
-		result = 1
-	} else if err := c.BodyParser(&multipleProducts); err == nil {
-		err := h.assortmentService.AddProducts(c.Context(), groupID, multipleProducts)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to add products"})
-		}
-		result = len(multipleProducts)
-	} else {
+	if err := c.BodyParser(&products); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
+	err := h.assortmentService.AddProductsToGroup(c.Context(), groupID, products)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to add products"})
+	}
+	result = len(products)
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("created %d product(s)", result)})
 }
 
 func (h *AssortmentHandlers) RemoveProduct(c *fiber.Ctx) error {
-	groupID := c.Params("id")
-	productID := c.Params("product")
-	err := h.assortmentService.RemoveProduct(c.Context(), groupID, productID)
+	id := c.Params("id")
+	err := h.assortmentService.RemoveProduct(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove product"})
 	}
