@@ -1,4 +1,4 @@
-export interface AccountGroupResponse {
+export interface AccountGroup {
 	id: string;
 	name: string;
 	accounts?: Account[];
