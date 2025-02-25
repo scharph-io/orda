@@ -10,34 +10,34 @@ import { API_ENDPOINTS } from '@orda.core/constants';
 export class UserService extends EntityService<User> {
 	public read() {
 		return this.httpClient
-			.get<User[]>(`${this.HOST}/${API_ENDPOINTS.USER}`)
+			.get<User[]>(`${this.HOST}${API_ENDPOINTS.USER}`)
 			.pipe(catchError(this.handleError));
 	}
 
 	public override readById(id: string): Observable<User> {
 		return this.httpClient
-			.get<User>(`${this.HOST}/${API_ENDPOINTS.USER}/${id}`)
+			.get<User>(`${this.HOST}${API_ENDPOINTS.USER}/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 
 	public create(u: User) {
 		this.logger.debug('Create', u, this.constructor.name);
 		return this.httpClient
-			.post<User>(`${this.HOST}/${API_ENDPOINTS.USER}`, u)
+			.post<User>(`${this.HOST}${API_ENDPOINTS.USER}`, u)
 			.pipe(catchError(this.handleError));
 	}
 
 	public update(id: string, u: User) {
 		this.logger.debug(`Update ${id} to`, u, this.constructor.name);
 		return this.httpClient
-			.put<User>(`${this.HOST}/${API_ENDPOINTS.USER}/${id}`, u)
+			.put<User>(`${this.HOST}${API_ENDPOINTS.USER}/${id}`, u)
 			.pipe(catchError(this.handleError));
 	}
 
 	public delete(id: string) {
 		this.logger.debug('Delete', id, this.constructor.name);
 		return this.httpClient
-			.delete(`${this.HOST}/${API_ENDPOINTS.USER}/${id}`)
+			.delete(`${this.HOST}${API_ENDPOINTS.USER}/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 }

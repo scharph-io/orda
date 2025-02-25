@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import {
 	FormControl,
 	FormGroup,
@@ -7,71 +7,106 @@ import {
 	Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { Account } from '@orda.core/models/account';
+import { AccountGroup } from '@orda.core/models/account';
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { EntityManager } from '@orda.shared/utils/entity-manager';
-import { MatSelectModule } from '@angular/material/select';
-import { TitleCasePipe } from '@angular/common';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
-import { switchMap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { AccountService } from '@orda.features/data-access/services/account/account.service';
+import { AccountGroupService } from '@orda.features/data-access/services/account/account-group.service';
+
+import { MatExpansionModule } from '@angular/material/expansion';
+import { OrdaLogger } from '@orda.shared/services/logger.service';
 
 @Component({
 	selector: 'orda-account',
-	imports: [MatButtonModule],
+	imports: [MatButtonModule, MatExpansionModule],
 	template: `
-		<div class="title-toolbar">
-			<h2>Accounts</h2>
-			<button mat-button (click)="create()">New</button>
-			<br />
-			@for (account of accountService.entityResource.value(); track account.id) {
-				{{ account.firstname }} ({{ account.lastname }}) - {{ account.main_balance }}
-				<button mat-button (click)="edit(account)">Edit</button>
-				<button mat-button (click)="delete(account)">Delete</button>
-				<br />
+		<button mat-button (click)="create()">Create</button>
+		<mat-accordion>
+			@for (group of accountGroupService.entityResource.value(); track group.id) {
+				<mat-expansion-panel hideToggle>
+					<mat-expansion-panel-header>
+						<mat-panel-title> {{ group.name }}</mat-panel-title>
+					</mat-expansion-panel-header>
+					<ng-template matExpansionPanelContent>
+						<button mat-button (click)="edit(group)">Update</button>
+						<button mat-button (click)="delete(group)">Delete</button>
+					</ng-template>
+				</mat-expansion-panel>
 			}
-		</div>
+		</mat-accordion>
 	`,
 	styles: ``,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccountComponent extends EntityManager<Account> {
+export class AccountComponent extends EntityManager<AccountGroup> {
+	logger = inject(OrdaLogger);
 	accountService = inject(AccountService);
+	accountGroupService = inject(AccountGroupService);
+
+	readonly panelOpenState = signal(false);
 
 	constructor() {
 		super();
-		this.accountService.entityResource.reload();
+		this.accountGroupService.entityResource.reload();
 	}
 
-	create(): void {
-		this.dialogClosed<AccountDialogComponent, undefined, Account>(
-			AccountDialogComponent,
+	create() {
+		this.dialogClosed<AccountGroupDialogComponent, undefined, AccountGroup>(
+			AccountGroupDialogComponent,
 			undefined,
-		).subscribe(() => this.accountService.entityResource.reload());
+		).subscribe(() => this.accountGroupService.entityResource.reload());
 	}
 
-	edit(a: Account): void {
-		this.dialogClosed<AccountDialogComponent, Account, Account>(
-			AccountDialogComponent,
-			a,
-		).subscribe(() => this.accountService.entityResource.reload());
+	edit(group: AccountGroup) {
+		this.dialogClosed<AccountGroupDialogComponent, AccountGroup, AccountGroup>(
+			AccountGroupDialogComponent,
+			group,
+		).subscribe(() => this.accountGroupService.entityResource.reload());
 	}
 
-	delete(a: Account): void {
-		this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-			message: `${a.firstname} ${a.lastname}`,
-		})
-			.pipe(switchMap(() => this.accountService.delete(a.id ?? '')))
-			.subscribe(() => this.accountService.entityResource.reload());
+	delete(group: AccountGroup) {
+		this.accountGroupService
+			.readById(group.id ?? '')
+			.pipe(
+				switchMap((group) =>
+					this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
+						ConfirmDialogComponent,
+						{
+							message: `Are you sure you want to delete the group '${group.name}'?`,
+						},
+					),
+				),
+			)
+			.pipe(
+				filter((res) => res),
+				switchMap(() => this.accountGroupService.delete(group.id)),
+			)
+			.subscribe({
+				next: () => {
+					this.accountGroupService.entityResource.reload();
+				},
+				error: (err) => this.logger.error(err),
+			});
 	}
 }
 
 @Component({
+	selector: 'orda-account-group-dialog',
+	imports: [
+		FormsModule,
+		ReactiveFormsModule,
+		DialogTemplateComponent,
+		MatLabel,
+		MatFormFieldModule,
+		MatInput,
+	],
 	template: `
 		<orda-dialog-template
 			[customTemplate]="template"
@@ -81,70 +116,43 @@ export class AccountComponent extends EntityManager<Account> {
 		<ng-template #template>
 			<form [formGroup]="formGroup">
 				<mat-form-field>
-					<mat-label>Firstname</mat-label>
-					<input matInput formControlName="fistname" />
+					<mat-label>Name</mat-label>
+					<input matInput formControlName="name" />
 				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Lastname</mat-label>
-					<input matInput formControlName="lastname" />
-				</mat-form-field>
-				<!-- <mat-form-field>
-					<mat-label>Type</mat-label>
-					<mat-select formControlName="type">
-						<mat-option value="admin">Admin</mat-option>
-						<mat-option value="user">User</mat-option>
-					</mat-select>
-				</mat-form-field> -->
 			</form>
 		</ng-template>
 	`,
-	imports: [
-		DialogTemplateComponent,
-		MatButtonModule,
-		FormsModule,
-		ReactiveFormsModule,
-		MatLabel,
-		MatFormField,
-		MatInput,
-		MatSelectModule,
-		TitleCasePipe,
-	],
-	providers: [],
-	changeDetection: ChangeDetectionStrategy.OnPush,
+	styles: ``,
 })
-class AccountDialogComponent extends DialogTemplateComponent<Account> {
-	accountService = inject(AccountService);
+class AccountGroupDialogComponent extends DialogTemplateComponent<AccountGroup> {
+	accountGroupService = inject(AccountGroupService);
 
 	formGroup = new FormGroup({
-		firstname: new FormControl<string>('', [
+		name: new FormControl('', [
 			Validators.required,
+			Validators.maxLength(10),
 			Validators.minLength(3),
-			Validators.maxLength(15),
 		]),
-		lastname: new FormControl<string>('', [Validators.required, Validators.maxLength(20)]),
 	});
 
 	constructor() {
 		super();
 		this.formGroup.patchValue({
-			firstname: this.inputData?.firstname,
-			lastname: this.inputData?.lastname,
+			name: this.inputData?.name,
 		});
 	}
 
 	public submit = () => {
 		if (this.inputData) {
-			this.accountService
-				.update(this.inputData.id ?? '', {
-					firstname: this.formGroup.value.firstname ?? '',
-					lastname: this.formGroup.value.lastname ?? '',
+			this.accountGroupService
+				.update(this.inputData?.id ?? '', {
+					name: this.formGroup.value.name ?? '',
 				})
 				.subscribe(this.closeObserver);
 		} else {
-			this.accountService
+			this.accountGroupService
 				.create({
-					firstname: this.formGroup.value.firstname ?? '',
-					lastname: this.formGroup.value.lastname ?? '',
+					name: this.formGroup.value.name ?? '',
 				})
 				.subscribe(this.closeObserver);
 		}

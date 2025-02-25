@@ -10,31 +10,31 @@ import { catchError } from 'rxjs';
 export class AccountGroupService extends EntityService<AccountGroup> {
 	create(t: Partial<AccountGroup>) {
 		return this.httpClient
-			.post<AccountGroup>(`${this.HOST}/${API_ENDPOINTS.ACCOUNT_GROUP}`, t)
+			.post<AccountGroup>(`${this.HOST}${API_ENDPOINTS.ACCOUNT}/group`, t)
 			.pipe(catchError(this.handleError));
 	}
 
 	read() {
 		return this.httpClient
-			.get<AccountGroup[]>(`${this.HOST}/${API_ENDPOINTS.ACCOUNT_GROUP}`)
+			.get<AccountGroup[]>(`${this.HOST}${API_ENDPOINTS.ACCOUNT}/group`)
 			.pipe(catchError(this.handleError));
 	}
 
 	readById(id: string) {
 		return this.httpClient
-			.get<AccountGroup>(`${this.HOST}/${API_ENDPOINTS.ACCOUNT_GROUP}/${id}`)
+			.get<AccountGroup>(`${this.HOST}${API_ENDPOINTS.ACCOUNT}/group/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 
 	delete(id: string) {
 		return this.httpClient
-			.delete(`${this.HOST}/${API_ENDPOINTS.ACCOUNT_GROUP}/${id}`)
+			.delete(`${this.HOST}${API_ENDPOINTS.ACCOUNT}/group/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 
 	update(id: string, t: Partial<AccountGroup>) {
 		return this.httpClient
-			.put<AccountGroup>(`${this.HOST}/${API_ENDPOINTS.ACCOUNT_GROUP}/${id}`, t)
+			.put<AccountGroup>(`${this.HOST}${API_ENDPOINTS.ACCOUNT}/group/${id}`, t)
 			.pipe(catchError(this.handleError));
 	}
 }
