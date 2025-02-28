@@ -77,7 +77,7 @@ func (s *AccountService) Create(ctx context.Context, req ports.AccountRequest) (
 }
 
 func (s *AccountService) GetAll(ctx context.Context) ([]ports.AccountResponse, error) {
-	groups, err := s.groupRepo.Read(ctx)
+	groups, _ := s.groupRepo.Read(ctx)
 	accounts, err := s.repo.Read(ctx)
 	if err != nil {
 		return nil, err
@@ -93,6 +93,28 @@ func (s *AccountService) GetAll(ctx context.Context) ([]ports.AccountResponse, e
 			Group:         getGroupName(groups, a.AccountGroupID)})
 	}
 	return res, nil
+}
+
+// GetById implements ports.IAccountService.
+func (s *AccountService) GetById(ctx context.Context, id string) (*ports.AccountResponse, error) {
+	acc, err := s.repo.ReadById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	group, err := s.groupRepo.ReadById(ctx, acc.AccountGroupID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ports.AccountResponse{
+		Id:            acc.ID,
+		Firstname:     acc.Firstname,
+		Lastname:      acc.Lastname,
+		MainBalance:   acc.MainBalance,
+		CreditBalance: acc.CreditBalance,
+		Group:         group.Name,
+	}, nil
+
 }
 
 func (s *AccountService) GetAllGroups(ctx context.Context) ([]ports.AccountGroupResponse, error) {

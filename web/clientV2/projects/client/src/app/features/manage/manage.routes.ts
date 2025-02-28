@@ -5,10 +5,10 @@ export default [
 		path: '',
 		loadComponent: () => import('./manage.component').then((m) => m.ManageComponent),
 	},
-	{
-		path: 'roles',
-		loadComponent: () => import('./roles/roles.component').then((m) => m.RolesComponent),
-	},
+	// {
+	// 	path: 'roles',
+	// 	loadComponent: () => import('./roles/roles.component').then((m) => m.RolesComponent),
+	// },
 	{
 		path: 'users',
 		loadComponent: () => import('./users/users.component').then((m) => m.UsersComponent),

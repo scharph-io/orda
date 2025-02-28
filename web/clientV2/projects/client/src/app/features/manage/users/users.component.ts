@@ -21,24 +21,38 @@ import {
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
 import { switchMap } from 'rxjs';
+import { MatTabsModule } from '@angular/material/tabs';
+import { RolesComponent } from '../roles/roles.component';
 
 @Component({
 	selector: 'orda-users',
-	imports: [MatButtonModule],
+	imports: [MatButtonModule, MatTabsModule, RolesComponent],
 	template: `
-		<div class="title-toolbar">
-			<h2>Users</h2>
-			<button mat-button (click)="create()">New</button>
-			<br />
-			@for (user of userService.entityResource.value(); track user.id) {
-				{{ user.username }} ({{ user.role }})
-				<button mat-button (click)="edit(user)">Edit</button>
-				<button mat-button (click)="delete(user)">Delete</button>
-				<br />
-			}
-		</div>
+		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+			<mat-tab label="User">
+				<ng-template matTabContent>
+					<div style="height: 80vh; overflow: auto;">
+						<button mat-button (click)="create()">New</button>
+						<br />
+						@for (user of userService.entityResource.value(); track user.id) {
+							{{ user.username }} ({{ user.role }})
+							<button mat-button (click)="edit(user)">Edit</button>
+							<button mat-button (click)="delete(user)">Delete</button>
+							<br />
+						}
+					</div>
+				</ng-template>
+			</mat-tab>
+			<mat-tab label="Roles">
+				<ng-template matTabContent><orda-roles /></ng-template>
+			</mat-tab>
+		</mat-tab-group>
 	`,
-	styles: ``,
+	styles: `
+		mat-tab-group {
+			overflow: auto;
+		}
+	`,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersComponent extends EntityManager<User> {

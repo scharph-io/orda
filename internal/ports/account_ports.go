@@ -8,12 +8,11 @@ import (
 )
 
 type DepositRequest struct {
-	AccountId     string               `json:"account_id" validate:"required"`
 	Amount        int32                `json:"amount" validate:"required gt=0"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
 	HistoryAction domain.HistoryAction `json:"history_type" validate:"required"`
-	UserId        string               `json:"user_id" validate:"required"`
-	TransactionId string               `json:"transaction_id,omitempty"`
+	UserId        string               `json:"userid" validate:"required"`
+	TransactionId string               `json:"transactionid,omitempty"`
 }
 
 type DepositGroupRequest struct {
@@ -75,6 +74,7 @@ type IAccountService interface {
 	CreateGroup(ctx context.Context, req AccountGroupRequest) (*AccountGroupResponse, error)
 	Create(ctx context.Context, req AccountRequest) (*AccountResponse, error)
 	GetAll(ctx context.Context) ([]AccountResponse, error)
+	GetById(ctx context.Context, id string) (*AccountResponse, error)
 	GetAllGroups(ctx context.Context) ([]AccountGroupResponse, error)
 	GetGroupAccounts(ctx context.Context, id string) ([]AccountResponse, error)
 	DepositAmount(ctx context.Context, accountId string, req DepositRequest) (*AccountResponse, error)
@@ -89,6 +89,7 @@ type IAccountHandlers interface {
 	CreateGroup(c *fiber.Ctx) error
 	Create(c *fiber.Ctx) error
 	GetAll(c *fiber.Ctx) error
+	GetById(c *fiber.Ctx) error
 	GetAllGroups(c *fiber.Ctx) error
 	GetGroupAccounts(c *fiber.Ctx) error
 	Deposit(c *fiber.Ctx) error

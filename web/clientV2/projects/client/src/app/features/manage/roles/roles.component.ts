@@ -28,7 +28,6 @@ import {
 	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe],
 	template: `
 		<div class="title-toolbar">
-			<h2>Roles</h2>
 			<button mat-button (click)="create()">New</button>
 		</div>
 

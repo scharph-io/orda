@@ -56,6 +56,18 @@ func (h *AccountHandlers) GetAll(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 
+// GetById implements ports.IAccountHandlers.
+func (h *AccountHandlers) GetById(c *fiber.Ctx) error {
+	res, err := h.service.GetById(c.Context(), c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get account"})
+	}
+	if res == nil {
+		return c.Status(fiber.StatusNoContent).JSON([]string{})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}
+
 func (h *AccountHandlers) GetAllGroups(c *fiber.Ctx) error {
 	res, err := h.service.GetAllGroups(c.Context())
 	if err != nil {
@@ -85,6 +97,8 @@ func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit data"})
 	}
+
+	fmt.Println(req)
 
 	res, err := h.service.DepositAmount(c.Context(), id, req)
 	if err != nil {
