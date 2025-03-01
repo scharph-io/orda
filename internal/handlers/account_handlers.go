@@ -93,14 +93,11 @@ func (h *AccountHandlers) GetGroupAccounts(c *fiber.Ctx) error {
 
 func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
 	id := c.Params("id")
-	req := ports.DepositRequest{}
-	if err := c.BodyParser(&req); err != nil {
+	req := &ports.DepositRequest{}
+	if err := c.BodyParser(req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit data"})
 	}
-
-	fmt.Println(req)
-
-	res, err := h.service.DepositAmount(c.Context(), id, req)
+	res, err := h.service.DepositAmount(c.Context(), id, *req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to deposit to account"})
 	}

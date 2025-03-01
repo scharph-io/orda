@@ -15,10 +15,10 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { rxResource } from '@angular/core/rxjs-interop';
 import {
+	FormControl,
+	FormGroup,
 	FormsModule,
 	ReactiveFormsModule,
-	FormGroup,
-	FormControl,
 	Validators,
 } from '@angular/forms';
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
@@ -27,7 +27,7 @@ import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
-import { switchMap, filter, tap } from 'rxjs';
+import { filter, switchMap, tap } from 'rxjs';
 
 @Component({
 	selector: 'orda-account',
@@ -78,6 +78,7 @@ import { switchMap, filter, tap } from 'rxjs';
 						</button>
 						<button mat-button (click)="edit(row)">Edit</button>
 						<button mat-button (click)="deposit(row)">Deposit</button>
+						<button mat-button (click)="info(row)">Info</button>
 					</td>
 				</ng-container>
 
@@ -169,6 +170,10 @@ export class AccountComponent extends EntityManager<Account> {
 			AccountDepositDialogComponent,
 			acc,
 		).subscribe(() => this.data.reload());
+	}
+
+	info(acc: Account) {
+		console.log(acc);
 	}
 }
 
