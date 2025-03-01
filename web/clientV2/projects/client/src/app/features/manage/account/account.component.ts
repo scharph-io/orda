@@ -28,6 +28,7 @@ import {
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
 import { filter, switchMap, tap } from 'rxjs';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
 	selector: 'orda-account',
@@ -40,6 +41,7 @@ import { filter, switchMap, tap } from 'rxjs';
 		MatFormFieldModule,
 		MatInputModule,
 		OrdaCurrencyPipe,
+		MatIcon,
 	],
 	template: `
 		<button mat-button (click)="create()">New</button>
@@ -73,12 +75,18 @@ import { filter, switchMap, tap } from 'rxjs';
 				<ng-container matColumnDef="actions">
 					<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
 					<td mat-cell *matCellDef="let row">
-						<button mat-button (click)="delete(row)" [disabled]="hasMainBalance(row)">
-							Delete
+						<button mat-icon-button (click)="delete(row)" [disabled]="hasMainBalance(row)">
+							<mat-icon>delete</mat-icon>
 						</button>
-						<button mat-button (click)="edit(row)">Edit</button>
-						<button mat-button (click)="deposit(row)">Deposit</button>
-						<button mat-button (click)="info(row)">Info</button>
+						<button mat-icon-button (click)="edit(row)">
+							<mat-icon>edit</mat-icon>
+						</button>
+						<button mat-icon-button (click)="deposit(row)">
+							<mat-icon>add_business</mat-icon>
+						</button>
+						<button mat-icon-button (click)="info(row)">
+							<mat-icon>info</mat-icon>
+						</button>
 					</td>
 				</ng-container>
 
