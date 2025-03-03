@@ -68,6 +68,19 @@ func (h *AccountHandlers) GetById(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 
+func (h *AccountHandlers) Update(c *fiber.Ctx) error {
+	req := ports.AccountRequest{}
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
+	}
+
+	res, err := h.service.Update(c.Context(), req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update account"})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}
+
 func (h *AccountHandlers) GetAllGroups(c *fiber.Ctx) error {
 	res, err := h.service.GetAllGroups(c.Context())
 	if err != nil {

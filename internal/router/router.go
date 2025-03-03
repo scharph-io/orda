@@ -94,6 +94,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	account := api.Group("/account")
 	account.Get("/", s.accountHandlers.GetAll)
 	account.Get("/:id", s.accountHandlers.GetById)
+	account.Put("/:id", s.accountHandlers.Update)
 	account.Post("/", s.accountHandlers.Create)
 	account.Post("/:id/deposit", s.accountHandlers.Deposit)
 	account.Delete("/:id", s.accountHandlers.DeleteAccount)

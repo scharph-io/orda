@@ -36,13 +36,13 @@ func (s *AccountService) Create(ctx context.Context, req ports.AccountRequest) (
 	c := config.GetConfig().Account
 	var group *domain.AccountGroup
 	var err error
-	if req.AccountGroupId == "" {
+	if req.GroupId == "" {
 		group, err = s.groupRepo.ReadByName(ctx, "Default")
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		group, err = s.groupRepo.ReadById(ctx, req.AccountGroupId)
+		group, err = s.groupRepo.ReadById(ctx, req.GroupId)
 		if err != nil {
 			return nil, err
 		}
@@ -90,7 +90,9 @@ func (s *AccountService) GetAll(ctx context.Context) ([]ports.AccountResponse, e
 			Lastname:      a.Lastname,
 			MainBalance:   a.MainBalance,
 			CreditBalance: a.CreditBalance,
-			Group:         getGroupName(groups, a.AccountGroupID)})
+			Group:         getGroupName(groups, a.AccountGroupID),
+			GroupId:       a.AccountGroupID,
+		})
 	}
 	return res, nil
 }
@@ -113,7 +115,25 @@ func (s *AccountService) GetById(ctx context.Context, id string) (*ports.Account
 		MainBalance:   acc.MainBalance,
 		CreditBalance: acc.CreditBalance,
 		Group:         group.Name,
+		GroupId:       acc.AccountGroupID,
 	}, nil
+
+}
+
+func (s *AccountService) Update(ctx context.Context, req ports.AccountRequest) (*ports.AccountResponse, error) {
+	acc, err := s.repo.ReadById(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	acc.Firstname = req.Firstname
+	acc.Lastname = req.Lastname
+	acc.AccountGroupID = req.GroupId
+
+	updatedAcc, err := s.repo.Update(ctx, *acc)
+	if err != nil {
+		return nil, err
+	}
+	return util.ToAccountResponse(updatedAcc), err
 
 }
 
@@ -157,6 +177,7 @@ func (s *AccountService) GetGroupAccounts(ctx context.Context, id string) ([]por
 			MainBalance:   a.MainBalance,
 			CreditBalance: a.CreditBalance,
 			Group:         group.Name,
+			GroupId:       a.AccountGroupID,
 		})
 	}
 	return res, nil

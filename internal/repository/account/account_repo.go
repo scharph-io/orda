@@ -2,7 +2,6 @@ package account
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -43,9 +42,9 @@ func (r *AccountRepo) ReadById(ctx context.Context, id string) (*domain.Account,
 }
 
 func (r *AccountRepo) Update(ctx context.Context, account domain.Account) (*domain.Account, error) {
-	fmt.Printf("[Repo] Deposit to %s \n", account.ToString())
-	if err := r.db.Model(&account).Updates(account).Error; err != nil {
-		return nil, err
+	res := r.db.WithContext(ctx).Model(&account).Updates(&account)
+	if res.Error != nil {
+		return nil, res.Error
 	}
 	return &account, nil
 }

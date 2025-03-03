@@ -28,8 +28,8 @@ import { RolesComponent } from '../roles/roles.component';
 	selector: 'orda-users',
 	imports: [MatButtonModule, MatTabsModule, RolesComponent],
 	template: `
-		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
-			<mat-tab label="User">
+		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
+			<mat-tab label="Users">
 				<ng-template matTabContent>
 					<div style="height: 80vh; overflow: auto;">
 						<button mat-button (click)="create()">New</button>

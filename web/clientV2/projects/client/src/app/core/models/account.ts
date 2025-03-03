@@ -11,6 +11,7 @@ export interface Account {
 	main_balance: number;
 	credit_balance: number;
 	group?: string;
+	groupid?: string;
 	last_deposit: number;
 	last_deposit_type: number;
 	last_deposit_time: string;

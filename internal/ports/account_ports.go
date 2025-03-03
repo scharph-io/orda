@@ -21,10 +21,10 @@ type DepositGroupRequest struct {
 }
 
 type AccountRequest struct {
-	Id             string `json:"id,omitempty"`
-	Firstname      string `json:"firstname"`
-	Lastname       string `json:"lastname"`
-	AccountGroupId string `json:"accountgroupid"`
+	Id        string `json:"id,omitempty"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	GroupId   string `json:"groupid"`
 }
 
 type AccountResponse struct {
@@ -34,6 +34,7 @@ type AccountResponse struct {
 	MainBalance     int32              `json:"main_balance"`
 	CreditBalance   int32              `json:"credit_balance"`
 	Group           string             `json:"group,omitempty"`
+	GroupId         string             `json:"groupid,omitempty"`
 	LastDeposit     int32              `json:"last_deposit"`
 	LastDepostType  domain.DepositType `json:"last_deposit_type"`
 	LastDepositTime string             `json:"last_deposit_time"`
@@ -75,6 +76,7 @@ type IAccountService interface {
 	Create(ctx context.Context, req AccountRequest) (*AccountResponse, error)
 	GetAll(ctx context.Context) ([]AccountResponse, error)
 	GetById(ctx context.Context, id string) (*AccountResponse, error)
+	Update(ctx context.Context, req AccountRequest) (*AccountResponse, error)
 	GetAllGroups(ctx context.Context) ([]AccountGroupResponse, error)
 	GetGroupAccounts(ctx context.Context, id string) ([]AccountResponse, error)
 	DepositAmount(ctx context.Context, accountId string, req DepositRequest) (*AccountResponse, error)
@@ -90,6 +92,7 @@ type IAccountHandlers interface {
 	Create(c *fiber.Ctx) error
 	GetAll(c *fiber.Ctx) error
 	GetById(c *fiber.Ctx) error
+	Update(c *fiber.Ctx) error
 	GetAllGroups(c *fiber.Ctx) error
 	GetGroupAccounts(c *fiber.Ctx) error
 	Deposit(c *fiber.Ctx) error

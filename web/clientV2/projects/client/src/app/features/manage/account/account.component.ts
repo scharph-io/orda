@@ -33,6 +33,12 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DEPOSIT_VALUES } from '@orda.core/constants';
 import { GroupDepositDialogComponent } from '@orda.features/manage/account/dialogs/group-deposit-dialog/group-deposit.component';
 import { AccountDetailDialogComponent } from '@orda.features/manage/account/dialogs/accout-detail-dialog/account-detail-dialog.component';
+import { RouterModule } from '@angular/router';
+import { MatTabsModule } from '@angular/material/tabs';
+import { AccountGroupComponent } from './group/group.component';
+import { AccountGroupService } from '@orda.features/data-access/services/account/account-group.service';
+import { TitleCasePipe } from '@angular/common';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
 	selector: 'orda-account',
@@ -46,65 +52,75 @@ import { AccountDetailDialogComponent } from '@orda.features/manage/account/dial
 		MatInputModule,
 		OrdaCurrencyPipe,
 		MatIcon,
+		RouterModule,
+		MatTabsModule,
+		AccountGroupComponent,
 	],
 	template: `
-		<button mat-button (click)="create()">New</button>
-		<button mat-button (click)="groupDeposit()">Group Deposit</button>
+		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
+			<mat-tab label="Accounts">
+				<button mat-button (click)="create()">New</button>
+				<button mat-button (click)="groupDeposit()">Group Deposit</button>
+				<br />
+				<mat-form-field>
+					<mat-label>Filter</mat-label>
+					<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
+				</mat-form-field>
 
-		<mat-form-field>
-			<mat-label>Filter</mat-label>
-			<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
-		</mat-form-field>
+				<div class="mat-elevation-z8">
+					<table mat-table [dataSource]="dataSource()" matSort>
+						<ng-container matColumnDef="name">
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Firstname</th>
+							<td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
+						</ng-container>
 
-		<div class="mat-elevation-z8">
-			<table mat-table [dataSource]="dataSource()" matSort>
-				<ng-container matColumnDef="name">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Firstname</th>
-					<td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
-				</ng-container>
+						<ng-container matColumnDef="group">
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Group</th>
+							<td mat-cell *matCellDef="let row">{{ row.group }}</td>
+						</ng-container>
 
-				<ng-container matColumnDef="group">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Group</th>
-					<td mat-cell *matCellDef="let row">{{ row.group }}</td>
-				</ng-container>
+						<ng-container matColumnDef="main-balance">
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
+							<td mat-cell *matCellDef="let row">{{ row.main_balance | currency }}</td>
+						</ng-container>
 
-				<ng-container matColumnDef="main-balance">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
-					<td mat-cell *matCellDef="let row">{{ row.main_balance | currency }}</td>
-				</ng-container>
+						<ng-container matColumnDef="credit-balance">
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Credit</th>
+							<td mat-cell *matCellDef="let row">{{ row.credit_balance | currency }}</td>
+						</ng-container>
 
-				<ng-container matColumnDef="credit-balance">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Credit</th>
-					<td mat-cell *matCellDef="let row">{{ row.credit_balance | currency }}</td>
-				</ng-container>
+						<ng-container matColumnDef="actions">
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+							<td mat-cell *matCellDef="let row">
+								<button mat-icon-button (click)="delete(row)" [disabled]="hasMainBalance(row)">
+									<mat-icon>delete</mat-icon>
+								</button>
+								<button mat-icon-button (click)="edit(row)">
+									<mat-icon>edit</mat-icon>
+								</button>
+								<button mat-icon-button (click)="deposit(row)">
+									<mat-icon>add_business</mat-icon>
+								</button>
+								<button mat-icon-button (click)="info(row)">
+									<mat-icon>info</mat-icon>
+								</button>
+							</td>
+						</ng-container>
 
-				<ng-container matColumnDef="actions">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
-					<td mat-cell *matCellDef="let row">
-						<button mat-icon-button (click)="delete(row)" [disabled]="hasMainBalance(row)">
-							<mat-icon>delete</mat-icon>
-						</button>
-						<button mat-icon-button (click)="edit(row)">
-							<mat-icon>edit</mat-icon>
-						</button>
-						<button mat-icon-button (click)="deposit(row)">
-							<mat-icon>add_business</mat-icon>
-						</button>
-						<button mat-icon-button (click)="info(row)">
-							<mat-icon>info</mat-icon>
-						</button>
-					</td>
-				</ng-container>
+						<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+						<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
-				<!-- Row shown when there is no matching data. -->
-				<tr class="mat-row" *matNoDataRow>
-					<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-				</tr>
-			</table>
-		</div>
+						<!-- Row shown when there is no matching data. -->
+						<tr class="mat-row" *matNoDataRow>
+							<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+						</tr>
+					</table>
+				</div>
+			</mat-tab>
+			<mat-tab label="Groups">
+				<ng-template matTabContent><orda-account-groups /></ng-template>
+			</mat-tab>
+		</mat-tab-group>
 	`,
 	styles: ``,
 	changeDetection: ChangeDetectionStrategy.OnPush,
@@ -210,6 +226,8 @@ export class AccountComponent extends EntityManager<Account> {
 		MatLabel,
 		MatFormFieldModule,
 		MatInput,
+		MatSelectModule,
+		TitleCasePipe,
 	],
 	template: `
 		<orda-dialog-template
@@ -227,13 +245,22 @@ export class AccountComponent extends EntityManager<Account> {
 					<mat-label>Lastname</mat-label>
 					<input matInput formControlName="lastname" />
 				</mat-form-field>
+				<mat-form-field>
+					<mat-label>Group</mat-label>
+					<mat-select formControlName="group">
+						@for (ag of accountGroupService.entityResource.value(); track ag.id) {
+							<mat-option [value]="ag.id">{{ ag.name | titlecase }}</mat-option>
+						}
+					</mat-select>
+				</mat-form-field>
 			</form>
 		</ng-template>
 	`,
 	styles: ``,
 })
 class AccountDialogComponent extends DialogTemplateComponent<Account> {
-	accountGroupService = inject(AccountService);
+	accountService = inject(AccountService);
+	accountGroupService = inject(AccountGroupService);
 
 	formGroup = new FormGroup({
 		firstname: new FormControl('', [
@@ -246,29 +273,35 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 			Validators.maxLength(10),
 			Validators.minLength(3),
 		]),
+		group: new FormControl('', [Validators.required]),
 	});
 
 	constructor() {
 		super();
+
 		this.formGroup.patchValue({
 			firstname: this.inputData?.firstname,
 			lastname: this.inputData?.lastname,
+			group: this.inputData?.groupid,
 		});
 	}
 
 	public submit = () => {
 		if (this.inputData) {
-			this.accountGroupService
+			this.accountService
 				.update(this.inputData?.id ?? '', {
+					id: this.inputData?.id ?? '',
 					firstname: this.formGroup.value.firstname ?? '',
 					lastname: this.formGroup.value.lastname ?? '',
+					groupid: this.formGroup.value.group ?? '',
 				})
 				.subscribe(this.closeObserver);
 		} else {
-			this.accountGroupService
+			this.accountService
 				.create({
 					firstname: this.formGroup.value.firstname ?? '',
 					lastname: this.formGroup.value.lastname ?? '',
+					groupid: this.formGroup.value.group ?? '',
 				})
 				.subscribe(this.closeObserver);
 		}
