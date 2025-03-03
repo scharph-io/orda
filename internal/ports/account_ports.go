@@ -8,7 +8,7 @@ import (
 )
 
 type DepositRequest struct {
-	Amount        int32                `json:"amount,string" validate:"required gt=0"`
+	Amount        int32                `json:"amount" validate:"required gt=0"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
 	HistoryAction domain.HistoryAction `json:"history_type" validate:"required"`
 	UserId        string               `json:"userid" validate:"required"`
@@ -17,7 +17,7 @@ type DepositRequest struct {
 
 type DepositGroupRequest struct {
 	Amount int32  `json:"amount"`
-	UserId string `json:"user_id,omitempty"`
+	UserId string `json:"userid,omitempty"`
 }
 
 type AccountRequest struct {

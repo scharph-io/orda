@@ -49,7 +49,6 @@ export class AccountService {
 	}
 
 	deposit(id: string, deposit: DepositRequest): Observable<Account> {
-		console.log('deposit', deposit);
 		return this.httpClient.post<Account>(
 			`${this.HOST}${API_ENDPOINTS.ACCOUNT}/${id}/deposit`,
 			deposit,

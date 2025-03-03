@@ -27,8 +27,12 @@ import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
-import { filter, switchMap, tap } from 'rxjs';
+import { filter, switchMap } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { DEPOSIT_VALUES } from '@orda.core/constants';
+import { GroupDepositDialogComponent } from '@orda.features/manage/account/dialogs/group-deposit-dialog/group-deposit.component';
+import { AccountDetailDialogComponent } from '@orda.features/manage/account/dialogs/accout-detail-dialog/account-detail-dialog.component';
 
 @Component({
 	selector: 'orda-account',
@@ -45,6 +49,8 @@ import { MatIcon } from '@angular/material/icon';
 	],
 	template: `
 		<button mat-button (click)="create()">New</button>
+		<button mat-button (click)="groupDeposit()">Group Deposit</button>
+
 		<mat-form-field>
 			<mat-label>Filter</mat-label>
 			<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
@@ -152,7 +158,7 @@ export class AccountComponent extends EntityManager<Account> {
 					this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
 						ConfirmDialogComponent,
 						{
-							message: `Are you sure you want to delete the group '${acc.firstname}'?`,
+							message: `Are you sure you want to delete the account '${acc.lastname} ${acc.firstname}'?`,
 						},
 					),
 				),
@@ -181,7 +187,17 @@ export class AccountComponent extends EntityManager<Account> {
 	}
 
 	info(acc: Account) {
-		console.log(acc);
+		this.dialogClosed<AccountDetailDialogComponent, Account, undefined>(
+			AccountDetailDialogComponent,
+			acc,
+		).subscribe(() => this.data.reload());
+	}
+
+	groupDeposit() {
+		this.dialogClosed<GroupDepositDialogComponent, undefined, undefined>(
+			GroupDepositDialogComponent,
+			undefined,
+		).subscribe(() => this.data.reload());
 	}
 }
 
@@ -262,12 +278,12 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 @Component({
 	selector: 'orda-account-deposit-dialog',
 	imports: [
-		FormsModule,
 		ReactiveFormsModule,
 		DialogTemplateComponent,
-		MatLabel,
 		MatFormFieldModule,
-		MatInput,
+		MatButtonToggleModule,
+		MatInputModule,
+		OrdaCurrencyPipe,
 	],
 	template: `
 		<orda-dialog-template
@@ -277,20 +293,21 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-				<mat-form-field>
-					<mat-label>Amount</mat-label>
-					<input matInput formControlName="amount" />
-				</mat-form-field>
+				<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
+					@for (val of DEPOSIT_VALUES; track val) {
+						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
+					}
+				</mat-button-toggle-group>
 			</form>
 		</ng-template>
 	`,
 	styles: ``,
 })
 class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
-	accountGroupService = inject(AccountService);
+	accountService = inject(AccountService);
 
 	formGroup = new FormGroup({
-		amount: new FormControl(0, [Validators.required, Validators.min(0), Validators.max(100)]),
+		amount: new FormControl(0, [Validators.required]),
 	});
 
 	constructor() {
@@ -298,14 +315,14 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 	}
 
 	public submit = () => {
-		this.accountGroupService
+		this.accountService
 			.deposit(this.inputData?.id ?? '', {
 				amount: this.formGroup.value.amount ?? 0,
 				userid: 'anon',
 				history_type: 0,
 				deposit_type: 0,
 			})
-			.pipe(tap((acc) => console.log(acc)))
 			.subscribe(this.closeObserver);
 	};
+	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 }

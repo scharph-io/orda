@@ -118,8 +118,10 @@ func (s *AccountService) GetById(ctx context.Context, id string) (*ports.Account
 }
 
 func (s *AccountService) GetAllGroups(ctx context.Context) ([]ports.AccountGroupResponse, error) {
+	fmt.Println("GetAllGroups")
 	groups, err := s.groupRepo.Read(ctx)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	var res []ports.AccountGroupResponse
@@ -223,15 +225,15 @@ func (s *AccountService) DepositAmountGroup(ctx context.Context, groupId string,
 	}
 
 	// Log deposit action
-	// if err := s.accountHistoryService.LogGroupDeposit(ports.AccountHistoryRequest{
-	// 	Amount:         req.Amount,
-	// 	AccountGroupId: group.ID,
-	// 	DepositType:    domain.DepositTypeFree,
-	// 	HistoryAction:  domain.HistoryDepositAction,
-	// 	// UserId:         req.UserId,
-	// }); err != nil {
-	// 	return nil, err
-	// }
+	if err := s.accountHistoryService.LogGroupDeposit(ports.AccountHistoryRequest{
+		Amount:         req.Amount,
+		AccountGroupId: group.ID,
+		DepositType:    domain.DepositTypeFree,
+		HistoryAction:  domain.HistoryDepositAction,
+		UserId:         req.UserId,
+	}); err != nil {
+		return nil, err
+	}
 
 	var res []ports.AccountResponse
 	for _, account := range accs {

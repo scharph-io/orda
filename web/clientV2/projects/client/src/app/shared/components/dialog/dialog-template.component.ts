@@ -31,11 +31,11 @@ export const FORM = new InjectionToken<FormGroup>('form');
 	imports: [
 		MatDialogActions,
 		MatDialogClose,
-		MatDialogTitle,
 		MatDialogContent,
 		CommonModule,
 		MatButton,
 		MatProgressSpinnerModule,
+		MatDialogTitle,
 	],
 	template: `
 		<h2 mat-dialog-title>{{ inputData ? 'Update' : 'Create' }}</h2>
@@ -59,6 +59,8 @@ export class DialogTemplateComponent<T> {
 	form = input.required<FormGroup>();
 	submitClick = output();
 	canSubmit = signal<boolean>(true);
+
+	customTitle = '';
 
 	protected readonly inputData = inject<T>(MAT_DIALOG_DATA);
 	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<T>, T> = inject(MatDialogRef);

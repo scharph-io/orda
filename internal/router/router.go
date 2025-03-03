@@ -99,7 +99,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	account.Delete("/:id", s.accountHandlers.DeleteAccount)
 
 	// Account Group
-	accountGroup := account.Group("/group")
+	accountGroup := api.Group("/account-group")
 	accountGroup.Get("/", s.accountHandlers.GetAllGroups)
 	accountGroup.Post("/", s.accountHandlers.CreateGroup)
 	accountGroup.Get("/:id", s.accountHandlers.GetGroupAccounts)
