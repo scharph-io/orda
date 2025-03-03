@@ -27,7 +27,7 @@ import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
-import { filter, switchMap } from 'rxjs';
+import { EMPTY, filter, map, switchMap } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DEPOSIT_VALUES } from '@orda.core/constants';
@@ -130,7 +130,10 @@ export class AccountComponent extends EntityManager<Account> {
 	accountService = inject(AccountService);
 
 	data = rxResource<Account[], undefined>({
-		loader: () => this.accountService.read(),
+		loader: () =>
+			this.accountService
+				.read()
+				.pipe(map((res) => res.sort((a, b) => a.lastname.localeCompare(b.lastname)))),
 	});
 
 	dataSource = computed(() => new MatTableDataSource(this.data.value() ?? []));
@@ -206,7 +209,7 @@ export class AccountComponent extends EntityManager<Account> {
 		this.dialogClosed<AccountDetailDialogComponent, Account, undefined>(
 			AccountDetailDialogComponent,
 			acc,
-		).subscribe(() => this.data.reload());
+		).subscribe(() => EMPTY);
 	}
 
 	groupDeposit() {

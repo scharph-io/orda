@@ -29,7 +29,11 @@ import { JsonPipe } from '@angular/common';
 	],
 	template: ` <h2 mat-dialog-title>Details</h2>
 		<mat-dialog-content>
-			{{ account | json }}
+			<pre>
+        <code>
+        {{ account | json }}
+        </code>
+      </pre>
 
 			<button mat-button>Delete</button>
 			<button mat-button>Edit</button>
