@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { AssortmentGroup } from '@orda.core/models/assortment';
 import { MatListModule } from '@angular/material/list';
-import { AssortmentGroupService } from '@orda.features/data-access/services/assortment/assortment-group.service';
 import { EntityManager } from '@orda.shared/utils/entity-manager';
 import {
 	FormControl,
@@ -23,6 +22,7 @@ import {
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
 import { RouterModule } from '@angular/router';
+import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
 
 @Component({
 	selector: 'orda-assortment-groups',
@@ -34,7 +34,7 @@ import { RouterModule } from '@angular/router';
 		</div>
 
 		<mat-list role="list">
-			@for (assortmentGroup of groupService.entityResource.value(); track assortmentGroup.id) {
+			@for (assortmentGroup of assortmentService.groups.value(); track assortmentGroup.id) {
 				<mat-list-item role="listitem">
 					<div class="item">
 						<p [routerLink]="[assortmentGroup.id]" routerLinkActive="router-link-active">
@@ -74,31 +74,30 @@ import { RouterModule } from '@angular/router';
 	`,
 })
 export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
-	groupService = inject(AssortmentGroupService);
+	assortmentService = inject(AssortmentService);
 	logger = inject(OrdaLogger);
 
 	constructor() {
 		super();
-		this.groupService.entityResource.reload();
 	}
 
 	create() {
 		this.dialogClosed<AssortmentGroupDialogComponent, undefined, AssortmentGroup>(
 			AssortmentGroupDialogComponent,
 			undefined,
-		).subscribe(() => this.groupService.entityResource.reload());
+		).subscribe(() => this.assortmentService.groups.reload());
 	}
 
 	edit(ag: AssortmentGroup) {
 		this.dialogClosed<AssortmentGroupDialogComponent, AssortmentGroup, AssortmentGroup>(
 			AssortmentGroupDialogComponent,
 			ag,
-		).subscribe(() => this.groupService.entityResource.reload());
+		).subscribe(() => this.assortmentService.groups.reload());
 	}
 
 	delete(ag: AssortmentGroup) {
-		this.groupService
-			.readById(ag.id ?? '')
+		this.assortmentService
+			.readGroupById(ag.id ?? '')
 			.pipe(
 				switchMap((assortmentGroup) =>
 					this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
@@ -111,11 +110,11 @@ export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
 			)
 			.pipe(
 				filter((res) => res),
-				switchMap(() => this.groupService.delete(ag.id)),
+				switchMap(() => this.assortmentService.deleteGroup(ag.id)),
 			)
 			.subscribe({
 				next: () => {
-					this.groupService.entityResource.reload();
+					this.assortmentService.groups.reload();
 				},
 				error: (err) => this.logger.error(err),
 			});
@@ -158,7 +157,7 @@ export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
 	styles: ``,
 })
 class AssortmentGroupDialogComponent extends DialogTemplateComponent<AssortmentGroup> {
-	assortmentService = inject(AssortmentGroupService);
+	assortmentService = inject(AssortmentService);
 
 	formGroup = new FormGroup({
 		name: new FormControl('', [
@@ -182,7 +181,7 @@ class AssortmentGroupDialogComponent extends DialogTemplateComponent<AssortmentG
 	public submit = () => {
 		if (this.inputData) {
 			this.assortmentService
-				.update(this.inputData?.id ?? '', {
+				.updateGroup(this.inputData?.id ?? '', {
 					name: this.formGroup.value.name ?? '',
 					desc: this.formGroup.value.desc ?? '',
 					deposit: this.formGroup.value.deposit ?? 0,
@@ -190,7 +189,7 @@ class AssortmentGroupDialogComponent extends DialogTemplateComponent<AssortmentG
 				.subscribe(this.closeObserver);
 		} else {
 			this.assortmentService
-				.create({
+				.createGroup({
 					name: this.formGroup.value.name ?? '',
 					desc: this.formGroup.value.desc ?? '',
 					deposit: this.formGroup.value.deposit ?? 0,

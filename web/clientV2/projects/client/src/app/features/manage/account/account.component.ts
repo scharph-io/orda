@@ -8,7 +8,6 @@ import { EntityManager } from '@orda.shared/utils/entity-manager';
 
 import { AccountService } from '@orda.features/data-access/services/account/account.service';
 
-import { MatExpansionModule } from '@angular/material/expansion';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -44,7 +43,6 @@ import { MatSelectModule } from '@angular/material/select';
 	selector: 'orda-account',
 	imports: [
 		MatButtonModule,
-		MatExpansionModule,
 		MatTableModule,
 		MatSortModule,
 		MatPaginatorModule,
@@ -118,7 +116,9 @@ import { MatSelectModule } from '@angular/material/select';
 				</div>
 			</mat-tab>
 			<mat-tab label="Groups">
-				<ng-template matTabContent><orda-account-groups /></ng-template>
+				<ng-template matTabContent>
+					<orda-account-groups />
+				</ng-template>
 			</mat-tab>
 		</mat-tab-group>
 	`,

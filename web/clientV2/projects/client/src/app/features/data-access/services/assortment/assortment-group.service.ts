@@ -14,48 +14,48 @@ export interface Message {
 export class AssortmentGroupService extends EntityService<AssortmentGroup> {
 	public read(): Observable<AssortmentGroup[]> {
 		return this.httpClient
-			.get<AssortmentGroup[]>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/groups`)
+			.get<AssortmentGroup[]>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group`)
 			.pipe(catchError(this.handleError));
 	}
 
 	public readById(id: string): Observable<AssortmentGroup> {
 		return this.httpClient
-			.get<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/groups/${id}`)
+			.get<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 
 	public create(ag: Partial<AssortmentGroup>): Observable<AssortmentGroup> {
 		this.logger.debug('Create', ag, this.constructor.name);
 		return this.httpClient
-			.post<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/groups`, ag)
+			.post<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group`, ag)
 			.pipe(catchError(this.handleError));
 	}
 
 	public update(id: string, ag: Partial<AssortmentGroup>): Observable<AssortmentGroup> {
 		this.logger.debug(`Update ${id} to`, ag, this.constructor.name);
 		return this.httpClient
-			.put<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/groups/${id}`, ag)
+			.put<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}`, ag)
 			.pipe(catchError(this.handleError));
 	}
 
 	public delete(id: string): Observable<unknown> {
 		this.logger.debug('Delete', id, this.constructor.name);
 		return this.httpClient
-			.delete(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/groups/${id}`)
+			.delete(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 
 	public readProductsByGroupId(id: string): Observable<AssortmentProduct[]> {
 		this.logger.debug('read products from', id, this.constructor.name);
 		return this.httpClient
-			.get<AssortmentProduct[]>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/groups/${id}/products`)
+			.get<AssortmentProduct[]>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}/products`)
 			.pipe(catchError(this.handleError));
 	}
 
 	public addProductsByGroupId(id: string, ...products: AssortmentProduct[]): Observable<Message> {
 		this.logger.debug(`add ${products.length} products to ${id}`, undefined, this.constructor.name);
 		return this.httpClient
-			.put<Message>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/groups/${id}/products`, products)
+			.put<Message>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}/products`, products)
 			.pipe(catchError(this.handleError));
 	}
 }
