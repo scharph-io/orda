@@ -110,6 +110,15 @@ func (h *AssortmentHandlers) RemoveProduct(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
+func (h *AssortmentHandlers) ReadProductById(c *fiber.Ctx) error {
+	id := c.Params("id")
+	product, err := h.assortmentService.ReadProductsById(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to read product"})
+	}
+	return c.Status(fiber.StatusOK).JSON(product)
+}
+
 func (h *AssortmentHandlers) UpdateProduct(c *fiber.Ctx) error {
 	req := ports.ProductRequest{}
 	productID := c.Params("id")

@@ -65,6 +65,7 @@ type IAssortmentService interface {
 	ReadProductsGroupById(ctx context.Context, id string) ([]ProductResponse, error)
 	AddProductsToGroup(ctx context.Context, id string, products []ProductRequest) error
 
+	ReadProductsById(ctx context.Context, id string) (*ProductResponse, error)
 	RemoveProduct(ctx context.Context, id string) error
 	UpdateProduct(ctx context.Context, product ProductRequest) (*ProductResponse, error)
 	ToggleProduct(ctx context.Context, productID string) error
@@ -79,6 +80,7 @@ type IAssortmentHandlers interface {
 	ReadProducts(c *fiber.Ctx) error
 	AddProducts(c *fiber.Ctx) error
 	RemoveProduct(c *fiber.Ctx) error
+	ReadProductById(c *fiber.Ctx) error
 	UpdateProduct(c *fiber.Ctx) error
 	ToggleProduct(c *fiber.Ctx) error
 }

@@ -132,6 +132,20 @@ func (s *AssortmentService) AddProductsToGroup(ctx context.Context, id string, p
 	return s.products.CreateMany(ctx, p)
 }
 
+func (s *AssortmentService) ReadProductsById(ctx context.Context, id string) (*ports.ProductResponse, error) {
+
+	p, err := s.products.ReadById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &ports.ProductResponse{
+		ID:    p.ID,
+		Name:  p.Name,
+		Desc:  p.Desc,
+		Price: p.Price,
+	}, nil
+}
+
 func (s *AssortmentService) RemoveProduct(ctx context.Context, id string) error {
 	p := domain.Product{
 		Base: domain.Base{ID: id},

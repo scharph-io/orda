@@ -27,7 +27,7 @@ func (r *ProductRepo) Create(ctx context.Context, product domain.Product) (*doma
 
 func (r *ProductRepo) ReadById(ctx context.Context, id string) (*domain.Product, error) {
 	var product domain.Product
-	if err := r.db.WithContext(ctx).Where("id = ?", id).Find(&product).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Where("id = ?", id).Find(&product).Error; err != nil {
 		return nil, err
 	}
 	return &product, nil
