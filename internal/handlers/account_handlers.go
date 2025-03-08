@@ -105,6 +105,8 @@ func (h *AccountHandlers) GetGroupAccounts(c *fiber.Ctx) error {
 }
 
 func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
+	fmt.Println("body", string(c.Body()))
+
 	id := c.Params("id")
 	req := &ports.DepositRequest{}
 	if err := c.BodyParser(req); err != nil {

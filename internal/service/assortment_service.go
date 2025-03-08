@@ -162,10 +162,14 @@ func (s *AssortmentService) UpdateProduct(ctx context.Context, product ports.Pro
 		Active: product.Active,
 	}
 
+	fmt.Println("Updating product:", p)
+
 	updated, err := s.products.Update(ctx, p)
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println("Updated product:", updated)
 
 	return &ports.ProductResponse{
 		ID:     updated.ID,

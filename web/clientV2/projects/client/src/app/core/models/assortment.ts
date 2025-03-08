@@ -11,5 +11,4 @@ export interface AssortmentProduct {
 	desc: string;
 	price: number;
 	active: boolean;
-	group_id?: string;
 }

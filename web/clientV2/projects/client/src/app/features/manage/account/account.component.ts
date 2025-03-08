@@ -31,7 +31,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { DEPOSIT_VALUES } from '@orda.core/constants';
 import { GroupDepositDialogComponent } from '@orda.features/manage/account/dialogs/group-deposit-dialog/group-deposit.component';
-import { AccountDetailDialogComponent } from '@orda.features/manage/account/dialogs/accout-detail-dialog/account-detail-dialog.component';
+import { AccountDetailDialogComponent } from '@orda.features/manage/account/dialogs/account-detail-dialog/account-detail-dialog.component';
 import { RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AccountGroupComponent } from './group/group.component';

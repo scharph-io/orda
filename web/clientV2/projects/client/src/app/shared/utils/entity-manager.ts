@@ -15,7 +15,7 @@ export abstract class EntityManager<T> {
 	protected dialogClosed<T, D = unknown, R = unknown>(c: ComponentType<T>, data: D) {
 		return this.dialog
 			.open<T, D, R>(c, {
-				data: data,
+				data,
 			})
 			.afterClosed()
 			.pipe(filter((r) => r !== undefined));

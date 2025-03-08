@@ -53,7 +53,7 @@ export const FORM = new InjectionToken<FormGroup>('form');
 	styleUrl: './dialog-template.component.css',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DialogTemplateComponent<T> {
+export class DialogTemplateComponent<D, R = D> {
 	logger = inject(OrdaLogger);
 	customTemplate = input.required<TemplateRef<ElementRef>>();
 	form = input.required<FormGroup>();
@@ -62,10 +62,11 @@ export class DialogTemplateComponent<T> {
 
 	customTitle = '';
 
-	protected readonly inputData = inject<T>(MAT_DIALOG_DATA);
-	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<T>, T> = inject(MatDialogRef);
+	protected readonly inputData = inject<D>(MAT_DIALOG_DATA);
+	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<D, R>, R> =
+		inject(MatDialogRef);
 
-	protected closeObserver: Partial<Observer<T>> = {
+	protected closeObserver: Partial<Observer<R>> = {
 		next: (value) => {
 			this.dialogRef.close(value);
 		},

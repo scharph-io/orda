@@ -17,15 +17,10 @@ export interface DepositRequest {
 	providedIn: 'root',
 })
 export class AccountService {
-	// override entityResource = rxResource(""
-	// 	loader: () => this.readById(this.accountId),
-	// });
-
 	httpClient = inject(HttpClient);
 	HOST = inject(HOST);
 
 	create(t: Partial<Account>): Observable<Account> {
-		console.log('create account', t);
 		return this.httpClient.post<Account>(`${this.HOST}${API_ENDPOINTS.ACCOUNT}`, t);
 	}
 
@@ -46,7 +41,6 @@ export class AccountService {
 	}
 
 	update(id: string, t: Partial<Account>): Observable<Account> {
-		console.log('update account', t);
 		return this.httpClient.put<Account>(`${this.HOST}${API_ENDPOINTS.ACCOUNT}/${id}`, t);
 	}
 

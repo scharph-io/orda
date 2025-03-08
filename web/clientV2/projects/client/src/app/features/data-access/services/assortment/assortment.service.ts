@@ -62,10 +62,13 @@ export class AssortmentService {
 			.pipe(catchError(this.handleError));
 	}
 
-	public addProduct(agId: string, ap: Partial<AssortmentProduct>): Observable<AssortmentProduct> {
+	public addProducts(
+		agId: string,
+		ap: Partial<AssortmentProduct>[],
+	): Observable<AssortmentProduct> {
 		this.logger.debug('[createProduct]', ap, this.constructor.name);
 		return this.httpClient
-			.post<AssortmentProduct>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${agId}/product`, ap)
+			.post<AssortmentProduct>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${agId}/products`, ap)
 			.pipe(catchError(this.handleError));
 	}
 
@@ -86,18 +89,18 @@ export class AssortmentService {
 			.pipe(catchError(this.handleError));
 	}
 
-	public removeProduct(apId: string): Observable<unknown> {
-		this.logger.debug(`[deleteProduct]`, apId, this.constructor.name);
+	public removeProduct(id: string): Observable<unknown> {
+		this.logger.debug(`[deleteProduct]`, id, this.constructor.name);
 		return this.httpClient
-			.delete(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/product/${apId}`)
+			.delete(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/product/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 
-	public toggleProduct(apId: string): Observable<AssortmentProduct> {
-		this.logger.debug(`[toggleProduct]`, apId, this.constructor.name);
+	public toggleProduct(id: string): Observable<AssortmentProduct> {
+		this.logger.debug(`[toggleProduct]`, id, this.constructor.name);
 		return this.httpClient
 			.patch<AssortmentProduct>(
-				`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/product/${apId}/toggle`,
+				`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/product/${id}/toggle`,
 				undefined,
 			)
 			.pipe(catchError(this.handleError));

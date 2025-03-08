@@ -2,6 +2,7 @@ package assortment
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -54,14 +55,22 @@ func (r *ProductRepo) Read(ctx context.Context) (domain.Products, error) {
 }
 
 func (r *ProductRepo) Update(ctx context.Context, product domain.Product) (*domain.Product, error) {
-	if err := r.db.WithContext(ctx).Model(&product).Updates(product).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&product).Updates(
+		map[string]interface{}{
+			"name":   product.Name,
+			"desc":   product.Desc,
+			"price":  product.Price,
+			"active": product.Active,
+		}).Error; err != nil {
 		return nil, err
 	}
 	return &product, nil
 }
 
 func (r *ProductRepo) Delete(ctx context.Context, product domain.Product) error {
-	if err := r.db.WithContext(ctx).Delete(&product).Error; err != nil {
+	fmt.Println("Remove", product)
+
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Delete(&product).Error; err != nil {
 		return err
 	}
 	return nil

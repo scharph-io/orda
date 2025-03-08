@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
@@ -26,6 +26,8 @@ import {
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
+import { MatIcon } from '@angular/material/icon';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 @Component({
 	selector: 'orda-assortment-products',
@@ -58,16 +60,22 @@ import { OrdaLogger } from '@orda.shared/services/logger.service';
 					<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
 					<td mat-cell *matCellDef="let row">{{ row.price | currency }}</td>
 				</ng-container>
+				<ng-container matColumnDef="active">
+					<th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
+					<td mat-cell *matCellDef="let row">
+						<mat-slide-toggle [(ngModel)]="row.active" (change)="toggleProduct(row.id)" />
+					</td>
+				</ng-container>
 
 				<ng-container matColumnDef="actions">
 					<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
 					<td mat-cell *matCellDef="let row">
-						<!--						<button mat-icon-button (click)="delete(row)" [disabled]="hasMainBalance(row)">-->
-						<!--							<mat-icon>delete</mat-icon>-->
-						<!--						</button>-->
-						<!--						<button mat-icon-button (click)="edit(row)">-->
-						<!--							<mat-icon>edit</mat-icon>-->
-						<!--						</button>-->
+						<button mat-icon-button (click)="delete(row)">
+							<mat-icon>delete</mat-icon>
+						</button>
+						<button mat-icon-button (click)="edit(row)">
+							<mat-icon>edit</mat-icon>
+						</button>
 						<!--						<button mat-icon-button (click)="deposit(row)">-->
 						<!--							<mat-icon>add_business</mat-icon>-->
 						<!--						</button>-->
@@ -96,28 +104,35 @@ import { OrdaLogger } from '@orda.shared/services/logger.service';
 		MatInputModule,
 		OrdaCurrencyPipe,
 		RouterModule,
+		MatIcon,
+		MatSlideToggle,
+		FormsModule,
 	],
 	styles: ``,
 })
 export class AssortmentProductsComponent extends EntityManager<AssortmentProduct> {
-	displayedColumns: string[] = ['name', 'desc', 'price', 'actions'];
+	displayedColumns: string[] = ['name', 'desc', 'price', 'active', 'actions'];
 	private logger = inject(OrdaLogger);
 
 	private readonly route = inject(ActivatedRoute);
 	assortmentService = inject(AssortmentService);
 
+	group_id = signal<string>(this.route.snapshot.paramMap.get('id') ?? '');
+
 	products = rxResource({
-		loader: () =>
-			this.assortmentService.readProductsByGroupId(this.route.snapshot.paramMap.get('id') ?? ''),
+		loader: () => this.assortmentService.readProductsByGroupId(this.group_id()),
 	});
 
 	dataSource = computed(() => new MatTableDataSource(this.products.value() ?? []));
 
 	public override create(): void {
-		this.dialogClosed<AssortmentProductDialogComponent, undefined, AssortmentProduct>(
+		this.dialogClosed<
 			AssortmentProductDialogComponent,
-			undefined,
-		).subscribe(() => this.products.reload());
+			{ group: string; data?: AssortmentProduct },
+			AssortmentProduct
+		>(AssortmentProductDialogComponent, { group: this.group_id() }).subscribe(() =>
+			this.products.reload(),
+		);
 	}
 
 	public override delete(p: AssortmentProduct): void {
@@ -146,11 +161,17 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 	}
 
 	public override edit(p: AssortmentProduct): void {
-		p.group_id = this.route.snapshot.paramMap.get('id') ?? '';
-		this.dialogClosed<AssortmentProductDialogComponent, AssortmentProduct, AssortmentProduct>(
+		this.dialogClosed<
 			AssortmentProductDialogComponent,
-			p,
-		).subscribe(() => this.products.reload());
+			{ group: string; data?: AssortmentProduct },
+			AssortmentProduct
+		>(AssortmentProductDialogComponent, { group: this.group_id(), data: p }).subscribe(() =>
+			this.products.reload(),
+		);
+	}
+
+	protected toggleProduct(id: string) {
+		this.assortmentService.toggleProduct(id).subscribe(() => this.products.reload());
 	}
 
 	applyFilter(event: Event) {
@@ -172,6 +193,7 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 		MatFormFieldModule,
 		MatInput,
 		MatSelectModule,
+		MatSlideToggle,
 	],
 	template: `
 		<orda-dialog-template
@@ -191,14 +213,21 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 				</mat-form-field>
 				<mat-form-field>
 					<mat-label>Price</mat-label>
-					<input matInput formControlName="price" />
+					<input type="number" matInput formControlName="price" />
 				</mat-form-field>
+				<mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
 			</form>
 		</ng-template>
 	`,
 	styles: ``,
 })
-class AssortmentProductDialogComponent extends DialogTemplateComponent<AssortmentProduct> {
+class AssortmentProductDialogComponent extends DialogTemplateComponent<
+	{
+		group: string;
+		data?: AssortmentProduct;
+	},
+	AssortmentProduct
+> {
 	assortmentService = inject(AssortmentService);
 
 	formGroup = new FormGroup({
@@ -213,35 +242,46 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<Assortmen
 			Validators.minLength(3),
 		]),
 		price: new FormControl(0, [Validators.required]),
+		active: new FormControl(true, Validators.requiredTrue),
 	});
 
 	constructor() {
 		super();
 
+		console.log(this.inputData);
+
 		this.formGroup.patchValue({
-			name: this.inputData?.name,
-			desc: this.inputData?.desc,
-			price: this.inputData?.price,
+			name: this.inputData.data?.name,
+			desc: this.inputData.data?.desc,
+			price: this.inputData.data?.price,
+			active: this.inputData.data?.active,
 		});
 	}
 
 	public submit = () => {
-		if (this.inputData) {
+		if (this.inputData.data) {
 			this.assortmentService
-				.updateProduct('', {
-					id: this.inputData?.id ?? '',
+				.updateProduct(this.inputData.data?.id ?? '', {
 					name: this.formGroup.value.name ?? '',
 					desc: this.formGroup.value.desc ?? '',
 					price: this.formGroup.value.price ?? 0,
+					active: this.formGroup.value.active ?? false,
 				})
 				.subscribe(this.closeObserver);
 		} else {
+			console.log(this.formGroup.value);
+
+			// const active = this.formGroup.value.active !== null ? this.formGroup.value.active : true;
+
 			this.assortmentService
-				.addProduct('', {
-					name: this.formGroup.value.name ?? '',
-					desc: this.formGroup.value.desc ?? '',
-					price: this.formGroup.value.price ?? 0,
-				})
+				.addProducts(this.inputData.group, [
+					{
+						name: this.formGroup.value.name ?? '',
+						desc: this.formGroup.value.desc ?? '',
+						price: this.formGroup.value.price ?? 0,
+						active: this.formGroup.value.active ?? false,
+					},
+				])
 				.subscribe(this.closeObserver);
 		}
 	};

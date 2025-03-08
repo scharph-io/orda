@@ -86,6 +86,8 @@ func (h *AssortmentHandlers) ReadProducts(c *fiber.Ctx) error {
 }
 
 func (h *AssortmentHandlers) AddProducts(c *fiber.Ctx) error {
+
+	fmt.Println("body", string(c.Body()))
 	groupID := c.Params("id")
 
 	products := []ports.ProductRequest{}
@@ -107,6 +109,7 @@ func (h *AssortmentHandlers) RemoveProduct(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove product"})
 	}
+	fmt.Println("Removed", id)
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
@@ -123,8 +126,11 @@ func (h *AssortmentHandlers) UpdateProduct(c *fiber.Ctx) error {
 	req := ports.ProductRequest{}
 	productID := c.Params("id")
 	if err := c.BodyParser(&req); err != nil {
+		fmt.Println(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
+
+	fmt.Println("Updating product:", req)
 
 	req.ID = productID
 	res, err := h.assortmentService.UpdateProduct(c.Context(), req)
