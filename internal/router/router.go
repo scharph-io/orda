@@ -136,15 +136,15 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	transactions.Delete("/:id", s.transactionHandlers.Delete)
 
 	// Views
-	views := api.Group("/views")
+	views := api.Group("/view")
 	views.Get("/", s.viewHandlers.Read)
 	views.Post("/", s.viewHandlers.Create)
 	views.Get("/:id", s.viewHandlers.ReadByID)
 	views.Put("/:id", s.viewHandlers.Update)
+	views.Patch("/:id/roles", s.viewHandlers.SetRoles)
 	views.Delete("/:id", s.viewHandlers.Delete)
 	views.Put("/:id/products", s.viewHandlers.AddProducts)
 	views.Delete("/:id/products", s.viewHandlers.RemoveProduct)
-	views.Put("/:id/roles", s.viewHandlers.AddRoles)
 
 	// views := api.Group("/views")
 	// viewHandler := createViewHandler()

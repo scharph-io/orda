@@ -2,6 +2,7 @@ package view
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -37,7 +38,7 @@ func (r *ViewRepo) ReadByID(ctx context.Context, id string) (*domain.View, error
 	var view domain.View
 	if err := r.db.Model(&domain.View{}).
 		Where("id = ?", id).
-		Preload("ViewProducts").
+		Preload("Products").
 		Preload("Roles").
 		Find(&view).Error; err != nil {
 		return nil, err
@@ -56,11 +57,23 @@ func (r *ViewRepo) Delete(ctx context.Context, view domain.View) error {
 	return r.db.Delete(&view).Error
 }
 
-func (r *ViewRepo) AddRoles(ctx context.Context, id string, roleIds ...string) error {
-	return r.db.Model(&domain.View{}).Where("id = ?", id).Association("Roles").Append(roleIds)
+func (r *ViewRepo) SetRoles(ctx context.Context, id string, roleIds ...string) error {
+	view, err := r.ReadByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	var roles []domain.Role
+	for _, roleId := range roleIds {
+		var role domain.Role
+		if err := r.db.Model(&domain.Role{}).Where("id = ?", roleId).First(&role).Error; err != nil {
+			return err
+		}
+		roles = append(roles, role)
+	}
 
-}
+	for _, role := range roles {
+		fmt.Println(role.Name, role.ID)
+	}
 
-func (r *ViewRepo) RemoveRoles(ctx context.Context, id string, roleIds []string) error {
-	return nil
+	return r.db.Model(view).Association("Roles").Replace(&roles)
 }

@@ -6,7 +6,6 @@ export const API_ENDPOINTS = {
 	ROLE: `${API}/role`,
 	ASSORTMENT: `${API}/assortment`,
 	VIEW: `${API}/view`,
-	VIEW_GROUP: `${API}/view-group`,
 };
 
 export const DEPOSIT_VALUES = [1000, 1500, 2000];

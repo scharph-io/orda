@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/ports"
 )
@@ -20,8 +22,11 @@ func (h *ViewHandlers) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
+
+	fmt.Println(req)
 	res, err := h.viewService.CreateView(c.Context(), req)
 	if err != nil {
+		fmt.Println(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create view"})
 	}
 
@@ -73,22 +78,12 @@ func (h *ViewHandlers) Delete(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusNoContent).JSON(fiber.Map{})
 }
 
-func (h *ViewHandlers) AddRoles(c *fiber.Ctx) error {
+func (h *ViewHandlers) SetRoles(c *fiber.Ctx) error {
 	id := c.Params("id")
-	roleIds := c.Query("role_ids")
-	err := h.viewService.AddRoles(c.Context(), id, roleIds)
+	roleIds := c.Query("roles")
+	err := h.viewService.SetRoles(c.Context(), id, roleIds)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to add roles"})
-	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
-}
-
-func (h *ViewHandlers) RemoveRole(c *fiber.Ctx) error {
-	id := c.Params("id")
-	roleId := c.Query("role_id")
-	err := h.viewService.RemoveRole(c.Context(), id, roleId)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove role"})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
 }

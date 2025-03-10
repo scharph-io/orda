@@ -2,20 +2,23 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 )
 
 type ViewService struct {
-	repo     ports.IViewRepository
-	itemRepo ports.IViewProductRepository
+	repo         ports.IViewRepository
+	viewroleRepo ports.IViewRoleRepository
+	productRepo  ports.IViewProductRepository
 }
 
-func NewViewService(vr ports.IViewRepository, vipr ports.IViewProductRepository) *ViewService {
+func NewViewService(vr ports.IViewRepository, vipr ports.IViewProductRepository, vrr ports.IViewRoleRepository) *ViewService {
 	return &ViewService{
-		repo:     vr,
-		itemRepo: vipr,
+		repo:         vr,
+		viewroleRepo: vrr,
+		productRepo:  vipr,
 	}
 }
 
@@ -26,10 +29,19 @@ func (s *ViewService) CreateView(ctx context.Context, v ports.ViewRequest) (*por
 	if err != nil {
 		return nil, err
 	}
-	return &ports.ViewResponse{
-		Name: view.Name,
-		ID:   view.ID,
-	}, nil
+
+	if err := s.repo.SetRoles(ctx, view.ID, v.Roles...); err != nil {
+		return nil, err
+	}
+
+	// for _, r := range v.Roles {
+	// 	if _, err := s.viewroleRepo.Create(ctx, domain.ViewRole{ViewID: view.ID, RoleID: r}); err != nil {
+	// 		return nil, err
+	// 	}
+	// }
+
+	return s.ReadView(ctx, view.ID)
+
 }
 
 func (s *ViewService) ReadViews(ctx context.Context) ([]*ports.ViewResponse, error) {
@@ -50,11 +62,29 @@ func (s *ViewService) ReadViews(ctx context.Context) ([]*ports.ViewResponse, err
 func (s *ViewService) ReadView(ctx context.Context, id string) (*ports.ViewResponse, error) {
 	view, err := s.repo.ReadByID(ctx, id)
 	if err != nil {
+		fmt.Println("Error View RepoReadById")
 		return nil, err
 	}
+
+	viewRoles, err := s.viewroleRepo.ReadByViewID(ctx, id)
+	if err != nil {
+		fmt.Println("Error Roles ReadByViewID")
+
+		return nil, err
+	}
+
+	var roles []*ports.RoleResponse
+	for _, vr := range viewRoles {
+		roles = append(roles, &ports.RoleResponse{
+			Id:   vr.RoleID,
+			Name: vr.Role.Name,
+		})
+	}
+
 	return &ports.ViewResponse{
-		ID:   view.ID,
-		Name: view.Name,
+		ID:    view.ID,
+		Name:  view.Name,
+		Roles: roles,
 	}, nil
 }
 
@@ -73,12 +103,8 @@ func (s *ViewService) DeleteView(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, domain.View{Base: domain.Base{ID: id}})
 }
 
-func (s *ViewService) AddRoles(ctx context.Context, id string, roleIds ...string) error {
-	return s.repo.AddRoles(ctx, id, roleIds...)
-}
-
-func (s *ViewService) RemoveRole(ctx context.Context, id, roleId string) error {
-	return s.repo.RemoveRoles(ctx, id, []string{roleId})
+func (s *ViewService) SetRoles(ctx context.Context, id string, roleIds ...string) error {
+	return s.repo.SetRoles(ctx, id, roleIds...)
 }
 
 func (s *ViewService) AddProducts(ctx context.Context, viewId string, products ...*ports.ViewProductRequest) error {
@@ -91,9 +117,9 @@ func (s *ViewService) AddProducts(ctx context.Context, viewId string, products .
 			Position:  vp.Position,
 		})
 	}
-	return s.itemRepo.AppendProducts(ctx, viewId, p...)
+	return s.productRepo.AppendProducts(ctx, viewId, p...)
 }
 
 func (s *ViewService) RemoveProduct(ctx context.Context, viewId, viewProductId string) error {
-	return s.itemRepo.RemoveProduct(ctx, viewId, viewProductId)
+	return s.productRepo.RemoveProduct(ctx, viewId, viewProductId)
 }

@@ -248,8 +248,6 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<
 	constructor() {
 		super();
 
-		console.log(this.inputData);
-
 		this.formGroup.patchValue({
 			name: this.inputData.data?.name,
 			desc: this.inputData.data?.desc,
@@ -269,10 +267,6 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<
 				})
 				.subscribe(this.closeObserver);
 		} else {
-			console.log(this.formGroup.value);
-
-			// const active = this.formGroup.value.active !== null ? this.formGroup.value.active : true;
-
 			this.assortmentService
 				.addProducts(this.inputData.group, [
 					{

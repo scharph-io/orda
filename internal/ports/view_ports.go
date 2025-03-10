@@ -8,7 +8,15 @@ import (
 )
 
 type ViewRequest struct {
-	Name string `json:"name" validate:"required"`
+	Name  string   `json:"name" validate:"required"`
+	Roles []string `json:"roles" validate:"required"`
+}
+
+type ViewResponse struct {
+	ID         string                 `json:"id"`
+	Name       string                 `json:"name"`
+	Roles      []*RoleResponse        `json:"roles,omitempty"`
+	Assortment []*ViewProductResponse `json:"assortment,omitempty"`
 }
 
 type ViewProductRequest struct {
@@ -23,20 +31,21 @@ type ViewProductResponse struct {
 	Color    string `json:"color,omitempty"`
 }
 
-type ViewResponse struct {
-	ID         string                 `json:"id"`
-	Name       string                 `json:"name"`
-	Assortment []*ViewProductResponse `json:"assortment,omitempty"`
-}
-
 type IViewRepository interface {
 	Create(ctx context.Context, view domain.View) (*domain.View, error)
 	Read(ctx context.Context) ([]*domain.View, error)
 	ReadByID(ctx context.Context, id string) (*domain.View, error)
 	Update(ctx context.Context, view domain.View) (*domain.View, error)
 	Delete(ctx context.Context, view domain.View) error
-	AddRoles(ctx context.Context, id string, roleIds ...string) error
-	RemoveRoles(ctx context.Context, id string, roleIds []string) error
+	SetRoles(ctx context.Context, id string, roleIds ...string) error
+}
+
+type IViewRoleRepository interface {
+	Create(ctx context.Context, viewRole domain.ViewRole) (*domain.ViewRole, error)
+	Read(ctx context.Context) ([]*domain.ViewRole, error)
+	ReadByViewID(ctx context.Context, view_id string) ([]*domain.ViewRole, error)
+	ReadByRoleID(ctx context.Context, role_id string) ([]*domain.ViewRole, error)
+	Delete(ctx context.Context, viewRole domain.ViewRole) error
 }
 
 type IViewProductRepository interface {
@@ -52,8 +61,7 @@ type IViewService interface {
 	ReadView(ctx context.Context, id string) (*ViewResponse, error)
 	UpdateView(ctx context.Context, id string, view ViewRequest) (*ViewResponse, error)
 	DeleteView(ctx context.Context, id string) error
-	AddRoles(ctx context.Context, id string, roleIds ...string) error
-	RemoveRole(ctx context.Context, id string, roleId string) error
+	SetRoles(ctx context.Context, id string, roleIds ...string) error
 	AddProducts(ctx context.Context, viewId string, products ...*ViewProductRequest) error
 	RemoveProduct(ctx context.Context, viewId, viewProductId string) error
 }
@@ -64,8 +72,7 @@ type IViewHandlers interface {
 	ReadByID(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
-	AddRoles(c *fiber.Ctx) error
-	RemoveRole(c *fiber.Ctx) error
+	SetRoles(c *fiber.Ctx) error
 	AddProducts(c *fiber.Ctx) error
 	RemoveProduct(c *fiber.Ctx) error
 }

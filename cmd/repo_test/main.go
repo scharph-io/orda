@@ -74,9 +74,9 @@ func main() {
 	views := GetViews()
 	if len(views) == 0 {
 		v1 := CreateView("Test")
-		vr.AddRoles(ctx, v1.ID, roles[0].ID)
+		vr.SetRoles(ctx, v1.ID, roles[0].ID)
 		v2 := CreateView("Test2")
-		vr.AddRoles(ctx, v2.ID, roles[1].ID)
+		vr.SetRoles(ctx, v2.ID, roles[1].ID)
 		views = GetViews()
 	}
 

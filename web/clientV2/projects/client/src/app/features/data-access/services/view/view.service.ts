@@ -1,40 +1,40 @@
 import { Injectable } from '@angular/core';
 import { EntityService } from '@orda.shared/utils/entity-service';
-import { ViewGroup } from '@orda.core/models/view';
+import { View } from '@orda.core/models/view';
 import { API_ENDPOINTS } from '@orda.core/constants';
 import { catchError } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class ViewGroupService extends EntityService<ViewGroup> {
-	create(t: Partial<ViewGroup>) {
+export class ViewService extends EntityService<View> {
+	create(t: Partial<View>) {
 		return this.httpClient
-			.post<ViewGroup>(`${this.HOST}${API_ENDPOINTS.VIEW_GROUP}`, t)
+			.post<View>(`${this.HOST}${API_ENDPOINTS.VIEW}`, t)
 			.pipe(catchError(this.handleError));
 	}
 
 	read() {
 		return this.httpClient
-			.get<ViewGroup[]>(`${this.HOST}${API_ENDPOINTS.VIEW_GROUP}`)
+			.get<View[]>(`${this.HOST}${API_ENDPOINTS.VIEW}`)
 			.pipe(catchError(this.handleError));
 	}
 
 	readById(id: string) {
 		return this.httpClient
-			.get<ViewGroup>(`${this.HOST}${API_ENDPOINTS.VIEW_GROUP}/${id}`)
+			.get<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 
 	delete(id: string) {
 		return this.httpClient
-			.delete(`${this.HOST}${API_ENDPOINTS.VIEW_GROUP}/${id}`)
+			.delete(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}`)
 			.pipe(catchError(this.handleError));
 	}
 
-	update(id: string, t: Partial<ViewGroup>) {
+	update(id: string, t: Partial<View>) {
 		return this.httpClient
-			.put<ViewGroup>(`${this.HOST}${API_ENDPOINTS.VIEW_GROUP}/${id}`, t)
+			.put<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}`, t)
 			.pipe(catchError(this.handleError));
 	}
 }
