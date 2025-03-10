@@ -9,16 +9,16 @@ import (
 )
 
 type ViewService struct {
-	repo         ports.IViewRepository
-	viewroleRepo ports.IViewRoleRepository
-	productRepo  ports.IViewProductRepository
+	repo ports.IViewRepository
+	// viewroleRepo ports.IViewRoleRepository
+	productRepo ports.IViewProductRepository
 }
 
-func NewViewService(vr ports.IViewRepository, vipr ports.IViewProductRepository, vrr ports.IViewRoleRepository) *ViewService {
+func NewViewService(vr ports.IViewRepository, vipr ports.IViewProductRepository) *ViewService {
 	return &ViewService{
-		repo:         vr,
-		viewroleRepo: vrr,
-		productRepo:  vipr,
+		repo: vr,
+		// viewroleRepo: vrr,
+		productRepo: vipr,
 	}
 }
 
@@ -30,7 +30,7 @@ func (s *ViewService) CreateView(ctx context.Context, v ports.ViewRequest) (*por
 		return nil, err
 	}
 
-	if err := s.repo.SetRoles(ctx, view.ID, v.Roles...); err != nil {
+	if err := s.repo.SetRoles(ctx, view, v.Roles...); err != nil {
 		return nil, err
 	}
 
@@ -66,18 +66,18 @@ func (s *ViewService) ReadView(ctx context.Context, id string) (*ports.ViewRespo
 		return nil, err
 	}
 
-	viewRoles, err := s.viewroleRepo.ReadByViewID(ctx, id)
-	if err != nil {
-		fmt.Println("Error Roles ReadByViewID")
+	// viewRoles, err := s.viewroleRepo.ReadByViewID(ctx, id)
+	// if err != nil {
+	// 	fmt.Println("Error Roles ReadByViewID")
 
-		return nil, err
-	}
+	// 	return nil, err
+	// }
 
 	var roles []*ports.RoleResponse
-	for _, vr := range viewRoles {
+	for _, vr := range view.Roles {
 		roles = append(roles, &ports.RoleResponse{
-			Id:   vr.RoleID,
-			Name: vr.Role.Name,
+			Id:   vr.ID,
+			Name: vr.Name,
 		})
 	}
 
@@ -104,7 +104,11 @@ func (s *ViewService) DeleteView(ctx context.Context, id string) error {
 }
 
 func (s *ViewService) SetRoles(ctx context.Context, id string, roleIds ...string) error {
-	return s.repo.SetRoles(ctx, id, roleIds...)
+	view, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return s.repo.SetRoles(ctx, view, roleIds...)
 }
 
 func (s *ViewService) AddProducts(ctx context.Context, viewId string, products ...*ports.ViewProductRequest) error {

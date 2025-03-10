@@ -37,7 +37,7 @@ type IViewRepository interface {
 	ReadByID(ctx context.Context, id string) (*domain.View, error)
 	Update(ctx context.Context, view domain.View) (*domain.View, error)
 	Delete(ctx context.Context, view domain.View) error
-	SetRoles(ctx context.Context, id string, roleIds ...string) error
+	SetRoles(ctx context.Context, view *domain.View, role_ids ...string) error
 }
 
 type IViewRoleRepository interface {

@@ -1,10 +1,18 @@
 package domain
 
+import (
+	"fmt"
+)
+
 type View struct {
 	Base
 	Name     string
 	Products []ViewProduct `gorm:"many2many:view_products;"`
 	Roles    []Role        `gorm:"many2many:view_roles;"`
+}
+
+func (v View) String() string {
+	return fmt.Sprintf("[%s] %s (%d products, %d roles)", v.ID, v.Name, len(v.Products), len(v.Roles))
 }
 
 type ViewRole struct {

@@ -46,7 +46,7 @@ run: ## Run the app locally
 	go run cmd/server/main.go
 
 run-playground: ## Run the app locally
-	go run cmd/test/main.go
+	go run cmd/repo_test/main.go
 
 pre-build-ui:
 	cat $(PACKAGE_JSON) | jq --arg version "$(VERSION)" '.version |= $$version' | tee $(PACKAGE_JSON) > /dev/null

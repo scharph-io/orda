@@ -16,6 +16,7 @@ import (
 
 var (
 	r ports.IRoleRepository
+	u ports.IUserRepository
 
 	pr ports.IProductRepository
 	gr ports.IProductGroupRepository
@@ -41,6 +42,7 @@ func main() {
 	db := database.DB
 
 	r = user.NewRoleRepo(db)
+	u = user.NewUserRepo(db)
 
 	vr = view.NewViewRepository(db)
 	vpr = view.NewViewProductRepo(db)
@@ -51,38 +53,80 @@ func main() {
 	tr = transaction.NewTransactionRepository(db)
 	tir = transaction.NewTransactionItemRepository(db)
 
+	// ROLES
+	fmt.Println("# Roles:")
 	roles := GetRoles()
+	{
+		if len(roles) == 0 {
+			r.Create(ctx, &domain.Role{
+				Name: "admin",
+			})
+			r.Create(ctx, &domain.Role{
+				Name: "user",
+			})
+			roles = GetRoles()
+		}
 
-	if len(roles) == 0 {
-		r.Create(ctx, &domain.Role{
-			Name: "admin",
-		})
-		r.Create(ctx, &domain.Role{
-			Name: "user",
-		})
+		for _, r := range roles {
+			fmt.Println(r.String())
+		}
 
-		roles = GetRoles()
+		fmt.Println("-------------------------------")
+		fmt.Println("")
 	}
 
-	fmt.Println("Roles:")
-	for _, r := range roles {
-		fmt.Println(r.ID, r.Name)
+	// USERS
+	fmt.Println("# Users:")
+	users := GetUsers()
+	{
+		if len(users) == 0 {
+			u.Create(ctx, &domain.User{
+				Username: "admin",
+				RoleId:   roles[0].ID,
+			})
+
+			users = GetUsers()
+		}
+
+		for _, u := range users {
+			fmt.Println(u.String())
+		}
+
+		fmt.Println("-------------------------------")
+		fmt.Println("")
 	}
 
-	fmt.Println("-------------------------------")
-	fmt.Println("Views:")
+	fmt.Println("# Views:")
 	views := GetViews()
-	if len(views) == 0 {
-		v1 := CreateView("Test")
-		vr.SetRoles(ctx, v1.ID, roles[0].ID)
-		v2 := CreateView("Test2")
-		vr.SetRoles(ctx, v2.ID, roles[1].ID)
+	{
+		if len(views) == 0 {
+			v1 := CreateView("Test")
+
+			// db.Debug().Model(&v1).Association("Roles").Append(&roles)
+
+			vr.SetRoles(ctx, v1, roles[0].ID, roles[1].ID)
+			v2 := CreateView("Test2")
+			vr.SetRoles(ctx, v2, roles[1].ID)
+			views = GetViews()
+		}
+
+		for _, v := range views {
+			fmt.Println(v.String())
+		}
+
+		vr.SetRoles(ctx, views[0], roles[1].ID)
+
+		fmt.Println("New ---- ")
 		views = GetViews()
+		for _, v := range views {
+			fmt.Println(v.String())
+		}
+
+		fmt.Println("-------------------------------")
+		fmt.Println("")
 	}
 
-	for _, v := range views {
-		fmt.Println(v.ID, v.Name)
-	}
+	return
 
 	groups, _ := gr.Read(ctx)
 
@@ -146,44 +190,44 @@ func main() {
 		fmt.Println(vp.Product.Name, vp.Color, vp.Product.Price)
 	}
 
-	transactions := GetTransactions()
+	// transactions := GetTransactions()
 
-	if len(transactions) == 0 {
-		fmt.Println("Create Transaction")
-		transaction := &domain.Transaction{
-			Items: []*domain.TransactionItem{
-				{
-					ProductID: vps[1].ProductID,
-					Qty:       1,
-					Price:     210,
-				},
-				{
-					ProductID: vps[0].ProductID,
-					Qty:       2,
-					Price:     100,
-				},
-			},
-			UserID:        "bla",
-			Total:         310,
-			PaymentOption: domain.PaymentMethodCash,
-			AccountType:   domain.AccountTypeAnonymous,
-		}
+	// if len(transactions) == 0 {
+	// 	fmt.Println("Create Transaction")
+	// 	transaction := &domain.Transaction{
+	// 		Items: []*domain.TransactionItem{
+	// 			{
+	// 				ProductID: vps[1].ProductID,
+	// 				Qty:       1,
+	// 				Price:     210,
+	// 			},
+	// 			{
+	// 				ProductID: vps[0].ProductID,
+	// 				Qty:       2,
+	// 				Price:     100,
+	// 			},
+	// 		},
+	// 		UserID:        "bla",
+	// 		Total:         310,
+	// 		PaymentOption: domain.PaymentMethodCash,
+	// 		AccountType:   domain.AccountTypeAnonymous,
+	// 	}
 
-		_, err := tr.Create(ctx, transaction)
-		if err != nil {
-			fmt.Println(err)
-		}
+	// 	_, err := tr.Create(ctx, transaction)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 	}
 
-		transactions = GetTransactions()
-	}
+	// 	transactions = GetTransactions()
+	// }
 
-	fmt.Println("Print Transactions: ")
-	for _, t := range transactions {
-		fmt.Println("- Transaction", t.ID, t.Total)
-		for i := range t.Items {
-			fmt.Println("		Item", i, " ", t.Items[i].ProductID, t.Items[i].Qty, t.Items[i].Price)
-		}
-	}
+	// fmt.Println("Print Transactions: ")
+	// for _, t := range transactions {
+	// 	fmt.Println("- Transaction", t.ID, t.Total)
+	// 	for i := range t.Items {
+	// 		fmt.Println("		Item", i, " ", t.Items[i].ProductID, t.Items[i].Qty, t.Items[i].Price)
+	// 	}
+	// }
 
 }
 
@@ -223,6 +267,14 @@ func GetRoles() []*domain.Role {
 	return r
 }
 
+func GetUsers() []domain.User {
+	u, err := u.Read(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return u
+}
+
 func GetTransactions() []*domain.Transaction {
 	t, err := tr.Read(ctx)
 	if err != nil {
@@ -236,7 +288,7 @@ func AppendProduct(viewID string, product *domain.ViewProduct) error {
 }
 
 func RemoveProduct(viewID, productID string) error {
-	return vpr.RemoveProduct(ctx, viewID, productID)
+	return vpr.RemoveProduct(ctx, viewID, viewID)
 }
 
 func GetViewProductsByViewId(id string) []*domain.ViewProduct {

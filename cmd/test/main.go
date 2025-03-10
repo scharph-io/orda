@@ -2,98 +2,106 @@ package main
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/joho/godotenv"
-	"github.com/scharph/orda/internal/database"
-	"github.com/scharph/orda/internal/repository"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
+// User model with Pets association
+type User struct {
+	ID   uint
+	Name string
+	Pets []Pet
+}
+
+// Pet model
+type Pet struct {
+	ID     uint
+	Name   string
+	UserID uint
+}
+
 func main() {
-
-	if err := godotenv.Load(".env"); err != nil {
-		fmt.Println("INFO: No .env file found")
-	}
-
-	database.ConnectDB()
-
-	db := database.DB
-
-	productRepo := repository.NewProductRepo(db)
-	// groupRepo := repository.NewGroupRepo(db)
-	viewRepo := repository.NewViewRepo(db)
-	// viewProductRepo := repository.NewViewProductRepo(db)
-
-	ctx := db.Statement.Context
-
-	views, err := viewRepo.Read(ctx)
-
+	// Set up database with query logging enabled
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal("failed to connect database")
 	}
-	fmt.Printf("Views: %d\n", len(views))
 
-	view := views[0]
+	// Migrate the schema
+	db.AutoMigrate(&User{}, &Pet{})
 
-	// vS := service.NewViewService(viewRepo, productRepo, groupRepo)
+	// Create test data
+	cleanupDB(db)
+	createTestData(db)
 
-	// vS.AddProduct(ctx, view.ID, "01915f5d-307a-75d3-b5f1-e62cdb11cadd")
+	// Demonstrate replace without creating new entries
+	replaceWithoutCreating(db)
 
-	products, err := productRepo.Read(ctx)
+	// View final results
+	showResults(db)
+}
+
+func cleanupDB(db *gorm.DB) {
+	db.Exec("DELETE FROM pets")
+	db.Exec("DELETE FROM users")
+}
+
+func createTestData(db *gorm.DB) {
+	// Create a user with pets
+	user := User{Name: "John"}
+	db.Create(&user)
+
+	// Add some pets to user
+	pets := []Pet{
+		{Name: "Dog", UserID: user.ID},
+		{Name: "Cat", UserID: user.ID},
+		{Name: "Fish", UserID: user.ID},
+	}
+	db.Create(&pets)
+
+	fmt.Println("=== Initial Data ===")
+	showResults(db)
+}
+
+func replaceWithoutCreating(db *gorm.DB) {
+	// Load user with all pets
+	var user User
+	db.First(&user, 1)
+
+	// Load existing pets to get their IDs
+	var existingPets []Pet
+	db.Where("user_id = ?", user.ID).Find(&existingPets)
+
+	// Prepare pets for replacement - IMPORTANT: must include IDs of existing pets
+	// We'll keep the first pet, update the second, and remove the third
+	updatedPets := []Pet{
+		existingPets[0], // Keep first pet unchanged
+		{ID: existingPets[1].ID, Name: "Updated Cat Name"}, // Update second pet
+		// Third pet is not included, so it will be removed
+	}
+
+	fmt.Println("\n=== Replacing Pets ===")
+	fmt.Printf("Updating with pets: %+v\n", updatedPets)
+
+	// Replace associations - this will update, not create
+	err := db.Model(&user).Association("Pets").Replace(updatedPets)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf("Failed to replace: %v", err)
 	}
-	p := products[0]
+}
 
-	viewRepo.AddProduct(ctx, view.ID, p)
+func showResults(db *gorm.DB) {
+	var user User
+	db.Preload("Pets").First(&user)
 
-	view1, err := viewRepo.ReadById(ctx, "01917afe-07de-744e-b2d8-8e002e76cfb5")
-	if err != nil {
-		fmt.Println(err)
+	fmt.Println("User:", user.Name, "ID:", user.ID)
+	fmt.Println("Pets:")
+	for _, pet := range user.Pets {
+		fmt.Printf("  - %s (ID: %d, UserID: %d)\n", pet.Name, pet.ID, pet.UserID)
 	}
-
-	fmt.Println(len(view1.Products))
-
-	view1.Products = append(view.Products, products[2])
-	// fmt.Println(view)
-
-	_, err = viewRepo.Update(ctx, &view)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// res, err := viewProductRepo.ReadByViewId(ctx, views[0].ID)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// for _, v := range res {
-	// 	fmt.Println(v.Position, v.Product.Name, v.Position, v.Color)
-
-	// }
-
-	// res, err := viewProductRepo.Read(ctx)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// for _, v := range res {
-	// 	fmt.Println(v.View.Name, v.Position, v.Product.Name, v.Position, v.Color)
-
-	// }
-	// for _, v := range ReadViewProducts {
-	// 	fmt.Println(v.Name, v.Deposit)
-	// 	for _, p := range v.Products {
-	// 		fmt.Println("--", p.Name, p.Desc, p.Price)
-	// 	}
-	// }
-
-	// v := "01915f7f-36c1-79f7-a050-613526320bf3"
-	// p := "01915f5d-307a-75d3-b5f1-e62cdb11cadd"
-
-	// res, err := viewService.AddProduct(ctx, v, p)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// fmt.Println(res)
-
 }

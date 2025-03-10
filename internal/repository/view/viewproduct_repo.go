@@ -18,9 +18,9 @@ func NewViewProductRepo(db *gorm.DB) *ViewProductRepo {
 
 var _ ports.IViewProductRepository = (*ViewProductRepo)(nil)
 
-func (r *ViewProductRepo) ReadByViewID(ctx context.Context, viewID string) ([]*domain.ViewProduct, error) {
+func (r *ViewProductRepo) ReadByViewID(ctx context.Context, view_id string) ([]*domain.ViewProduct, error) {
 	var viewProducts []*domain.ViewProduct
-	if err := r.db.Model(&domain.ViewProduct{}).Where("view_id = ?", viewID).Preload("Product").Find(&viewProducts).Error; err != nil {
+	if err := r.db.Model(&domain.ViewProduct{}).Where("view_id = ?", view_id).Preload("Product").Find(&viewProducts).Error; err != nil {
 		return nil, err
 	}
 	return viewProducts, nil
@@ -33,15 +33,17 @@ func (r *ViewProductRepo) Update(ctx context.Context, viewProduct domain.ViewPro
 	return &viewProduct, nil
 }
 
-func (r *ViewProductRepo) AppendProducts(ctx context.Context, viewId string, products ...*domain.ViewProduct) error {
-	for i := range products {
-		if products[i].ViewID == "" {
-			products[i].ViewID = viewId
-		}
-	}
-	return r.db.Model(domain.ViewProduct{}).Create(products).Error
+func (r *ViewProductRepo) AppendProducts(ctx context.Context, view_id string, products ...*domain.ViewProduct) error {
+	return nil
+	// for i := range products {
+	// 	// uuid := uuid.MustParse(viewId)
+	// 	// if products[i].ViewID == len(uuid) {
+	// 	// 	products[i].ViewID = uuid.MustParse(viewId)
+	// 	// }
+	// }
+	// return r.db.Model(domain.ViewProduct{}).Create(products).Error
 }
 
-func (r *ViewProductRepo) RemoveProduct(ctx context.Context, viewId, productId string) error {
-	return r.db.Model(domain.ViewProduct{}).Delete(&domain.ViewProduct{ViewID: viewId, ProductID: productId}).Error
+func (r *ViewProductRepo) RemoveProduct(ctx context.Context, view_id, product_id string) error {
+	return r.db.Model(domain.ViewProduct{}).Delete(&domain.ViewProduct{ViewID: view_id, ProductID: product_id}).Error
 }

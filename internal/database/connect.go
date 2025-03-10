@@ -78,8 +78,9 @@ func Connect() {
 	// }
 
 	if err := DB.AutoMigrate(
-		&domain.User{},
+
 		&domain.Role{},
+		&domain.User{},
 
 		&domain.Transaction{},
 		&domain.TransactionItem{},

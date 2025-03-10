@@ -39,7 +39,7 @@ func NewServer() *Server {
 	productRepo := assortment.NewProductRepo(db)
 
 	viewRepo := view.NewViewRepository(db)
-	viewRoleRepo := view.NewViewRoleRepo(db)
+	// viewRoleRepo := view.NewViewRoleRepo(db)
 	viewProductRepo := view.NewViewProductRepo(db)
 
 	transactionRepo := transaction.NewTransactionRepository(db)
@@ -50,7 +50,7 @@ func NewServer() *Server {
 	roleService := service.NewRoleService(roleRepo)
 	accountService := service.NewAccountService(accountRepo, accountGroupRepo, accountHistoryRepo)
 	assortmentService := service.NewAssortmentService(productRepo, productGroupRepo)
-	viewService := service.NewViewService(viewRepo, viewProductRepo, viewRoleRepo)
+	viewService := service.NewViewService(viewRepo, viewProductRepo)
 	transactionService := service.NewTransactionService(transactionRepo, transactionItemRepo, productRepo)
 
 	// handlers
