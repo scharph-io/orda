@@ -43,11 +43,12 @@ type IProductGroupRepository interface {
 	ReadByID(ctx context.Context, id string) (*domain.ProductGroup, error)
 	Update(ctx context.Context, productGroup domain.ProductGroup) (*domain.ProductGroup, error)
 	Delete(ctx context.Context, productGroup domain.ProductGroup) error
+	AppendProducts(ctx context.Context, group *domain.ProductGroup, products ...*domain.Product) error
+	RemoveProducts(ctx context.Context, group *domain.ProductGroup, products ...*domain.Product) error
+	ReadProducts(ctx context.Context, group *domain.ProductGroup) (domain.Products, error)
 }
 
 type IProductRepository interface {
-	Create(ctx context.Context, product domain.Product) (*domain.Product, error)
-	CreateMany(ctx context.Context, products []domain.Product) error
 	ReadById(ctx context.Context, id string) (*domain.Product, error)
 	ReadByIds(ctx context.Context, ids []string) (domain.Products, error)
 	ReadByGroupID(ctx context.Context, groupID string) (domain.Products, error)

@@ -18,8 +18,8 @@ var (
 	r ports.IRoleRepository
 	u ports.IUserRepository
 
-	pr ports.IProductRepository
-	gr ports.IProductGroupRepository
+	pr  ports.IProductRepository
+	pgr ports.IProductGroupRepository
 
 	vr  ports.IViewRepository
 	vpr ports.IViewProductRepository
@@ -48,7 +48,7 @@ func main() {
 	vpr = view.NewViewProductRepo(db)
 
 	pr = assortment.NewProductRepo(db)
-	gr = assortment.NewProductGroupRepo(db)
+	pgr = assortment.NewProductGroupRepo(db)
 
 	tr = transaction.NewTransactionRepository(db)
 	tir = transaction.NewTransactionItemRepository(db)
@@ -101,11 +101,20 @@ func main() {
 	{
 		if len(views) == 0 {
 			v1 := CreateView("Test")
-
-			// db.Debug().Model(&v1).Association("Roles").Append(&roles)
+			if v1 == nil {
+				fmt.Println("Failed to create view 'Test'")
+				return
+			}
+			fmt.Println("Created view:", v1.ID)
 
 			vr.ReplaceRoles(ctx, v1, roles[0].ID, roles[1].ID)
 			v2 := CreateView("Test2")
+			if v2 == nil {
+				fmt.Println("Failed to create view 'Test2'")
+				return
+			}
+			fmt.Println("Created view:", v2.ID)
+
 			vr.ReplaceRoles(ctx, v2, roles[1].ID)
 			views = GetViews()
 		}
@@ -127,16 +136,16 @@ func main() {
 	}
 
 	fmt.Println("# ProductGroups:")
-	groups, _ := gr.Read(ctx)
+	groups, _ := pgr.Read(ctx)
 	{
 		if len(groups) == 0 {
-			gr.Create(ctx, domain.ProductGroup{
-				Name: "TestGroup1",
+			pgr.Create(ctx, domain.ProductGroup{
+				Name: "ProductGroup1",
 			})
-			gr.Create(ctx, domain.ProductGroup{
-				Name: "TestGroup2",
+			pgr.Create(ctx, domain.ProductGroup{
+				Name: "ProductGroup2",
 			})
-			groups, _ = gr.Read(ctx)
+			groups, _ = pgr.Read(ctx)
 		}
 
 		for _, g := range groups {
@@ -149,25 +158,35 @@ func main() {
 
 	fmt.Println("# Products:")
 	group1 := groups[0]
-	productsOfGroup1, _ := pr.ReadByGroupID(ctx, group1.ID)
+	group2 := groups[1]
+	productsOfGroup1, _ := pgr.ReadProducts(ctx, group1)
 	{
 		if len(productsOfGroup1) == 0 {
-			pr.Create(ctx, domain.Product{
-				Name:           "TestProduct1",
-				Price:          100,
-				ProductGroupID: group1.ID,
+
+			pgr.AppendProducts(ctx, group1,
+				&domain.Product{
+					Name:  "Cola",
+					Price: 100,
+				},
+				&domain.Product{
+					Name:  "Fanta",
+					Price: 410,
+				})
+
+			pgr.AppendProducts(ctx, group2, &domain.Product{
+				Name:  "Rum",
+				Price: 610,
 			})
-			pr.Create(ctx, domain.Product{
-				Name:           "TestProduct2",
-				Price:          200,
-				ProductGroupID: group1.ID,
-			})
-			productsOfGroup1, _ = pr.ReadByGroupID(ctx, group1.ID)
+
+			productsOfGroup1, _ = pgr.ReadProducts(ctx, group1)
 		}
 
-		fmt.Println("Products in group", groups[0].String())
-		for _, p := range productsOfGroup1 {
-			fmt.Println(p.String())
+		for _, g := range groups {
+			fmt.Println(g.String())
+			ps, _ := pgr.ReadProducts(ctx, g)
+			for _, p := range ps {
+				fmt.Println("   ---", p.String())
+			}
 		}
 
 		fmt.Println("-------------------------------")
@@ -175,21 +194,53 @@ func main() {
 	}
 
 	fmt.Println("# Views:")
-	view1 := views[0]
 
-	fmt.Println(view1.Name)
-	vps := GetViewProductsByViewId(view1.ID)
+	// vps := GetViewProductsByViewId(view1.ID)
 	{
+		// product := productsOfGroup1[0]
+		view1 := views[0]
 
-		// vr.AppendProducts(ctx, view1, &domain.ViewProduct{
-		// 	Position:  1,
-		// 	Color:     "blue",
-		// 	ProductID: productsOfGroup1[1].ID,
-		// })
-		// if len(vps) == 0 {
+		fmt.Println("Appending product to view:")
+		fmt.Println("View:", view1.String())
+		// fmt.Println("   --", product.String())
 
-		// 	// vps = GetViewProductsByViewId(view1.ID)
+		// vr.ReplaceViewProducts(ctx, view1,
+		// 	&domain.ViewProduct{
+		// 		Position: 1,
+		// 		Color:    "blue",
+		// 		Product:  product,
+		// 	})
+
+		// var products []*domain.Product
+		// for _, pr := range productsOfGroup1 {
+		// 	var p domain.Product
+		// 	if err := db.Model(&p).Where("id = ?", pr.ID).Find(&p).Error; err != nil {
+		// 		panic(err)
+		// 	}
+		// 	products = append(products, &p)
 		// }
+
+		// var viewProducts []*domain.ViewProduct
+		// for _, pr := range productsOfGroup1 {
+		// 	viewProducts = append(viewProducts, &domain.ViewProduct{
+		// 		Product: pr,
+		// 	})
+		// }
+
+		// for _, vp := range viewProducts {
+		// 	fmt.Println("   --", vp.String())
+		// }
+
+		if err := db.Model(&view1).Association("Products").Append(productsOfGroup1); err != nil {
+			fmt.Println("err: ", err)
+		}
+
+		// var vps []*domain.ViewProduct
+		// if err := db.Model(&view1).Association("Products").Find(&vps); err != nil {
+		// 	fmt.Println("err: ", err)
+		// }
+
+		vps := GetViewProductsByViewId(view1.ID)
 
 		fmt.Println("ViewProducts in view", view1.Name)
 		for _, vp := range vps {

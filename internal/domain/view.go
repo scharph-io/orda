@@ -4,11 +4,13 @@ import (
 	"fmt"
 )
 
+type Roles []Role
+
 type View struct {
 	Base
 	Name     string
-	Products []ViewProduct `gorm:"many2many:view_products;"`
-	Roles    []Role        `gorm:"many2many:view_roles;"`
+	Products Products `gorm:"many2many:view_products;"`
+	Roles    Roles    `gorm:"many2many:view_roles;"`
 }
 
 func (v View) String() string {
@@ -16,17 +18,17 @@ func (v View) String() string {
 }
 
 type ViewRole struct {
-	ViewID string `gorm:"primaryKey;size:36"`
-	View   View   `gorm:"foreignKey:ViewID"`
-	RoleID string `gorm:"primaryKey;size:36"`
-	Role   Role   `gorm:"foreignKey:RoleID"`
+	ViewId string `gorm:"primaryKey;size:36"`
+	View   View   `gorm:"foreignKey:ViewId"`
+	RoleId string `gorm:"primaryKey;size:36"`
+	Role   Role   `gorm:"foreignKey:RoleId"`
 }
 
 type ViewProduct struct {
-	ViewID    string  `gorm:"primaryKey"`
-	View      View    `gorm:"foreignKey:ViewID"`
-	ProductID string  `gorm:"primaryKey"`
-	Product   Product `gorm:"foreignKey:ProductID"`
+	ViewId    string  `gorm:"primaryKey;size:36"`
+	View      View    `gorm:"foreignKey:ViewId"`
+	ProductId string  `gorm:"primaryKey;size:36"`
+	Product   Product `gorm:"foreignKey:ProductId"`
 	Position  int8
 	Color     string
 }

@@ -54,3 +54,23 @@ func (r *ProductGroupRepo) Delete(ctx context.Context, productGroup domain.Produ
 	}
 	return nil
 }
+
+func (r *ProductGroupRepo) AppendProducts(ctx context.Context, group *domain.ProductGroup, products ...*domain.Product) error {
+	// fmt.Println("Append associated products")
+	return r.db.WithContext(ctx).Model(&group).Association("Products").Append(products)
+
+}
+
+func (r *ProductGroupRepo) RemoveProducts(ctx context.Context, group *domain.ProductGroup, products ...*domain.Product) error {
+	// fmt.Println("Delete associated products")
+	return r.db.WithContext(ctx).Model(&group).Association("Products").Delete(products)
+}
+
+func (r *ProductGroupRepo) ReadProducts(ctx context.Context, group *domain.ProductGroup) (domain.Products, error) {
+	// fmt.Println("Read associated products")
+	var products domain.Products
+	if err := r.db.WithContext(ctx).Model(&group).Association("Products").Find(&products); err != nil {
+		return nil, err
+	}
+	return products, nil
+}

@@ -27,7 +27,7 @@ func (r *ViewRepo) Create(ctx context.Context, view domain.View) (*domain.View, 
 
 func (r *ViewRepo) Read(ctx context.Context) ([]*domain.View, error) {
 	var views []*domain.View
-	if err := r.db.Preload("Roles").Find(&views).Error; err != nil {
+	if err := r.db.Preload("Roles").Preload("Products").Find(&views).Error; err != nil {
 		return nil, err
 	}
 	return views, nil
@@ -68,14 +68,14 @@ func (r *ViewRepo) ReplaceRoles(ctx context.Context, view *domain.View, role_ids
 	return r.db.Model(&view).Association("Roles").Replace(roles)
 }
 
-func (r *ViewRepo) ReplaceProducts(ctx context.Context, view *domain.View, products ...*domain.ViewProduct) error {
-	return r.db.Model(&view).Association("Products").Replace(&products)
+func (r *ViewRepo) ReplaceViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error {
+	return r.db.WithContext(ctx).Model(&v).Association("Products").Replace(ps)
 }
 
-func (r *ViewRepo) AppendProducts(ctx context.Context, view *domain.View, products ...*domain.ViewProduct) error {
-	return r.db.Model(view).Association("Products").Append(&products)
+func (r *ViewRepo) AppendViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error {
+	return r.db.Debug().WithContext(ctx).Model(&v).Association("Products").Append(ps)
 }
 
-func (r *ViewRepo) RemoveProduct(ctx context.Context, view *domain.View, vp *domain.ViewProduct) error {
-	return r.db.Model(&view).Association("Products").Delete(vp)
+func (r *ViewRepo) RemoveViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error {
+	return r.db.WithContext(ctx).Model(&v).Association("Products").Delete(ps)
 }
