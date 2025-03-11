@@ -104,9 +104,9 @@ func main() {
 
 			// db.Debug().Model(&v1).Association("Roles").Append(&roles)
 
-			vr.SetRoles(ctx, v1, roles[0].ID, roles[1].ID)
+			vr.ReplaceRoles(ctx, v1, roles[0].ID, roles[1].ID)
 			v2 := CreateView("Test2")
-			vr.SetRoles(ctx, v2, roles[1].ID)
+			vr.ReplaceRoles(ctx, v2, roles[1].ID)
 			views = GetViews()
 		}
 
@@ -114,7 +114,7 @@ func main() {
 			fmt.Println(v.String())
 		}
 
-		vr.SetRoles(ctx, views[0], roles[1].ID)
+		vr.ReplaceRoles(ctx, views[0], roles[1].ID)
 
 		fmt.Println("New ---- ")
 		views = GetViews()
@@ -126,68 +126,78 @@ func main() {
 		fmt.Println("")
 	}
 
-	return
-
+	fmt.Println("# ProductGroups:")
 	groups, _ := gr.Read(ctx)
+	{
+		if len(groups) == 0 {
+			gr.Create(ctx, domain.ProductGroup{
+				Name: "TestGroup1",
+			})
+			gr.Create(ctx, domain.ProductGroup{
+				Name: "TestGroup2",
+			})
+			groups, _ = gr.Read(ctx)
+		}
 
-	if len(groups) == 0 {
-		gr.Create(ctx, domain.ProductGroup{
-			Name: "TestGroup1",
-		})
-		gr.Create(ctx, domain.ProductGroup{
-			Name: "TestGroup2",
-		})
-		groups, _ = gr.Read(ctx)
+		for _, g := range groups {
+			fmt.Println(g.String())
+		}
+
+		fmt.Println("-------------------------------")
+		fmt.Println("")
 	}
 
-	fmt.Println("-------------------------------")
-	fmt.Println("Groups")
-	for _, g := range groups {
-		fmt.Println(g.ID, g.Name)
+	fmt.Println("# Products:")
+	group1 := groups[0]
+	productsOfGroup1, _ := pr.ReadByGroupID(ctx, group1.ID)
+	{
+		if len(productsOfGroup1) == 0 {
+			pr.Create(ctx, domain.Product{
+				Name:           "TestProduct1",
+				Price:          100,
+				ProductGroupID: group1.ID,
+			})
+			pr.Create(ctx, domain.Product{
+				Name:           "TestProduct2",
+				Price:          200,
+				ProductGroupID: group1.ID,
+			})
+			productsOfGroup1, _ = pr.ReadByGroupID(ctx, group1.ID)
+		}
+
+		fmt.Println("Products in group", groups[0].String())
+		for _, p := range productsOfGroup1 {
+			fmt.Println(p.String())
+		}
+
+		fmt.Println("-------------------------------")
+		fmt.Println("")
 	}
 
-	products, _ := pr.ReadByGroupID(ctx, groups[0].ID)
+	fmt.Println("# Views:")
+	view1 := views[0]
 
-	if len(products) == 0 {
-		pr.Create(ctx, domain.Product{
-			Name:           "TestProduct1",
-			Price:          100,
-			ProductGroupID: groups[0].ID,
-		})
-		pr.Create(ctx, domain.Product{
-			Name:           "TestProduct2",
-			Price:          200,
-			ProductGroupID: groups[0].ID,
-		})
-		products, _ = pr.ReadByGroupID(ctx, groups[0].ID)
-	}
+	fmt.Println(view1.Name)
+	vps := GetViewProductsByViewId(view1.ID)
+	{
 
-	fmt.Println("Products in group", groups[0].Name, groups[0].ID)
-	for _, p := range products {
-		fmt.Println(p.ID, p.Name)
-	}
+		// vr.AppendProducts(ctx, view1, &domain.ViewProduct{
+		// 	Position:  1,
+		// 	Color:     "blue",
+		// 	ProductID: productsOfGroup1[1].ID,
+		// })
+		// if len(vps) == 0 {
 
-	vps := GetViewProductsByViewId(views[0].ID)
+		// 	// vps = GetViewProductsByViewId(view1.ID)
+		// }
 
-	if len(vps) == 0 {
-		fmt.Println("Append", products[0].Name, "to", views[0].Name)
-		AppendProduct(views[0].ID, &domain.ViewProduct{
-			Position:  0,
-			Color:     "red",
-			ProductID: products[0].ID,
-		})
+		fmt.Println("ViewProducts in view", view1.Name)
+		for _, vp := range vps {
+			fmt.Println(vp.String())
+		}
 
-		AppendProduct(views[0].ID, &domain.ViewProduct{
-			Position:  1,
-			Color:     "blue",
-			ProductID: products[1].ID,
-		})
-		vps = GetViewProductsByViewId(views[0].ID)
-	}
-
-	fmt.Println("ViewProducts in view", views[0].Name)
-	for _, vp := range vps {
-		fmt.Println(vp.Product.Name, vp.Color, vp.Product.Price)
+		fmt.Println("-------------------------------")
+		fmt.Println("")
 	}
 
 	// transactions := GetTransactions()
@@ -281,14 +291,6 @@ func GetTransactions() []*domain.Transaction {
 		fmt.Println(err)
 	}
 	return t
-}
-
-func AppendProduct(viewID string, product *domain.ViewProduct) error {
-	return vpr.AppendProducts(ctx, viewID, product)
-}
-
-func RemoveProduct(viewID, productID string) error {
-	return vpr.RemoveProduct(ctx, viewID, viewID)
 }
 
 func GetViewProductsByViewId(id string) []*domain.ViewProduct {

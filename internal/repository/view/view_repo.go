@@ -56,7 +56,7 @@ func (r *ViewRepo) Delete(ctx context.Context, view domain.View) error {
 	return r.db.Delete(&view).Error
 }
 
-func (r *ViewRepo) SetRoles(ctx context.Context, view *domain.View, role_ids ...string) error {
+func (r *ViewRepo) ReplaceRoles(ctx context.Context, view *domain.View, role_ids ...string) error {
 	var roles []*domain.Role
 	for _, roleId := range role_ids {
 		var role domain.Role
@@ -66,4 +66,16 @@ func (r *ViewRepo) SetRoles(ctx context.Context, view *domain.View, role_ids ...
 		roles = append(roles, &role)
 	}
 	return r.db.Model(&view).Association("Roles").Replace(roles)
+}
+
+func (r *ViewRepo) ReplaceProducts(ctx context.Context, view *domain.View, products ...*domain.ViewProduct) error {
+	return r.db.Model(&view).Association("Products").Replace(&products)
+}
+
+func (r *ViewRepo) AppendProducts(ctx context.Context, view *domain.View, products ...*domain.ViewProduct) error {
+	return r.db.Model(view).Association("Products").Append(&products)
+}
+
+func (r *ViewRepo) RemoveProduct(ctx context.Context, view *domain.View, vp *domain.ViewProduct) error {
+	return r.db.Model(&view).Association("Products").Delete(vp)
 }

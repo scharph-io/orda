@@ -14,6 +14,10 @@ type ProductGroup struct {
 	Products Products
 }
 
+func (pg ProductGroup) String() string {
+	return fmt.Sprintf("[%s] Name: %s", pg.ID, pg.Name)
+}
+
 // Product is the model for the product
 type Product struct {
 	Base
@@ -24,6 +28,6 @@ type Product struct {
 	Active         bool
 }
 
-func (p Product) ToString() string {
-	return fmt.Sprintf("[ProductID] ID: %s Name: %s NetPrice: %d", p.ID, p.Name, p.Price)
+func (p Product) String() string {
+	return fmt.Sprintf("[%s] Name: %s Price: %d", p.ID, p.Name, p.Price)
 }

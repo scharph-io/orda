@@ -30,3 +30,7 @@ type ViewProduct struct {
 	Position  int8
 	Color     string
 }
+
+func (v ViewProduct) String() string {
+	return fmt.Sprintf("[%s] %s active:%v, pos: %d", v.Product.Name, v.Color, v.Product.Active, v.Position)
+}

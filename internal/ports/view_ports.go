@@ -37,7 +37,10 @@ type IViewRepository interface {
 	ReadByID(ctx context.Context, id string) (*domain.View, error)
 	Update(ctx context.Context, view domain.View) (*domain.View, error)
 	Delete(ctx context.Context, view domain.View) error
-	SetRoles(ctx context.Context, view *domain.View, role_ids ...string) error
+	ReplaceRoles(ctx context.Context, view *domain.View, role_ids ...string) error
+	AppendProducts(ctx context.Context, view *domain.View, products ...*domain.ViewProduct) error
+	ReplaceProducts(ctx context.Context, view *domain.View, products ...*domain.ViewProduct) error
+	RemoveProduct(ctx context.Context, view *domain.View, vp *domain.ViewProduct) error
 }
 
 type IViewRoleRepository interface {
@@ -51,8 +54,6 @@ type IViewRoleRepository interface {
 type IViewProductRepository interface {
 	ReadByViewID(ctx context.Context, viewID string) ([]*domain.ViewProduct, error)
 	Update(ctx context.Context, viewProduct domain.ViewProduct) (*domain.ViewProduct, error)
-	AppendProducts(ctx context.Context, viewId string, products ...*domain.ViewProduct) error
-	RemoveProduct(ctx context.Context, viewId, productId string) error
 }
 
 type IViewService interface {
