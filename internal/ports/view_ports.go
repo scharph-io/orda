@@ -38,9 +38,11 @@ type IViewRepository interface {
 	Update(ctx context.Context, view domain.View) (*domain.View, error)
 	Delete(ctx context.Context, view domain.View) error
 	ReplaceRoles(ctx context.Context, v *domain.View, role_ids ...string) error
-	AppendViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error
+	AppendViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 	ReplaceViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error
-	RemoveViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error
+	// RemoveViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error
+	AddViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
+	RemoveViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 }
 
 type IViewRoleRepository interface {

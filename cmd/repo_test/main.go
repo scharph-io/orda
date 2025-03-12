@@ -100,22 +100,12 @@ func main() {
 	views := GetViews()
 	{
 		if len(views) == 0 {
-			v1 := CreateView("Test")
-			if v1 == nil {
-				fmt.Println("Failed to create view 'Test'")
-				return
-			}
-			fmt.Println("Created view:", v1.ID)
-
+			v1 := CreateView("Kiosk")
 			vr.ReplaceRoles(ctx, v1, roles[0].ID, roles[1].ID)
-			v2 := CreateView("Test2")
-			if v2 == nil {
-				fmt.Println("Failed to create view 'Test2'")
-				return
-			}
-			fmt.Println("Created view:", v2.ID)
 
+			v2 := CreateView("Bar")
 			vr.ReplaceRoles(ctx, v2, roles[1].ID)
+
 			views = GetViews()
 		}
 
@@ -140,10 +130,10 @@ func main() {
 	{
 		if len(groups) == 0 {
 			pgr.Create(ctx, domain.ProductGroup{
-				Name: "ProductGroup1",
+				Name: "Getränke",
 			})
 			pgr.Create(ctx, domain.ProductGroup{
-				Name: "ProductGroup2",
+				Name: "Essen",
 			})
 			groups, _ = pgr.Read(ctx)
 		}
@@ -157,13 +147,13 @@ func main() {
 	}
 
 	fmt.Println("# Products:")
-	group1 := groups[0]
-	group2 := groups[1]
-	productsOfGroup1, _ := pgr.ReadProducts(ctx, group1)
+	drinks_group := groups[0]
+	food_group := groups[1]
+	drinks, _ := pgr.ReadProducts(ctx, drinks_group)
 	{
-		if len(productsOfGroup1) == 0 {
+		if len(drinks) == 0 {
 
-			pgr.AppendProducts(ctx, group1,
+			pgr.AppendProducts(ctx, drinks_group,
 				&domain.Product{
 					Name:  "Cola",
 					Price: 100,
@@ -171,14 +161,27 @@ func main() {
 				&domain.Product{
 					Name:  "Fanta",
 					Price: 410,
+				},
+				&domain.Product{
+					Name:  "Mineral",
+					Price: 310,
+				},
+				&domain.Product{
+					Name:  "Rum",
+					Price: 460,
 				})
 
-			pgr.AppendProducts(ctx, group2, &domain.Product{
-				Name:  "Rum",
-				Price: 610,
-			})
+			pgr.AppendProducts(ctx, food_group,
+				&domain.Product{
+					Name:  "Schnitzel",
+					Price: 610,
+				},
+				&domain.Product{
+					Name:  "Pommes",
+					Price: 610,
+				})
 
-			productsOfGroup1, _ = pgr.ReadProducts(ctx, group1)
+			drinks, _ = pgr.ReadProducts(ctx, drinks_group)
 		}
 
 		for _, g := range groups {
@@ -193,58 +196,121 @@ func main() {
 		fmt.Println("")
 	}
 
+	food, _ := pgr.ReadProducts(ctx, food_group)
 	fmt.Println("# Views:")
 
 	// vps := GetViewProductsByViewId(view1.ID)
 	{
 		// product := productsOfGroup1[0]
-		view1 := views[0]
+		kiosk := views[0]
 
-		fmt.Println("Appending product to view:")
-		fmt.Println("View:", view1.String())
-		// fmt.Println("   --", product.String())
+		fmt.Println("Appending to View:", kiosk.String())
 
-		// vr.ReplaceViewProducts(ctx, view1,
-		// 	&domain.ViewProduct{
-		// 		Position: 1,
-		// 		Color:    "blue",
-		// 		Product:  product,
-		// 	})
-
-		// var products []*domain.Product
-		// for _, pr := range productsOfGroup1 {
-		// 	var p domain.Product
-		// 	if err := db.Model(&p).Where("id = ?", pr.ID).Find(&p).Error; err != nil {
-		// 		panic(err)
-		// 	}
-		// 	products = append(products, &p)
+		// if err := vr.AddViewProducts(ctx, view1, vp2, vp1); err != nil {
+		// 	fmt.Println("Error adding view products:", err)
 		// }
 
-		// var viewProducts []*domain.ViewProduct
-		// for _, pr := range productsOfGroup1 {
-		// 	viewProducts = append(viewProducts, &domain.ViewProduct{
-		// 		Product: pr,
-		// 	})
+		// vps := GetViewProductsByViewId(view1.ID)
+
+		// fmt.Println("ViewProducts in view", view1.Name)
+		// for _, vp := range vps {
+		// 	fmt.Println(vp.String())
 		// }
 
-		// for _, vp := range viewProducts {
-		// 	fmt.Println("   --", vp.String())
+		// fmt.Println("Removing product from view:")
+		// fmt.Println("View:", view1.String())
+
+		// if err := vr.RemoveViewProducts(ctx, view1, vp1); err != nil {
+		// 	fmt.Println("Error removing view products:", err)
 		// }
 
-		if err := db.Model(&view1).Association("Products").Append(productsOfGroup1); err != nil {
-			fmt.Println("err: ", err)
+		// vps = GetViewProductsByViewId(view1.ID)
+
+		// fmt.Println("ViewProducts in view", view1.Name)
+		// for _, vp := range vps {
+		// 	fmt.Println(vp.String())
+		// }
+		//
+
+		// if err := vr.ReplaceViewProducts(ctx, view1, vp1, vp2); err != nil {
+		// 	fmt.Println("err", err)
+		// }
+		// vps := GetViewProductsByViewId(view1.ID)
+		// for _, vp := range vps {
+		// 	fmt.Println(vp.String())
+		// }
+		// fmt.Println("--------------")
+
+		// if err := vr.ReplaceViewProducts(ctx, view1, &domain.ViewProduct{
+		// 	ProductId: productsOfGroup1[1].ID,
+		// 	Color:     "violett",
+		// 	Position:  3,
+		// }); err != nil {
+		// 	fmt.Println("err", err)
+		// }
+
+		// vps = GetViewProductsByViewId(view1.ID)
+		// for _, vp := range vps {
+		// 	fmt.Println(vp.String())
+		// }
+		//
+
+		if err := vr.AppendViewProducts(ctx, kiosk, &domain.ViewProduct{
+			ProductId: food[1].ID,
+			Color:     "violett",
+			Position:  1,
+		}); err != nil {
+			fmt.Println("err", err)
 		}
 
-		// var vps []*domain.ViewProduct
-		// if err := db.Model(&view1).Association("Products").Find(&vps); err != nil {
-		// 	fmt.Println("err: ", err)
-		// }
-
-		vps := GetViewProductsByViewId(view1.ID)
-
-		fmt.Println("ViewProducts in view", view1.Name)
+		vps := GetViewProductsByViewId(kiosk.ID)
+		fmt.Println("ViewProducts: ")
 		for _, vp := range vps {
-			fmt.Println(vp.String())
+			fmt.Println("  -- ", vp.String())
+		}
+
+		if err := vr.AppendViewProducts(ctx, kiosk,
+			&domain.ViewProduct{
+				ProductId: drinks[0].ID,
+				Color:     "blue",
+				Position:  2,
+			},
+			&domain.ViewProduct{
+				ProductId: drinks[1].ID,
+				Color:     "grey",
+				Position:  3,
+			},
+			&domain.ViewProduct{
+				ProductId: food[0].ID,
+				Color:     "brown",
+				Position:  4,
+			},
+			&domain.ViewProduct{
+				ProductId: drinks[2].ID,
+				Color:     "green",
+				Position:  5,
+			}); err != nil {
+			fmt.Println("err", err)
+		}
+
+		vps = GetViewProductsByViewId(kiosk.ID)
+		fmt.Println("ViewProducts: ")
+		for _, vp := range vps {
+			fmt.Println("  -- ", vp.String())
+		}
+
+		if err := vr.ReplaceViewProducts(ctx, kiosk, &domain.ViewProduct{
+			ProductId: food[0].ID,
+			Color:     "violett",
+			Position:  3,
+		}); err != nil {
+			fmt.Println("err", err)
+		}
+
+		fmt.Println("ViewProducts: ")
+		vps = GetViewProductsByViewId(kiosk.ID)
+		for _, vp := range vps {
+			fmt.Println("  -- ", vp.String())
 		}
 
 		fmt.Println("-------------------------------")

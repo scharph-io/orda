@@ -68,14 +68,81 @@ func (r *ViewRepo) ReplaceRoles(ctx context.Context, view *domain.View, role_ids
 	return r.db.Model(&view).Association("Roles").Replace(roles)
 }
 
-func (r *ViewRepo) ReplaceViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error {
-	return r.db.WithContext(ctx).Model(&v).Association("Products").Replace(ps)
+func (r *ViewRepo) ReplaceViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error {
+	var productIds []string
+	for _, vp := range vps {
+		productIds = append(productIds, vp.ProductId)
+	}
+
+	var products []domain.Product
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Where("id IN ?", productIds).Find(&products).Error; err != nil {
+		return err
+	}
+	if err := r.db.WithContext(ctx).Model(&v).Association("Products").Replace(&products); err != nil {
+		return err
+	}
+	var viewProducts []domain.ViewProduct
+	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("view_id = ?", v.ID).Find(&viewProducts).Error; err != nil {
+		return err
+	}
+
+	for i, vp := range viewProducts {
+		vp.Color = vps[i].Color
+		vp.Position = vps[i].Position
+		if err := r.db.WithContext(ctx).Save(&vp).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func (r *ViewRepo) AppendViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error {
-	return r.db.Debug().WithContext(ctx).Model(&v).Association("Products").Append(ps)
+func (r *ViewRepo) AppendViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error {
+	var productIds []string
+	for _, vp := range vps {
+		productIds = append(productIds, vp.ProductId)
+	}
+
+	var products []domain.Product
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Where("id IN ?", productIds).Find(&products).Error; err != nil {
+		return err
+	}
+
+	if err := r.db.WithContext(ctx).Model(&v).Association("Products").Append(&products); err != nil {
+		return err
+	}
+	var viewProducts []domain.ViewProduct
+	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("view_id = ? AND product_id IN ?", v.ID, productIds).Find(&viewProducts).Error; err != nil {
+		return err
+	}
+
+	for i, vp := range viewProducts {
+		vp.Color = vps[i].Color
+		vp.Position = vps[i].Position
+		if err := r.db.WithContext(ctx).Save(&vp).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func (r *ViewRepo) RemoveViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error {
-	return r.db.WithContext(ctx).Model(&v).Association("Products").Delete(ps)
+// func (r *ViewRepo) RemoveViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error {
+// 	return r.db.WithContext(ctx).Model(&v).Association("Products").Delete(ps)
+// }
+
+func (r *ViewRepo) AddViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error {
+	for _, vp := range vps {
+		if err := r.db.WithContext(ctx).Model(vp).Create(vp).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r *ViewRepo) RemoveViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error {
+	for _, vp := range vps {
+		if err := r.db.WithContext(ctx).Model(vp).Delete(vp).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }
