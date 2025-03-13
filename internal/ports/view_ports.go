@@ -38,19 +38,12 @@ type IViewRepository interface {
 	Update(ctx context.Context, view domain.View) (*domain.View, error)
 	Delete(ctx context.Context, view domain.View) error
 	ReplaceRoles(ctx context.Context, v *domain.View, role_ids ...string) error
+	GetViewRoles(ctx context.Context, v *domain.View) ([]*domain.Role, error)
 	AppendViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 	ReplaceViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error
 	AddViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 	RemoveViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 }
-
-// type IViewRoleRepository interface {
-// 	Create(ctx context.Context, viewRole domain.ViewRole) (*domain.ViewRole, error)
-// 	Read(ctx context.Context) ([]*domain.ViewRole, error)
-// 	ReadByViewID(ctx context.Context, view_id string) ([]*domain.ViewRole, error)
-// 	ReadByRoleID(ctx context.Context, role_id string) ([]*domain.ViewRole, error)
-// 	Delete(ctx context.Context, viewRole domain.ViewRole) error
-// }
 
 type IViewProductRepository interface {
 	ReadByViewID(ctx context.Context, viewId string) ([]*domain.ViewProduct, error)
@@ -64,6 +57,7 @@ type IViewService interface {
 	Update(ctx context.Context, id string, view ViewRequest) (*ViewResponse, error)
 	Delete(ctx context.Context, id string) error
 	SetRoles(ctx context.Context, id string, roleIds ...string) error
+	GetRoles(ctx context.Context, id string) ([]*RoleResponse, error)
 	RemoveRoles(ctx context.Context, id string, roleIds ...string) error
 	SetProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
 	AddProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
@@ -77,6 +71,7 @@ type IViewHandlers interface {
 	Update(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
 	SetRoles(c *fiber.Ctx) error
+	GetRoles(c *fiber.Ctx) error
 	RemoveRoles(c *fiber.Ctx) error
 	SetOrAddProducts(c *fiber.Ctx) error
 	RemoveProducts(c *fiber.Ctx) error

@@ -67,6 +67,14 @@ func (r *ViewRepo) ReplaceRoles(ctx context.Context, view *domain.View, role_ids
 	return r.db.Model(&view).Association("Roles").Replace(roles)
 }
 
+func (r *ViewRepo) GetViewRoles(ctx context.Context, view *domain.View) ([]*domain.Role, error) {
+	var roles []*domain.Role
+	if err := r.db.Model(&view).Association("Roles").Find(&roles); err != nil {
+		return nil, err
+	}
+	return roles, nil
+}
+
 func (r *ViewRepo) ReplaceViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error {
 	var productIds []string
 	for _, vp := range vps {

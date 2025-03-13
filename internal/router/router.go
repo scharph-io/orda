@@ -142,6 +142,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	views.Get("/:id", s.viewHandlers.ReadOne)
 	views.Put("/:id", s.viewHandlers.Update)
 	views.Delete("/:id", s.viewHandlers.Delete)
+	views.Get("/:id/roles", s.viewHandlers.GetRoles)
 	views.Put("/:id/roles", s.viewHandlers.SetRoles)
 	views.Delete("/:id/roles", s.viewHandlers.RemoveRoles)
 	views.Put("/:id/products", s.viewHandlers.SetOrAddProducts)

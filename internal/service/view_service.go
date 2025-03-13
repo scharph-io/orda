@@ -115,6 +115,27 @@ func (s *ViewService) SetRoles(ctx context.Context, id string, roleIds ...string
 	return s.repo.ReplaceRoles(ctx, view, roleIds...)
 }
 
+func (s *ViewService) GetRoles(ctx context.Context, id string) ([]*ports.RoleResponse, error) {
+	view, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	roles, err := s.repo.GetViewRoles(ctx, view)
+	if err != nil {
+		return nil, err
+	}
+
+	var roleResponses []*ports.RoleResponse
+	for _, role := range roles {
+		roleResponses = append(roleResponses, &ports.RoleResponse{
+			Id:   role.ID,
+			Name: role.Name,
+		})
+	}
+	return roleResponses, nil
+}
+
 func (s *ViewService) RemoveRoles(ctx context.Context, id string, roleIds ...string) error {
 	view, err := s.repo.ReadByID(ctx, id)
 	if err != nil {

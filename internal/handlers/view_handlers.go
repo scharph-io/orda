@@ -90,6 +90,15 @@ func (h *ViewHandlers) SetRoles(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Roles updated successfully"})
 }
 
+func (h *ViewHandlers) GetRoles(c *fiber.Ctx) error {
+	id := c.Params("id")
+	roles, err := h.viewService.GetRoles(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to get roles"})
+	}
+	return c.Status(fiber.StatusOK).JSON(roles)
+}
+
 func (h *ViewHandlers) RemoveRoles(c *fiber.Ctx) error {
 	id := c.Params("id")
 	roles := []string{}
