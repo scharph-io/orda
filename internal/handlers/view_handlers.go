@@ -23,7 +23,6 @@ func (h *ViewHandlers) Create(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
 
-	fmt.Println(req)
 	res, err := h.viewService.Create(c.Context(), req)
 	if err != nil {
 		fmt.Println(err)
@@ -80,12 +79,15 @@ func (h *ViewHandlers) Delete(c *fiber.Ctx) error {
 
 func (h *ViewHandlers) SetRoles(c *fiber.Ctx) error {
 	id := c.Params("id")
-	roleIds := c.Query("roles")
-	err := h.viewService.SetRoles(c.Context(), id, roleIds)
+	roles := []string{}
+	if err := c.BodyParser(&roles); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
+	}
+	err := h.viewService.SetRoles(c.Context(), id, roles...)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to add roles"})
 	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Roles updated successfully"})
 }
 
 func (h *ViewHandlers) RemoveRoles(c *fiber.Ctx) error {
@@ -103,7 +105,7 @@ func (h *ViewHandlers) RemoveRoles(c *fiber.Ctx) error {
 
 func (h *ViewHandlers) SetOrAddProducts(c *fiber.Ctx) error {
 	id := c.Params("id")
-	overwrite := c.QueryBool("overwrite")
+	overwrite := c.QueryBool("overwrite", false)
 	req := []*ports.ViewProductRequest{}
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
@@ -120,7 +122,9 @@ func (h *ViewHandlers) SetOrAddProducts(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": fmt.Sprintf("%d Products updated successfully", len(req)),
+	})
 }
 
 func (h *ViewHandlers) RemoveProducts(c *fiber.Ctx) error {

@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -51,20 +50,45 @@ func (s *ViewService) ReadMany(ctx context.Context) ([]*ports.ViewResponse, erro
 func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewResponse, error) {
 	view, err := s.repo.ReadByID(ctx, id)
 	if err != nil {
-		fmt.Println("Error View RepoReadById")
 		return nil, err
 	}
-	var roles []*ports.RoleResponse
-	for _, vr := range view.Roles {
-		roles = append(roles, &ports.RoleResponse{
-			Id:   vr.ID,
-			Name: vr.Name,
-		})
+
+	// Should i show the roles?
+	// roles := make([]*ports.RoleResponse, 0)
+	// for _, vr := range view.Roles {
+	// 	roles = append(roles, &ports.RoleResponse{
+	// 		Id:   vr.ID,
+	// 		Name: vr.Name,
+	// 	})
+	// }
+
+	vps, err := s.productRepo.ReadByViewID(ctx, view.ID)
+	if err != nil {
+		return nil, err
 	}
+
+	products := make([]*ports.ViewProductResponse, 0)
+	for _, vp := range vps {
+		if vp.Product.Active {
+			products = append(products, &ports.ViewProductResponse{
+				ProductResponse: ports.ProductResponse{
+					ID:   vp.ProductId,
+					Name: vp.Product.Name,
+
+					Price: vp.Product.Price,
+					Desc:  vp.Product.Desc,
+				},
+				Position: vp.Position,
+				Color:    vp.Color,
+			})
+		}
+	}
+
 	return &ports.ViewResponse{
-		ID:    view.ID,
-		Name:  view.Name,
-		Roles: roles,
+		ID:   view.ID,
+		Name: view.Name,
+		// Roles:      roles,
+		Assortment: products,
 	}, nil
 }
 

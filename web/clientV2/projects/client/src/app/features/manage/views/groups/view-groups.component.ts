@@ -32,7 +32,7 @@ import { MatOption } from '@angular/material/core';
 	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule],
 	template: `
 		<div class="title-toolbar">
-			<h2>View Groups</h2>
+			<h2>View</h2>
 			<button mat-button (click)="create()">New</button>
 		</div>
 
@@ -41,7 +41,7 @@ import { MatOption } from '@angular/material/core';
 				<mat-list-item role="listitem">
 					<div class="item">
 						<p [routerLink]="[group.id]" routerLinkActive="router-link-active">
-							{{ group.name | titlecase }}
+							{{ group.name | titlecase }} {{ group.id }}
 						</p>
 						<div>
 							<button

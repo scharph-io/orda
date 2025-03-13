@@ -15,8 +15,8 @@ type ViewRequest struct {
 type ViewResponse struct {
 	ID         string                 `json:"id"`
 	Name       string                 `json:"name"`
-	Roles      []*RoleResponse        `json:"roles,omitempty"`
-	Assortment []*ViewProductResponse `json:"assortment,omitempty"`
+	Roles      []*RoleResponse        `json:"roles,omitzero"`
+	Assortment []*ViewProductResponse `json:"assortment,omitzero"`
 }
 
 type ViewProductRequest struct {
@@ -44,13 +44,13 @@ type IViewRepository interface {
 	RemoveViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 }
 
-type IViewRoleRepository interface {
-	Create(ctx context.Context, viewRole domain.ViewRole) (*domain.ViewRole, error)
-	Read(ctx context.Context) ([]*domain.ViewRole, error)
-	ReadByViewID(ctx context.Context, view_id string) ([]*domain.ViewRole, error)
-	ReadByRoleID(ctx context.Context, role_id string) ([]*domain.ViewRole, error)
-	Delete(ctx context.Context, viewRole domain.ViewRole) error
-}
+// type IViewRoleRepository interface {
+// 	Create(ctx context.Context, viewRole domain.ViewRole) (*domain.ViewRole, error)
+// 	Read(ctx context.Context) ([]*domain.ViewRole, error)
+// 	ReadByViewID(ctx context.Context, view_id string) ([]*domain.ViewRole, error)
+// 	ReadByRoleID(ctx context.Context, role_id string) ([]*domain.ViewRole, error)
+// 	Delete(ctx context.Context, viewRole domain.ViewRole) error
+// }
 
 type IViewProductRepository interface {
 	ReadByViewID(ctx context.Context, viewId string) ([]*domain.ViewProduct, error)
