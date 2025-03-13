@@ -119,9 +119,9 @@ func (s *AssortmentService) DeleteProductGroup(ctx context.Context, id string) e
 }
 
 func (s *AssortmentService) AddProductsToGroup(ctx context.Context, id string, products []ports.ProductRequest) error {
-	var p []domain.Product
+	var p []*domain.Product
 	for _, product := range products {
-		p = append(p, domain.Product{
+		p = append(p, &domain.Product{
 			Name:           product.Name,
 			Desc:           product.Desc,
 			Price:          product.Price,
@@ -129,7 +129,12 @@ func (s *AssortmentService) AddProductsToGroup(ctx context.Context, id string, p
 			ProductGroupID: id,
 		})
 	}
-	return s.products.CreateMany(ctx, p)
+
+	group, err := s.groups.ReadByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return s.groups.AppendProducts(ctx, group, p...)
 }
 
 func (s *AssortmentService) ReadProductsById(ctx context.Context, id string) (*ports.ProductResponse, error) {
