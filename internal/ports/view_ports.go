@@ -40,7 +40,6 @@ type IViewRepository interface {
 	ReplaceRoles(ctx context.Context, v *domain.View, role_ids ...string) error
 	AppendViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 	ReplaceViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error
-	// RemoveViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error
 	AddViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 	RemoveViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 }
@@ -54,28 +53,31 @@ type IViewRoleRepository interface {
 }
 
 type IViewProductRepository interface {
-	ReadByViewID(ctx context.Context, viewID string) ([]*domain.ViewProduct, error)
+	ReadByViewID(ctx context.Context, viewId string) ([]*domain.ViewProduct, error)
 	Update(ctx context.Context, viewProduct domain.ViewProduct) (*domain.ViewProduct, error)
 }
 
 type IViewService interface {
-	CreateView(ctx context.Context, view ViewRequest) (*ViewResponse, error)
-	ReadViews(ctx context.Context) ([]*ViewResponse, error)
-	ReadView(ctx context.Context, id string) (*ViewResponse, error)
-	UpdateView(ctx context.Context, id string, view ViewRequest) (*ViewResponse, error)
-	DeleteView(ctx context.Context, id string) error
+	Create(ctx context.Context, view ViewRequest) (*ViewResponse, error)
+	ReadMany(ctx context.Context) ([]*ViewResponse, error)
+	ReadOne(ctx context.Context, id string) (*ViewResponse, error)
+	Update(ctx context.Context, id string, view ViewRequest) (*ViewResponse, error)
+	Delete(ctx context.Context, id string) error
 	SetRoles(ctx context.Context, id string, roleIds ...string) error
-	AddProducts(ctx context.Context, viewId string, products ...*ViewProductRequest) error
-	RemoveProduct(ctx context.Context, viewId, viewProductId string) error
+	RemoveRoles(ctx context.Context, id string, roleIds ...string) error
+	SetProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
+	AddProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
+	RemoveProducts(ctx context.Context, id string, productsIds ...string) error
 }
 
 type IViewHandlers interface {
 	Create(c *fiber.Ctx) error
-	Read(c *fiber.Ctx) error
-	ReadByID(c *fiber.Ctx) error
+	ReadMany(c *fiber.Ctx) error
+	ReadOne(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
 	SetRoles(c *fiber.Ctx) error
-	AddProducts(c *fiber.Ctx) error
-	RemoveProduct(c *fiber.Ctx) error
+	RemoveRoles(c *fiber.Ctx) error
+	SetOrAddProducts(c *fiber.Ctx) error
+	RemoveProducts(c *fiber.Ctx) error
 }

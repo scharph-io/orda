@@ -303,6 +303,23 @@ func main() {
 			ProductId: food[0].ID,
 			Color:     "violett",
 			Position:  3,
+		},
+			&domain.ViewProduct{
+				ProductId: food[1].ID,
+				Color:     "red",
+				Position:  1,
+			}); err != nil {
+			fmt.Println("err", err)
+		}
+
+		fmt.Println("ViewProducts: ")
+		vps = GetViewProductsByViewId(kiosk.ID)
+		for _, vp := range vps {
+			fmt.Println("  -- ", vp.String())
+		}
+
+		if err := vr.RemoveViewProducts(ctx, kiosk, &domain.ViewProduct{
+			ProductId: food[0].ID,
 		}); err != nil {
 			fmt.Println("err", err)
 		}

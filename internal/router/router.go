@@ -137,25 +137,15 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 
 	// Views
 	views := api.Group("/view")
-	views.Get("/", s.viewHandlers.Read)
 	views.Post("/", s.viewHandlers.Create)
-	views.Get("/:id", s.viewHandlers.ReadByID)
+	views.Get("/", s.viewHandlers.ReadMany)
+	views.Get("/:id", s.viewHandlers.ReadOne)
 	views.Put("/:id", s.viewHandlers.Update)
-	views.Patch("/:id/roles", s.viewHandlers.SetRoles)
 	views.Delete("/:id", s.viewHandlers.Delete)
-	views.Put("/:id/products", s.viewHandlers.AddProducts)
-	views.Delete("/:id/products", s.viewHandlers.RemoveProduct)
-
-	// views := api.Group("/views")
-	// viewHandler := createViewHandler()
-	// views.Get("/", viewHandler.GetViews)
-	// views.Post("/", viewHandler.CreateView)
-	// views.Get("/:id", viewHandler.GetViewById)
-	// views.Put("/:id", viewHandler.UpdateView)
-	// views.Delete("/:id", viewHandler.DeleteView)
-	// // views.Get("/:id/products" /*TODO*/)
-	// views.Post("/:id/products/add", viewHandler.AddProducts)
-	// views.Post("/:id/products/remove", viewHandler.RemoveProducts)
+	views.Put("/:id/roles", s.viewHandlers.SetRoles)
+	views.Delete("/:id/roles", s.viewHandlers.RemoveRoles)
+	views.Put("/:id/products", s.viewHandlers.SetOrAddProducts)
+	views.Delete("/:id/products", s.viewHandlers.RemoveProducts)
 
 	// // Checkout
 	// checkout := api.Group("/checkout")

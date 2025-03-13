@@ -9,42 +9,31 @@ import (
 )
 
 type ViewService struct {
-	repo ports.IViewRepository
-	// viewroleRepo ports.IViewRoleRepository
+	repo        ports.IViewRepository
 	productRepo ports.IViewProductRepository
 }
 
-func NewViewService(vr ports.IViewRepository, vipr ports.IViewProductRepository) *ViewService {
+func NewViewService(vr ports.IViewRepository, vpr ports.IViewProductRepository) *ViewService {
 	return &ViewService{
-		repo: vr,
-		// viewroleRepo: vrr,
-		productRepo: vipr,
+		repo:        vr,
+		productRepo: vpr,
 	}
 }
 
 var _ ports.IViewService = (*ViewService)(nil)
 
-func (s *ViewService) CreateView(ctx context.Context, v ports.ViewRequest) (*ports.ViewResponse, error) {
-	view, err := s.repo.Create(ctx, domain.View{Name: v.Name})
+func (s *ViewService) Create(ctx context.Context, view ports.ViewRequest) (*ports.ViewResponse, error) {
+	v, err := s.repo.Create(ctx, domain.View{Name: view.Name})
 	if err != nil {
 		return nil, err
 	}
-
-	if err := s.repo.SetRoles(ctx, view, v.Roles...); err != nil {
+	if err := s.repo.ReplaceRoles(ctx, v, view.Roles...); err != nil {
 		return nil, err
 	}
-
-	// for _, r := range v.Roles {
-	// 	if _, err := s.viewroleRepo.Create(ctx, domain.ViewRole{ViewID: view.ID, RoleID: r}); err != nil {
-	// 		return nil, err
-	// 	}
-	// }
-
-	return s.ReadView(ctx, view.ID)
-
+	return s.ReadOne(ctx, v.ID)
 }
 
-func (s *ViewService) ReadViews(ctx context.Context) ([]*ports.ViewResponse, error) {
+func (s *ViewService) ReadMany(ctx context.Context) ([]*ports.ViewResponse, error) {
 	views, err := s.repo.Read(ctx)
 	if err != nil {
 		return nil, err
@@ -59,20 +48,12 @@ func (s *ViewService) ReadViews(ctx context.Context) ([]*ports.ViewResponse, err
 	return res, nil
 }
 
-func (s *ViewService) ReadView(ctx context.Context, id string) (*ports.ViewResponse, error) {
+func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewResponse, error) {
 	view, err := s.repo.ReadByID(ctx, id)
 	if err != nil {
 		fmt.Println("Error View RepoReadById")
 		return nil, err
 	}
-
-	// viewRoles, err := s.viewroleRepo.ReadByViewID(ctx, id)
-	// if err != nil {
-	// 	fmt.Println("Error Roles ReadByViewID")
-
-	// 	return nil, err
-	// }
-
 	var roles []*ports.RoleResponse
 	for _, vr := range view.Roles {
 		roles = append(roles, &ports.RoleResponse{
@@ -80,7 +61,6 @@ func (s *ViewService) ReadView(ctx context.Context, id string) (*ports.ViewRespo
 			Name: vr.Name,
 		})
 	}
-
 	return &ports.ViewResponse{
 		ID:    view.ID,
 		Name:  view.Name,
@@ -88,18 +68,18 @@ func (s *ViewService) ReadView(ctx context.Context, id string) (*ports.ViewRespo
 	}, nil
 }
 
-func (s *ViewService) UpdateView(ctx context.Context, id string, v ports.ViewRequest) (*ports.ViewResponse, error) {
-	view, err := s.repo.Update(ctx, domain.View{Base: domain.Base{ID: id}, Name: v.Name})
+func (s *ViewService) Update(ctx context.Context, id string, view ports.ViewRequest) (*ports.ViewResponse, error) {
+	v, err := s.repo.Update(ctx, domain.View{Base: domain.Base{ID: id}, Name: view.Name})
 	if err != nil {
 		return nil, err
 	}
 	return &ports.ViewResponse{
-		ID:   view.ID,
-		Name: view.Name,
+		ID:   v.ID,
+		Name: v.Name,
 	}, nil
 }
 
-func (s *ViewService) DeleteView(ctx context.Context, id string) error {
+func (s *ViewService) Delete(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, domain.View{Base: domain.Base{ID: id}})
 }
 
@@ -108,22 +88,64 @@ func (s *ViewService) SetRoles(ctx context.Context, id string, roleIds ...string
 	if err != nil {
 		return err
 	}
-	return s.repo.SetRoles(ctx, view, roleIds...)
+	return s.repo.ReplaceRoles(ctx, view, roleIds...)
 }
 
-func (s *ViewService) AddProducts(ctx context.Context, viewId string, products ...*ports.ViewProductRequest) error {
-	var p []*domain.ViewProduct
+func (s *ViewService) RemoveRoles(ctx context.Context, id string, roleIds ...string) error {
+	view, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return s.repo.ReplaceRoles(ctx, view, roleIds...)
+}
+
+func (s *ViewService) SetProducts(ctx context.Context, id string, products ...*ports.ViewProductRequest) error {
+	view, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	var vps []*domain.ViewProduct
 	for _, vp := range products {
-		p = append(p, &domain.ViewProduct{
-			ViewID:    viewId,
-			ProductID: vp.ProductID,
+		vps = append(vps, &domain.ViewProduct{
+			ViewId:    view.ID,
+			ProductId: vp.ProductID,
 			Color:     vp.Color,
 			Position:  vp.Position,
 		})
 	}
-	return s.productRepo.AppendProducts(ctx, viewId, p...)
+	return s.repo.ReplaceViewProducts(ctx, view, vps...)
 }
 
-func (s *ViewService) RemoveProduct(ctx context.Context, viewId, viewProductId string) error {
-	return s.productRepo.RemoveProduct(ctx, viewId, viewProductId)
+func (s *ViewService) AddProducts(ctx context.Context, id string, products ...*ports.ViewProductRequest) error {
+	view, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	var vps []*domain.ViewProduct
+	for _, vp := range products {
+		vps = append(vps, &domain.ViewProduct{
+			ViewId:    id,
+			ProductId: vp.ProductID,
+			Color:     vp.Color,
+			Position:  vp.Position,
+		})
+	}
+	return s.repo.AppendViewProducts(ctx, view, vps...)
+}
+
+func (s *ViewService) RemoveProducts(ctx context.Context, id string, productsIds ...string) error {
+	view, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	var vps []*domain.ViewProduct
+	for _, id := range productsIds {
+		vps = append(vps, &domain.ViewProduct{
+			ViewId:    view.ID,
+			ProductId: id,
+		})
+	}
+	return s.repo.RemoveViewProducts(ctx, view, vps...)
 }

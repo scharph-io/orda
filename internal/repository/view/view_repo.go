@@ -139,10 +139,5 @@ func (r *ViewRepo) AddViewProducts(ctx context.Context, v *domain.View, vps ...*
 }
 
 func (r *ViewRepo) RemoveViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error {
-	for _, vp := range vps {
-		if err := r.db.WithContext(ctx).Model(vp).Delete(vp).Error; err != nil {
-			return err
-		}
-	}
-	return nil
+	return r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Delete(vps).Error
 }
