@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
-import { TitleCasePipe } from '@angular/common';
+import { JsonPipe, TitleCasePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { filter, switchMap } from 'rxjs';
@@ -29,7 +29,7 @@ import { MatOption } from '@angular/material/core';
 
 @Component({
 	selector: 'orda-view-groups',
-	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule],
+	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule, JsonPipe],
 	template: `
 		<div class="title-toolbar">
 			<h2>View</h2>
@@ -41,7 +41,7 @@ import { MatOption } from '@angular/material/core';
 				<mat-list-item role="listitem">
 					<div class="item">
 						<p [routerLink]="[group.id]" routerLinkActive="router-link-active">
-							{{ group.name | titlecase }} {{ group.id }}
+							{{ group.name | titlecase }} {{ group.id }} {{ group | json }}
 						</p>
 						<div>
 							<button
@@ -148,7 +148,7 @@ export class ViewGroupsComponent extends EntityManager<View> {
 					<input matInput formControlName="name" />
 				</mat-form-field>
 				<mat-form-field>
-					<mat-label>Toppings</mat-label>
+					<mat-label>Roles</mat-label>
 					<mat-select formControlName="roles" multiple>
 						@for (role of roleService.entityResource.value(); track role) {
 							<mat-option [value]="role">{{ role.name }}</mat-option>
@@ -164,6 +164,8 @@ class ViewGroupDialogComponent extends DialogTemplateComponent<View> {
 	viewService = inject(ViewService);
 	roleService = inject(RoleService);
 
+	viewDetails: View = httpRes();
+
 	formGroup = new FormGroup({
 		name: new FormControl('', [
 			Validators.required,
@@ -175,6 +177,7 @@ class ViewGroupDialogComponent extends DialogTemplateComponent<View> {
 
 	constructor() {
 		super();
+
 		this.formGroup.patchValue({
 			name: this.inputData?.name,
 		});

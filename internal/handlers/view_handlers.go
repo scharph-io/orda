@@ -146,5 +146,5 @@ func (h *ViewHandlers) RemoveProducts(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove products"})
 	}
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
+	return c.SendStatus(fiber.StatusNoContent)
 }

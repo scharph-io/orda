@@ -51,9 +51,15 @@ type IProductGroupRepository interface {
 type IProductRepository interface {
 	ReadById(ctx context.Context, id string) (*domain.Product, error)
 	ReadByIds(ctx context.Context, ids []string) (domain.Products, error)
-	ReadByGroupID(ctx context.Context, groupID string) (domain.Products, error)
-	Update(ctx context.Context, product domain.Product) (*domain.Product, error)
-	Delete(ctx context.Context, product domain.Product) error
+	ReadByGroupID(ctx context.Context, id string) (domain.Products, error)
+	Update(ctx context.Context, p domain.Product) (*domain.Product, error)
+	Delete(ctx context.Context, p domain.Product) error
+
+	// Views
+	GetProductViews(ctx context.Context, p *domain.Product) ([]*domain.ViewProduct, error)
+	AppendProductViews(ctx context.Context, p *domain.Product, vps ...*domain.ViewProduct) error
+	ReplaceProductViews(ctx context.Context, p *domain.Product, vps ...*domain.ViewProduct) error
+	RemoveProductViews(ctx context.Context, id string, viewIds ...string) error
 }
 
 type IAssortmentService interface {
@@ -63,25 +69,37 @@ type IAssortmentService interface {
 	UpdateProductGroup(ctx context.Context, id string, productGroup ProductGroupRequest) (*ProductGroupResponse, error)
 	DeleteProductGroup(ctx context.Context, id string) error
 
+	// Products
+	ReadProductById(ctx context.Context, id string) (*ProductResponse, error)
 	ReadProductsGroupById(ctx context.Context, id string) ([]ProductResponse, error)
-	AddProductsToGroup(ctx context.Context, id string, products []ProductRequest) error
-
-	ReadProductsById(ctx context.Context, id string) (*ProductResponse, error)
+	AddProductsToGroup(ctx context.Context, id string, products ...ProductRequest) error
 	RemoveProduct(ctx context.Context, id string) error
 	UpdateProduct(ctx context.Context, product ProductRequest) (*ProductResponse, error)
 	ToggleProduct(ctx context.Context, productID string) error
+
+	// Views
+	SetProductViews(ctx context.Context, id string, views ...*ViewProductRequest) error
+	AddProductViews(ctx context.Context, id string, views ...*ViewProductRequest) error
+	RemoveProductViews(ctx context.Context, id string, viewsIds ...string) error
 }
 
 type IAssortmentHandlers interface {
+	// Product Group
 	CreateGroup(c *fiber.Ctx) error
 	ReadGroups(c *fiber.Ctx) error
 	ReadGroup(c *fiber.Ctx) error
 	UpdateGroup(c *fiber.Ctx) error
 	DeleteGroup(c *fiber.Ctx) error
+
+	// Products
 	ReadProducts(c *fiber.Ctx) error
 	AddProducts(c *fiber.Ctx) error
 	RemoveProduct(c *fiber.Ctx) error
 	ReadProductById(c *fiber.Ctx) error
 	UpdateProduct(c *fiber.Ctx) error
 	ToggleProduct(c *fiber.Ctx) error
+
+	// Views
+	SetOrAddViews(c *fiber.Ctx) error
+	RemoveViews(c *fiber.Ctx) error
 }

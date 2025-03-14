@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -37,11 +38,15 @@ func (s *ViewService) ReadMany(ctx context.Context) ([]*ports.ViewResponse, erro
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(views)
 	var res []*ports.ViewResponse
 	for _, v := range views {
 		res = append(res, &ports.ViewResponse{
-			ID:   v.ID,
-			Name: v.Name,
+			ID:            v.ID,
+			Name:          v.Name,
+			RolesCount:    len(v.Roles),
+			ProductsCount: len(v.Products),
 		})
 	}
 	return res, nil
@@ -185,12 +190,5 @@ func (s *ViewService) RemoveProducts(ctx context.Context, id string, productsIds
 	if err != nil {
 		return err
 	}
-	var vps []*domain.ViewProduct
-	for _, id := range productsIds {
-		vps = append(vps, &domain.ViewProduct{
-			ViewId:    view.ID,
-			ProductId: id,
-		})
-	}
-	return s.repo.RemoveViewProducts(ctx, view, vps...)
+	return s.repo.RemoveViewProducts(ctx, view, productsIds...)
 }

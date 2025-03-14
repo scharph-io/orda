@@ -13,16 +13,26 @@ type ViewRequest struct {
 }
 
 type ViewResponse struct {
-	ID         string                 `json:"id"`
-	Name       string                 `json:"name"`
-	Roles      []*RoleResponse        `json:"roles,omitzero"`
-	Assortment []*ViewProductResponse `json:"assortment,omitzero"`
+	ID            string                 `json:"id"`
+	Name          string                 `json:"name"`
+	Roles         []*RoleResponse        `json:"roles,omitzero"`
+	Assortment    []*ViewProductResponse `json:"assortment,omitzero"`
+	RolesCount    int                    `json:"roles_count"`
+	ProductsCount int                    `json:"products_count"`
 }
 
+// add assortment to views
 type ViewProductRequest struct {
 	ProductID string `json:"product_id" validate:"required"`
 	Color     string `json:"color,omitempty" validate:"iscolor"`
 	Position  int8   `json:"position,omitempty" validate:"gte=0,lte=130"`
+}
+
+// add views to assortment
+type ProductViewRequest struct {
+	ViewID   string `json:"view_id" validate:"required"`
+	Color    string `json:"color,omitempty" validate:"iscolor"`
+	Position int8   `json:"position,omitempty" validate:"gte=0,lte=130"`
 }
 
 type ViewProductResponse struct {
@@ -37,12 +47,15 @@ type IViewRepository interface {
 	ReadByID(ctx context.Context, id string) (*domain.View, error)
 	Update(ctx context.Context, view domain.View) (*domain.View, error)
 	Delete(ctx context.Context, view domain.View) error
+
+	// Roles
 	ReplaceRoles(ctx context.Context, v *domain.View, role_ids ...string) error
 	GetViewRoles(ctx context.Context, v *domain.View) ([]*domain.Role, error)
+
+	// Products
 	AppendViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
 	ReplaceViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error
-	AddViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
-	RemoveViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error
+	RemoveViewProducts(ctx context.Context, v *domain.View, productIds ...string) error
 }
 
 type IViewProductRepository interface {
@@ -56,9 +69,13 @@ type IViewService interface {
 	ReadOne(ctx context.Context, id string) (*ViewResponse, error)
 	Update(ctx context.Context, id string, view ViewRequest) (*ViewResponse, error)
 	Delete(ctx context.Context, id string) error
+
+	// Roles
 	SetRoles(ctx context.Context, id string, roleIds ...string) error
 	GetRoles(ctx context.Context, id string) ([]*RoleResponse, error)
 	RemoveRoles(ctx context.Context, id string, roleIds ...string) error
+
+	// Products
 	SetProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
 	AddProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
 	RemoveProducts(ctx context.Context, id string, productsIds ...string) error

@@ -132,19 +132,6 @@ func (r *ViewRepo) AppendViewProducts(ctx context.Context, v *domain.View, vps .
 	return nil
 }
 
-// func (r *ViewRepo) RemoveViewProducts(ctx context.Context, v *domain.View, ps ...*domain.ViewProduct) error {
-// 	return r.db.WithContext(ctx).Model(&v).Association("Products").Delete(ps)
-// }
-
-func (r *ViewRepo) AddViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error {
-	for _, vp := range vps {
-		if err := r.db.WithContext(ctx).Model(vp).Create(vp).Error; err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (r *ViewRepo) RemoveViewProducts(ctx context.Context, v *domain.View, vps ...*domain.ViewProduct) error {
-	return r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Delete(vps).Error
+func (r *ViewRepo) RemoveViewProducts(ctx context.Context, v *domain.View, productIds ...string) error {
+	return r.db.WithContext(ctx).Delete(&domain.ViewProduct{}, "view_id = ? AND product_id IN ?", v.ID, productIds).Error
 }

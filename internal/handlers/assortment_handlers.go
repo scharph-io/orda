@@ -87,7 +87,6 @@ func (h *AssortmentHandlers) ReadProducts(c *fiber.Ctx) error {
 
 func (h *AssortmentHandlers) AddProducts(c *fiber.Ctx) error {
 
-	fmt.Println("body", string(c.Body()))
 	groupID := c.Params("id")
 
 	products := []ports.ProductRequest{}
@@ -95,7 +94,7 @@ func (h *AssortmentHandlers) AddProducts(c *fiber.Ctx) error {
 	if err := c.BodyParser(&products); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
-	err := h.assortmentService.AddProductsToGroup(c.Context(), groupID, products)
+	err := h.assortmentService.AddProductsToGroup(c.Context(), groupID, products...)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to add products"})
 	}
@@ -115,7 +114,7 @@ func (h *AssortmentHandlers) RemoveProduct(c *fiber.Ctx) error {
 
 func (h *AssortmentHandlers) ReadProductById(c *fiber.Ctx) error {
 	id := c.Params("id")
-	product, err := h.assortmentService.ReadProductsById(c.Context(), id)
+	product, err := h.assortmentService.ReadProductById(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to read product"})
 	}
@@ -146,6 +145,43 @@ func (h *AssortmentHandlers) ToggleProduct(c *fiber.Ctx) error {
 	err := h.assortmentService.ToggleProduct(c.Context(), productID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to toggle product"})
+	}
+	return c.SendStatus(fiber.StatusNoContent)
+}
+
+func (h *AssortmentHandlers) SetOrAddViews(c *fiber.Ctx) error {
+	productID := c.Params("id")
+	overwrite := c.QueryBool("overwrite", false)
+	req := []*ports.ViewProductRequest{}
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
+	}
+
+	if overwrite {
+		err := h.assortmentService.SetProductViews(c.Context(), productID, req...)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to set views"})
+		}
+	} else {
+		err := h.assortmentService.AddProductViews(c.Context(), productID, req...)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to add views"})
+		}
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": fmt.Sprintf("%d Views updated successfully", len(req)),
+	})
+}
+
+func (h *AssortmentHandlers) RemoveViews(c *fiber.Ctx) error {
+	productID := c.Params("id")
+	viewIds := []string{}
+	if err := c.BodyParser(&viewIds); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
+	}
+	err := h.assortmentService.RemoveProductViews(c.Context(), productID, viewIds...)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove views"})
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }

@@ -196,143 +196,161 @@ func main() {
 		fmt.Println("")
 	}
 
-	food, _ := pgr.ReadProducts(ctx, food_group)
+	// food, _ := pgr.ReadProducts(ctx, food_group)
 	fmt.Println("# Views:")
+	kiosk := views[0]
+	bar := views[1]
 
-	// vps := GetViewProductsByViewId(view1.ID)
-	{
-		// product := productsOfGroup1[0]
-		kiosk := views[0]
+	// {
 
-		fmt.Println("Appending to View:", kiosk.String())
+	// 	fmt.Println("Appending to View:", kiosk.String())
 
-		// if err := vr.AddViewProducts(ctx, view1, vp2, vp1); err != nil {
-		// 	fmt.Println("Error adding view products:", err)
-		// }
+	// 	vpsKiosk := GetViewProductsByViewId(kiosk.ID)
 
-		// vps := GetViewProductsByViewId(view1.ID)
+	// 	if len(vpsKiosk) == 0 {
+	// 		if err := vr.AppendViewProducts(ctx, kiosk, &domain.ViewProduct{
+	// 			ProductId: food[1].ID,
+	// 			Color:     "violett",
+	// 			Position:  1,
+	// 		}); err != nil {
+	// 			fmt.Println("err", err)
+	// 		}
 
-		// fmt.Println("ViewProducts in view", view1.Name)
-		// for _, vp := range vps {
-		// 	fmt.Println(vp.String())
-		// }
+	// 		vpsKiosk = GetViewProductsByViewId(kiosk.ID)
+	// 		fmt.Println("ViewProducts: ")
+	// 		for _, vp := range vpsKiosk {
+	// 			fmt.Println("  -- ", vp.String())
+	// 		}
 
-		// fmt.Println("Removing product from view:")
-		// fmt.Println("View:", view1.String())
+	// 		if err := vr.AppendViewProducts(ctx, kiosk,
+	// 			&domain.ViewProduct{
+	// 				ProductId: drinks[0].ID,
+	// 				Color:     "blue",
+	// 				Position:  2,
+	// 			},
+	// 			&domain.ViewProduct{
+	// 				ProductId: drinks[1].ID,
+	// 				Color:     "grey",
+	// 				Position:  3,
+	// 			},
+	// 			&domain.ViewProduct{
+	// 				ProductId: food[0].ID,
+	// 				Color:     "brown",
+	// 				Position:  4,
+	// 			},
+	// 			&domain.ViewProduct{
+	// 				ProductId: drinks[2].ID,
+	// 				Color:     "green",
+	// 				Position:  5,
+	// 			}); err != nil {
+	// 			fmt.Println("err", err)
+	// 		}
 
-		// if err := vr.RemoveViewProducts(ctx, view1, vp1); err != nil {
-		// 	fmt.Println("Error removing view products:", err)
-		// }
+	// 		vpsKiosk = GetViewProductsByViewId(kiosk.ID)
+	// 		fmt.Println("ViewProducts: ")
+	// 		for _, vp := range vpsKiosk {
+	// 			fmt.Println("  -- ", vp.String())
+	// 		}
 
-		// vps = GetViewProductsByViewId(view1.ID)
+	// 		if err := vr.ReplaceViewProducts(ctx, kiosk, &domain.ViewProduct{
+	// 			ProductId: food[0].ID,
+	// 			Color:     "violett",
+	// 			Position:  3,
+	// 		},
+	// 			&domain.ViewProduct{
+	// 				ProductId: food[1].ID,
+	// 				Color:     "red",
+	// 				Position:  1,
+	// 			}); err != nil {
+	// 			fmt.Println("err", err)
+	// 		}
 
-		// fmt.Println("ViewProducts in view", view1.Name)
-		// for _, vp := range vps {
-		// 	fmt.Println(vp.String())
-		// }
-		//
+	// 		fmt.Println("ViewProducts: ")
+	// 		vpsKiosk = GetViewProductsByViewId(kiosk.ID)
+	// 		for _, vp := range vpsKiosk {
+	// 			fmt.Println("  -- ", vp.String())
+	// 		}
 
-		// if err := vr.ReplaceViewProducts(ctx, view1, vp1, vp2); err != nil {
-		// 	fmt.Println("err", err)
-		// }
-		// vps := GetViewProductsByViewId(view1.ID)
-		// for _, vp := range vps {
-		// 	fmt.Println(vp.String())
-		// }
-		// fmt.Println("--------------")
+	// 		if err := vr.RemoveViewProducts(ctx, kiosk, &domain.ViewProduct{
+	// 			ProductId: food[0].ID,
+	// 		}); err != nil {
+	// 			fmt.Println("err", err)
+	// 		}
 
-		// if err := vr.ReplaceViewProducts(ctx, view1, &domain.ViewProduct{
-		// 	ProductId: productsOfGroup1[1].ID,
-		// 	Color:     "violett",
-		// 	Position:  3,
-		// }); err != nil {
-		// 	fmt.Println("err", err)
-		// }
+	// 		fmt.Println("ViewProducts: ")
+	// 		vpsKiosk = GetViewProductsByViewId(kiosk.ID)
+	// 		for _, vp := range vpsKiosk {
+	// 			fmt.Println("  -- ", vp.String())
+	// 		}
+	// 	}
 
-		// vps = GetViewProductsByViewId(view1.ID)
-		// for _, vp := range vps {
-		// 	fmt.Println(vp.String())
-		// }
-		//
+	// 	vpsBar := GetViewProductsByViewId(bar.ID)
+	// 	if len(vpsBar) == 0 {
+	// 		fmt.Println("Appending to:", bar.Name)
+	// 		vr.ReplaceViewProducts(ctx, bar,
+	// 			&domain.ViewProduct{
+	// 				ProductId: food[0].ID,
+	// 				Color:     "violett",
+	// 				Position:  3,
+	// 			},
+	// 			&domain.ViewProduct{
+	// 				ProductId: food[1].ID,
+	// 				Color:     "green",
+	// 				Position:  12,
+	// 			})
+	// 	}
 
-		if err := vr.AppendViewProducts(ctx, kiosk, &domain.ViewProduct{
-			ProductId: food[1].ID,
-			Color:     "violett",
-			Position:  1,
-		}); err != nil {
-			fmt.Println("err", err)
-		}
+	// 	fmt.Println("-------------------------------")
+	// 	fmt.Println("")
+	// }
 
-		vps := GetViewProductsByViewId(kiosk.ID)
-		fmt.Println("ViewProducts: ")
-		for _, vp := range vps {
-			fmt.Println("  -- ", vp.String())
-		}
+	// pvs, err := pr.GetProductViews(ctx, &food[1])
+	// if err != nil {
+	// 	fmt.Println("err", err)
+	// }
 
-		if err := vr.AppendViewProducts(ctx, kiosk,
-			&domain.ViewProduct{
-				ProductId: drinks[0].ID,
-				Color:     "blue",
-				Position:  2,
-			},
-			&domain.ViewProduct{
-				ProductId: drinks[1].ID,
-				Color:     "grey",
-				Position:  3,
-			},
-			&domain.ViewProduct{
-				ProductId: food[0].ID,
-				Color:     "brown",
-				Position:  4,
-			},
-			&domain.ViewProduct{
-				ProductId: drinks[2].ID,
-				Color:     "green",
-				Position:  5,
-			}); err != nil {
-			fmt.Println("err", err)
-		}
+	// fmt.Println(food[1].Name, "has views:")
+	// for _, pv := range pvs {
+	// 	fmt.Println("  -- ", pv.String())
+	// }
 
-		vps = GetViewProductsByViewId(kiosk.ID)
-		fmt.Println("ViewProducts: ")
-		for _, vp := range vps {
-			fmt.Println("  -- ", vp.String())
-		}
-
-		if err := vr.ReplaceViewProducts(ctx, kiosk, &domain.ViewProduct{
-			ProductId: food[0].ID,
-			Color:     "violett",
-			Position:  3,
+	pr.AppendProductViews(ctx, &drinks[0],
+		&domain.ViewProduct{
+			ViewId:   bar.ID,
+			Color:    "black",
+			Position: 10,
 		},
-			&domain.ViewProduct{
-				ProductId: food[1].ID,
-				Color:     "red",
-				Position:  1,
-			}); err != nil {
-			fmt.Println("err", err)
-		}
+	)
 
-		fmt.Println("ViewProducts: ")
-		vps = GetViewProductsByViewId(kiosk.ID)
-		for _, vp := range vps {
-			fmt.Println("  -- ", vp.String())
-		}
-
-		if err := vr.RemoveViewProducts(ctx, kiosk, &domain.ViewProduct{
-			ProductId: food[0].ID,
-		}); err != nil {
-			fmt.Println("err", err)
-		}
-
-		fmt.Println("ViewProducts: ")
-		vps = GetViewProductsByViewId(kiosk.ID)
-		for _, vp := range vps {
-			fmt.Println("  -- ", vp.String())
-		}
-
-		fmt.Println("-------------------------------")
-		fmt.Println("")
+	pvsDrinks, err := pr.GetProductViews(ctx, &drinks[0])
+	if err != nil {
+		fmt.Println("err", err)
 	}
+
+	fmt.Println(drinks[0].Name, "has views:")
+	for _, pv := range pvsDrinks {
+		fmt.Println("  -- ", pv.String())
+	}
+
+	pr.ReplaceProductViews(ctx, &drinks[0],
+		&domain.ViewProduct{
+			ViewId:   kiosk.ID,
+			Color:    "black",
+			Position: 10,
+		},
+	)
+
+	pvsDrinks, err = pr.GetProductViews(ctx, &drinks[0])
+	if err != nil {
+		fmt.Println("err", err)
+	}
+
+	fmt.Println(drinks[0].Name, "has views:")
+	for _, pv := range pvsDrinks {
+		fmt.Println("  -- ", pv.String())
+	}
+
+	// pr.RemoveProductViews(ctx context.Context, product *domain.Product, vps ...*domain.ViewProduct)
 
 	// transactions := GetTransactions()
 

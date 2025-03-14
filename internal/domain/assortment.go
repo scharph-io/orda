@@ -26,6 +26,7 @@ type Product struct {
 	Price          int32
 	ProductGroupID string `gorm:"size:36;not null"`
 	Active         bool
+	Views          []View `gorm:"many2many:view_products;"`
 }
 
 func (p Product) String() string {

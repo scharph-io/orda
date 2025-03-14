@@ -2,7 +2,6 @@ package assortment
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -45,7 +44,7 @@ func (r *ProductRepo) Read(ctx context.Context) (domain.Products, error) {
 
 func (r *ProductRepo) Update(ctx context.Context, product domain.Product) (*domain.Product, error) {
 	if err := r.db.WithContext(ctx).Model(&product).Updates(
-		map[string]interface{}{
+		map[string]any{
 			"name":   product.Name,
 			"desc":   product.Desc,
 			"price":  product.Price,
@@ -56,18 +55,16 @@ func (r *ProductRepo) Update(ctx context.Context, product domain.Product) (*doma
 	return &product, nil
 }
 
-func (r *ProductRepo) Delete(ctx context.Context, product domain.Product) error {
-	fmt.Println("Remove", product)
-
-	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Delete(&product).Error; err != nil {
+func (r *ProductRepo) Delete(ctx context.Context, p domain.Product) error {
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Delete(&p).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *ProductRepo) ReadByGroupID(ctx context.Context, groupID string) (domain.Products, error) {
+func (r *ProductRepo) ReadByGroupID(ctx context.Context, id string) (domain.Products, error) {
 	var products domain.Products
-	if err := r.db.WithContext(ctx).Where("product_group_id = ?", groupID).Find(&products).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("product_group_id = ?", id).Find(&products).Error; err != nil {
 		return nil, err
 	}
 	return products, nil
@@ -79,4 +76,75 @@ func (r *ProductRepo) ReadByID(ctx context.Context, id string) (*domain.Product,
 		return nil, err
 	}
 	return &product, nil
+}
+
+func (r *ProductRepo) GetProductViews(ctx context.Context, p *domain.Product) ([]*domain.ViewProduct, error) {
+	var views []*domain.ViewProduct
+	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("product_id = ?", p.ID).Preload("View").Find(&views).Error; err != nil {
+		return nil, err
+	}
+	return views, nil
+}
+
+func (r *ProductRepo) AppendProductViews(ctx context.Context, p *domain.Product, vps ...*domain.ViewProduct) error {
+	var viewIds []string
+	for _, vp := range vps {
+		viewIds = append(viewIds, vp.ViewId)
+	}
+
+	var views []domain.View
+	if err := r.db.WithContext(ctx).Model(&domain.View{}).Where("id IN ?", viewIds).Find(&views).Error; err != nil {
+		return err
+	}
+
+	if err := r.db.WithContext(ctx).Model(&p).Association("Views").Append(&views); err != nil {
+		return err
+	}
+
+	var viewProducts []domain.ViewProduct
+	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("product_id = ?", p.ID).Find(&viewProducts).Error; err != nil {
+		return err
+	}
+
+	for i, vp := range viewProducts {
+		vp.Color = vps[i].Color
+		vp.Position = vps[i].Position
+		if err := r.db.WithContext(ctx).Save(&vp).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r *ProductRepo) ReplaceProductViews(ctx context.Context, p *domain.Product, vps ...*domain.ViewProduct) error {
+	var viewIds []string
+	for _, vp := range vps {
+		viewIds = append(viewIds, vp.ViewId)
+	}
+
+	var views []domain.View
+	if err := r.db.WithContext(ctx).Model(&domain.View{}).Where("id IN ?", viewIds).Find(&views).Error; err != nil {
+		return err
+	}
+
+	if err := r.db.WithContext(ctx).Model(&p).Association("Views").Replace(&views); err != nil {
+		return err
+	}
+
+	var viewProducts []domain.ViewProduct
+	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("product_id = ?", p.ID).Find(&viewProducts).Error; err != nil {
+		return err
+	}
+
+	for i, vp := range viewProducts {
+		vp.Color = vps[i].Color
+		vp.Position = vps[i].Position
+		if err := r.db.WithContext(ctx).Save(&vp).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (r *ProductRepo) RemoveProductViews(ctx context.Context, id string, viewIds ...string) error {
+	return r.db.WithContext(ctx).Delete(&domain.ViewProduct{}, "product_id = ? AND view_id IN ?", id, viewIds).Error
 }

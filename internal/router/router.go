@@ -127,6 +127,8 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	product.Put("/:id", s.assortmentHandlers.UpdateProduct)
 	product.Patch("/:id/toggle", s.assortmentHandlers.ToggleProduct)
 	product.Delete("/:id", s.assortmentHandlers.RemoveProduct)
+	product.Patch("/:id/views", s.assortmentHandlers.SetOrAddViews)
+	product.Delete("/:id/views", s.assortmentHandlers.RemoveViews)
 
 	//Transactions
 	transactions := api.Group("/transaction")

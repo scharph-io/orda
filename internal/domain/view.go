@@ -34,5 +34,5 @@ type ViewProduct struct {
 }
 
 func (v ViewProduct) String() string {
-	return fmt.Sprintf("[view: %s] [product:%s] name: %s, active:%v, pos: %d", v.ViewId, v.ProductId, v.Product.Name, v.Product.Active, v.Position)
+	return fmt.Sprintf("[view: %s] [product:%s] view: %s name: %s, active:%v, pos: %d, color: %s", v.ViewId, v.ProductId, v.View.Name, v.Product.Name, v.Product.Active, v.Position, v.Color)
 }
