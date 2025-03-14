@@ -15,7 +15,7 @@ export default [
 	},
 	{
 		path: 'views',
-		loadComponent: () => import('./views/views.component').then((m) => m.ViewsComponent),
+		loadChildren: () => import('./views/view.routes'),
 	},
 	{
 		path: 'history',

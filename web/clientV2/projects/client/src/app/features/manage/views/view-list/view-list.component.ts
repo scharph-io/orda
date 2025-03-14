@@ -2,10 +2,10 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
-import { JsonPipe, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
-import { filter, switchMap } from 'rxjs';
+import { filter, map, switchMap, tap } from 'rxjs';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
@@ -26,10 +26,11 @@ import { View } from '@orda.core/models/view';
 import { MatSelect } from '@angular/material/select';
 import { RoleService } from '@orda.features/data-access/services/role.service';
 import { MatOption } from '@angular/material/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
-	selector: 'orda-view-groups',
-	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule, JsonPipe],
+	selector: 'orda-view-list',
+	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule],
 	template: `
 		<div class="title-toolbar">
 			<h2>View</h2>
@@ -37,22 +38,17 @@ import { MatOption } from '@angular/material/core';
 		</div>
 
 		<mat-list role="list">
-			@for (group of viewService.entityResource.value(); track group.id) {
+			@for (view of viewService.entityResource.value(); track view.id) {
 				<mat-list-item role="listitem">
 					<div class="item">
-						<p [routerLink]="[group.id]" routerLinkActive="router-link-active">
-							{{ group.name | titlecase }} {{ group.id }} {{ group | json }}
+						<p [routerLink]="[view.id]" routerLinkActive="router-link-active">
+							{{ view.name | titlecase }}
 						</p>
 						<div>
-							<button
-								title="delete assortment group"
-								class="red-btn"
-								mat-icon-button
-								(click)="delete(group)"
-							>
+							<button title="delete view" class="red-btn" mat-icon-button (click)="delete(view)">
 								<mat-icon>delete</mat-icon>
 							</button>
-							<button title="edit assortment group" mat-icon-button (click)="edit(group)">
+							<button title="edit assortment group" mat-icon-button (click)="edit(view)">
 								<mat-icon>edit</mat-icon>
 							</button>
 						</div>
@@ -76,7 +72,7 @@ import { MatOption } from '@angular/material/core';
 		}
 	`,
 })
-export class ViewGroupsComponent extends EntityManager<View> {
+export class ViewListComponent extends EntityManager<View> {
 	viewService = inject(ViewService);
 	logger = inject(OrdaLogger);
 
@@ -85,14 +81,14 @@ export class ViewGroupsComponent extends EntityManager<View> {
 	}
 
 	create() {
-		this.dialogClosed<ViewGroupDialogComponent, undefined, View>(
-			ViewGroupDialogComponent,
+		this.dialogClosed<ViewListDialogComponent, undefined, View>(
+			ViewListDialogComponent,
 			undefined,
 		).subscribe(() => this.viewService.entityResource.reload());
 	}
 
 	edit(v: View) {
-		this.dialogClosed<ViewGroupDialogComponent, View, View>(ViewGroupDialogComponent, v).subscribe(
+		this.dialogClosed<ViewListDialogComponent, View, View>(ViewListDialogComponent, v).subscribe(
 			() => this.viewService.entityResource.reload(),
 		);
 	}
@@ -124,7 +120,7 @@ export class ViewGroupsComponent extends EntityManager<View> {
 }
 
 @Component({
-	selector: 'orda-view-group-dialog',
+	selector: 'orda-view-list-dialog',
 	imports: [
 		FormsModule,
 		ReactiveFormsModule,
@@ -149,9 +145,9 @@ export class ViewGroupsComponent extends EntityManager<View> {
 				</mat-form-field>
 				<mat-form-field>
 					<mat-label>Roles</mat-label>
-					<mat-select formControlName="roles" multiple>
-						@for (role of roleService.entityResource.value(); track role) {
-							<mat-option [value]="role">{{ role.name }}</mat-option>
+					<mat-select formControlName="roles" multiple [value]="viewDetails.value()">
+						@for (role of roleService.entityResource.value(); track role.id) {
+							<mat-option [value]="role.id">{{ role.name }}</mat-option>
 						}
 					</mat-select>
 				</mat-form-field>
@@ -160,19 +156,22 @@ export class ViewGroupsComponent extends EntityManager<View> {
 	`,
 	styles: ``,
 })
-class ViewGroupDialogComponent extends DialogTemplateComponent<View> {
+class ViewListDialogComponent extends DialogTemplateComponent<View> {
 	viewService = inject(ViewService);
 	roleService = inject(RoleService);
 
-	viewDetails: View = httpRes();
+	viewDetails = rxResource({
+		loader: () =>
+			this.viewService.readById(this.inputData.id).pipe(map((view) => view.roles.map((r) => r.id))),
+	});
 
 	formGroup = new FormGroup({
 		name: new FormControl('', [
 			Validators.required,
-			Validators.maxLength(50),
+			Validators.maxLength(25),
 			Validators.minLength(3),
 		]),
-		roles: new FormControl(''),
+		roles: new FormControl([]),
 	});
 
 	constructor() {
@@ -189,12 +188,21 @@ class ViewGroupDialogComponent extends DialogTemplateComponent<View> {
 				.update(this.inputData?.id ?? '', {
 					name: this.formGroup.value.name ?? '',
 				})
+				.pipe(
+					switchMap(() =>
+						this.viewService.setRoles(this.inputData.id, this.formGroup.value.roles ?? []),
+					),
+				)
 				.subscribe(this.closeObserver);
 		} else {
 			this.viewService
 				.create({
 					name: this.formGroup.value.name ?? '',
 				})
+				.pipe(
+					tap((view) => console.log(view)),
+					switchMap((view) => this.viewService.setRoles(view.id, this.formGroup.value.roles ?? [])),
+				)
 				.subscribe(this.closeObserver);
 		}
 	};

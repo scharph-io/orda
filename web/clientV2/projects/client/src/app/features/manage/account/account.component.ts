@@ -34,10 +34,10 @@ import { GroupDepositDialogComponent } from '@orda.features/manage/account/dialo
 import { AccountDetailDialogComponent } from '@orda.features/manage/account/dialogs/account-detail-dialog/account-detail-dialog.component';
 import { RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AccountGroupComponent } from './group/group.component';
 import { AccountGroupService } from '@orda.features/data-access/services/account/account-group.service';
 import { TitleCasePipe } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
+import { AccountGroupComponent } from '@orda.features/manage/account/group/group.component';
 
 @Component({
 	selector: 'orda-account',

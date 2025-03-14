@@ -68,6 +68,7 @@ export class DialogTemplateComponent<D, R = D> {
 
 	protected closeObserver: Partial<Observer<R>> = {
 		next: (value) => {
+			console.log('sd', value);
 			this.dialogRef.close(value);
 		},
 		error: (error) => {

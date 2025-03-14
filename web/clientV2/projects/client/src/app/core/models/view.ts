@@ -4,8 +4,10 @@ import { Role } from '@orda.core/models/role';
 export interface View {
 	id: string;
 	name: string;
-	assortment: AssortmentProduct[];
+	products: AssortmentProduct[];
 	roles: Role[];
+	products_count: number;
+	roles_count: number;
 }
 
 export interface ViewProduct {

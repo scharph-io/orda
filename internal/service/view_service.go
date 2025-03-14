@@ -58,14 +58,14 @@ func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewRespon
 		return nil, err
 	}
 
-	// Should i show the roles?
-	// roles := make([]*ports.RoleResponse, 0)
-	// for _, vr := range view.Roles {
-	// 	roles = append(roles, &ports.RoleResponse{
-	// 		Id:   vr.ID,
-	// 		Name: vr.Name,
-	// 	})
-	// }
+	// Should I show the roles?
+	roles := make([]*ports.RoleResponse, 0)
+	for _, vr := range view.Roles {
+		roles = append(roles, &ports.RoleResponse{
+			Id:   vr.ID,
+			Name: vr.Name,
+		})
+	}
 
 	vps, err := s.productRepo.ReadByViewID(ctx, view.ID)
 	if err != nil {
@@ -90,14 +90,18 @@ func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewRespon
 	}
 
 	return &ports.ViewResponse{
-		ID:   view.ID,
-		Name: view.Name,
-		// Roles:      roles,
-		Assortment: products,
+		ID:            view.ID,
+		Name:          view.Name,
+		Roles:         roles,
+		Products:      products,
+		RolesCount:    len(roles),
+		ProductsCount: len(products),
 	}, nil
 }
 
 func (s *ViewService) Update(ctx context.Context, id string, view ports.ViewRequest) (*ports.ViewResponse, error) {
+
+	fmt.Println(view)
 	v, err := s.repo.Update(ctx, domain.View{Base: domain.Base{ID: id}, Name: view.Name})
 	if err != nil {
 		return nil, err

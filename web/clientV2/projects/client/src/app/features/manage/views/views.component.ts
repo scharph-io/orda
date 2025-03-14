@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ViewGroupsComponent } from '@orda.features/manage/views/groups/view-groups.component';
+import { ViewListComponent } from '@orda.features/manage/views/view-list/view-list.component';
 
 @Component({
 	selector: 'orda-views',
-	imports: [ViewGroupsComponent],
-	template: ` <orda-view-groups />`,
+	imports: [ViewListComponent],
+	template: ` <orda-view-list />`,
 	styleUrl: './views.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })

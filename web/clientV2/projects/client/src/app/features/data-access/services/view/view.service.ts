@@ -3,6 +3,7 @@ import { EntityService } from '@orda.shared/utils/entity-service';
 import { View } from '@orda.core/models/view';
 import { API_ENDPOINTS } from '@orda.core/constants';
 import { catchError } from 'rxjs';
+import { httpResource } from '@angular/common/http';
 
 @Injectable({
 	providedIn: 'root',
@@ -26,6 +27,10 @@ export class ViewService extends EntityService<View> {
 			.pipe(catchError(this.handleError));
 	}
 
+	resourceById(id: string) {
+		return httpResource<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}`);
+	}
+
 	delete(id: string) {
 		return this.httpClient
 			.delete(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}`)
@@ -35,6 +40,12 @@ export class ViewService extends EntityService<View> {
 	update(id: string, t: Partial<View>) {
 		return this.httpClient
 			.put<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}`, t)
+			.pipe(catchError(this.handleError));
+	}
+
+	setRoles(id: string, roleIds: string[]) {
+		return this.httpClient
+			.put<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}/roles`, roleIds)
 			.pipe(catchError(this.handleError));
 	}
 }

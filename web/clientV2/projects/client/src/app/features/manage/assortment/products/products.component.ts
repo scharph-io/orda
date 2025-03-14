@@ -30,7 +30,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 
 @Component({
-	selector: 'orda-assortment-products',
+	selector: 'orda-assortment-view-details',
 	template: `
 		<div class="title-toolbar">
 			<h2>Assortment Products</h2>

@@ -16,7 +16,7 @@ type ViewResponse struct {
 	ID            string                 `json:"id"`
 	Name          string                 `json:"name"`
 	Roles         []*RoleResponse        `json:"roles,omitzero"`
-	Assortment    []*ViewProductResponse `json:"assortment,omitzero"`
+	Products      []*ViewProductResponse `json:"products,omitzero"`
 	RolesCount    int                    `json:"roles_count"`
 	ProductsCount int                    `json:"products_count"`
 }

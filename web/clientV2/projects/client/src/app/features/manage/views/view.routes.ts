@@ -8,6 +8,6 @@ export default [
 	{
 		path: ':id',
 		loadComponent: () =>
-			import('./products/view-products.component').then((m) => m.ViewProductsComponent),
+			import('./view-details/view-details.component').then((m) => m.ViewDetailsComponent),
 	},
 ] satisfies Routes;
