@@ -76,6 +76,9 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 						<button mat-icon-button (click)="edit(row)">
 							<mat-icon>edit</mat-icon>
 						</button>
+						<button mat-icon-button (click)="duplicate(row)">
+							<mat-icon>control_point_duplicate</mat-icon>
+						</button>
 						<!--						<button mat-icon-button (click)="deposit(row)">-->
 						<!--							<mat-icon>add_business</mat-icon>-->
 						<!--						</button>-->
@@ -120,7 +123,7 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 	group_id = signal<string>(this.route.snapshot.paramMap.get('id') ?? '');
 
 	products = rxResource({
-		loader: () => this.assortmentService.readProductsByGroupId(this.group_id()),
+		loader: () => this.assortmentService.readProducts(this.group_id()),
 	});
 
 	dataSource = computed(() => new MatTableDataSource(this.products.value() ?? []));
@@ -168,6 +171,18 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 		>(AssortmentProductDialogComponent, { group: this.group_id(), data: p }).subscribe(() =>
 			this.products.reload(),
 		);
+	}
+
+	public duplicate(p: AssortmentProduct): void {
+		this.dialogClosed<
+			AssortmentProductDialogComponent,
+			{ group: string; data?: AssortmentProduct; duplicate: boolean },
+			AssortmentProduct
+		>(AssortmentProductDialogComponent, {
+			group: this.group_id(),
+			data: p,
+			duplicate: true,
+		}).subscribe(() => this.products.reload());
 	}
 
 	protected toggleProduct(id: string) {
@@ -225,6 +240,7 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<
 	{
 		group: string;
 		data?: AssortmentProduct;
+		duplicate?: boolean;
 	},
 	AssortmentProduct
 > {
@@ -257,11 +273,25 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<
 	}
 
 	public submit = () => {
+		if (this.inputData.duplicate) {
+			this.assortmentService
+				.addProducts(this.inputData.group, [
+					{
+						name: this.trim(this.formGroup.value.name ?? ''),
+						desc: this.trim(this.formGroup.value.desc ?? ''),
+						price: this.formGroup.value.price ?? 0,
+						active: this.formGroup.value.active ?? false,
+					},
+				])
+				.subscribe(this.closeObserver);
+			return;
+		}
+
 		if (this.inputData.data) {
 			this.assortmentService
 				.updateProduct(this.inputData.data?.id ?? '', {
-					name: this.formGroup.value.name ?? '',
-					desc: this.formGroup.value.desc ?? '',
+					name: this.trim(this.formGroup.value.name ?? ''),
+					desc: this.trim(this.formGroup.value.desc ?? ''),
 					price: this.formGroup.value.price ?? 0,
 					active: this.formGroup.value.active ?? false,
 				})

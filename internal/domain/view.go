@@ -11,10 +11,11 @@ type View struct {
 	Name     string
 	Products Products `gorm:"many2many:view_products;"`
 	Roles    Roles    `gorm:"many2many:view_roles;"`
+	Deposit  uint
 }
 
 func (v View) String() string {
-	return fmt.Sprintf("[%s] %s (%d products, %d roles)", v.ID, v.Name, len(v.Products), len(v.Roles))
+	return fmt.Sprintf("[%s] %s (%d products, %d roles, deposit: %d)", v.ID, v.Name, len(v.Products), len(v.Roles), v.Deposit)
 }
 
 type ViewRole struct {

@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
@@ -27,48 +26,50 @@ var _ ports.ITransactionService = (*TransactionService)(nil)
 
 func (s *TransactionService) Create(ctx context.Context, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
 
-	pIds := make([]string, 0)
-	for _, item := range t.Items {
-		pIds = append(pIds, item.ProductID)
-	}
+	// pIds := make([]string, 0)
+	// for _, item := range t.Items {
+	// 	pIds = append(pIds, item.ProductID)
+	// }
 
-	products, err := s.productRepo.ReadByIds(ctx, pIds)
-	if err != nil {
-		return nil, err
-	}
+	// products, err := s.productRepo.Read(ctx, pIds)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	pMap := make(map[string]int32)
-	for _, p := range products {
-		pMap[p.ID] = p.Price
-	}
+	// pMap := make(map[string]int32)
+	// for _, p := range products {
+	// 	pMap[p.ID] = p.Price
+	// }
 
-	var total int32 = 0
-	var items []*domain.TransactionItem
-	for _, item := range t.Items {
-		total += pMap[item.ProductID] * int32(item.Quantity)
-		items = append(items, &domain.TransactionItem{
-			ProductID: item.ProductID,
-			Qty:       int8(item.Quantity),
-			Price:     pMap[item.ProductID],
-		})
-	}
+	// var total int32 = 0
+	// var items []*domain.TransactionItem
+	// for _, item := range t.Items {
+	// 	total += pMap[item.ProductID] * int32(item.Quantity)
+	// 	items = append(items, &domain.TransactionItem{
+	// 		ProductID: item.ProductID,
+	// 		Qty:       int8(item.Quantity),
+	// 		Price:     pMap[item.ProductID],
+	// 	})
+	// }
 
-	transaction := &domain.Transaction{
-		PaymentOption: t.PaymentOption,
-		AccountType:   t.AccountType,
-		UserID:        t.UserID,
-		AccountID:     sql.NullString{String: t.AccountID, Valid: true},
-		Total:         total,
-		Items:         items,
-	}
+	// transaction := &domain.Transaction{
+	// 	PaymentOption: t.PaymentOption,
+	// 	AccountType:   t.AccountType,
+	// 	UserID:        t.UserID,
+	// 	AccountID:     sql.NullString{String: t.AccountID, Valid: true},
+	// 	Total:         total,
+	// 	Items:         items,
+	// }
 
-	transaction, err = s.repo.Create(ctx, transaction)
+	// transaction, err = s.repo.Create(ctx, transaction)
 
-	return &ports.TransactionResponse{
-		TransactionID: transaction.ID,
-		Total:         transaction.Total,
-		ItemsLength:   len(transaction.Items),
-	}, nil
+	// return &ports.TransactionResponse{
+	// 	TransactionID: transaction.ID,
+	// 	Total:         transaction.Total,
+	// 	ItemsLength:   len(transaction.Items),
+	// }, nil
+	//
+	return nil, nil
 }
 
 func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResponse, error) {

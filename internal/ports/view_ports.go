@@ -8,17 +8,19 @@ import (
 )
 
 type ViewRequest struct {
-	Name  string   `json:"name" validate:"required"`
-	Roles []string `json:"roles" validate:"required"`
+	Name    string   `json:"name" validate:"required"`
+	Roles   []string `json:"roles" validate:"required"`
+	Deposit uint     `json:"deposit"`
 }
 
 type ViewResponse struct {
-	ID            string                 `json:"id"`
+	Id            string                 `json:"id"`
 	Name          string                 `json:"name"`
 	Roles         []*RoleResponse        `json:"roles,omitzero"`
 	Products      []*ViewProductResponse `json:"products,omitzero"`
 	RolesCount    int                    `json:"roles_count"`
 	ProductsCount int                    `json:"products_count"`
+	Deposit       uint                   `json:"deposit"`
 }
 
 // add assortment to views
@@ -76,6 +78,7 @@ type IViewService interface {
 	RemoveRoles(ctx context.Context, id string, roleIds ...string) error
 
 	// Products
+	GetProducts(ctx context.Context, id string) ([]*ViewProductResponse, error)
 	SetProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
 	AddProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
 	RemoveProducts(ctx context.Context, id string, productsIds ...string) error
@@ -90,6 +93,7 @@ type IViewHandlers interface {
 	SetRoles(c *fiber.Ctx) error
 	GetRoles(c *fiber.Ctx) error
 	RemoveRoles(c *fiber.Ctx) error
+	GetProducts(c *fiber.Ctx) error
 	SetOrAddProducts(c *fiber.Ctx) error
 	RemoveProducts(c *fiber.Ctx) error
 }

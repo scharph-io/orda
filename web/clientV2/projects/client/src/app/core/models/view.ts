@@ -8,9 +8,15 @@ export interface View {
 	roles: Role[];
 	products_count: number;
 	roles_count: number;
+	deposit: number;
 }
 
 export interface ViewProduct {
 	id: string;
 	name: string;
+	desc: string;
+	price: number;
+	position: number;
+	color: string;
+	product_id: string;
 }

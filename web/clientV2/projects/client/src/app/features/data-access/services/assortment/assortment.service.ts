@@ -19,6 +19,13 @@ export class AssortmentService {
 		loader: () => this.readGroups(),
 	});
 
+	public createGroup(ag: Partial<AssortmentGroup>): Observable<AssortmentGroup> {
+		this.logger.debug('[create]', ag, this.constructor.name);
+		return this.httpClient
+			.post<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group`, ag)
+			.pipe(catchError(this.handleError));
+	}
+
 	public readGroups(): Observable<AssortmentGroup[]> {
 		this.logger.debug('[readGroups]', undefined, this.constructor.name);
 		return this.httpClient
@@ -31,13 +38,6 @@ export class AssortmentService {
 
 		return this.httpClient
 			.get<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}`)
-			.pipe(catchError(this.handleError));
-	}
-
-	public createGroup(ag: Partial<AssortmentGroup>): Observable<AssortmentGroup> {
-		this.logger.debug('[create]', ag, this.constructor.name);
-		return this.httpClient
-			.post<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group`, ag)
 			.pipe(catchError(this.handleError));
 	}
 
@@ -55,11 +55,19 @@ export class AssortmentService {
 			.pipe(catchError(this.handleError));
 	}
 
-	public readProductsByGroupId(id: string): Observable<AssortmentProduct[]> {
-		this.logger.debug('[readProductsByGroupId]', id, this.constructor.name);
-		return this.httpClient
-			.get<AssortmentProduct[]>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}/products`)
-			.pipe(catchError(this.handleError));
+	public readProducts(group_id?: string): Observable<AssortmentProduct[]> {
+		this.logger.debug('[readProducts]', group_id ?? '', this.constructor.name);
+		if (group_id) {
+			return this.httpClient
+				.get<
+					AssortmentProduct[]
+				>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/product?group_id=${group_id}`, {})
+				.pipe(catchError(this.handleError));
+		} else {
+			return this.httpClient
+				.get<AssortmentProduct[]>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/product`)
+				.pipe(catchError(this.handleError));
+		}
 	}
 
 	public addProducts(

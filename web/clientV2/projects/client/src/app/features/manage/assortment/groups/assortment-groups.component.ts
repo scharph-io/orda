@@ -147,10 +147,6 @@ export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
 					<mat-label>Description</mat-label>
 					<input matInput formControlName="desc" />
 				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Deposit</mat-label>
-					<input matInput type="number" formControlName="deposit" />
-				</mat-form-field>
 			</form>
 		</ng-template>
 	`,
@@ -166,7 +162,6 @@ class AssortmentGroupDialogComponent extends DialogTemplateComponent<AssortmentG
 			Validators.minLength(3),
 		]),
 		desc: new FormControl('', Validators.required),
-		deposit: new FormControl(0, [Validators.required, Validators.min(0)]),
 	});
 
 	constructor() {
@@ -174,7 +169,6 @@ class AssortmentGroupDialogComponent extends DialogTemplateComponent<AssortmentG
 		this.formGroup.patchValue({
 			name: this.inputData?.name,
 			desc: this.inputData?.desc,
-			deposit: this.inputData?.deposit,
 		});
 	}
 
@@ -184,7 +178,6 @@ class AssortmentGroupDialogComponent extends DialogTemplateComponent<AssortmentG
 				.updateGroup(this.inputData?.id ?? '', {
 					name: this.formGroup.value.name ?? '',
 					desc: this.formGroup.value.desc ?? '',
-					deposit: this.formGroup.value.deposit ?? 0,
 				})
 				.subscribe(this.closeObserver);
 		} else {
@@ -192,7 +185,6 @@ class AssortmentGroupDialogComponent extends DialogTemplateComponent<AssortmentG
 				.createGroup({
 					name: this.formGroup.value.name ?? '',
 					desc: this.formGroup.value.desc ?? '',
-					deposit: this.formGroup.value.deposit ?? 0,
 				})
 				.subscribe(this.closeObserver);
 		}

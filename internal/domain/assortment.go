@@ -10,7 +10,6 @@ type ProductGroup struct {
 	Base
 	Name     string
 	Desc     string
-	Deposit  uint
 	Products Products
 }
 

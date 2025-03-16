@@ -8,16 +8,14 @@ import (
 )
 
 type ProductGroupRequest struct {
-	Name    string `json:"name"`
-	Desc    string `json:"desc"`
-	Deposit uint   `json:"deposit"`
+	Name string `json:"name"`
+	Desc string `json:"desc"`
 }
 
 type ProductGroupResponse struct {
 	ID       string           `json:"id"`
 	Name     string           `json:"name"`
 	Desc     string           `json:"desc"`
-	Deposit  uint             `json:"deposit"`
 	Products []ProductRequest `json:"products,omitempty"`
 }
 
@@ -30,11 +28,12 @@ type ProductRequest struct {
 }
 
 type ProductResponse struct {
-	ID     string `json:"id,omitempty"`
-	Name   string `json:"name"`
-	Desc   string `json:"desc"`
-	Price  int32  `json:"price"`
-	Active bool   `json:"active,omitempty"`
+	ID      string `json:"id,omitempty"`
+	Name    string `json:"name"`
+	Desc    string `json:"desc"`
+	Price   int32  `json:"price"`
+	Active  bool   `json:"active"`
+	GroupId string `json:"group_id"`
 }
 
 type IProductGroupRepository interface {
@@ -49,9 +48,10 @@ type IProductGroupRepository interface {
 }
 
 type IProductRepository interface {
+	Read(ctx context.Context) ([]*domain.Product, error)
 	ReadById(ctx context.Context, id string) (*domain.Product, error)
-	ReadByIds(ctx context.Context, ids []string) (domain.Products, error)
-	ReadByGroupID(ctx context.Context, id string) (domain.Products, error)
+	// ReadByIds(ctx context.Context, ids []string) (domain.Products, error)
+	ReadByGroupId(ctx context.Context, id string) (domain.Products, error)
 	Update(ctx context.Context, p domain.Product) (*domain.Product, error)
 	Delete(ctx context.Context, p domain.Product) error
 
@@ -63,6 +63,7 @@ type IProductRepository interface {
 }
 
 type IAssortmentService interface {
+	// Product Groups
 	CreateProductGroup(ctx context.Context, productGroup ProductGroupRequest) (*ProductGroupResponse, error)
 	ReadProductGroups(ctx context.Context) ([]ProductGroupResponse, error)
 	ReadProductGroup(ctx context.Context, id string) (*ProductGroupResponse, error)
@@ -70,8 +71,9 @@ type IAssortmentService interface {
 	DeleteProductGroup(ctx context.Context, id string) error
 
 	// Products
+	ReadProducts(ctx context.Context) ([]*ProductResponse, error)
 	ReadProductById(ctx context.Context, id string) (*ProductResponse, error)
-	ReadProductsGroupById(ctx context.Context, id string) ([]ProductResponse, error)
+	ReadProductsGroupById(ctx context.Context, id string) ([]*ProductResponse, error)
 	AddProductsToGroup(ctx context.Context, id string, products ...ProductRequest) error
 	RemoveProduct(ctx context.Context, id string) error
 	UpdateProduct(ctx context.Context, product ProductRequest) (*ProductResponse, error)

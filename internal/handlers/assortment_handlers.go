@@ -77,8 +77,15 @@ func (h *AssortmentHandlers) DeleteGroup(c *fiber.Ctx) error {
 }
 
 func (h *AssortmentHandlers) ReadProducts(c *fiber.Ctx) error {
-	id := c.Params("id")
-	res, err := h.assortmentService.ReadProductsGroupById(c.Context(), id)
+	groupid := c.Query("group_id", "")
+
+	res := make([]*ports.ProductResponse, 0)
+	var err error
+	if groupid != "" {
+		res, err = h.assortmentService.ReadProductsGroupById(c.Context(), groupid)
+	} else {
+		res, err = h.assortmentService.ReadProducts(c.Context())
+	}
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to get products"})
 	}
@@ -86,9 +93,7 @@ func (h *AssortmentHandlers) ReadProducts(c *fiber.Ctx) error {
 }
 
 func (h *AssortmentHandlers) AddProducts(c *fiber.Ctx) error {
-
 	groupID := c.Params("id")
-
 	products := []ports.ProductRequest{}
 	result := 0
 	if err := c.BodyParser(&products); err != nil {

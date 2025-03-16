@@ -2,7 +2,6 @@ export interface AssortmentGroup {
 	id: string;
 	name: string;
 	desc: string;
-	deposit: number;
 }
 
 export interface AssortmentProduct {
@@ -11,4 +10,5 @@ export interface AssortmentProduct {
 	desc: string;
 	price: number;
 	active: boolean;
+	group_id: string;
 }

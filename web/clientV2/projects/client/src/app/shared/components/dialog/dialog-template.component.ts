@@ -60,8 +60,6 @@ export class DialogTemplateComponent<D, R = D> {
 	submitClick = output();
 	canSubmit = signal<boolean>(true);
 
-	customTitle = '';
-
 	protected readonly inputData = inject<D>(MAT_DIALOG_DATA);
 	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<D, R>, R> =
 		inject(MatDialogRef);
@@ -75,4 +73,6 @@ export class DialogTemplateComponent<D, R = D> {
 			this.logger.error('Error:', error, this.constructor.name);
 		},
 	};
+
+	protected trim = (value: string): string => value.trim();
 }

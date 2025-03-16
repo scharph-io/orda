@@ -119,10 +119,10 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	group.Post("/", s.assortmentHandlers.CreateGroup)
 	group.Put("/:id", s.assortmentHandlers.UpdateGroup)
 	group.Delete("/:id", s.assortmentHandlers.DeleteGroup)
-	group.Get("/:id/products", s.assortmentHandlers.ReadProducts)
 	group.Post("/:id/products", s.assortmentHandlers.AddProducts)
 
 	product := assortment.Group("/product")
+	product.Get("/", s.assortmentHandlers.ReadProducts)
 	product.Get("/:id", s.assortmentHandlers.ReadProductById)
 	product.Put("/:id", s.assortmentHandlers.UpdateProduct)
 	product.Patch("/:id/toggle", s.assortmentHandlers.ToggleProduct)
@@ -144,9 +144,12 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	views.Get("/:id", s.viewHandlers.ReadOne)
 	views.Put("/:id", s.viewHandlers.Update)
 	views.Delete("/:id", s.viewHandlers.Delete)
+
 	views.Get("/:id/roles", s.viewHandlers.GetRoles)
 	views.Put("/:id/roles", s.viewHandlers.SetRoles)
 	views.Delete("/:id/roles", s.viewHandlers.RemoveRoles)
+
+	views.Get("/:id/products", s.viewHandlers.GetProducts)
 	views.Put("/:id/products", s.viewHandlers.SetOrAddProducts)
 	views.Delete("/:id/products", s.viewHandlers.RemoveProducts)
 

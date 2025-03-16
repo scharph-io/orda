@@ -99,6 +99,15 @@ func (h *ViewHandlers) GetRoles(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(roles)
 }
 
+func (h *ViewHandlers) GetProducts(c *fiber.Ctx) error {
+	id := c.Params("id")
+	products, err := h.viewService.GetProducts(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to get products"})
+	}
+	return c.Status(fiber.StatusOK).JSON(products)
+}
+
 func (h *ViewHandlers) RemoveRoles(c *fiber.Ctx) error {
 	id := c.Params("id")
 	roles := []string{}

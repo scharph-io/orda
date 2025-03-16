@@ -40,13 +40,14 @@ func (s *ViewService) ReadMany(ctx context.Context) ([]*ports.ViewResponse, erro
 	}
 
 	fmt.Println(views)
-	var res []*ports.ViewResponse
+	res := make([]*ports.ViewResponse, 0)
 	for _, v := range views {
 		res = append(res, &ports.ViewResponse{
-			ID:            v.ID,
+			Id:            v.ID,
 			Name:          v.Name,
 			RolesCount:    len(v.Roles),
 			ProductsCount: len(v.Products),
+			Deposit:       v.Deposit,
 		})
 	}
 	return res, nil
@@ -90,24 +91,26 @@ func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewRespon
 	}
 
 	return &ports.ViewResponse{
-		ID:            view.ID,
+		Id:            view.ID,
 		Name:          view.Name,
 		Roles:         roles,
 		Products:      products,
 		RolesCount:    len(roles),
 		ProductsCount: len(products),
+		Deposit:       view.Deposit,
 	}, nil
 }
 
 func (s *ViewService) Update(ctx context.Context, id string, view ports.ViewRequest) (*ports.ViewResponse, error) {
 
+	fmt.Print("Updating view ...")
 	fmt.Println(view)
 	v, err := s.repo.Update(ctx, domain.View{Base: domain.Base{ID: id}, Name: view.Name})
 	if err != nil {
 		return nil, err
 	}
 	return &ports.ViewResponse{
-		ID:   v.ID,
+		Id:   v.ID,
 		Name: v.Name,
 	}, nil
 }
@@ -151,6 +154,34 @@ func (s *ViewService) RemoveRoles(ctx context.Context, id string, roleIds ...str
 		return err
 	}
 	return s.repo.ReplaceRoles(ctx, view, roleIds...)
+}
+
+func (s *ViewService) GetProducts(ctx context.Context, id string) ([]*ports.ViewProductResponse, error) {
+	view, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	vps, err := s.productRepo.ReadByViewID(ctx, view.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	productResponses := make([]*ports.ViewProductResponse, 0)
+	for _, vp := range vps {
+		productResponses = append(productResponses, &ports.ViewProductResponse{
+			ProductResponse: ports.ProductResponse{
+				ID:     vp.Product.ID,
+				Name:   vp.Product.Name,
+				Desc:   vp.Product.Desc,
+				Price:  vp.Product.Price,
+				Active: vp.Product.Active,
+			},
+			Color:    vp.Color,
+			Position: vp.Position,
+		})
+	}
+	return productResponses, nil
 }
 
 func (s *ViewService) SetProducts(ctx context.Context, id string, products ...*ports.ViewProductRequest) error {

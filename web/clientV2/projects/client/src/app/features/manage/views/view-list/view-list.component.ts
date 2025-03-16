@@ -41,7 +41,11 @@ import { rxResource } from '@angular/core/rxjs-interop';
 			@for (view of viewService.entityResource.value(); track view.id) {
 				<mat-list-item role="listitem">
 					<div class="item">
-						<p [routerLink]="[view.id]" routerLinkActive="router-link-active">
+						<p
+							[routerLink]="[view.id]"
+							[state]="{ name: view.name }"
+							routerLinkActive="router-link-active"
+						>
 							{{ view.name | titlecase }}
 						</p>
 						<div>
@@ -144,6 +148,10 @@ export class ViewListComponent extends EntityManager<View> {
 					<input matInput formControlName="name" />
 				</mat-form-field>
 				<mat-form-field>
+					<mat-label>Deposit</mat-label>
+					<input matInput type="number" formControlName="deposit" />
+				</mat-form-field>
+				<mat-form-field>
 					<mat-label>Roles</mat-label>
 					<mat-select formControlName="roles" multiple [value]="viewDetails.value()">
 						@for (role of roleService.entityResource.value(); track role.id) {
@@ -172,21 +180,35 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 			Validators.minLength(3),
 		]),
 		roles: new FormControl([]),
+		deposit: new FormControl(0, [Validators.required, Validators.min(0)]),
 	});
 
 	constructor() {
 		super();
 
+		console.log(this.inputData);
+
 		this.formGroup.patchValue({
 			name: this.inputData?.name,
+			deposit: this.inputData?.deposit,
 		});
 	}
 
 	public submit = () => {
 		if (this.inputData) {
+			// if (
+			// 	this.equal(
+			// 		this.inputData.roles.map((r) => r.id),
+			// 		this.formGroup.value.roles ?? [],
+			// 	)
+			// ) {
+			// 	console.log(this.formGroup.value);
+			// }
+
 			this.viewService
 				.update(this.inputData?.id ?? '', {
 					name: this.formGroup.value.name ?? '',
+					deposit: this.formGroup.value.deposit ?? 0,
 				})
 				.pipe(
 					switchMap(() =>
@@ -198,6 +220,7 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 			this.viewService
 				.create({
 					name: this.formGroup.value.name ?? '',
+					deposit: this.formGroup.value.deposit ?? 0,
 				})
 				.pipe(
 					tap((view) => console.log(view)),
@@ -206,4 +229,9 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 				.subscribe(this.closeObserver);
 		}
 	};
+
+	// private equal = (a: string[], b: string[]) => {
+	// 	if (a.length !== b.length) return false;
+	// 	return JSON.stringify([...new Set(a)].sort()) === JSON.stringify([...new Set(b)].sort());
+	// };
 }
