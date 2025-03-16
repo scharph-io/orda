@@ -21,7 +21,6 @@ export class UserService extends EntityService<User> {
 	}
 
 	public create(u: User) {
-		this.logger.debug('Create', u, this.constructor.name);
 		return this.httpClient
 			.post<User>(`${this.HOST}${API_ENDPOINTS.USER}`, u)
 			.pipe(catchError(this.handleError));

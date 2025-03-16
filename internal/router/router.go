@@ -83,15 +83,15 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	user.Delete("/:id", s.userHandlers.Delete)
 
 	// Role
-	role := api.Group("/role")
-	role.Get("/", s.authHandlers.RequireRole("admin"), s.roleHandlers.GetAll)
-	role.Post("/", s.authHandlers.RequireRole("admin"), s.roleHandlers.Create)
-	role.Put("/:id", s.authHandlers.RequireRole("admin"), s.roleHandlers.Update)
-	role.Get("/:id", s.authHandlers.RequireRole("admin"), s.roleHandlers.GetOne)
-	role.Delete("/:id", s.authHandlers.RequireRole("admin"), s.roleHandlers.Delete)
+	role := api.Group("/role", s.authHandlers.RequireRole("admin"))
+	role.Get("/", s.roleHandlers.GetAll)
+	role.Post("/", s.roleHandlers.Create)
+	role.Put("/:id", s.roleHandlers.Update)
+	role.Get("/:id", s.roleHandlers.GetOne)
+	role.Delete("/:id", s.roleHandlers.Delete)
 
 	// Account
-	account := api.Group("/account")
+	account := api.Group("/account", s.authHandlers.RequireRole("admin"))
 	account.Get("/", s.accountHandlers.GetAll)
 	account.Get("/:id", s.accountHandlers.GetById)
 	account.Put("/:id", s.accountHandlers.Update)
@@ -152,6 +152,14 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	views.Get("/:id/products", s.viewHandlers.GetProducts)
 	views.Put("/:id/products", s.viewHandlers.SetOrAddProducts)
 	views.Delete("/:id/products", s.viewHandlers.RemoveProducts)
+
+	// Order
+	order := api.Group("/order/views")
+	// order.Post("/", s.orderHandlers.Create)
+	order.Get("/", s.orderHandlers.GetViews)
+	// order.Get("/:id", s.orderHandlers.ReadOne)
+	// order.Put("/:id", s.orderHandlers.Update)
+	// order.Delete("/:id", s.orderHandlers.Delete)
 
 	// // Checkout
 	// checkout := api.Group("/checkout")

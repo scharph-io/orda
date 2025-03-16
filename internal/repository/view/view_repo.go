@@ -2,6 +2,7 @@ package view
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -42,6 +43,23 @@ func (r *ViewRepo) ReadByID(ctx context.Context, id string) (*domain.View, error
 		return nil, err
 	}
 	return &view, nil
+}
+
+func (r *ViewRepo) ReadByRoleID(ctx context.Context, roleID string) ([]*domain.View, error) {
+	// TODO
+	type ViewWithRole struct {
+		domain.View
+		RoleId string
+	}
+	var views []*ViewWithRole
+	if err := r.db.Joins("left join view_roles on views.id = view_id").Scan(&views).Error; err != nil {
+		return nil, err
+	}
+
+	for _, view := range views {
+		fmt.Println(view.RoleId, view.Name)
+	}
+	return nil, nil
 }
 
 func (r *ViewRepo) Update(ctx context.Context, view domain.View) (*domain.View, error) {

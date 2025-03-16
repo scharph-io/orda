@@ -23,6 +23,7 @@ import {
 import { switchMap } from 'rxjs';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RolesComponent } from '../roles/roles.component';
+import { StrongPasswordRegx } from '@orda.core/constants';
 
 @Component({
 	selector: 'orda-users',
@@ -44,7 +45,9 @@ import { RolesComponent } from '../roles/roles.component';
 				</ng-template>
 			</mat-tab>
 			<mat-tab label="Roles">
-				<ng-template matTabContent><orda-roles /></ng-template>
+				<ng-template matTabContent>
+					<orda-roles />
+				</ng-template>
 			</mat-tab>
 		</mat-tab-group>
 	`,
@@ -98,6 +101,12 @@ export class UsersComponent extends EntityManager<User> {
 					<mat-label>Name</mat-label>
 					<input matInput formControlName="name" />
 				</mat-form-field>
+
+				<mat-form-field>
+					<mat-label>Password</mat-label>
+					<input type="password" matInput formControlName="password" />
+				</mat-form-field>
+
 				<mat-form-field>
 					<mat-label>Role</mat-label>
 					<mat-select formControlName="role">
@@ -133,6 +142,13 @@ class UserDialogComponent extends DialogTemplateComponent<User> {
 			Validators.minLength(3),
 			Validators.maxLength(15),
 		]),
+		password: new FormControl<string>('', [
+			Validators.required,
+			Validators.minLength(3),
+			Validators.maxLength(25),
+			Validators.pattern(StrongPasswordRegx),
+		]),
+
 		role: new FormControl<string>('', Validators.required),
 	});
 
@@ -144,6 +160,7 @@ class UserDialogComponent extends DialogTemplateComponent<User> {
 		});
 	}
 
+	public validPassword = (pw1: string, pw2: string): boolean => pw1 === pw2;
 	public submit = () => {
 		if (this.inputData) {
 			this.userService
@@ -157,7 +174,7 @@ class UserDialogComponent extends DialogTemplateComponent<User> {
 				.create({
 					username: this.formGroup.value.name ?? '',
 					roleid: this.formGroup.value.role ?? '',
-					password: 'test123',
+					password: this.formGroup.value.password ?? '',
 				})
 				.subscribe(this.closeObserver);
 		}

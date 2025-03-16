@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from '@orda.shared/components/login/login.component';
 import { HomeComponent } from '@orda.features/home/home.component';
 import { authGuard } from '@orda.core/guards/auth.guard';
+import { OrderComponent } from '@orda.features/order/order.component';
+import { roleGuard } from '@orda.core/guards/role.guard';
 
 export const routes: Routes = [
 	{
@@ -15,8 +17,13 @@ export const routes: Routes = [
 	},
 	{
 		path: 'manage',
-		canActivate: [authGuard],
+		canActivate: [authGuard, roleGuard],
 		loadChildren: () => import('@orda.features/manage/manage.routes'),
+	},
+	{
+		path: 'order',
+		canActivate: [authGuard],
+		loadComponent: () => OrderComponent,
 	},
 	{ path: '', redirectTo: 'home', pathMatch: 'full' },
 	{ path: '**', redirectTo: 'home' },

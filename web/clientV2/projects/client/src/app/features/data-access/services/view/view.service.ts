@@ -65,7 +65,7 @@ export class ViewService extends EntityService<View> {
 
 	getProducts(view_id: string) {
 		return this.httpClient
-			.get<View[]>(`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products`)
+			.get<ViewProduct[]>(`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products`)
 			.pipe(catchError(this.handleError));
 	}
 }

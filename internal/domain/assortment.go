@@ -14,7 +14,7 @@ type ProductGroup struct {
 }
 
 func (pg ProductGroup) String() string {
-	return fmt.Sprintf("[%s] Name: %s", pg.ID, pg.Name)
+	return fmt.Sprintf("[%s] Name: %s\n", pg.ID, pg.Name)
 }
 
 // Product is the model for the product

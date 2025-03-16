@@ -9,7 +9,6 @@ import { MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { ViewService } from '@orda.features/data-access/services/view/view.service';
-import { map } from 'rxjs';
 import { ViewProduct } from '@orda.core/models/view';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 
@@ -17,73 +16,96 @@ import { OrdaLogger } from '@orda.shared/services/logger.service';
 	selector: 'orda-view-details',
 	imports: [MatTableModule, MatCheckboxModule, MatButton, MatFormField, MatInput, MatLabel],
 	template: `
-		<button mat-button (click)="save()">Save</button>
+		<h2>{{ view.value()?.name }}</h2>
+
 		<mat-form-field>
 			<mat-label>Filter</mat-label>
 			<input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
 		</mat-form-field>
-		<table mat-table [dataSource]="availableProductsDataSource()">
-			<ng-container matColumnDef="select">
-				<th mat-header-cell *matHeaderCellDef>
-					<mat-checkbox
-						(change)="$event ? toggleAllRows() : null"
-						[checked]="selection().hasValue() && isAllSelected()"
-						[indeterminate]="selection().hasValue() && !isAllSelected()"
-					>
-					</mat-checkbox>
-				</th>
-				<td mat-cell *matCellDef="let row">
-					<mat-checkbox
-						(click)="$event.stopPropagation()"
-						(change)="$event ? selection().toggle(row.id) : null"
-						[checked]="selection().isSelected(row.id)"
-					>
-					</mat-checkbox>
-				</td>
-			</ng-container>
-			<!-- Position Column -->
-			<ng-container matColumnDef="name">
-				<th mat-header-cell *matHeaderCellDef>Name</th>
-				<td mat-cell *matCellDef="let element">{{ element.name }} {{ element.id }}</td>
-			</ng-container>
+		<button mat-button (click)="save()">Save</button>
+		<div class="mat-elevation-z8 table-container">
+			<table
+				mat-table
+				[dataSource]="availableProductsDataSource()"
+				[style]="{ 'max-height': '20vh', overflow: 'auto' }"
+			>
+				<ng-container matColumnDef="select">
+					<th mat-header-cell *matHeaderCellDef>
+						<mat-checkbox
+							(change)="$event ? toggleAllRows() : null"
+							[checked]="selection().hasValue() && isAllSelected()"
+							[indeterminate]="selection().hasValue() && !isAllSelected()"
+						>
+						</mat-checkbox>
+					</th>
+					<td mat-cell *matCellDef="let row">
+						<mat-checkbox
+							(click)="$event.stopPropagation()"
+							(change)="$event ? selection().toggle(row.id) : null"
+							[checked]="selection().isSelected(row.id)"
+						>
+						</mat-checkbox>
+					</td>
+				</ng-container>
+				<!-- Position Column -->
+				<ng-container matColumnDef="name">
+					<th mat-header-cell *matHeaderCellDef>Name</th>
+					<td mat-cell *matCellDef="let element">{{ element.name }}</td>
+				</ng-container>
 
-			<!-- Name Column -->
-			<ng-container matColumnDef="desc">
-				<th mat-header-cell *matHeaderCellDef>Desc</th>
-				<td mat-cell *matCellDef="let element">{{ element.desc }}</td>
-			</ng-container>
+				<!-- Name Column -->
+				<ng-container matColumnDef="desc">
+					<th mat-header-cell *matHeaderCellDef>Desc</th>
+					<td mat-cell *matCellDef="let element">{{ element.desc }}</td>
+				</ng-container>
 
-			<!-- Weight Column -->
-			<ng-container matColumnDef="group">
-				<th mat-header-cell *matHeaderCellDef>Group</th>
-				<td mat-cell *matCellDef="let element">{{ element.group_id }}</td>
-			</ng-container>
+				<!-- Weight Column -->
+				<ng-container matColumnDef="group">
+					<th mat-header-cell *matHeaderCellDef>Group</th>
+					<td mat-cell *matCellDef="let element">{{ getGroupName(element.group_id) }}</td>
+				</ng-container>
 
-			<!-- Symbol Column -->
-			<ng-container matColumnDef="actions">
-				<th mat-header-cell *matHeaderCellDef>Actions</th>
-				<td mat-cell *matCellDef="let element">{{ element.active }}</td>
-			</ng-container>
+				<!--			&lt;!&ndash; Symbol Column &ndash;&gt;-->
+				<!--			<ng-container matColumnDef="actions">-->
+				<!--				<th mat-header-cell *matHeaderCellDef>Actions</th>-->
+				<!--				<td mat-cell *matCellDef="let element">{{ element.active }}</td>-->
+				<!--			</ng-container>-->
 
-			<tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-			<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+				<tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-			<!-- Row shown when there is no matching data. -->
-			<tr class="mat-row" *matNoDataRow>
-				<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-			</tr>
-		</table>
+				<!-- Row shown when there is no matching data. -->
+				<tr class="mat-row" *matNoDataRow>
+					<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+				</tr>
+			</table>
+		</div>
 	`,
-	styles: ``,
+	styles: `
+		/* app.component.scss */
+
+		.table-container {
+			/*--mat-table-row-item-container-height: 2rem;*/
+
+			height: 75vh; /* Set your desired fixed height here */
+			overflow: auto;
+			width: 100%;
+		}
+	`,
 })
 export class ViewDetailsComponent {
-	displayedColumns: string[] = ['select', 'name', 'desc', 'group', 'actions'];
+	// displayedColumns: string[] = ['select', 'name', 'desc', 'group', 'actions'];
+	displayedColumns: string[] = ['select', 'name', 'desc', 'group'];
 
 	private logger = inject(OrdaLogger);
 	private viewService = inject(ViewService);
 	private assortmentService = inject(AssortmentService);
 
 	view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
+
+	view = rxResource({
+		loader: () => this.viewService.readById(this.view_id()),
+	});
 
 	availableProducts = rxResource({
 		loader: () => this.assortmentService.readProducts(),
@@ -92,16 +114,25 @@ export class ViewDetailsComponent {
 		() => new MatTableDataSource(this.availableProducts.value() ?? []),
 	);
 
-	viewProductIds = rxResource({
-		loader: () =>
-			this.viewService.getProducts(this.view_id()).pipe(map((vps) => vps.map((vp) => vp.id))),
+	viewProducts = rxResource({
+		loader: () => this.viewService.getProducts(this.view_id()),
 	});
 
-	selection = computed(() => new SelectionModel<string>(true, this.viewProductIds.value() ?? []));
+	selection = computed(
+		() =>
+			new SelectionModel<string>(
+				true,
+				(this.viewProducts.value() ?? []).map((p) => p.id),
+			),
+	);
 
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.availableProductsDataSource().filter = filterValue.trim().toLowerCase();
+		this.availableProductsDataSource().filterPredicate = (data, filter) =>
+			data.name.toLowerCase().includes(filter) ||
+			data.desc.toLowerCase().includes(filter) ||
+			this.getGroupName(data.group_id).toLowerCase().includes(filter);
 	}
 
 	/** Whether the number of selected elements matches the total number of rows. */
@@ -122,25 +153,28 @@ export class ViewDetailsComponent {
 	}
 
 	save() {
-		const viewProducts = this.selection().selected.map(
-			(p, i) =>
+		const viewProductsToSave = this.selection().selected.map(
+			(p) =>
 				({
 					product_id: p,
-					color: '', // FIX ME
-					position: (this.viewProductIds.value() ?? []).length + i,
 				}) as Partial<ViewProduct>,
 		);
-		this.viewService.setProducts(this.view_id(), viewProducts).subscribe({
+
+		this.viewService.setProducts(this.view_id(), viewProductsToSave).subscribe({
 			next: () => {
 				this.logger.debug(
-					`successfully saved ${viewProducts.length} products to view ${this.view_id()}`,
+					`successfully saved ${viewProductsToSave.length} products to view ${this.view_id()}`,
 				);
 			},
 			error: (err) => {
 				this.logger.error(
-					`failed saving ${viewProducts.length} products to view ${this.view_id()}, ${err}`,
+					`failed saving ${viewProductsToSave.length} products to view ${this.view_id()}, ${err}`,
 				);
 			},
 		});
+	}
+
+	getGroupName(group_id: string): string {
+		return this.assortmentService.groups.value()?.find((g) => g.id === group_id)?.name ?? '';
 	}
 }

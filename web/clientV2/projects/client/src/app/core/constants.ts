@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
 	ROLE: `${API}/role`,
 	ASSORTMENT: `${API}/assortment`,
 	VIEW: `${API}/view`,
+	ORDER: `${API}/order`,
 };
-
+export const StrongPasswordRegx = /^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d).{8,}$/;
 export const DEPOSIT_VALUES = [1000, 1500, 2000];

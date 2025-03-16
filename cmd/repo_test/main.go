@@ -113,18 +113,28 @@ func main() {
 			fmt.Println(v.String())
 		}
 
-		vr.ReplaceRoles(ctx, views[0], roles[1].ID)
-
-		fmt.Println("New ---- ")
-		views = GetViews()
-		for _, v := range views {
+		fmt.Println("#########")
+		x, err := vr.ReadByRoleID(ctx, "admin")
+		if err != nil {
+			fmt.Println("Error reading views by role:", err)
+		}
+		for _, v := range x {
 			fmt.Println(v.String())
 		}
+
+		// vr.ReplaceRoles(ctx, views[0], roles[1].ID)
+
+		// fmt.Println("New ---- ")
+		// views = GetViews()
+		// for _, v := range views {
+		// 	fmt.Println(v.String())
+		// }
 
 		fmt.Println("-------------------------------")
 		fmt.Println("")
 	}
 
+	return
 	fmt.Println("# ProductGroups:")
 	groups, _ := pgr.Read(ctx)
 	{

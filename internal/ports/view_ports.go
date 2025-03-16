@@ -47,6 +47,7 @@ type IViewRepository interface {
 	Create(ctx context.Context, view domain.View) (*domain.View, error)
 	Read(ctx context.Context) ([]*domain.View, error)
 	ReadByID(ctx context.Context, id string) (*domain.View, error)
+	ReadByRoleID(ctx context.Context, roleID string) ([]*domain.View, error)
 	Update(ctx context.Context, view domain.View) (*domain.View, error)
 	Delete(ctx context.Context, view domain.View) error
 

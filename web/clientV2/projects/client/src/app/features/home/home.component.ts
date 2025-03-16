@@ -74,6 +74,7 @@ export class HomeComponent {
 		{ title: 'Views', path: '/manage/views' },
 		{ title: 'Account', path: '/manage/accounts' },
 		{ title: 'History', path: '/manage/history' },
+		{ title: 'Order', path: '/order' },
 	]);
 
 	navigateTo(path: string) {
