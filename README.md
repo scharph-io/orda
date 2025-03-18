@@ -33,3 +33,5 @@ Preisfaktor Pro gruppe
 Einkaufspreis und Verkaufspreis
 
 wenn einkaufpreis nicht angegeben dann einkaufspreis = verkaufspreis / preisfaktor
+
+Uses scopes: https://gorm.io/docs/advanced_query.html#Applying-Scopes-in-Queries

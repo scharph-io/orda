@@ -46,19 +46,30 @@ func (r *ViewRepo) ReadByID(ctx context.Context, id string) (*domain.View, error
 }
 
 func (r *ViewRepo) ReadByRoleID(ctx context.Context, roleID string) ([]*domain.View, error) {
-	// TODO
-	type ViewWithRole struct {
-		domain.View
-		RoleId string
-	}
-	var views []*ViewWithRole
-	if err := r.db.Joins("left join view_roles on views.id = view_id").Scan(&views).Error; err != nil {
-		return nil, err
-	}
+	fmt.Println("test ...... ")
+	var viewIds []string
+	r.db.Model(&domain.ViewRole{}).Select("view_id").
+		Where("role_id = ?", roleID).
+		Find(&viewIds)
 
-	for _, view := range views {
-		fmt.Println(view.RoleId, view.Name)
-	}
+	var views []*domain.View
+	r.db.Model(&domain.View{}).Where("id IN (?)", viewIds).Find(&views)
+
+	fmt.Println(views)
+
+	// // TODO
+	// type ViewWithRole struct {
+	// 	domain.View
+	// 	RoleId string
+	// }
+	// var views []*ViewWithRole
+	// if err := r.db.Joins("left join view_roles on views.id = view_id").Scan(&views).Error; err != nil {
+	// 	return nil, err
+	// }
+
+	// for _, view := range views {
+	// 	fmt.Println(view.RoleId, view.Name)
+	// }
 	return nil, nil
 }
 
