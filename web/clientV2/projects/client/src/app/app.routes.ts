@@ -12,7 +12,7 @@ export const routes: Routes = [
 	},
 	{
 		path: 'home',
-		canActivate: [authGuard, manageGuard],
+		canActivate: [authGuard],
 		loadComponent: () => HomeComponent,
 	},
 	{

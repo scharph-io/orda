@@ -115,7 +115,8 @@ export class AssortmentService {
 	}
 
 	protected handleError(error: unknown): Observable<never> {
-		this.logger.error(`[${this.constructor.name}] An error occurred`, error);
+		// this.logger.error(`[${this.constructor.name}] An error occurred`, error);
+		console.log(error);
 		return EMPTY;
 	}
 }

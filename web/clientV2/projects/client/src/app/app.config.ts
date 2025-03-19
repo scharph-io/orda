@@ -24,12 +24,6 @@ registerLocaleData(localeDe, 'de');
 
 export const appConfig: ApplicationConfig = {
 	providers: [
-		// provideAppInitializer(() => {
-		// 	const sessionService = inject(SessionService);
-		// 	return firstValueFrom(
-		// 		sessionService.checkSession().pipe(defaultIfEmpty({ authenticated: false })),
-		// 	);
-		// }),
 		provideAppInitializer(() => {
 			inject(SessionService);
 		}),

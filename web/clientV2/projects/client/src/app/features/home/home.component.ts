@@ -6,6 +6,7 @@ import { SessionService } from '@orda.core/services/session.service';
 interface Tile {
 	title: string;
 	path: string;
+	canActivate?: () => boolean;
 }
 
 @Component({
@@ -18,7 +19,7 @@ interface Tile {
 		</h2>
 
 		<div class="container">
-			<h3>Manage</h3>
+			<h3>Menu</h3>
 			<mat-grid-list
 				style="width: 50%"
 				[cols]="primaryTiles().length"
@@ -26,9 +27,11 @@ interface Tile {
 				[gutterSize]="'0.5rem'"
 			>
 				@for (tile of primaryTiles(); track tile) {
-					<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
-						>{{ tile.title }}
-					</mat-grid-tile>
+					@if (tile.canActivate ? tile.canActivate() : true) {
+						<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
+							>{{ tile.title }}
+						</mat-grid-tile>
+					}
 				}
 			</mat-grid-list>
 		</div>
@@ -52,18 +55,18 @@ export class HomeComponent {
 	private readonly router = inject(Router);
 
 	primaryTiles = signal<Tile[]>([
-		{ title: 'Users', path: '/manage/users' },
 		{
-			title: 'Assortment',
-			path: '/manage/assortment',
+			title: 'Manage',
+			path: '/manage',
+			canActivate: () => this.sessionService.user().role === 'admin',
 		},
-		{ title: 'Views', path: '/manage/views' },
-		{ title: 'Account', path: '/manage/accounts' },
-		{ title: 'History', path: '/manage/history' },
-		{ title: 'Order', path: '/order' },
+		{
+			title: 'Order',
+			path: '/order',
+		},
 	]);
 
 	navigateTo(path: string) {
-		this.router.navigate([path]).catch(console.error);
+		return this.router.navigate([path]);
 	}
 }

@@ -6,5 +6,5 @@ export const manageGuard: CanActivateFn = () => {
 	if (inject(SessionService).user().role == 'admin') {
 		return true;
 	}
-	return inject(Router).navigate(['/order']);
+	return inject(Router).navigate(['/home']);
 };

@@ -1,17 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { OrderService } from '@orda.features/data-access/services/order.service';
-import { JsonPipe } from '@angular/common';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconModule } from '@angular/material/icon';
+import { OrderDesktopComponent } from '@orda.features/order/views/desktop/desktop.component';
 
 @Component({
 	selector: 'orda-order',
-	imports: [JsonPipe],
-	template: `
-		<pre>
-    <code>
-      {{ orderService.views.value() | json }}
-    </code>
-  </pre>
-	`,
+	imports: [MatTabsModule, MatIconModule, OrderDesktopComponent],
+	template: ` <orda-order-desktop [views]="orderService.views.value() ?? []" /> `,
 	styles: ``,
 })
 export class OrderComponent {
