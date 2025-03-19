@@ -11,8 +11,7 @@ type DepositRequest struct {
 	Amount        int32                `json:"amount" validate:"required gt=0"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
 	HistoryAction domain.HistoryAction `json:"history_type" validate:"required"`
-	UserId        string               `json:"userid" validate:"required"`
-	TransactionId string               `json:"transactionid,omitempty"`
+	TransactionId string               `json:"transactionid,omitzero"`
 }
 
 type DepositGroupRequest struct {

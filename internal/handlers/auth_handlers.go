@@ -99,7 +99,7 @@ func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
 	if err := session.Destroy(); err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
-	c.ClearCookie(config.Session_cookie)
+	// c.ClearCookie(config.Session_cookie)
 	return c.SendStatus(fiber.StatusNoContent)
 }
 

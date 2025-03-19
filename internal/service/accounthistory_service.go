@@ -20,16 +20,37 @@ func NewAccountHistoryService(repo ports.IAccountHistoryRepository) *AccountHist
 }
 
 func (s *AccountHistoryService) Log(ctx context.Context, user_id string, depositReq ...ports.LogRequest) error {
-	logs := make([]domain.AccountHistory, len(depositReq))
+	logs := make([]domain.AccountHistory, 0)
 	for _, req := range depositReq {
+		var accountGroupId sql.NullString
+		if req.AccountGroupId != nil {
+			accountGroupId = sql.NullString{String: *req.AccountGroupId, Valid: true}
+		} else {
+			accountGroupId = sql.NullString{Valid: false}
+		}
+
+		var accountId sql.NullString
+		if req.AccountId != nil {
+			accountId = sql.NullString{String: *req.AccountId, Valid: true}
+		} else {
+			accountId = sql.NullString{Valid: false}
+		}
+
+		var transactionId sql.NullString
+		if req.TransactionId != nil {
+			transactionId = sql.NullString{String: *req.TransactionId, Valid: true}
+		} else {
+			transactionId = sql.NullString{Valid: false}
+		}
+
 		logs = append(logs, domain.AccountHistory{
 			Amount:         req.Amount,
-			AccountGroupID: sql.NullString{String: *req.AccountGroupId, Valid: req.AccountGroupId != nil},
-			AccountID:      sql.NullString{String: *req.AccountId, Valid: req.AccountId != nil},
+			AccountGroupID: accountGroupId,
+			AccountID:      accountId,
 			HistoryAction:  req.HistoryAction,
 			DepositType:    req.DepositType,
 			UserID:         user_id,
-			TransactionID:  sql.NullString{String: *req.TransactionId, Valid: req.TransactionId != nil},
+			TransactionID:  transactionId,
 		})
 	}
 	if _, err := s.repo.Create(ctx, logs...); err != nil {

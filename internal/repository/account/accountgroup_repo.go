@@ -18,7 +18,7 @@ func NewAccountGroupRepo(db *gorm.DB) *AccountGroupRepository {
 	return &AccountGroupRepository{db}
 }
 
-func (r *AccountGroupRepository) Create(ctx context.Context, creator_id string, req domain.AccountGroup) (*domain.AccountGroup, error) {
+func (r *AccountGroupRepository) Create(ctx context.Context, req domain.AccountGroup) (*domain.AccountGroup, error) {
 	if err := r.db.Create(&req).Error; err != nil {
 		return nil, err
 	}

@@ -230,6 +230,8 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId st
 		return nil, err
 	}
 
+	fmt.Println("AccountID", account.ID)
+
 	account.LastBalance = account.MainBalance + account.CreditBalance
 	if req.DepositType == domain.DepositTypePaid {
 		account.MainBalance += req.Amount
