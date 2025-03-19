@@ -9,6 +9,6 @@ export interface AssortmentProduct {
 	name: string;
 	desc: string;
 	price: number;
-	active: boolean;
-	group_id: string;
+	active?: boolean;
+	group_id?: string;
 }

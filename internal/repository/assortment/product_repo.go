@@ -64,6 +64,9 @@ func (r *ProductRepo) Update(ctx context.Context, product domain.Product) (*doma
 }
 
 func (r *ProductRepo) Delete(ctx context.Context, p domain.Product) error {
+	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Delete(&domain.ViewProduct{}, "product_id = ?", p.ID).Error; err != nil {
+		return err
+	}
 	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Delete(&p).Error; err != nil {
 		return err
 	}
@@ -85,7 +88,7 @@ func (r *ProductRepo) AppendProductViews(ctx context.Context, p *domain.Product,
 	}
 
 	var views []domain.View
-	if err := r.db.WithContext(ctx).Model(&domain.View{}).Where("id IN ?", viewIds).Find(&views).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&domain.View{}).Find(&views, "id IN ?", viewIds).Error; err != nil {
 		return err
 	}
 
@@ -94,7 +97,7 @@ func (r *ProductRepo) AppendProductViews(ctx context.Context, p *domain.Product,
 	}
 
 	var viewProducts []domain.ViewProduct
-	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("product_id = ?", p.ID).Find(&viewProducts).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Find(&viewProducts, "product_id = ?", p.ID).Error; err != nil {
 		return err
 	}
 
@@ -115,7 +118,7 @@ func (r *ProductRepo) ReplaceProductViews(ctx context.Context, p *domain.Product
 	}
 
 	var views []domain.View
-	if err := r.db.WithContext(ctx).Model(&domain.View{}).Where("id IN ?", viewIds).Find(&views).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&domain.View{}).Find(&views, "id IN ?", viewIds).Error; err != nil {
 		return err
 	}
 

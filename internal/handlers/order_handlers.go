@@ -26,7 +26,7 @@ func (h *OrdaHandlers) GetViews(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusNoContent)
 	}
 
-	role := sess.Get("role")
+	role := sess.Get("roleid")
 	if role == nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
@@ -35,6 +35,6 @@ func (h *OrdaHandlers) GetViews(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return c.Status(fiber.StatusBadRequest).JSON(views)
+	return c.Status(fiber.StatusOK).JSON(views)
 
 }

@@ -1,13 +1,13 @@
 import { Component, inject, isDevMode, signal } from '@angular/core';
-import { AuthService } from '@orda.core/services/auth.service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router } from '@angular/router';
+import { SessionService } from '@orda.core/services/session.service';
 
 @Component({
 	selector: 'orda-login',
@@ -99,7 +99,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 	`,
 })
 export class LoginComponent {
-	private authService = inject(AuthService);
+	private sessionService = inject(SessionService);
 	private router = inject(Router);
 
 	protected isLoading = false;
@@ -124,13 +124,13 @@ export class LoginComponent {
 		}
 
 		if (this.loginForm.value.username !== '' && this.loginForm.value.password !== '') {
-			this.authService
+			this.sessionService
 				.login(this.loginForm.value.username!, this.loginForm.value.password!)
 				.subscribe({
 					next: (res) => {
+						console.log(res);
 						this.isLoading = false;
-						this.authService.user.set(res.data);
-						this.router.navigate(['/home']);
+						this.router.navigate(['/home']).catch(() => undefined);
 					},
 					error: () => {
 						this.isLoading = false;

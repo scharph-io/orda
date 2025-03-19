@@ -1,8 +1,10 @@
 import {
 	ApplicationConfig,
 	DEFAULT_CURRENCY_CODE,
+	inject,
 	isDevMode,
 	LOCALE_ID,
+	provideAppInitializer,
 	provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter, withHashLocation } from '@angular/router';
@@ -16,11 +18,20 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { errorInterceptor } from '@orda.core/interceptors/error.interceptor';
 import { credentialInterceptor } from '@orda.core/interceptors/credential.interceptor';
 import localeDe from '@angular/common/locales/de';
+import { SessionService } from '@orda.core/services/session.service';
+import { defaultIfEmpty, first, firstValueFrom } from 'rxjs';
 
 registerLocaleData(localeDe, 'de');
 
 export const appConfig: ApplicationConfig = {
 	providers: [
+		provideAppInitializer(() =>
+			firstValueFrom(
+				inject(SessionService)
+					.checkSession()
+					.pipe(defaultIfEmpty({ authenticated: false }), first()),
+			),
+		),
 		provideZoneChangeDetection({ eventCoalescing: true }),
 		provideRouter(routes, withHashLocation()),
 		provideAnimationsAsync(),

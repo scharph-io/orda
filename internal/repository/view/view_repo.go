@@ -2,7 +2,6 @@ package view
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -45,32 +44,19 @@ func (r *ViewRepo) ReadByID(ctx context.Context, id string) (*domain.View, error
 	return &view, nil
 }
 
-func (r *ViewRepo) ReadByRoleID(ctx context.Context, roleID string) ([]*domain.View, error) {
-	fmt.Println("test ...... ")
+func (r *ViewRepo) ReadByRoleId(ctx context.Context, roleId string) ([]*domain.View, error) {
 	var viewIds []string
-	r.db.Model(&domain.ViewRole{}).Select("view_id").
-		Where("role_id = ?", roleID).
-		Find(&viewIds)
-
+	if err := r.db.Model(&domain.ViewRole{}).Select("view_id").
+		Where("role_id = ?", roleId).
+		Scan(&viewIds).Error; err != nil {
+		return nil, err
+	}
 	var views []*domain.View
-	r.db.Model(&domain.View{}).Where("id IN (?)", viewIds).Find(&views)
 
-	fmt.Println(views)
-
-	// // TODO
-	// type ViewWithRole struct {
-	// 	domain.View
-	// 	RoleId string
-	// }
-	// var views []*ViewWithRole
-	// if err := r.db.Joins("left join view_roles on views.id = view_id").Scan(&views).Error; err != nil {
-	// 	return nil, err
-	// }
-
-	// for _, view := range views {
-	// 	fmt.Println(view.RoleId, view.Name)
-	// }
-	return nil, nil
+	if err := r.db.Model(&domain.View{}).Where("id IN (?)", viewIds).Preload("Products").Find(&views).Error; err != nil {
+		return nil, err
+	}
+	return views, nil
 }
 
 func (r *ViewRepo) Update(ctx context.Context, view domain.View) (*domain.View, error) {
@@ -81,6 +67,12 @@ func (r *ViewRepo) Update(ctx context.Context, view domain.View) (*domain.View, 
 }
 
 func (r *ViewRepo) Delete(ctx context.Context, view domain.View) error {
+	if err := r.db.Model(&domain.ViewProduct{}).Where("view_id = ?", view.ID).Delete(&domain.ViewProduct{}).Error; err != nil {
+		return err
+	}
+	if err := r.db.Model(&domain.ViewRole{}).Where("view_id = ?", view.ID).Delete(&domain.ViewRole{}).Error; err != nil {
+		return err
+	}
 	return r.db.Delete(&view).Error
 }
 

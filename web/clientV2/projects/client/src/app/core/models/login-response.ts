@@ -5,4 +5,4 @@ export interface LoginResponse<T> {
 	data: T;
 }
 
-export type SessionInfo = Partial<Pick<User, 'role' | 'username'>>;
+export type SessionInfo = Partial<Pick<User, 'role' | 'roleid' | 'username'>>;

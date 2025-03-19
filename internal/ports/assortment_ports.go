@@ -32,8 +32,8 @@ type ProductResponse struct {
 	Name    string `json:"name"`
 	Desc    string `json:"desc"`
 	Price   int32  `json:"price"`
-	Active  bool   `json:"active"`
-	GroupId string `json:"group_id"`
+	Active  bool   `json:"active,omitzero"`
+	GroupId string `json:"group_id,omitzero"`
 }
 
 type IProductGroupRepository interface {

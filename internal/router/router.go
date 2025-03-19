@@ -36,15 +36,6 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 
 	// app.Use(csrf.New())
 
-	app.Use(func(c *fiber.Ctx) error {
-		sess, err := middleware.Store.Get(c)
-		if err != nil {
-			return err
-		}
-		c.Locals("session", sess)
-		return c.Next()
-	})
-
 	app.Use(healthcheck.New(healthcheck.Config{
 		LivenessProbe: func(c *fiber.Ctx) bool {
 			return true
@@ -55,6 +46,15 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 		},
 		ReadinessEndpoint: "/ready",
 	}))
+
+	app.Use(func(c *fiber.Ctx) error {
+		sess, err := middleware.Store.Get(c)
+		if err != nil {
+			return err
+		}
+		c.Locals("session", sess)
+		return c.Next()
+	})
 
 	// Auth
 	auth := app.Group("/auth", logger.New(logger.Config{

@@ -39,11 +39,7 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 			"error": "Invalid credentials",
 		})
 	}
-
-	fmt.Println("User found: ", user)
-
 	if !util.VerifyPassword(req.Password, user.Password) {
-		fmt.Println("not matching")
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid credentials",
 		})
@@ -56,17 +52,19 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	sess.Set(config.Session_cookie, user.Id)
-	sess.Set("username", user.Username)
-	sess.Set("role", user.Role)
-
-	if err := sess.Save(); err != nil {
+	// Regenerate session ID to prevent session fixation
+	if err := sess.Regenerate(); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to save session",
+			"error": "Failed to regenerate session",
 		})
 	}
 
-	c.Cookie(cookieConfig(user.Id))
+	sess.Set("userid", user.Id)
+	sess.Set("username", user.Username)
+	sess.Set("roleid", user.RoleId)
+	sess.Set("role", user.Role)
+
+	sess.Save()
 
 	return c.JSON(fiber.Map{
 		"message": "Logged in successfully",
@@ -80,7 +78,7 @@ func (h *AuthHandlers) Session(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusNoContent)
 	}
 
-	userID := sess.Get(config.Session_cookie)
+	userID := sess.Get("userid")
 	if userID == nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
@@ -88,6 +86,7 @@ func (h *AuthHandlers) Session(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"username": sess.Get("username"),
 		"role":     sess.Get("role"),
+		"roleid":   sess.Get("roleid"),
 	})
 }
 
@@ -112,7 +111,7 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	userID := sess.Get(config.Session_cookie)
+	userID := sess.Get("userid")
 	if userID == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Unauthorized",

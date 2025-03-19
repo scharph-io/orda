@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '@orda.core/services/auth.service';
+import { SessionService } from '@orda.core/services/session.service';
 
 @Component({
 	selector: 'orda-root',
@@ -20,11 +20,11 @@ import { AuthService } from '@orda.core/services/auth.service';
 })
 export class AppComponent {
 	title = 'orda';
-	authService = inject(AuthService);
+	sessionService = inject(SessionService);
 	router = inject(Router);
 
 	logout() {
-		this.authService.logout().subscribe({
+		this.sessionService.logout().subscribe({
 			next: () => {
 				this.router.navigate(['/login']);
 			},

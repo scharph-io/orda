@@ -35,6 +35,11 @@ func (r *RoleRepo) Update(ctx context.Context, id string, role *domain.Role) (*d
 }
 
 func (r *RoleRepo) Delete(ctx context.Context, id string) (bool, error) {
+
+	if err := r.db.WithContext(ctx).Model(&domain.ViewRole{}).Delete(&domain.ViewRole{}, "role_id = ?", id).Error; err != nil {
+		return false, err
+	}
+
 	if err := r.db.WithContext(ctx).Unscoped().Delete(&domain.Role{}, "id = ?", id).Error; err != nil {
 		return false, err
 	}

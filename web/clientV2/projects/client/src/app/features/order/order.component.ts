@@ -16,4 +16,8 @@ import { JsonPipe } from '@angular/common';
 })
 export class OrderComponent {
 	orderService = inject(OrderService);
+
+	constructor() {
+		this.orderService.views.reload();
+	}
 }

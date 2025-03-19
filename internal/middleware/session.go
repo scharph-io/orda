@@ -25,7 +25,7 @@ func initSessionConfig() {
 
 	c := config.GetConfig()
 	database := c.Database
-	server := c.Server
+	// server := c.Server
 
 	// Initialize custom config
 	storage := mysql.New(mysql.Config{
@@ -41,9 +41,9 @@ func initSessionConfig() {
 		Expiration:     time.Hour * 24,
 		Storage:        storage,
 		CookieHTTPOnly: true,
-		CookieSecure:   server.SSL, // Set to true in production
+		CookieSecure:   true, // Set to true in production
 		CookieSameSite: config.Cookie_sameSite,
-		KeyGenerator:   uuid.New().String,
+		KeyGenerator:   func() string { return uuid.New().String() },
 		KeyLookup:      "cookie:session-id",
 		// KeyLookup:    "cookie:__Host-orda-session", // Recommended to use the __Host- prefix when serving the app over TLS
 	})

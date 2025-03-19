@@ -114,7 +114,7 @@ func main() {
 		}
 
 		fmt.Println("#########")
-		x, err := vr.ReadByRoleID(ctx, "admin")
+		x, err := vr.ReadByRoleId(ctx, "admin")
 		if err != nil {
 			fmt.Println("Error reading views by role:", err)
 		}
@@ -133,6 +133,9 @@ func main() {
 		fmt.Println("-------------------------------")
 		fmt.Println("")
 	}
+
+	x, err := vr.ReadByRoleID(ctx, "01959bbd5b3778fc86305e6ab424a533")
+	fmt.Println(x)
 
 	return
 	fmt.Println("# ProductGroups:")

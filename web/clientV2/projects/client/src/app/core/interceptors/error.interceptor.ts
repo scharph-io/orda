@@ -1,25 +1,23 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { catchError, tap, throwError } from 'rxjs';
+import { SessionService } from '@orda.core/services/session.service';
 import { inject } from '@angular/core';
-// import { AuthService } from '@orda.core/services/auth.service';
-import { catchError, EMPTY, throwError } from 'rxjs';
-import { Router } from '@angular/router';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-	const router = inject(Router);
-
 	return next(req).pipe(
+		tap(() => console.log('test')),
 		catchError((error) => {
-			if (error instanceof HttpErrorResponse && error.status === 401) {
-				router.navigate(['/login']).catch((err) => console.error(err));
-				return EMPTY;
-			} else if (error instanceof HttpErrorResponse) {
-				console.log(
-					'HTTP ERROR',
-					(error as HttpErrorResponse).status,
-					(error as HttpErrorResponse).statusText,
-				);
-			}
-
+			// console.log('test');
+			inject(SessionService).logout();
+			// if (error instanceof HttpErrorResponse && error.status === 401) {
+			// } else if (error instanceof HttpErrorResponse) {
+			console.log(
+				'HTTP ERROR',
+				(error as HttpErrorResponse).status,
+				(error as HttpErrorResponse).statusText,
+			);
+			// }
+			//
 			return throwError(() => error);
 		}),
 	);

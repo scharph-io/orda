@@ -132,7 +132,9 @@ export class ViewDetailsComponent {
 		this.availableProductsDataSource().filterPredicate = (data, filter) =>
 			data.name.toLowerCase().includes(filter) ||
 			data.desc.toLowerCase().includes(filter) ||
-			this.getGroupName(data.group_id).toLowerCase().includes(filter);
+			this.getGroupName(data.group_id ?? '')
+				.toLowerCase()
+				.includes(filter);
 	}
 
 	/** Whether the number of selected elements matches the total number of rows. */

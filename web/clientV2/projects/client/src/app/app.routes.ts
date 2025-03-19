@@ -3,7 +3,7 @@ import { LoginComponent } from '@orda.shared/components/login/login.component';
 import { HomeComponent } from '@orda.features/home/home.component';
 import { authGuard } from '@orda.core/guards/auth.guard';
 import { OrderComponent } from '@orda.features/order/order.component';
-import { roleGuard } from '@orda.core/guards/role.guard';
+import { manageGuard } from '@orda.core/guards/manage.guard';
 
 export const routes: Routes = [
 	{
@@ -12,12 +12,12 @@ export const routes: Routes = [
 	},
 	{
 		path: 'home',
-		canActivate: [authGuard],
+		canActivate: [authGuard, manageGuard],
 		loadComponent: () => HomeComponent,
 	},
 	{
 		path: 'manage',
-		canActivate: [authGuard, roleGuard],
+		canActivate: [authGuard, manageGuard],
 		loadChildren: () => import('@orda.features/manage/manage.routes'),
 	},
 	{
