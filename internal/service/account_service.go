@@ -230,8 +230,6 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId st
 		return nil, err
 	}
 
-	fmt.Println("AccountID", account.ID)
-
 	account.LastBalance = account.MainBalance + account.CreditBalance
 	if req.DepositType == domain.DepositTypePaid {
 		account.MainBalance += req.Amount
@@ -250,13 +248,14 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId st
 		return nil, err
 	}
 
+	fmt.Println("Updated Account:", updatedAcc.ToString())
+
 	// Log deposit action
 	if err := s.accountHistoryService.Log(ctx, userid, ports.LogRequest{
 		Amount:        req.Amount,
 		AccountId:     &updatedAcc.ID,
 		DepositType:   req.DepositType,
 		HistoryAction: req.HistoryAction,
-		TransactionId: &req.TransactionId,
 	}); err != nil {
 		return nil, err
 	}

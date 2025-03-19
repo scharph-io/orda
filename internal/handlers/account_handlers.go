@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/ports"
 )
@@ -121,29 +119,25 @@ func (h *AccountHandlers) GetGroupAccounts(c *fiber.Ctx) error {
 
 func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
 	id := c.Params("id")
+
 	var req ports.DepositRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit data"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request",
+		})
 	}
 
-	fmt.Println("Amount:", req.Amount)
-	fmt.Println("DepositType:", req.DepositType)
-	fmt.Println("History Action:", req.HistoryAction)
-	fmt.Println("Transaction ID:", req.TransactionId)
-	fmt.Println("Account ID:", id)
+	if req.Amount <= 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit amount"})
+	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": req})
-	// // if req.Amount <= 0 {
-	// // 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit amount"})
-	// // }
+	userID := c.Locals("userid").(string)
 
-	// // userID := c.Locals("userid").(string)
-
-	// // res, err := h.service.DepositAmount(c.Context(), userID, id, *req)
-	// // if err != nil {
-	// // 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to deposit to account"})
-	// // }
-	// return c.Status(fiber.StatusOK).JSON(res)
+	res, err := h.service.DepositAmount(c.Context(), userID, id, req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to deposit to account"})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
 }
 
 func (h *AccountHandlers) DepositGroup(c *fiber.Ctx) error {
