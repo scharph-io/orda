@@ -38,11 +38,23 @@ func (h *AccountHandlers) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
 	}
-	res, err := h.service.Create(c.Context(), req)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create account"})
+	// res, err := h.service.Create(c.Context(), req)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create account"})
+	// }
+	return c.Status(fiber.StatusCreated).JSON(req)
+}
+
+func (h *AccountHandlers) CreateMany(c *fiber.Ctx) error {
+	req := []ports.AccountRequest{}
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
 	}
-	return c.Status(fiber.StatusCreated).JSON(res)
+	// res, err := h.service.Create(c.Context(), req)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create account"})
+	// }
+	return c.Status(fiber.StatusCreated).JSON(req)
 }
 
 func (h *AccountHandlers) GetAll(c *fiber.Ctx) error {
@@ -165,7 +177,7 @@ func (h *AccountHandlers) DeleteGroup(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 
-func (h *AccountHandlers) DeleteAccount(c *fiber.Ctx) error {
+func (h *AccountHandlers) Delete(c *fiber.Ctx) error {
 	id := c.Params("id")
 	res, err := h.service.DeleteAccount(c.Context(), id)
 	if err != nil {

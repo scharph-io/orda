@@ -1,6 +1,10 @@
 package ports
 
-import "github.com/scharph/orda/internal/domain"
+import (
+	"context"
+
+	"github.com/scharph/orda/internal/domain"
+)
 
 type HistoryType string
 
@@ -12,30 +16,29 @@ const (
 type AccountHistoryResponse struct {
 	Id            string               `json:"id,omitempty"`
 	Amount        int32                `json:"amount"`
-	Account       AccountResponse      `json:"account,omitempty"`
+	Account       string               `json:"account,omitempty"`
 	AccountGroup  string               `json:"account_group,omitempty"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
 	HistoryAction domain.HistoryAction `json:"history_type"`
 }
 
-type AccountHistoryRequest struct {
-	Amount         int32                `json:"amount"`
-	AccountId      string               `json:"account_id,omitempty"`
-	AccountGroupId string               `json:"account_group_id,omitempty"`
+type LogRequest struct {
 	DepositType    domain.DepositType   `json:"deposit_type"`
 	HistoryAction  domain.HistoryAction `json:"history_type"`
-	UserId         string               `json:"user_id,omitempty"`
-	TransactionId  string               `json:"transaction_id,omitempty"`
+	TransactionId  *string              `json:"transaction_id,omitempty"`
+	AccountId      *string              `json:"account_id,omitempty"`
+	AccountGroupId *string              `json:"account_group_id,omitempty"`
+	Amount         int32                `json:"amount"`
 }
 
 type IAccountHistoryRepository interface {
-	Create(depositHistory domain.AccountHistory) error
-	ReadByAccountId(account_id string) ([]domain.AccountHistory, error)
-	ReadByAccountGroupId(account_group_id string) ([]domain.AccountHistory, error)
+	Create(ctx context.Context, logs ...domain.AccountHistory) ([]domain.AccountHistory, error)
+	ReadByAccountId(ctx context.Context, saccount_id string) ([]*domain.AccountHistory, error)
+	ReadByAccountGroupId(ctx context.Context, account_group_id string) ([]*domain.AccountHistory, error)
 }
 
 type IAccountHistoryService interface {
-	LogDeposit(depositReq AccountHistoryRequest) error
-	LogGroupDeposit(depositGroupReq AccountHistoryRequest) error
-	Get(t HistoryType, id string) ([]AccountHistoryResponse, error)
+	Log(ctx context.Context, user_id string, depositReq ...LogRequest) error
+	GetByAccountId(ctx context.Context, t HistoryType, id string) ([]*AccountHistoryResponse, error)
+	GetByAccountGroupId(ctx context.Context, t HistoryType, id string) ([]*AccountHistoryResponse, error)
 }

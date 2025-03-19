@@ -127,8 +127,7 @@ export class LoginComponent {
 			this.sessionService
 				.login(this.loginForm.value.username!, this.loginForm.value.password!)
 				.subscribe({
-					next: (res) => {
-						console.log(res);
+					next: () => {
 						this.isLoading = false;
 						this.router.navigate(['/home']).catch(() => undefined);
 					},

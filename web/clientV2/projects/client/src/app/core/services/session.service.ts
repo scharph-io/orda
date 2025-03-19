@@ -3,6 +3,7 @@ import { HOST } from '@orda.core/config/config';
 import { HttpClient } from '@angular/common/http';
 import { LoginResponse, SessionInfo } from '@orda.core/models/login-response';
 import { tap } from 'rxjs';
+import { OrdaLogger } from '@orda.shared/services/logger.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -10,17 +11,18 @@ import { tap } from 'rxjs';
 export class SessionService {
 	private readonly host = inject<string>(HOST);
 	private readonly httpClient = inject(HttpClient);
+	private readonly logger = inject(OrdaLogger);
 
 	user = signal<SessionInfo>({});
 
 	isAuthenticated = computed(() => !!this.user().username);
 
 	constructor() {
-		// this.checkSession();
+		this.logger.debug('Init SessionService');
+		this.checkSession();
 	}
 
 	checkSession() {
-		console.log('Checking session');
 		const storedUser = localStorage.getItem('user');
 		if (storedUser) {
 			this.user.set(JSON.parse(storedUser));
@@ -29,13 +31,18 @@ export class SessionService {
 	}
 
 	public logout() {
-		console.log('Removing user from local storage');
+		this.logger.debug('logout');
 		localStorage.removeItem('user');
 		this.user.set({});
-		return this.httpClient.post<void>(`${this.host}/auth/logout`, {});
+		return this.httpClient.post<void>(`${this.host}/auth/logout`, {}).pipe(
+			tap(() => {
+				this.logger.debug('logout success');
+			}),
+		);
 	}
 
 	public login(username: string, password: string) {
+		this.logger.debug('login');
 		return this.httpClient
 			.post<LoginResponse<SessionInfo>>(`${this.host}/auth/login`, {
 				username,
@@ -43,6 +50,7 @@ export class SessionService {
 			})
 			.pipe(
 				tap((res) => {
+					this.logger.debug('login success');
 					this.user.set(res.data);
 					localStorage.setItem('user', JSON.stringify(res.data));
 				}),

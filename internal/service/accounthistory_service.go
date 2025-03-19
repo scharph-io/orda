@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -18,69 +19,58 @@ func NewAccountHistoryService(repo ports.IAccountHistoryRepository) *AccountHist
 	return &AccountHistoryService{repo}
 }
 
-func (s *AccountHistoryService) LogDeposit(depositReq ports.AccountHistoryRequest) error {
-	return s.repo.Create(domain.AccountHistory{
-		Amount:        depositReq.Amount,
-		AccountID:     sql.NullString{String: depositReq.AccountId, Valid: true},
-		HistoryAction: depositReq.HistoryAction,
-		DepositType:   depositReq.DepositType,
-		// UserID:        sql.NullString{String: depositReq.UserId, Valid: true},
-		// TransactionID: sql.NullString{String: depositReq.TransactionId, Valid: true},
-	})
+func (s *AccountHistoryService) Log(ctx context.Context, user_id string, depositReq ...ports.LogRequest) error {
+	logs := make([]domain.AccountHistory, len(depositReq))
+	for _, req := range depositReq {
+		logs = append(logs, domain.AccountHistory{
+			Amount:         req.Amount,
+			AccountGroupID: sql.NullString{String: *req.AccountGroupId, Valid: req.AccountGroupId != nil},
+			AccountID:      sql.NullString{String: *req.AccountId, Valid: req.AccountId != nil},
+			HistoryAction:  req.HistoryAction,
+			DepositType:    req.DepositType,
+			UserID:         user_id,
+			TransactionID:  sql.NullString{String: *req.TransactionId, Valid: req.TransactionId != nil},
+		})
+	}
+	if _, err := s.repo.Create(ctx, logs...); err != nil {
+		return err
+	}
+	return nil
 }
 
-func (s *AccountHistoryService) LogGroupDeposit(depositGroupReq ports.AccountHistoryRequest) error {
-	return s.repo.Create(domain.AccountHistory{
-		Amount:         depositGroupReq.Amount,
-		AccountGroupID: sql.NullString{String: depositGroupReq.AccountGroupId, Valid: true},
-		HistoryAction:  depositGroupReq.HistoryAction,
-		DepositType:    depositGroupReq.DepositType,
-		// UserID:         sql.NullString{String: depositGroupReq.UserId, Valid: true},
-	})
-}
-
-func (s *AccountHistoryService) Get(t ports.HistoryType, id string) ([]ports.AccountHistoryResponse, error) {
+func (s *AccountHistoryService) GetByAccountId(ctx context.Context, t ports.HistoryType, id string) ([]*ports.AccountHistoryResponse, error) {
+	res := make([]*ports.AccountHistoryResponse, 0)
 	if t == ports.HistoryTypeAccount {
-		histories, err := s.repo.ReadByAccountId(id)
+		logs, err := s.repo.ReadByAccountId(ctx, id)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, h := range histories {
-			fmt.Printf("%+v\n", h.Account)
-		}
-
-		var res []ports.AccountHistoryResponse
-		for _, h := range histories {
-			res = append(res, ports.AccountHistoryResponse{
-				Id:     h.ID,
-				Amount: h.Amount,
-				Account: ports.AccountResponse{
-					Firstname: h.Account.Firstname,
-					Lastname:  h.Account.Lastname,
-				},
+		for _, h := range logs {
+			res = append(res, &ports.AccountHistoryResponse{
+				Id:            h.ID,
+				Amount:        h.Amount,
+				Account:       fmt.Sprintf("%s %s", h.Account.Firstname, h.Account.Lastname),
 				DepositType:   h.DepositType,
 				HistoryAction: h.HistoryAction,
 			})
 		}
-
-		return res, nil
 	} else if t == ports.HistoryTypeGroup {
-		histories, err := s.repo.ReadByAccountGroupId(id)
+		logs, err := s.repo.ReadByAccountGroupId(ctx, id)
 		if err != nil {
 			return nil, err
 		}
-
-		var res []ports.AccountHistoryResponse
-		for _, h := range histories {
-			res = append(res, ports.AccountHistoryResponse{
+		for _, h := range logs {
+			res = append(res, &ports.AccountHistoryResponse{
 				Id:           h.ID,
 				Amount:       h.Amount,
-				AccountGroup: h.AccountGroupID.String,
+				AccountGroup: h.AccountGroup.Name,
 			})
 		}
-
-		return res, nil
 	}
+	return res, nil
+}
+
+func (s *AccountHistoryService) GetByAccountGroupId(ctx context.Context, t ports.HistoryType, id string) ([]*ports.AccountHistoryResponse, error) {
 	return nil, nil
 }

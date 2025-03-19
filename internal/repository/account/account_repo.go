@@ -18,11 +18,11 @@ func NewAccountRepo(db *gorm.DB) *AccountRepo {
 
 var _ ports.IAccountRepository = (*AccountRepo)(nil)
 
-func (r *AccountRepo) Create(ctx context.Context, acc domain.Account) (*domain.Account, error) {
+func (r *AccountRepo) Create(ctx context.Context, acc ...domain.Account) ([]domain.Account, error) {
 	if err := r.db.Create(&acc).Error; err != nil {
 		return nil, err
 	}
-	return &acc, nil
+	return acc, nil
 }
 
 func (r *AccountRepo) Read(ctx context.Context) ([]domain.Account, error) {

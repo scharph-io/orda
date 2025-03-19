@@ -19,19 +19,20 @@ import { errorInterceptor } from '@orda.core/interceptors/error.interceptor';
 import { credentialInterceptor } from '@orda.core/interceptors/credential.interceptor';
 import localeDe from '@angular/common/locales/de';
 import { SessionService } from '@orda.core/services/session.service';
-import { defaultIfEmpty, first, firstValueFrom } from 'rxjs';
 
 registerLocaleData(localeDe, 'de');
 
 export const appConfig: ApplicationConfig = {
 	providers: [
-		provideAppInitializer(() =>
-			firstValueFrom(
-				inject(SessionService)
-					.checkSession()
-					.pipe(defaultIfEmpty({ authenticated: false }), first()),
-			),
-		),
+		// provideAppInitializer(() => {
+		// 	const sessionService = inject(SessionService);
+		// 	return firstValueFrom(
+		// 		sessionService.checkSession().pipe(defaultIfEmpty({ authenticated: false })),
+		// 	);
+		// }),
+		provideAppInitializer(() => {
+			inject(SessionService);
+		}),
 		provideZoneChangeDetection({ eventCoalescing: true }),
 		provideRouter(routes, withHashLocation()),
 		provideAnimationsAsync(),
