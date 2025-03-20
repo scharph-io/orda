@@ -1,22 +1,26 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
 	"github.com/scharph/orda/internal/middleware"
+	"github.com/scharph/orda/web/client"
 )
 
 func (s *Server) SetupRoutes(app *fiber.App) {
 
-	// app.Use("/", filesystem.New(filesystem.Config{
-	// 	Root:       http.FS(client.Assets),
-	// 	PathPrefix: "dist/client/browser",
-	// 	Browse:     true,
-	// 	Index:      "index.html",
-	// }))
+	app.Use("/", filesystem.New(filesystem.Config{
+		Root:       http.FS(client.Assets),
+		PathPrefix: "dist/client/browser",
+		Browse:     true,
+		Index:      "index.html",
+	}))
 
 	// app.Use(requestid.New(requestid.Config{
 	// 	Header: "X-Custom-Header",
