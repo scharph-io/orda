@@ -134,7 +134,7 @@ func main() {
 		fmt.Println("")
 	}
 
-	x, err := vr.ReadByRoleID(ctx, "01959bbd5b3778fc86305e6ab424a533")
+	x, err := vr.ReadByRoleId(ctx, "01959bbd5b3778fc86305e6ab424a533")
 	fmt.Println(x)
 
 	return
