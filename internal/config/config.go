@@ -15,10 +15,11 @@ const (
 
 type Config struct {
 	Server struct {
-		Port int
-		Host string
-		TZ   string
-		SSL  bool
+		Port         int
+		Host         string
+		TZ           string
+		SSL          bool
+		EnforcerFile string
 	}
 	Database struct {
 		Host     string
@@ -51,6 +52,7 @@ func loadConfig() *Config {
 	v.SetDefault("server.host", "localhost")
 	v.SetDefault("server.tz", "UTC")
 	v.SetDefault("server.ssl", false)
+	v.SetDefault("server.enforcerFile", "rbac_model.conf")
 
 	v.SetDefault("database.host", "localhost")
 	v.SetDefault("database.port", 3306)
@@ -72,6 +74,9 @@ func loadConfig() *Config {
 
 	v.BindEnv("server.port")
 	v.BindEnv("server.host")
+	v.BindEnv("server.tz")
+	v.BindEnv("server.ssl")
+	v.BindEnv("server.enforcerFile")
 
 	v.BindEnv("database.user")
 	v.BindEnv("database.host")
