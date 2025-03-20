@@ -1,0 +1,53 @@
+/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+  @include mat.theme(
+      (
+        color: mat.$blue-palette,
+        typography: Roboto,
+        density: 0,
+      )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+:root {
+  @include mat.progress-spinner-overrides(
+      (
+        active-indicator-color: blue,
+      )
+  );
+  @include mat.table-overrides((
+    row-item-container-height: '2rem'
+  ));
+}
+
+.content {
+  margin: 0.5rem 0.5rem;
+}
+
+.red-btn {
+  @include mat.icon-button-overrides(
+      (
+        icon-color: #da2525,
+      )
+  );
+  @include mat.button-overrides(
+      (
+        filled-container-color: orange,
+        filled-label-text-color: red,
+      )
+  );
+}
