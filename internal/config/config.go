@@ -14,11 +14,10 @@ const (
 )
 
 type Config struct {
+	TZ     string
 	Server struct {
-		Port     int
-		Host     string
-		Timezone string
-		SSL      bool
+		Port int
+		Host string
 	}
 	Database struct {
 		Host     string
@@ -67,7 +66,7 @@ func loadConfig() *Config {
 	v.AddConfigPath(".")      // optionally look for config in working directory
 
 	// Environment variables setup
-	v.SetEnvPrefix("ORDA") // prefix for environment variables
+	// v.SetEnvPrefix("ORDA") // prefix for environment variables
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv() // read in environment variables that match
 
