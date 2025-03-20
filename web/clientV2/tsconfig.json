@@ -28,10 +28,12 @@
 		"sourceMap": true,
 		"inlineSources": true,
 		"typeRoots": ["node_modules/@types"],
-		"baseUrl": ".", // root of your "paths" below. Required if "paths" is defined
+		"baseUrl": ".",
+		// root of your "paths" below. Required if "paths" is defined
 		"paths": {
-			"@shared/*": ["projects/client/src/app/shared/*"],
-			"@manage/*": ["projects/client/src/app/manage/*"]
+			"@orda.core/*": ["projects/client/src/app/core/*"],
+			"@orda.shared/*": ["projects/client/src/app/shared/*"],
+			"@orda.features/*": ["projects/client/src/app/features/*"]
 		}
 	},
 	"angularCompilerOptions": {
@@ -41,7 +43,6 @@
 		"strictTemplates": true,
 		"fullTemplateTypeCheck": true,
 		"strictOutputEventTypes": true,
-		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true
 	},
 	"include": ["projects/**/*.ts", "projects/**/*.html", "projects/**/*.scss"],

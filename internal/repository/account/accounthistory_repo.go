@@ -1,6 +1,7 @@
 package account
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
@@ -18,35 +19,45 @@ func NewAccountHistoryRepo(db *gorm.DB) *AccountHistoryRepository {
 	return &AccountHistoryRepository{db}
 }
 
-func (r *AccountHistoryRepository) Create(entry domain.AccountHistory) error {
-	fmt.Printf("%s\n", entry.ToString())
-	if err := r.db.Model(domain.AccountHistory{}).Create(&entry).Error; err != nil {
-		return err
+func (r *AccountHistoryRepository) Create(ctx context.Context, logs ...domain.AccountHistory) ([]domain.AccountHistory, error) {
+
+	fmt.Println("Creating account history logs")
+	for _, log := range logs {
+		fmt.Println("Creating log:")
+		fmt.Println("Amount:", log.Amount)
+		fmt.Println("AccountID:", log.AccountID)
+		fmt.Println("AccountGroupID:", log.AccountGroupID)
+		fmt.Println("Transaction:", log.TransactionID)
 	}
-	return nil
+
+	if err := r.db.Create(&logs).Error; err != nil {
+		return nil, err
+	}
+	return logs, nil
 }
 
-func (r *AccountHistoryRepository) ReadByAccountId(account_id string) ([]domain.AccountHistory, error) {
-	var histories []domain.AccountHistory
+func (r *AccountHistoryRepository) ReadByAccountId(ctx context.Context, account_id string) ([]*domain.AccountHistory, error) {
+	var logs []*domain.AccountHistory
 	if err := r.db.
 		Model(domain.AccountHistory{}).
 		Preload("Account").
-		Find(&histories, "account_id = ?", account_id).
+		Find(&logs, "account_id = ?", account_id).
 		Error; err != nil {
 		return nil, err
 	}
-	return histories, nil
+	return logs, nil
 }
 
-func (r *AccountHistoryRepository) ReadByAccountGroupId(account_group_id string) ([]domain.AccountHistory, error) {
-	var histories []domain.AccountHistory
+func (r *AccountHistoryRepository) ReadByAccountGroupId(ctx context.Context, account_group_id string) ([]*domain.AccountHistory, error) {
+	var logs []*domain.AccountHistory
 	if err := r.db.
+		WithContext(ctx).
 		Model(domain.AccountHistory{}).
-		Find(&histories, "account_group_id = ?", account_group_id).
+		Find(&logs, "account_group_id = ?", account_group_id).
 		Preload("AccountGroup").
 		Error; err != nil {
 		return nil, err
 	}
 
-	return histories, nil
+	return logs, nil
 }

@@ -2,7 +2,6 @@ package account
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -19,11 +18,11 @@ func NewAccountRepo(db *gorm.DB) *AccountRepo {
 
 var _ ports.IAccountRepository = (*AccountRepo)(nil)
 
-func (r *AccountRepo) Create(ctx context.Context, acc domain.Account) (*domain.Account, error) {
+func (r *AccountRepo) Create(ctx context.Context, acc ...domain.Account) ([]domain.Account, error) {
 	if err := r.db.Create(&acc).Error; err != nil {
 		return nil, err
 	}
-	return &acc, nil
+	return acc, nil
 }
 
 func (r *AccountRepo) Read(ctx context.Context) ([]domain.Account, error) {
@@ -43,16 +42,16 @@ func (r *AccountRepo) ReadById(ctx context.Context, id string) (*domain.Account,
 }
 
 func (r *AccountRepo) Update(ctx context.Context, account domain.Account) (*domain.Account, error) {
-	fmt.Printf("[Repo] Deposit to %s \n", account.ToString())
-	if err := r.db.Model(&account).Updates(account).Error; err != nil {
-		return nil, err
+	res := r.db.WithContext(ctx).Model(&account).Updates(&account)
+	if res.Error != nil {
+		return nil, res.Error
 	}
 	return &account, nil
 }
 
 func (r *AccountRepo) UpdateMany(ctx context.Context, accounts []domain.Account) ([]domain.Account, error) {
 	for _, acc := range accounts {
-		if err := r.db.Model(&acc).
+		if err := r.db.WithContext(ctx).Model(&acc).
 			Updates(domain.Account{
 				LastDeposit:     acc.LastDeposit,
 				MainBalance:     acc.MainBalance,
@@ -68,7 +67,7 @@ func (r *AccountRepo) UpdateMany(ctx context.Context, accounts []domain.Account)
 }
 
 func (r *AccountRepo) Delete(ctx context.Context, id string) (bool, error) {
-	if err := r.db.Delete(&domain.Account{}, "id = ?", id).Error; err != nil {
+	if err := r.db.WithContext(ctx).Delete(&domain.Account{}, "id = ?", id).Error; err != nil {
 		return false, err
 	}
 	return true, nil

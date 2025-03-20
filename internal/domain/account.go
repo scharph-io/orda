@@ -19,7 +19,7 @@ type AccountGroup struct {
 }
 
 func (ag *AccountGroup) ToString() string {
-	return fmt.Sprintf("[AccountGroup]: %s, ID: %s", ag.Name, ag.ID)
+	return fmt.Sprintf("[AccountGroup]: %s, ID: %s\n", ag.Name, ag.ID)
 }
 
 type Accounts []Account

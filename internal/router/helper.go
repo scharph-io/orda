@@ -22,6 +22,7 @@ type Server struct {
 	assortmentHandlers  ports.IAssortmentHandlers
 	viewHandlers        ports.IViewHandlers
 	transactionHandlers ports.ITransactionHandlers
+	orderHandlers       ports.IOrderHandlers
 }
 
 func NewServer() *Server {
@@ -39,6 +40,7 @@ func NewServer() *Server {
 	productRepo := assortment.NewProductRepo(db)
 
 	viewRepo := view.NewViewRepository(db)
+	// viewRoleRepo := view.NewViewRoleRepo(db)
 	viewProductRepo := view.NewViewProductRepo(db)
 
 	transactionRepo := transaction.NewTransactionRepository(db)
@@ -51,6 +53,7 @@ func NewServer() *Server {
 	assortmentService := service.NewAssortmentService(productRepo, productGroupRepo)
 	viewService := service.NewViewService(viewRepo, viewProductRepo)
 	transactionService := service.NewTransactionService(transactionRepo, transactionItemRepo, productRepo)
+	orderService := service.NewOrderService(viewRepo, transactionRepo, accountRepo)
 
 	// handlers
 	userHandlers := handlers.NewUserHandlers(userService)
@@ -60,6 +63,7 @@ func NewServer() *Server {
 	assortmentHandlers := handlers.NewAssortmentHandler(assortmentService)
 	viewHandlers := handlers.NewViewHandlers(viewService)
 	transactionHandlers := handlers.NewTransactionHandler(transactionService)
+	orderHandlers := handlers.NewOrderHandlers(orderService, *middleware.Store)
 
 	return &Server{
 		userHandlers,
@@ -69,6 +73,7 @@ func NewServer() *Server {
 		assortmentHandlers,
 		viewHandlers,
 		transactionHandlers,
+		orderHandlers,
 	}
 }
 

@@ -19,11 +19,11 @@ func NewAssortmentService(products ports.IProductRepository, groups ports.IProdu
 	return &AssortmentService{products, groups}
 }
 
+// Product Groups
 func (s *AssortmentService) CreateProductGroup(ctx context.Context, productGroup ports.ProductGroupRequest) (*ports.ProductGroupResponse, error) {
 	group := domain.ProductGroup{
-		Name:    productGroup.Name,
-		Desc:    productGroup.Desc,
-		Deposit: productGroup.Deposit,
+		Name: productGroup.Name,
+		Desc: productGroup.Desc,
 	}
 	created, err := s.groups.Create(ctx, group)
 	if err != nil {
@@ -31,10 +31,9 @@ func (s *AssortmentService) CreateProductGroup(ctx context.Context, productGroup
 	}
 
 	return &ports.ProductGroupResponse{
-		ID:      created.ID,
-		Name:    created.Name,
-		Desc:    created.Desc,
-		Deposit: created.Deposit,
+		ID:   created.ID,
+		Name: created.Name,
+		Desc: created.Desc,
 	}, nil
 }
 
@@ -47,41 +46,32 @@ func (s *AssortmentService) ReadProductGroups(ctx context.Context) ([]ports.Prod
 	var response []ports.ProductGroupResponse
 	for _, group := range groups {
 		response = append(response, ports.ProductGroupResponse{
-			ID:      group.ID,
-			Name:    group.Name,
-			Desc:    group.Desc,
-			Deposit: group.Deposit,
+			ID:   group.ID,
+			Name: group.Name,
+			Desc: group.Desc,
 		})
 	}
 	return response, nil
 }
 
-func (s *AssortmentService) ReadProductsGroupById(ctx context.Context, id string) ([]ports.ProductResponse, error) {
-
-	products, err := s.products.ReadByGroupID(ctx, id)
+func (s *AssortmentService) ReadProductGroup(ctx context.Context, id string) (*ports.ProductGroupResponse, error) {
+	group, err := s.groups.ReadByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	var productResponse []ports.ProductResponse
-	for _, product := range products {
-		productResponse = append(productResponse, ports.ProductResponse{
-			ID:     product.ID,
-			Name:   product.Name,
-			Desc:   product.Desc,
-			Price:  product.Price,
-			Active: product.Active,
-		})
-	}
-	return productResponse, nil
+	return &ports.ProductGroupResponse{
+		ID:   group.ID,
+		Name: group.Name,
+		Desc: group.Desc,
+	}, nil
 }
 
 func (s *AssortmentService) UpdateProductGroup(ctx context.Context, id string, productGroup ports.ProductGroupRequest) (*ports.ProductGroupResponse, error) {
 	group := domain.ProductGroup{
-		Base:    domain.Base{ID: id},
-		Name:    productGroup.Name,
-		Desc:    productGroup.Desc,
-		Deposit: productGroup.Deposit,
+		Base: domain.Base{ID: id},
+		Name: productGroup.Name,
+		Desc: productGroup.Desc,
 	}
 
 	updated, err := s.groups.Update(ctx, group)
@@ -90,10 +80,9 @@ func (s *AssortmentService) UpdateProductGroup(ctx context.Context, id string, p
 	}
 
 	return &ports.ProductGroupResponse{
-		ID:      updated.ID,
-		Name:    updated.Name,
-		Desc:    updated.Desc,
-		Deposit: updated.Deposit,
+		ID:   updated.ID,
+		Name: updated.Name,
+		Desc: updated.Desc,
 	}, nil
 }
 
@@ -104,36 +93,84 @@ func (s *AssortmentService) DeleteProductGroup(ctx context.Context, id string) e
 	return s.groups.Delete(ctx, group)
 }
 
-func (s *AssortmentService) AddProduct(ctx context.Context, groupID string, product ports.ProductRequest) error {
-	p := domain.Product{
-		Name:           product.Name,
-		Desc:           product.Desc,
-		Price:          product.Price,
-		Active:         product.Active,
-		ProductGroupID: groupID,
+// Products
+func (s *AssortmentService) ReadProducts(ctx context.Context) ([]*ports.ProductResponse, error) {
+	products, err := s.products.Read(ctx)
+	if err != nil {
+		return nil, err
 	}
-	_, err := s.products.Create(ctx, p)
-	return err
+
+	productResponse := make([]*ports.ProductResponse, 0, len(products))
+	for _, product := range products {
+		productResponse = append(productResponse, &ports.ProductResponse{
+			ID:      product.ID,
+			Name:    product.Name,
+			Desc:    product.Desc,
+			Price:   product.Price,
+			Active:  product.Active,
+			GroupId: product.ProductGroupID,
+		})
+	}
+	return productResponse, nil
 }
 
-func (s *AssortmentService) AddProducts(ctx context.Context, groupID string, products []ports.ProductRequest) error {
-	var p []domain.Product
+func (s *AssortmentService) ReadProductById(ctx context.Context, id string) (*ports.ProductResponse, error) {
+	product, err := s.products.ReadById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ports.ProductResponse{
+		ID:     product.ID,
+		Name:   product.Name,
+		Desc:   product.Desc,
+		Price:  product.Price,
+		Active: product.Active,
+	}, nil
+}
+
+func (s *AssortmentService) ReadProductsGroupById(ctx context.Context, id string) ([]*ports.ProductResponse, error) {
+	products, err := s.products.ReadByGroupId(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	productResponse := make([]*ports.ProductResponse, 0, len(products))
 	for _, product := range products {
-		p = append(p, domain.Product{
+		productResponse = append(productResponse, &ports.ProductResponse{
+			ID:      product.ID,
+			Name:    product.Name,
+			Desc:    product.Desc,
+			Price:   product.Price,
+			Active:  product.Active,
+			GroupId: product.ProductGroupID,
+		})
+	}
+	return productResponse, nil
+}
+
+func (s *AssortmentService) AddProductsToGroup(ctx context.Context, id string, products ...ports.ProductRequest) error {
+	var p []*domain.Product
+	for _, product := range products {
+		p = append(p, &domain.Product{
 			Name:           product.Name,
 			Desc:           product.Desc,
 			Price:          product.Price,
 			Active:         product.Active,
-			ProductGroupID: groupID,
+			ProductGroupID: id,
 		})
 	}
-	return s.products.CreateMany(ctx, p)
+
+	group, err := s.groups.ReadByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return s.groups.AppendProducts(ctx, group, p...)
 }
 
-func (s *AssortmentService) RemoveProduct(ctx context.Context, groupID, productID string) error {
+func (s *AssortmentService) RemoveProduct(ctx context.Context, id string) error {
 	p := domain.Product{
-		Base:           domain.Base{ID: productID},
-		ProductGroupID: groupID,
+		Base: domain.Base{ID: id},
 	}
 	return s.products.Delete(ctx, p)
 }
@@ -147,10 +184,14 @@ func (s *AssortmentService) UpdateProduct(ctx context.Context, product ports.Pro
 		Active: product.Active,
 	}
 
+	fmt.Println("Updating product:", p)
+
 	updated, err := s.products.Update(ctx, p)
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println("Updated product:", updated)
 
 	return &ports.ProductResponse{
 		ID:     updated.ID,
@@ -164,8 +205,32 @@ func (s *AssortmentService) UpdateProduct(ctx context.Context, product ports.Pro
 func (s *AssortmentService) ToggleProduct(ctx context.Context, productID string) error {
 	p, err := s.products.ReadById(ctx, productID)
 
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf("set from %v to %v\n", p.Active, !p.Active)
 	p.Active = !p.Active
 	_, err = s.products.Update(ctx, *p)
 	return err
+}
+
+// Views
+func (s *AssortmentService) SetProductViews(ctx context.Context, id string, views ...*ports.ViewProductRequest) error {
+
+	// for _, view := range views {
+	// 	err := s.products.ReplaceProductViews(ctx, id, view)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
+	return nil
+}
+
+func (s *AssortmentService) AddProductViews(ctx context.Context, id string, views ...*ports.ViewProductRequest) error {
+	return nil
+}
+
+func (s *AssortmentService) RemoveProductViews(ctx context.Context, id string, viewIds ...string) error {
+	return s.products.RemoveProductViews(ctx, id, viewIds...)
 }

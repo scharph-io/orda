@@ -8,11 +8,17 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	Cookie_sameSite = "Strict"
+	Session_cookie  = "session-user"
+)
+
 type Config struct {
 	Server struct {
 		Port     int
 		Host     string
 		Timezone string
+		SSL      bool
 	}
 	Database struct {
 		Host     string
@@ -44,6 +50,7 @@ func loadConfig() *Config {
 	v.SetDefault("server.port", 3000)
 	v.SetDefault("server.host", "localhost")
 	v.SetDefault("server.timezone", "UTC")
+	v.SetDefault("server.ssl", false)
 
 	v.SetDefault("database.host", "localhost")
 	v.SetDefault("database.port", 3306)

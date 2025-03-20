@@ -13,8 +13,9 @@ type RoleRequest struct {
 }
 
 type RoleResponse struct {
-	Id   string `json:"id,omitempty"`
-	Name string `json:"name"`
+	Id    string         `json:"id,omitempty"`
+	Name  string         `json:"name"`
+	Users []UserResponse `json:"users,omitempty"`
 }
 
 type IRoleRepository interface {
@@ -40,4 +41,5 @@ type IRoleHandlers interface {
 	GetAll(c *fiber.Ctx) error
 	GetOne(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
+	Update(c *fiber.Ctx) error
 }

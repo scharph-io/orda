@@ -23,7 +23,7 @@ type AccountHistory struct {
 	DepositType    DepositType
 	TransactionID  sql.NullString `gorm:"size:36"`
 	Transaction    Transaction
-	UserID         sql.NullString `gorm:"size:36"`
+	UserID         string `gorm:"size:36"`
 	User           User
 }
 

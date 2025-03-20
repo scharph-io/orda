@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/ports"
 )
@@ -38,7 +36,23 @@ func (h *AccountHandlers) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
 	}
-	res, err := h.service.Create(c.Context(), req)
+
+	userID := c.Locals("userid").(string)
+	res, err := h.service.Create(c.Context(), userID, req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create account"})
+	}
+	return c.Status(fiber.StatusCreated).JSON(res)
+}
+
+func (h *AccountHandlers) CreateMany(c *fiber.Ctx) error {
+	req := []ports.AccountRequest{}
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
+	}
+
+	userID := c.Locals("userid").(string)
+	res, err := h.service.Create(c.Context(), userID, req...)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create account"})
 	}
@@ -52,6 +66,30 @@ func (h *AccountHandlers) GetAll(c *fiber.Ctx) error {
 	}
 	if res == nil {
 		return c.Status(fiber.StatusNoContent).JSON([]string{})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}
+
+func (h *AccountHandlers) GetById(c *fiber.Ctx) error {
+	res, err := h.service.GetById(c.Context(), c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get account"})
+	}
+	if res == nil {
+		return c.Status(fiber.StatusNoContent).JSON([]string{})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}
+
+func (h *AccountHandlers) Update(c *fiber.Ctx) error {
+	req := ports.AccountRequest{}
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid user data"})
+	}
+
+	res, err := h.service.Update(c.Context(), req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to update account"})
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
 }
@@ -81,12 +119,21 @@ func (h *AccountHandlers) GetGroupAccounts(c *fiber.Ctx) error {
 
 func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
 	id := c.Params("id")
-	req := ports.DepositRequest{}
+
+	var req ports.DepositRequest
 	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit data"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request",
+		})
 	}
 
-	res, err := h.service.DepositAmount(c.Context(), id, req)
+	if req.Amount <= 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit amount"})
+	}
+
+	userID := c.Locals("userid").(string)
+
+	res, err := h.service.DepositAmount(c.Context(), userID, id, req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to deposit to account"})
 	}
@@ -99,7 +146,9 @@ func (h *AccountHandlers) DepositGroup(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit data"})
 	}
-	res, err := h.service.DepositAmountGroup(c.Context(), id, req)
+
+	userID := c.Locals("userid").(string)
+	res, err := h.service.DepositAmountGroup(c.Context(), userID, id, req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to deposit to group"})
 	}
@@ -107,11 +156,9 @@ func (h *AccountHandlers) DepositGroup(c *fiber.Ctx) error {
 }
 
 func (h *AccountHandlers) GetHistory(c *fiber.Ctx) error {
-	var history []ports.AccountHistoryResponse
+	var history []*ports.AccountHistoryResponse
 	var err error
 	if account := c.Query("account"); account != "" {
-
-		fmt.Println(account)
 		history, err = h.service.GetAccountHistory(c.Context(), account)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get account history"})
@@ -134,9 +181,9 @@ func (h *AccountHandlers) DeleteGroup(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 
-func (h *AccountHandlers) DeleteAccount(c *fiber.Ctx) error {
+func (h *AccountHandlers) Delete(c *fiber.Ctx) error {
 	id := c.Params("id")
-	res, err := h.service.DeleteAccount(c.Context(), id)
+	res, err := h.service.Delete(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to delete account"})
 	}

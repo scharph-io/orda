@@ -24,7 +24,7 @@ BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 BINARY_NAME=$(PROJECT)
 MAIN=cmd/server/main.go
 
-CLIENT_PROJECT=web/client_v2
+CLIENT_PROJECT=web/clientV2
 PACKAGE_JSON=$(CLIENT_PROJECT)/package.json
  ##SSL_CERT_DIR=/etc/ssl/certs
 
@@ -40,13 +40,13 @@ install-ui:
 	npm --prefix $(CLIENT_PROJECT) install
 
 update-ui:
-	npm update --prefix $(CLIENT_PROJECT) @angular/cli @angular/core
+	npm --prefix $(CLIENT_PROJECT) run ng update @angular/cli @angular/core
 
 run: ## Run the app locally
 	go run cmd/server/main.go
 
 run-playground: ## Run the app locally
-	go run cmd/test/main.go
+	go run cmd/repo_test/main.go
 
 pre-build-ui:
 	cat $(PACKAGE_JSON) | jq --arg version "$(VERSION)" '.version |= $$version' | tee $(PACKAGE_JSON) > /dev/null

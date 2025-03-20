@@ -1,12 +1,36 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
+import { Router, RouterModule } from '@angular/router';
+import { SessionService } from '@orda.core/services/session.service';
 
 @Component({
-	selector: 'orda-app-root',
-	imports: [RouterOutlet],
+	selector: 'orda-root',
 	templateUrl: './app.component.html',
-	styleUrl: './app.component.scss',
+	imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, RouterModule],
+	styles: [
+		`
+			.spacer {
+				flex: 1 1 auto;
+			}
+		`,
+	],
 })
 export class AppComponent {
-	title = 'app';
+	title = 'orda';
+	sessionService = inject(SessionService);
+	router = inject(Router);
+
+	logout() {
+		this.sessionService.logout().subscribe({
+			next: () => {
+				this.router.navigate(['/login']);
+			},
+			error: (err) => {
+				console.error(err);
+			},
+		});
+	}
 }

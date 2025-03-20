@@ -43,6 +43,13 @@ func (s *RoleService) Update(ctx context.Context, id string, role ports.RoleRequ
 }
 
 func (s *RoleService) Delete(ctx context.Context, id string) (bool, error) {
+	res, err := s.repo.ReadById(ctx, id)
+	if err != nil {
+		return false, err
+	}
+	if res.Name == "admin" {
+		return false, errors.New("role admin cannot be deleted")
+	}
 	return s.repo.Delete(ctx, id)
 }
 
@@ -51,7 +58,13 @@ func (s *RoleService) GetById(ctx context.Context, id string) (*ports.RoleRespon
 	if err != nil {
 		return nil, err
 	}
-	return &ports.RoleResponse{Id: res.ID, Name: res.Name}, nil
+
+	var users []ports.UserResponse
+	for _, u := range res.Users {
+		users = append(users, ports.UserResponse{Id: u.ID, Username: u.Username})
+	}
+
+	return &ports.RoleResponse{Id: res.ID, Name: res.Name, Users: users}, nil
 }
 
 func (s *RoleService) GetByName(ctx context.Context, name string) (*ports.RoleResponse, error) {

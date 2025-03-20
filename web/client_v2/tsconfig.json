@@ -17,14 +17,10 @@
     "paths": {
       "@assortment-management": ["./dist/assortment-management"],
       "@ordering": ["./dist/ordering"],
-      "@shared/*": ["./dist/shared"],
+      "@orda.shared/*": ["./dist/shared"],
       "@statistics": ["./dist/statistics"],
-      "@user-management": [
-        "./dist/user-management"
-      ],
-      "manage": [
-        "./dist/manage"
-      ]
+      "@user-management": ["./dist/user-management"],
+      "manage": ["./dist/manage"]
     },
     "importHelpers": true,
     "target": "ES2022",

@@ -18,11 +18,11 @@ func NewAccountGroupRepo(db *gorm.DB) *AccountGroupRepository {
 	return &AccountGroupRepository{db}
 }
 
-func (r *AccountGroupRepository) Create(ctx context.Context, accountGroup domain.AccountGroup) (*domain.AccountGroup, error) {
-	if err := r.db.Create(&accountGroup).Error; err != nil {
+func (r *AccountGroupRepository) Create(ctx context.Context, req domain.AccountGroup) (*domain.AccountGroup, error) {
+	if err := r.db.Create(&req).Error; err != nil {
 		return nil, err
 	}
-	return &accountGroup, nil
+	return &req, nil
 }
 
 func (r *AccountGroupRepository) Read(ctx context.Context) ([]domain.AccountGroup, error) {
