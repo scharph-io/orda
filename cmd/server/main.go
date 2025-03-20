@@ -18,19 +18,21 @@ var (
 )
 
 func main() {
-	config := config.GetConfig().Server
+	serverC := config.GetConfig().Server
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		AppName: fmt.Sprintf("orda %s", version),
+	})
 
 	database.Connect()
 	middleware.AuthInit()
 	accesscontrol.Init()
 
-	log.Println("server running on port", config.Port)
+	log.Println("server running on port", serverC.Port)
 
 	server := router.NewServer()
 	server.SetupRoutes(app)
-	log.Fatal(app.Listen(fmt.Sprintf(":%d", config.Port)))
+	log.Fatal(app.Listen(fmt.Sprintf(":%d", serverC.Port)))
 
 	// https://github.com/gofiber/recipes/tree/master/auth-docker-postgres-jwt
 

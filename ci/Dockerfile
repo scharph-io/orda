@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:alpine3.19 as builder-node
+FROM node:alpine3.21 AS builder-node
 ARG BUILD
 RUN apk update && apk add make
 

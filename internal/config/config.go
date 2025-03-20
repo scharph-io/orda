@@ -15,10 +15,11 @@ const (
 
 type Config struct {
 	Server struct {
-		Port     int
-		Host     string
-		Timezone string
-		SSL      bool
+		Port         int
+		Host         string
+		TZ           string
+		SSL          bool
+		EnforcerFile string
 	}
 	Database struct {
 		Host     string
@@ -49,8 +50,9 @@ func loadConfig() *Config {
 	// Set default values
 	v.SetDefault("server.port", 3000)
 	v.SetDefault("server.host", "localhost")
-	v.SetDefault("server.timezone", "UTC")
+	v.SetDefault("server.tz", "UTC")
 	v.SetDefault("server.ssl", false)
+	v.SetDefault("server.enforcerFile", "rbac_model.conf")
 
 	v.SetDefault("database.host", "localhost")
 	v.SetDefault("database.port", 3306)
@@ -67,9 +69,26 @@ func loadConfig() *Config {
 	v.AddConfigPath(".")      // optionally look for config in working directory
 
 	// Environment variables setup
-	v.SetEnvPrefix("ORDA") // prefix for environment variables
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv() // read in environment variables that match
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	v.BindEnv("server.port")
+	v.BindEnv("server.host")
+	v.BindEnv("server.tz")
+	v.BindEnv("server.ssl")
+	v.BindEnv("server.enforcerFile")
+
+	v.BindEnv("database.user")
+	v.BindEnv("database.host")
+	v.BindEnv("database.port")
+	v.BindEnv("database.name")
+	v.BindEnv("database.password")
+
+	v.BindEnv("account.initialBalance")
+	v.BindEnv("account.maxDeposit")
+	v.BindEnv("account.negativeLimit")
+	v.BindEnv("account.limit")
+	v.BindEnv("account.topUpFactor")
 
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
@@ -78,10 +97,12 @@ func loadConfig() *Config {
 			panic(fmt.Sprintf("Fatal error reading config file: %s", err))
 		}
 	}
+
 	var cfg Config
 	if err := v.Unmarshal(&cfg); err != nil {
 		panic(fmt.Sprintf("Unable to decode config into struct: %s", err))
 	}
+	cfg.Print()
 	return &cfg
 }
 
@@ -90,4 +111,10 @@ func GetConfig() *Config {
 		config = loadConfig()
 	})
 	return config
+}
+
+func (c *Config) Print() {
+	fmt.Printf("database: %+v\n", c.Database)
+	fmt.Printf("server: %+v\n", c.Server)
+	fmt.Printf("account: %+v\n", c.Account)
 }

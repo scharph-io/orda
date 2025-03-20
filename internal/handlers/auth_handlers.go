@@ -2,12 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/scharph/orda/internal/accesscontrol"
-	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/util"
 )
@@ -149,12 +147,12 @@ func (h *AuthHandlers) Policy(c *fiber.Ctx) error {
 	return c.JSON(h.psyncInstance.GetPolicies())
 }
 
-func cookieConfig(value string) *fiber.Cookie {
-	return &fiber.Cookie{
-		Name:     config.Session_cookie,
-		Secure:   config.GetConfig().Server.SSL,
-		Value:    value,
-		SameSite: config.Cookie_sameSite,
-		Expires:  time.Now().Add(time.Hour * 24),
-	}
-}
+// func cookieConfig(value string) *fiber.Cookie {
+// 	return &fiber.Cookie{
+// 		Name:     config.Session_cookie,
+// 		Secure:   config.GetConfig().Server.SSL,
+// 		Value:    value,
+// 		SameSite: config.Cookie_sameSite,
+// 		Expires:  time.Now().Add(time.Hour * 24),
+// 	}
+// }

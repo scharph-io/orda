@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	casbin_model = "rbac_model.conf"
-	driver_name  = "mysql"
+	driver_name = "mysql"
 )
 
 func enforcer() (*casbin.Enforcer, error) {
 	c := config.GetConfig().Database
+	s := config.GetConfig().Server
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/",
 		c.User, c.Password, c.Host, c.Port,
@@ -27,7 +27,7 @@ func enforcer() (*casbin.Enforcer, error) {
 		return nil, err
 	}
 
-	e, err := casbin.NewEnforcer(casbin_model, a)
+	e, err := casbin.NewEnforcer(s.EnforcerFile, a)
 	if err != nil {
 		return nil, err
 	}
