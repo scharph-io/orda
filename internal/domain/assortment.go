@@ -11,6 +11,7 @@ type ProductGroup struct {
 	Name     string
 	Desc     string
 	Products Products
+	Deposit  uint
 }
 
 func (pg ProductGroup) String() string {

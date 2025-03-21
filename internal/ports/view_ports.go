@@ -11,11 +11,13 @@ type ViewRequest struct {
 	Name    string   `json:"name" validate:"required"`
 	Roles   []string `json:"roles" validate:"required"`
 	Deposit uint     `json:"deposit"`
+	Desc    string   `json:"desc"`
 }
 
 type ViewResponse struct {
 	Id            string                 `json:"id"`
 	Name          string                 `json:"name"`
+	Desc          string                 `json:"desc"`
 	Roles         []*RoleResponse        `json:"roles,omitzero"`
 	Products      []*ViewProductResponse `json:"products,omitzero"`
 	RolesCount    int                    `json:"roles_count"`

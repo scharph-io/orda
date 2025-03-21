@@ -8,8 +8,9 @@ import (
 )
 
 type ProductGroupRequest struct {
-	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Name    string `json:"name"`
+	Desc    string `json:"desc"`
+	Deposit uint   `json:"deposit"`
 }
 
 type ProductGroupResponse struct {
@@ -17,6 +18,7 @@ type ProductGroupResponse struct {
 	Name     string           `json:"name"`
 	Desc     string           `json:"desc"`
 	Products []ProductRequest `json:"products,omitempty"`
+	Deposit  uint             `json:"deposit"`
 }
 
 type ProductRequest struct {

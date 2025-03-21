@@ -19,7 +19,19 @@ export class SessionService {
 
 	constructor() {
 		this.logger.debug('Init SessionService');
-		this.checkSession();
+		if(localStorage.getItem('user')) {
+      this.checkSession().subscribe({
+        next: (res) => {
+          this.user.set(res);
+          localStorage.setItem('user', JSON.stringify(res));
+          this.logger.debug('SessionService restored');
+        },
+        error: (err) => {
+          this.logger.error(err);
+          this.logout()
+        }
+      })
+    }
 	}
 
 	checkSession() {

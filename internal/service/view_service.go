@@ -23,7 +23,7 @@ func NewViewService(vr ports.IViewRepository, vpr ports.IViewProductRepository) 
 var _ ports.IViewService = (*ViewService)(nil)
 
 func (s *ViewService) Create(ctx context.Context, view ports.ViewRequest) (*ports.ViewResponse, error) {
-	v, err := s.repo.Create(ctx, domain.View{Name: view.Name})
+	v, err := s.repo.Create(ctx, domain.View{Name: view.Name, Desc: view.Desc})
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +45,7 @@ func (s *ViewService) ReadMany(ctx context.Context) ([]*ports.ViewResponse, erro
 		res = append(res, &ports.ViewResponse{
 			Id:            v.ID,
 			Name:          v.Name,
+			Desc:          v.Desc,
 			RolesCount:    len(v.Roles),
 			ProductsCount: len(v.Products),
 			Deposit:       v.Deposit,
@@ -78,11 +79,10 @@ func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewRespon
 		if vp.Product.Active {
 			products = append(products, &ports.ViewProductResponse{
 				ProductResponse: ports.ProductResponse{
-					ID:   vp.ProductId,
-					Name: vp.Product.Name,
-
-					Price: vp.Product.Price,
+					ID:    vp.ProductId,
+					Name:  vp.Product.Name,
 					Desc:  vp.Product.Desc,
+					Price: vp.Product.Price,
 				},
 				Position: vp.Position,
 				Color:    vp.Color,
@@ -93,6 +93,7 @@ func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewRespon
 	return &ports.ViewResponse{
 		Id:            view.ID,
 		Name:          view.Name,
+		Desc:          view.Desc,
 		Roles:         roles,
 		Products:      products,
 		RolesCount:    len(roles),
@@ -103,15 +104,14 @@ func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewRespon
 
 func (s *ViewService) Update(ctx context.Context, id string, view ports.ViewRequest) (*ports.ViewResponse, error) {
 
-	fmt.Print("Updating view ...")
-	fmt.Println(view)
-	v, err := s.repo.Update(ctx, domain.View{Base: domain.Base{ID: id}, Name: view.Name})
+	v, err := s.repo.Update(ctx, domain.View{Base: domain.Base{ID: id}, Name: view.Name, Desc: view.Desc})
 	if err != nil {
 		return nil, err
 	}
 	return &ports.ViewResponse{
 		Id:   v.ID,
 		Name: v.Name,
+		Desc: v.Desc,
 	}, nil
 }
 

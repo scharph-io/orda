@@ -9,6 +9,7 @@ type Roles []Role
 type View struct {
 	Base
 	Name     string
+	Desc     string
 	Products Products `gorm:"many2many:view_products;constraint:OnDelete:CASCADE;"`
 	Roles    Roles    `gorm:"many2many:view_roles;constraint:OnDelete:CASCADE;"`
 	Deposit  uint

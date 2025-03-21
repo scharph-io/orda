@@ -5,7 +5,7 @@ import { MatIcon } from '@angular/material/icon';
 import { TitleCasePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
-import { filter, map, switchMap, tap } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs';
 import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
@@ -46,7 +46,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 							[state]="{ name: view.name }"
 							routerLinkActive="router-link-active"
 						>
-							{{ view.name | titlecase }}
+							{{ view.name | titlecase }} ({{view.desc}})
 						</p>
 						<div>
 							<button title="delete view" class="red-btn" mat-icon-button (click)="delete(view)">
@@ -148,9 +148,13 @@ export class ViewListComponent extends EntityManager<View> {
 					<input matInput formControlName="name" />
 				</mat-form-field>
 				<mat-form-field>
-					<mat-label>Deposit</mat-label>
-					<input matInput type="number" formControlName="deposit" />
+					<mat-label>Description</mat-label>
+					<input matInput formControlName="desc" />
 				</mat-form-field>
+<!--        <mat-form-field>-->
+<!--          <mat-label>Deposit</mat-label>-->
+<!--          <input matInput type="number" formControlName="deposit" />-->
+<!--        </mat-form-field>-->
 				<mat-form-field>
 					<mat-label>Roles</mat-label>
 					<mat-select formControlName="roles" multiple [value]="viewDetails.value()">
@@ -162,7 +166,12 @@ export class ViewListComponent extends EntityManager<View> {
 			</form>
 		</ng-template>
 	`,
-	styles: ``,
+	styles: `
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+  `,
 })
 class ViewListDialogComponent extends DialogTemplateComponent<View> {
 	viewService = inject(ViewService);
@@ -179,6 +188,7 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 			Validators.maxLength(25),
 			Validators.minLength(3),
 		]),
+    desc: new FormControl('',[Validators.maxLength(40)]),
 		roles: new FormControl([]),
 		deposit: new FormControl(0, [Validators.required, Validators.min(0)]),
 	});
@@ -186,29 +196,19 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 	constructor() {
 		super();
 
-		console.log(this.inputData);
-
 		this.formGroup.patchValue({
 			name: this.inputData?.name,
 			deposit: this.inputData?.deposit,
+      desc: this.inputData?.desc,
 		});
 	}
 
 	public submit = () => {
 		if (this.inputData) {
-			// if (
-			// 	this.equal(
-			// 		this.inputData.roles.map((r) => r.id),
-			// 		this.formGroup.value.roles ?? [],
-			// 	)
-			// ) {
-			// 	console.log(this.formGroup.value);
-			// }
-
 			this.viewService
 				.update(this.inputData?.id ?? '', {
 					name: this.formGroup.value.name ?? '',
-					deposit: this.formGroup.value.deposit ?? 0,
+          desc: this.formGroup.value.desc ?? '',
 				})
 				.pipe(
 					switchMap(() =>
@@ -220,10 +220,11 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 			this.viewService
 				.create({
 					name: this.formGroup.value.name ?? '',
-					deposit: this.formGroup.value.deposit ?? 0,
+					// deposit: this.formGroup.value.deposit ?? 0,
+          deposit: 100,
+          desc: this.formGroup.value.desc ?? '',
 				})
 				.pipe(
-					tap((view) => console.log(view)),
 					switchMap((view) => this.viewService.setRoles(view.id, this.formGroup.value.roles ?? [])),
 				)
 				.subscribe(this.closeObserver);

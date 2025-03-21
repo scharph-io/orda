@@ -1,0 +1,103 @@
+{
+  "hello": "Hallo",
+  "customer": "Kunde",
+  "menu": {
+    "home": "Startseite",
+    "orders": "Bestellungen",
+    "history": "Zahlungsverlauf",
+    "info": "Info",
+    "manage": "Verwalten",
+    "store": "Geschäft",
+    "statistics": "Statistiken"
+  },
+  "logout": "Abmelden",
+  "login": "Anmelden",
+  "cart": {
+    "title": "Warenkorb",
+    "empty": "Warenkorb ist leer",
+    "checkout": "Zur Kasse",
+    "total": "Gesamt",
+    "remove": "Entfernen",
+    "quantity": "Menge",
+    "price": "Preis",
+    "subtotal": "Summe",
+    "totalPrice": "Gesamtpreis"
+  },
+  "payment": {
+    "title": "Zahlung",
+    "method": "Zahlungsmethode",
+    "card": "Karte",
+    "cash": "Bargeld",
+    "submit": "Absenden",
+    "none": "Keine"
+  },
+  "account": {
+    "title": "Kontotyp",
+    "cash": "Kasse",
+    "free": "Frei",
+    "premium": "Sponsor"
+  },
+  "checkout": {
+    "payout": "Auszahlung",
+    "settle": "Abrechnen"
+  },
+  "deposit": "Pfand",
+  "description": "Bezeichnung",
+  "quantity": "Anzahl",
+  "total": "Gesamtpreis",
+  "unitprice": "Einheitspreis",
+  "paymentOption": "Zahlungsoption",
+  "accountType": "Kontotyp",
+  "table": {
+    "name": "Name",
+    "desc": "Beschreibung",
+    "price": "Preis",
+    "active": "Aktiviert",
+    "color": "Akzentfarbe",
+    "deposit": "Pfandbetrag",
+    "show_deposit": "Pfand",
+    "position": "Position",
+    "qty": "Anzahl"
+  },
+
+  "dialog": {
+    "cancel": "Abbrechen",
+    "update": "Speichern",
+    "create": "Anlegen"
+  },
+  "category": {
+    "title": "Kategorie",
+    "add": "Kategorie anlegen",
+    "edit": "Kategorie bearbeiten",
+    "delete": "Kategorie löschen",
+    "export": "Exportieren"
+  },
+  "article": {
+    "title": "Artikel",
+    "add": "Artikel anlegen",
+    "edit": "Artikel bearbeiten",
+    "delete": "Artikel löschen"
+  },
+  "statistic": {
+    "overall": "Gesamt",
+    "daily": "Täglich",
+    "choose_date": "Datum auswählen",
+    "income": "Einnahmen",
+    "total_per_day": "Gesamt pro Tag",
+    "cash_per_day": "Bargeld pro Tag",
+    "card_per_day": "Karte pro Tag",
+    "premium_per_day": "Sponsor pro Tag",
+    "free_per_day": "Frei pro Tag",
+    "deposit_in_per_day": "Pfand Eingang pro Tag",
+    "deposit_out_per_day": "Pfand Ausgang pro Tag",
+    "products_sold_per_day": "Verkaufte Produkte",
+    "total": "Gesamt",
+    "cash": "Bargeld",
+    "card": "Karte",
+    "premium": "Sponsor",
+    "free": "Frei",
+    "deposit_in": "Pfand Eingang",
+    "deposit_out": "Pfand Ausgang",
+    "products_sold": "Verkaufte Produkte"
+  }
+}
