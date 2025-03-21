@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { OrderStoreService } from '@orda.features/order/services/order-store.service';
 import { CartCheckoutDialogComponent } from '@orda.features/order/components/cart/cart-actions/dialogs/cart-checkout-dialog.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
 	selector: 'orda-cart-actions',
@@ -47,8 +48,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export class CartActionsComponent {
 	cart = inject(OrderStoreService);
 	dialog = inject(MatDialog);
+  private readonly snackBar = inject(MatSnackBar);
 
-	cartItems = toSignal(this.cart.items$);
+
+  cartItems = toSignal(this.cart.items$);
 
 	clearCart(): void {
 		this.cart.clear();
@@ -58,7 +61,6 @@ export class CartActionsComponent {
 		const dialogRef = this.dialog.open<CartCheckoutDialogComponent, undefined, number>(
 			CartCheckoutDialogComponent,
 			{
-				// data: this.cartItems(),
 				width: 'auto',
 				minWidth: '25rem',
 				height: '25rem',
@@ -68,9 +70,14 @@ export class CartActionsComponent {
 		dialogRef.afterClosed().subscribe((result) => {
 			console.log('The dialog was closed', result);
 
-			if (result) {
+      this.snackBar.open(`Checkout result: ${result}`, undefined, {
+        duration: 5000,
+      });
+			if (result && result > 0) {
 				this.clearCart();
 			}
 		});
 	}
+
+
 }

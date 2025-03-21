@@ -44,12 +44,11 @@ import { ProductTileComponent } from '@orda.features/order/components/product-ti
 })
 export class OrderGridComponent {
 	view = input.required<Partial<View>>();
-	gridCols = input<number>(7);
+	gridCols = input<number>(6);
 
 	cart = inject(OrderStoreService);
 
 	addProduct(p: ViewProduct) {
-		console.log(p);
 		this.cart.addItem({
 			id: p.id ?? '',
 			name: p.name,

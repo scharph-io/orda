@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
-import { CheckoutRequest } from '@orda.features/order/services/checkout.service';
+import { CheckoutRequest, CheckoutService } from '@orda.features/order/services/checkout.service';
 import { OrderStoreService } from '@orda.features/order/services/order-store.service';
 import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/transaction';
 import { AccountService } from '@orda.features/data-access/services/account/account.service';
@@ -42,7 +42,7 @@ interface AutoCompleteOption {
 		MatButtonModule,
 	],
 	template: `
-		<h2 mat-dialog-title>Checkout</h2>
+<!--		<h2 mat-dialog-title>Checkout</h2>-->
 		<mat-dialog-content class="container">
 			<div class="total">
 				<div class="total-container">
@@ -53,7 +53,6 @@ interface AutoCompleteOption {
 				</div>
 			</div>
 			@let totalSum = total() ?? 0;
-			@if (totalSum > 0) {
 				<div class="payment">
 					<mat-button-toggle-group [formControl]="paymentOptionControl" aria-label="Payment option">
 						<mat-button-toggle [value]="PaymentOption.CASH">{{
@@ -88,7 +87,7 @@ interface AutoCompleteOption {
 						</mat-form-field>
 						<button mat-button (click)="accountControl.reset()">Clear</button>
 					</div>
-					@if (selectedAccount()) {
+					@if (selectedAccount() && error === '') {
 						@if (diff() > 0) {
 							<div class="error" [style.color]="'green'">
 								{{ selectedAccount()?.credit_balance | currency }} - {{ total() | currency }} =
@@ -104,29 +103,94 @@ interface AutoCompleteOption {
 
 						@if (diff() < 0) {}
 					}
-				}
+
 			}
 			<div class="error" [style.color]="'red'">{{ error }}</div>
 		</mat-dialog-content>
 		<mat-dialog-actions align="end">
-			<button mat-button [mat-dialog-close]="-1">{{ 'checkout.cancel' }}</button>
-			<button
-				[disabled]="paymentOptionControl.value === null"
-				mat-button
-				[mat-dialog-close]="1"
-				cdkFocusInitial
-			>
-				{{ 'checkout.title' }}
-			</button>
+			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'checkout.cancel' }}</button>
+      @switch (paymentOptionControl.value) {
+        @case (PaymentOption.CASH) {
+          <button
+            mat-button
+            cdkFocusInitial
+            (click)="checkout()"
+          >
+            {{ 'checkout.cash.title' }}
+          </button>
+        }
+        @case (PaymentOption.ACCOUNT) {
+          <button
+            mat-button
+            [disabled]="!accountControl.value"
+            (click)="checkout(PaymentOption.ACCOUNT, selectedAccount()?.id)"
+          >
+            {{ 'checkout.account.title' }}
+          </button>
+        }
+      }
+			´
 		</mat-dialog-actions>
 	`,
-	styles: ``,
+	styles: `
+    .container {
+      display: grid;
+      gap: 0.5rem;
+      grid-template:
+          'total' 1fr
+          'payment' 1fr
+          'account' auto
+          'error' auto/1fr;
+    }
+
+    .total {
+      justify-self: center;
+      align-self: center;
+      grid-area: total;
+    }
+
+    .account {
+      justify-self: center;
+      grid-area: account;
+    }
+
+    .payment {
+      justify-self: center;
+      grid-area: payment;
+    }
+
+    .error {
+      justify-self: center;
+      grid-area: error;
+    }
+
+    .total-container {
+      display: flex;
+      gap: 0.5em;
+      flex-direction: row-reverse;
+    }
+
+    .item-1 {
+      font-size: 1.5em;
+      flex-grow: 1;
+      align-self: center;
+    }
+
+    .item-0 {
+      font-size: 2em;
+      font-weight: bold;
+      flex-grow: 2;
+      flex-basis: 1rem;
+      align-self: center;
+    }`,
 })
 export class CartCheckoutDialogComponent implements OnInit {
 	cart = inject(OrderStoreService);
 	accountService = inject(AccountService);
+  checkoutService = inject(CheckoutService);
 
-	public accounts = rxResource({
+
+  public accounts = rxResource({
 		loader: () => this.accountService.read(),
 	});
 
@@ -134,7 +198,7 @@ export class CartCheckoutDialogComponent implements OnInit {
 	total = toSignal(this.cart.subtotal$);
 	totalQty = toSignal(this.cart.totalQty$);
 
-	dialogRef: MatDialogRef<CartCheckoutDialogComponent, string> = inject(MatDialogRef);
+	dialogRef: MatDialogRef<CartCheckoutDialogComponent, number> = inject(MatDialogRef);
 
 	accountControl = new FormControl('');
 	paymentOptionControl = new FormControl(PaymentOption.CASH, [Validators.required]);
@@ -189,4 +253,28 @@ export class CartCheckoutDialogComponent implements OnInit {
 			return correspondingOption ? correspondingOption.lastname : '';
 		};
 	}
+
+  checkout(option = PaymentOption.CASH, account_id?: string) {
+    if(this.error !== '') {
+      this.error = ''
+    }
+    this.checkoutService.checkout(
+      {
+        payment_option: option,
+        items: this.items()?.map((i) => ({ id: i.id, quantity: i.quantity })) ?? [],
+        account_id
+      }
+    ).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.dialogRef.close(1);
+        } else {
+          this.error = 'checkout.failed';
+        }
+      },
+      error: (err) => {
+        this.error = err;
+      }
+    });
+  }
 }
