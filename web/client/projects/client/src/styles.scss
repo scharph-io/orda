@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 
-@import '@fontsource/inter/500'; // Specify weight
+@forward '@fontsource/inter/500'; // Specify weight
 
 html,
 body {
@@ -12,14 +12,14 @@ body {
 	margin: 0;
 
 	font-family: Inter, 'Helvetica Neue', sans-serif;
-	background-image: url('../public/background.svg');
+	// background-image: url('../public/background.svg');
 
 	color-scheme: light dark;
 	@include mat.theme(
 		(
-			color: mat.$violet-palette,
+			// color: mat.$violet-palette,
 			typography: Inter,
-			density: 0,
+			density: 0
 		)
 	);
 
@@ -51,7 +51,7 @@ body {
 }
 
 .content {
-	margin: 0.5rem 0.5rem;
+	margin: 0.25rem;
 }
 
 .red-btn {

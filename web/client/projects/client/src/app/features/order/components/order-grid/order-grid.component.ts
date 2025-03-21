@@ -17,15 +17,15 @@ import { ProductTileComponent } from '@orda.features/order/components/product-ti
 		ProductTileComponent,
 	],
 	template: `
-    Deposit{{ view().deposit }}
+		Deposit{{ view().deposit }}
 
-    <mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
-<!--			@if (view().deposit && (view().deposit ?? 0 > 0)) {-->
-<!--				<mat-grid-tile [colspan]="2">-->
-<!--					Hello-->
-<!--					&lt;!&ndash;					<orda-plus-minus-tile [key]="'deposit'" [value]="view().deposit ?? 100" />&ndash;&gt;-->
-<!--				</mat-grid-tile>-->
-<!--			}-->
+		<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
+			<!--			@if (view().deposit && (view().deposit ?? 0 > 0)) {-->
+			<!--				<mat-grid-tile [colspan]="2">-->
+			<!--					Hello-->
+			<!--					&lt;!&ndash;					<orda-plus-minus-tile [key]="'deposit'" [value]="view().deposit ?? 100" />&ndash;&gt;-->
+			<!--				</mat-grid-tile>-->
+			<!--			}-->
 
 			@for (vp of view().products; track vp.id) {
 				<mat-grid-tile
@@ -51,7 +51,7 @@ export class OrderGridComponent {
 	addProduct(p: ViewProduct) {
 		console.log(p);
 		this.cart.addItem({
-			uuid: p.id ?? '',
+			id: p.id ?? '',
 			name: p.name,
 			price: p.price,
 			quantity: 1,

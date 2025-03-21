@@ -28,7 +28,8 @@ import { CartComponent } from '@orda.features/order/components/cart/cart.compone
 		.desktop-container {
 			display: flex;
 			justify-content: space-between;
-			height: calc(100vh - 64px);
+			gap: 0.25rem;
+			/* height: calc(100vh - 64px); */
 		}
 
 		.products {

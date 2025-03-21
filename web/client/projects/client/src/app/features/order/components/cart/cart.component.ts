@@ -17,18 +17,20 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 				<span class="cartEmpty">{{ 'cart.empty' }}</span>
 			}
 		</div>
-		<orda-cart-actions class="actions" [items]="items() ?? []" />
+
 		<orda-cart-subtotal class="subtotal" [subtotal]="subtotal() ?? 0" />
+		<orda-cart-actions class="actions" />
 	`,
 	styles: `
 		:host {
-			padding: 1em;
+			// padding: 1em;
 			display: grid;
-			gap: 0.5em;
+			// gap: 0.5em;
 			grid-auto-flow: row;
 			justify-content: center;
 			align-content: stretch;
 			align-items: stretch;
+			padding: 0.25rem;
 			grid-template:
 				'cart' 1fr
 				'subtotal' min-content
@@ -37,7 +39,8 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 
 		.cart {
 			grid-area: cart;
-			height: calc(100vh - 13em);
+			// height: calc(100vh - 13em);
+			height: 80vh;
 			overflow-y: auto;
 		}
 
@@ -74,12 +77,4 @@ export class CartComponent {
 
 	items = toSignal(this.cart.items$);
 	subtotal = toSignal(this.cart.subtotal$);
-
-	// get items$(): Observable<CartItem[]> {
-	// 	return this.cart.items$;
-	// }
-
-	// get subtotal$(): Observable<number> {
-	// 	return this.cart.subtotal$;
-	// }
 }
