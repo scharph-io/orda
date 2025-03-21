@@ -6,6 +6,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { View, ViewProduct } from '@orda.core/models/view';
 import { ProductTileComponent } from '@orda.features/order/components/product-tile/product-tile.component';
+import { PlusMinusTileComponent } from '@orda.features/order/components/plus-minus-tile/plus-minus-tile.component';
 
 @Component({
 	selector: 'orda-order-grid',
@@ -15,17 +16,16 @@ import { ProductTileComponent } from '@orda.features/order/components/product-ti
 		LayoutModule,
 		MatRippleModule,
 		ProductTileComponent,
+    PlusMinusTileComponent
 	],
 	template: `
-		Deposit{{ view().deposit }}
 
 		<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
-			<!--			@if (view().deposit && (view().deposit ?? 0 > 0)) {-->
-			<!--				<mat-grid-tile [colspan]="2">-->
-			<!--					Hello-->
-			<!--					&lt;!&ndash;					<orda-plus-minus-tile [key]="'deposit'" [value]="view().deposit ?? 100" />&ndash;&gt;-->
-			<!--				</mat-grid-tile>-->
-			<!--			}-->
+<!--						@if (view().deposit && (view().deposit ?? 0 > 0)) {-->
+      <mat-grid-tile [colspan]="2">
+        <orda-plus-minus-tile [key]="'deposit'" [value]="view().deposit ?? 100" />
+      </mat-grid-tile>
+<!--						}-->
 
 			@for (vp of view().products; track vp.id) {
 				<mat-grid-tile
@@ -40,11 +40,17 @@ import { ProductTileComponent } from '@orda.features/order/components/product-ti
 			}
 		</mat-grid-list>
 	`,
-	styles: ``,
+	styles: `
+    mat-grid-tile {
+      cursor: pointer;
+      border-radius: 0.25em;
+      background-color: lightgrey;
+    }`,
 })
 export class OrderGridComponent {
 	view = input.required<Partial<View>>();
 	gridCols = input<number>(6);
+
 
 	cart = inject(OrderStoreService);
 
