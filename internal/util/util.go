@@ -82,3 +82,11 @@ func ToAccountResponse(account *domain.Account) *ports.AccountResponse {
 		GroupId:         account.AccountGroupID,
 	}
 }
+
+// Map function for slices
+func MapSlice[T any, U any](input []T, fn func(T) U) (res []U) {
+	for _, v := range input {
+		res = append(res, fn(v))
+	}
+	return res
+}

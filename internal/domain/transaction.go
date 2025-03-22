@@ -3,22 +3,11 @@ package domain
 import "database/sql"
 
 type PaymentOption int8
-type AccountType int8
-
-const (
-	PaymentMethodNone PaymentOption = 0
-	PaymentMethodCash PaymentOption = 1
-	PaymentOptionCard PaymentOption = 2
-
-	AccountTypeAnonymous AccountType = 0
-	AccountTypePool      AccountType = 1
-)
 
 type Transaction struct {
 	Base
 	Items         []*TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
 	PaymentOption PaymentOption
-	AccountType   AccountType
 	Total         int32
 	UserID        string         `gorm:"size:36"`
 	User          User           `gorm:"foreignKey:UserID"`
@@ -29,6 +18,8 @@ type Transaction struct {
 type TransactionItem struct {
 	TransactionID string `gorm:"primaryKey;index;size:36"`
 	ProductID     string `gorm:"primaryKey;index;size:36"`
-	Qty           int8
-	Price         int32
+	// Think about deposit. with this deposit does not work
+	// Product       Product `gorm:"foreignKey:ProductID"`
+	Qty   int8
+	Price int32
 }

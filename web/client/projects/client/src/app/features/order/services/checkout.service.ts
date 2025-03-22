@@ -6,14 +6,22 @@ import { HOST } from '@orda.core/config/config';
 import { API_ENDPOINTS } from '@orda.core/constants';
 
 export interface CheckoutRequestItem {
-	id: string;
-	quantity: number;
+	id?: string;
+	qty: number;
+	price?: number;
 }
 
 export interface CheckoutRequest {
 	items: CheckoutRequestItem[];
+	deposits: CheckoutRequestItem[];
 	payment_option: PaymentOption;
 	account_id?: string;
+}
+
+export interface CheckoutResponse {
+	transaction_id: string;
+	items_length: number;
+	total: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,9 +31,7 @@ export class CheckoutService {
 
 	checkout(checkoutReq: CheckoutRequest) {
 		return this.httpClient
-			.post<{
-				success: boolean;
-			}>(`${this.HOST}${API_ENDPOINTS.ORDER}/checkout`, checkoutReq)
+			.post<CheckoutResponse>(`${this.HOST}${API_ENDPOINTS.ORDER}/checkout`, checkoutReq)
 			.pipe(catchError(this.handleError));
 	}
 

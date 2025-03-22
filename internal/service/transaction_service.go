@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
+	"github.com/scharph/orda/internal/util"
 )
 
 type TransactionService struct {
@@ -24,52 +26,63 @@ func NewTransactionService(tr ports.ITransactionRepository, tir ports.ITransacti
 
 var _ ports.ITransactionService = (*TransactionService)(nil)
 
-func (s *TransactionService) Create(ctx context.Context, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
+func (s *TransactionService) Create(ctx context.Context, userid string, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
+	// Deposit
+	if len(t.Deposits) > 0 {
+		fmt.Println(t.Deposits)
+	}
 
-	// pIds := make([]string, 0)
-	// for _, item := range t.Items {
-	// 	pIds = append(pIds, item.ProductID)
-	// }
+	ids := util.MapSlice(t.Items, func(i ports.ItemRequest) string {
+		return i.Id
+	})
+	products, err := s.productRepo.ReadByIds(ctx, ids...)
+	if err != nil {
+		return nil, err
+	}
 
-	// products, err := s.productRepo.Read(ctx, pIds)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	var total int32 = 0
+	var items []*domain.TransactionItem
+	for index, p := range products {
+		total += p.Price * int32(t.Items[index].Quantity)
+		items = append(items, &domain.TransactionItem{
+			ProductID: p.ID,
+			Qty:       t.Items[index].Quantity,
+			Price:     p.Price,
+		})
+	}
 
-	// pMap := make(map[string]int32)
-	// for _, p := range products {
-	// 	pMap[p.ID] = p.Price
-	// }
+	for _, d := range t.Deposits {
+		total += int32(d.Quantity) * d.Price
+		items = append(items, &domain.TransactionItem{
+			ProductID: "deposit",
+			Qty:       d.Quantity,
+			Price:     d.Price,
+		})
+	}
 
-	// var total int32 = 0
-	// var items []*domain.TransactionItem
-	// for _, item := range t.Items {
-	// 	total += pMap[item.ProductID] * int32(item.Quantity)
-	// 	items = append(items, &domain.TransactionItem{
-	// 		ProductID: item.ProductID,
-	// 		Qty:       int8(item.Quantity),
-	// 		Price:     pMap[item.ProductID],
-	// 	})
-	// }
+	var acc sql.NullString
+	if t.AccountID != nil {
+		acc = sql.NullString{String: *t.AccountID, Valid: true}
+	} else {
+		acc = sql.NullString{Valid: false}
+	}
 
-	// transaction := &domain.Transaction{
-	// 	PaymentOption: t.PaymentOption,
-	// 	AccountType:   t.AccountType,
-	// 	UserID:        t.UserID,
-	// 	AccountID:     sql.NullString{String: t.AccountID, Valid: true},
-	// 	Total:         total,
-	// 	Items:         items,
-	// }
+	transaction := &domain.Transaction{
+		PaymentOption: t.PaymentOption,
+		UserID:        userid,
+		AccountID:     acc,
+		Total:         total,
+		Items:         items,
+	}
 
-	// transaction, err = s.repo.Create(ctx, transaction)
+	transaction, err = s.repo.Create(ctx, transaction)
 
-	// return &ports.TransactionResponse{
-	// 	TransactionID: transaction.ID,
-	// 	Total:         transaction.Total,
-	// 	ItemsLength:   len(transaction.Items),
-	// }, nil
-	//
-	return nil, nil
+	return &ports.TransactionResponse{
+		TransactionID: transaction.ID,
+		Total:         transaction.Total,
+		ItemsLength:   len(transaction.Items),
+	}, nil
+
 }
 
 func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResponse, error) {
@@ -83,10 +96,10 @@ func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResp
 			TransactionID: v.ID,
 			Total:         v.Total,
 			ItemsLength:   len(v.Items),
-			AccountType:   int(v.AccountType),
-			PaymentOption: int(v.PaymentOption),
-			User:          v.User.Username,
-			Account:       fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname),
+			// Account:       fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname),
+			// Account: *ports.AccountResponse{
+			// 	Firstname: v.Account.Firstname,
+			// },
 		})
 	}
 	return res, nil
@@ -103,10 +116,9 @@ func (s *TransactionService) ReadByID(ctx context.Context, id string) (*ports.Tr
 		TransactionID: t.ID,
 		Total:         t.Total,
 		ItemsLength:   len(t.Items),
-		AccountType:   int(t.AccountType),
-		PaymentOption: int(t.PaymentOption),
-		User:          t.User.Username,
-		Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
+		// AccountType:   int(t.AccountType),
+
+		// Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
 	}, nil
 }
 

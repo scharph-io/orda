@@ -48,10 +48,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class CartActionsComponent {
 	cart = inject(OrderStoreService);
 	dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
+	private readonly snackBar = inject(MatSnackBar);
 
-
-  cartItems = toSignal(this.cart.items$);
+	cartItems = toSignal(this.cart.items$);
 
 	clearCart(): void {
 		this.cart.clear();
@@ -70,14 +69,12 @@ export class CartActionsComponent {
 		dialogRef.afterClosed().subscribe((result) => {
 			console.log('The dialog was closed', result);
 
-      this.snackBar.open(`Checkout result: ${result}`, undefined, {
-        duration: 5000,
-      });
+			this.snackBar.open(`Checkout result: ${result}`, undefined, {
+				duration: 5000,
+			});
 			if (result && result > 0) {
 				this.clearCart();
 			}
 		});
 	}
-
-
 }

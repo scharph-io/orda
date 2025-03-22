@@ -158,16 +158,17 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	views.Delete("/:id/products", s.viewHandlers.RemoveProducts)
 
 	// Order
-	order := api.Group("/order/views")
+	order := api.Group("/order")
 	// order.Post("/", s.orderHandlers.Create)
-	order.Get("/", s.orderHandlers.GetViews)
+	order.Get("/views", s.orderHandlers.GetViews)
+	order.Post("/checkout", s.transactionHandlers.Create)
 	// order.Get("/:id", s.orderHandlers.ReadOne)
 	// order.Put("/:id", s.orderHandlers.Update)
 	// order.Delete("/:id", s.orderHandlers.Delete)
 
 	// // Checkout
 	// checkout := api.Group("/checkout")
-	// checkout.Post("/", middleware.Protected(), handler.CreateTransaction)
+	// checkout.Post("/", s.transactionHandlers.Create)
 
 	// // Transaction
 	// transaction := api.Group("/transaction")

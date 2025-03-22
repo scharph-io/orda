@@ -16,16 +16,15 @@ import { PlusMinusTileComponent } from '@orda.features/order/components/plus-min
 		LayoutModule,
 		MatRippleModule,
 		ProductTileComponent,
-    PlusMinusTileComponent
+		PlusMinusTileComponent,
 	],
 	template: `
-
 		<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
-<!--						@if (view().deposit && (view().deposit ?? 0 > 0)) {-->
-      <mat-grid-tile [colspan]="2">
-        <orda-plus-minus-tile [key]="'deposit'" [value]="view().deposit ?? 100" />
-      </mat-grid-tile>
-<!--						}-->
+			<!--						@if (view().deposit && (view().deposit ?? 0 > 0)) {-->
+			<mat-grid-tile [colspan]="2">
+				<orda-plus-minus-tile [key]="'deposit'" [value]="view().deposit ?? 100" />
+			</mat-grid-tile>
+			<!--						}-->
 
 			@for (vp of view().products; track vp.id) {
 				<mat-grid-tile
@@ -41,16 +40,16 @@ import { PlusMinusTileComponent } from '@orda.features/order/components/plus-min
 		</mat-grid-list>
 	`,
 	styles: `
-    mat-grid-tile {
-      cursor: pointer;
-      border-radius: 0.25em;
-      background-color: lightgrey;
-    }`,
+		mat-grid-tile {
+			cursor: pointer;
+			border-radius: 0.25em;
+			background-color: lightgrey;
+		}
+	`,
 })
 export class OrderGridComponent {
 	view = input.required<Partial<View>>();
 	gridCols = input<number>(6);
-
 
 	cart = inject(OrderStoreService);
 

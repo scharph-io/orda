@@ -6,8 +6,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
-import { CheckoutRequest, CheckoutService } from '@orda.features/order/services/checkout.service';
-import { OrderStoreService } from '@orda.features/order/services/order-store.service';
+import {
+	CheckoutRequest,
+	CheckoutRequestItem,
+	CheckoutService,
+} from '@orda.features/order/services/checkout.service';
+import { CartItem, OrderStoreService } from '@orda.features/order/services/order-store.service';
 import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/transaction';
 import { AccountService } from '@orda.features/data-access/services/account/account.service';
 import { map, Observable, startWith } from 'rxjs';
@@ -42,155 +46,151 @@ interface AutoCompleteOption {
 		MatButtonModule,
 	],
 	template: `
-<!--		<h2 mat-dialog-title>Checkout</h2>-->
+		<!--		<h2 mat-dialog-title>Checkout</h2>-->
 		<mat-dialog-content class="container">
+			@let totalSum = total() ?? 0;
 			<div class="total">
 				<div class="total-container">
 					<div class="item-0">
-						{{ total() | currency: 'EUR' }}
+						{{ totalSum | currency: 'EUR' }}
 					</div>
 					<div class="item-1">{{ 'cart.total' }}:</div>
 				</div>
 			</div>
-			@let totalSum = total() ?? 0;
-				<div class="payment">
-					<mat-button-toggle-group [formControl]="paymentOptionControl" aria-label="Payment option">
-						<mat-button-toggle [value]="PaymentOption.CASH">{{
-							PaymentOptionKeys[PaymentOption.CASH]
-						}}</mat-button-toggle>
-						<mat-button-toggle [value]="PaymentOption.ACCOUNT">{{
-							PaymentOptionKeys[PaymentOption.ACCOUNT]
-						}}</mat-button-toggle>
-					</mat-button-toggle-group>
-				</div>
-				@if (paymentOptionControl.value === PaymentOption.ACCOUNT) {
-					<div class="account">
-						<mat-form-field class="example-full-width">
-							<mat-label>{{ 'checkout.account' }}</mat-label>
-							<input
-								type="text"
-								placeholder="Account"
-								matInput
-								[formControl]="accountControl"
-								[matAutocomplete]="auto"
-								(click)="this.accountControl.setValue('')"
-							/>
-							<mat-autocomplete
-								#auto="matAutocomplete"
-								[displayWith]="displayFn(accounts.value() ?? [])"
-							>
-								@let items = (filteredOptions | async) ?? [];
-								@for (option of items; track option.id) {
-									<mat-option [value]="option.id">{{ option.name }}</mat-option>
-								}
-							</mat-autocomplete>
-						</mat-form-field>
-						<button mat-button (click)="accountControl.reset()">Clear</button>
-					</div>
-					@if (selectedAccount() && error === '') {
-						@if (diff() > 0) {
-							<div class="error" [style.color]="'green'">
-								{{ selectedAccount()?.credit_balance | currency }} - {{ total() | currency }} =
-								{{ diff() | currency }}
-							</div>
-						} @else {
-							<div class="error" [style.color]="'red'">
-								{{ selectedAccount()?.credit_balance | currency }} - {{ total() | currency }} =
-								{{ diff() | currency }}
-								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>
-							</div>
-						}
 
-						@if (diff() < 0) {}
+			<div class="payment">
+				<mat-button-toggle-group [formControl]="paymentOptionControl" aria-label="Payment option">
+					<mat-button-toggle [value]="PaymentOption.CASH">{{
+						PaymentOptionKeys[PaymentOption.CASH]
+					}}</mat-button-toggle>
+					<mat-button-toggle [value]="PaymentOption.ACCOUNT">{{
+						PaymentOptionKeys[PaymentOption.ACCOUNT]
+					}}</mat-button-toggle>
+				</mat-button-toggle-group>
+			</div>
+			@if (paymentOptionControl.value === PaymentOption.ACCOUNT) {
+				<div class="account">
+					<mat-form-field class="example-full-width">
+						<mat-label>{{ 'checkout.account' }}</mat-label>
+						<input
+							type="text"
+							placeholder="Account"
+							matInput
+							[formControl]="accountControl"
+							[matAutocomplete]="auto"
+							(click)="this.accountControl.setValue('')"
+						/>
+						<mat-autocomplete
+							#auto="matAutocomplete"
+							[displayWith]="displayFn(accounts.value() ?? [])"
+						>
+							@let items = (filteredOptions | async) ?? [];
+							@for (option of items; track option.id) {
+								<mat-option [value]="option.id">{{ option.name }}</mat-option>
+							}
+						</mat-autocomplete>
+					</mat-form-field>
+					<button mat-button (click)="accountControl.reset()">Clear</button>
+				</div>
+				@if (selectedAccount() && error === '') {
+					@if (diff() > 0) {
+						<div class="error" [style.color]="'green'">
+							{{ selectedAccount()?.credit_balance | currency }} - {{ total() | currency }} =
+							{{ diff() | currency }}
+						</div>
+					} @else {
+						<div class="error" [style.color]="'red'">
+							{{ selectedAccount()?.credit_balance | currency }} - {{ total() | currency }} =
+							{{ diff() | currency }}
+							<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>
+						</div>
 					}
 
+					@if (diff() < 0) {}
+				}
 			}
 			<div class="error" [style.color]="'red'">{{ error }}</div>
 		</mat-dialog-content>
 		<mat-dialog-actions align="end">
 			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'checkout.cancel' }}</button>
-      @switch (paymentOptionControl.value) {
-        @case (PaymentOption.CASH) {
-          <button
-            mat-button
-            cdkFocusInitial
-            (click)="checkout()"
-          >
-            {{ 'checkout.cash.title' }}
-          </button>
-        }
-        @case (PaymentOption.ACCOUNT) {
-          <button
-            mat-button
-            [disabled]="!accountControl.value"
-            (click)="checkout(PaymentOption.ACCOUNT, selectedAccount()?.id)"
-          >
-            {{ 'checkout.account.title' }}
-          </button>
-        }
-      }
+			@switch (paymentOptionControl.value) {
+				@case (PaymentOption.CASH) {
+					<button mat-button cdkFocusInitial (click)="checkout()">
+						{{ 'checkout.cash.title' }}
+					</button>
+				}
+				@case (PaymentOption.ACCOUNT) {
+					<button
+						mat-button
+						[disabled]="!accountControl.value"
+						(click)="checkout(PaymentOption.ACCOUNT, selectedAccount()?.id)"
+					>
+						{{ 'checkout.account.title' }}
+					</button>
+				}
+			}
 			´
 		</mat-dialog-actions>
 	`,
 	styles: `
-    .container {
-      display: grid;
-      gap: 0.5rem;
-      grid-template:
-          'total' 1fr
-          'payment' 1fr
-          'account' auto
-          'error' auto/1fr;
-    }
+		.container {
+			display: grid;
+			gap: 0.5rem;
+			grid-template:
+				'total' 1fr
+				'payment' 1fr
+				'account' auto
+				'error' auto/1fr;
+		}
 
-    .total {
-      justify-self: center;
-      align-self: center;
-      grid-area: total;
-    }
+		.total {
+			justify-self: center;
+			align-self: center;
+			grid-area: total;
+		}
 
-    .account {
-      justify-self: center;
-      grid-area: account;
-    }
+		.account {
+			justify-self: center;
+			grid-area: account;
+		}
 
-    .payment {
-      justify-self: center;
-      grid-area: payment;
-    }
+		.payment {
+			justify-self: center;
+			grid-area: payment;
+		}
 
-    .error {
-      justify-self: center;
-      grid-area: error;
-    }
+		.error {
+			justify-self: center;
+			grid-area: error;
+		}
 
-    .total-container {
-      display: flex;
-      gap: 0.5em;
-      flex-direction: row-reverse;
-    }
+		.total-container {
+			display: flex;
+			gap: 0.5em;
+			flex-direction: row-reverse;
+		}
 
-    .item-1 {
-      font-size: 1.5em;
-      flex-grow: 1;
-      align-self: center;
-    }
+		.item-1 {
+			font-size: 1.5em;
+			flex-grow: 1;
+			align-self: center;
+		}
 
-    .item-0 {
-      font-size: 2em;
-      font-weight: bold;
-      flex-grow: 2;
-      flex-basis: 1rem;
-      align-self: center;
-    }`,
+		.item-0 {
+			font-size: 2em;
+			font-weight: bold;
+			flex-grow: 2;
+			flex-basis: 1rem;
+			align-self: center;
+		}
+	`,
 })
 export class CartCheckoutDialogComponent implements OnInit {
 	cart = inject(OrderStoreService);
 	accountService = inject(AccountService);
-  checkoutService = inject(CheckoutService);
+	checkoutService = inject(CheckoutService);
 
-
-  public accounts = rxResource({
+	public accounts = rxResource({
 		loader: () => this.accountService.read(),
 	});
 
@@ -214,11 +214,6 @@ export class CartCheckoutDialogComponent implements OnInit {
 	});
 
 	error = '';
-
-	checkoutData: CheckoutRequest = {
-		items: [],
-		payment_option: PaymentOption.CASH,
-	};
 
 	filteredOptions: Observable<AutoCompleteOption[]> | undefined;
 
@@ -254,27 +249,32 @@ export class CartCheckoutDialogComponent implements OnInit {
 		};
 	}
 
-  checkout(option = PaymentOption.CASH, account_id?: string) {
-    if(this.error !== '') {
-      this.error = ''
-    }
-    this.checkoutService.checkout(
-      {
-        payment_option: option,
-        items: this.items()?.map((i) => ({ id: i.id, quantity: i.quantity })) ?? [],
-        account_id
-      }
-    ).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.dialogRef.close(1);
-        } else {
-          this.error = 'checkout.failed';
-        }
-      },
-      error: (err) => {
-        this.error = err;
-      }
-    });
-  }
+	checkout(option = PaymentOption.CASH, account_id?: string) {
+		this.error = '';
+
+		const checkoutData = {
+			payment_option: option,
+			account_id,
+			items:
+				this.items()
+					?.filter((i: CartItem) => i.id !== 'deposit')
+					.map((i: CartItem) => ({ id: i.id, qty: i.quantity }) as CheckoutRequestItem) ?? [],
+			deposits:
+				this.items()
+					?.filter((i: CartItem) => i.id === 'deposit')
+					.map((i: CartItem) => ({ qty: i.quantity, price: i.price }) as CheckoutRequestItem) ?? [],
+		} as CheckoutRequest;
+
+		console.log(JSON.stringify(checkoutData));
+
+		this.checkoutService.checkout(checkoutData).subscribe({
+			next: (res) => {
+				console.log(JSON.stringify(res));
+				this.dialogRef.close(1);
+			},
+			error: (err) => {
+				this.error = err;
+			},
+		});
+	}
 }

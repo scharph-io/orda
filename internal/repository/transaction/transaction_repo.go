@@ -19,8 +19,7 @@ func NewTransactionRepository(db *gorm.DB) *TransactionRepository {
 }
 
 func (r *TransactionRepository) Create(ctx context.Context, transaction *domain.Transaction) (*domain.Transaction, error) {
-
-	if err := r.db.WithContext(ctx).Create(&transaction).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(transaction).Error; err != nil {
 		return nil, err
 	}
 	return transaction, nil

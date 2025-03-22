@@ -52,7 +52,7 @@ type IProductGroupRepository interface {
 type IProductRepository interface {
 	Read(ctx context.Context) ([]*domain.Product, error)
 	ReadById(ctx context.Context, id string) (*domain.Product, error)
-	// ReadByIds(ctx context.Context, ids []string) (domain.Products, error)
+	ReadByIds(ctx context.Context, ids ...string) (domain.Products, error)
 	ReadByGroupId(ctx context.Context, id string) (domain.Products, error)
 	Update(ctx context.Context, p domain.Product) (*domain.Product, error)
 	Delete(ctx context.Context, p domain.Product) error

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/service"
@@ -19,9 +21,10 @@ var _ ports.ITransactionHandlers = (*TransactionHandlers)(nil)
 func (h *TransactionHandlers) Create(c *fiber.Ctx) error {
 	req := ports.TransactionRequest{}
 	if err := c.BodyParser(&req); err != nil {
+		fmt.Println(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
-	res, err := h.transactionService.Create(c.Context(), req)
+	res, err := h.transactionService.Create(c.Context(), c.Locals("userid").(string), req)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create transaction"})
 	}

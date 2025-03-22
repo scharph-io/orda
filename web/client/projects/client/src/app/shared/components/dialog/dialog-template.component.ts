@@ -40,10 +40,10 @@ export const FORM = new InjectionToken<FormGroup>('form');
 	template: `
 		<h2 mat-dialog-title>{{ inputData ? 'Update' : 'Create' }}</h2>
 		<mat-dialog-content>
-        <ng-container *ngTemplateOutlet="customTemplate()" />
+			<ng-container *ngTemplateOutlet="customTemplate()" />
 		</mat-dialog-content>
 		<mat-dialog-actions>
-			<button mat-button mat-dialog-close>Cancel</button>
+			<button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
 			<button mat-button [disabled]="!canSubmit()" (click)="submitClick.emit()">
 				{{ inputData ? 'Update' : 'Save' }}
 			</button>
@@ -66,7 +66,6 @@ export class DialogTemplateComponent<D, R = D> {
 
 	protected closeObserver: Partial<Observer<R>> = {
 		next: (value) => {
-			console.log('sd', value);
 			this.dialogRef.close(value);
 		},
 		error: (error) => {
