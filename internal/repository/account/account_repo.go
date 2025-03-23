@@ -35,14 +35,21 @@ func (r *AccountRepo) Read(ctx context.Context) ([]domain.Account, error) {
 
 func (r *AccountRepo) ReadById(ctx context.Context, id string) (*domain.Account, error) {
 	var account domain.Account
-	if err := r.db.Model(&domain.Account{}).Where("id = ?", id).Find(&account).Error; err != nil {
+	if err := r.db.Find(&account, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &account, nil
 }
 
 func (r *AccountRepo) Update(ctx context.Context, account domain.Account) (*domain.Account, error) {
-	res := r.db.WithContext(ctx).Model(&account).Updates(&account)
+	res := r.db.WithContext(ctx).Model(&account).Updates(map[string]interface{}{
+		"last_deposit":      account.LastDeposit,
+		"main_balance":      account.MainBalance,
+		"credit_balance":    account.CreditBalance,
+		"last_balance":      account.LastBalance,
+		"last_deposit_type": account.LastDepositType,
+		"last_deposit_time": account.LastDepositTime,
+	})
 	if res.Error != nil {
 		return nil, res.Error
 	}

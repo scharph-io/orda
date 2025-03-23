@@ -97,24 +97,26 @@ export class UsersComponent extends EntityManager<User> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-				<mat-form-field>
-					<mat-label>Name</mat-label>
-					<input matInput formControlName="name" />
-				</mat-form-field>
+        <div class="dialog-flex">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
 
-				<mat-form-field>
-					<mat-label>Password</mat-label>
-					<input type="password" matInput formControlName="password" />
-				</mat-form-field>
+          <mat-form-field>
+            <mat-label>Password</mat-label>
+            <input type="password" matInput formControlName="password" />
+          </mat-form-field>
 
-				<mat-form-field>
-					<mat-label>Role</mat-label>
-					<mat-select formControlName="role">
-						@for (role of roleService.entityResource.value(); track role.id) {
-							<mat-option [value]="role.id">{{ role.name | titlecase }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
+          <mat-form-field>
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              @for (role of roleService.entityResource.value(); track role.id) {
+                <mat-option [value]="role.id">{{ role.name | titlecase }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
 			</form>
 		</ng-template>
 	`,

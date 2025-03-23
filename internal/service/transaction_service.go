@@ -2,74 +2,170 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
+	"github.com/scharph/orda/internal/util"
 )
 
 type TransactionService struct {
-	repo        ports.ITransactionRepository
-	itemRepo    ports.ITransactionItemRepository
-	productRepo ports.IProductRepository
+	repo           ports.ITransactionRepository
+	itemRepo       ports.ITransactionItemRepository
+	productRepo    ports.IProductRepository
+	accountService ports.IAccountService
 }
 
-func NewTransactionService(tr ports.ITransactionRepository, tir ports.ITransactionItemRepository, p ports.IProductRepository) *TransactionService {
+func NewTransactionService(tr ports.ITransactionRepository, tir ports.ITransactionItemRepository, p ports.IProductRepository, as ports.IAccountService) *TransactionService {
 	return &TransactionService{
-		repo:        tr,
-		itemRepo:    tir,
-		productRepo: p,
+		repo:           tr,
+		itemRepo:       tir,
+		productRepo:    p,
+		accountService: as,
 	}
 }
 
 var _ ports.ITransactionService = (*TransactionService)(nil)
 
-func (s *TransactionService) Create(ctx context.Context, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
+func (s *TransactionService) Create(ctx context.Context, userid string, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
+	productIds := util.MapSlice(t.Items, func(i ports.ItemRequest) string {
+		return i.Id
+	})
+	products, err := s.productRepo.ReadByIds(ctx, productIds...)
+	if err != nil {
+		return nil, err
+	}
 
-	// pIds := make([]string, 0)
-	// for _, item := range t.Items {
-	// 	pIds = append(pIds, item.ProductID)
-	// }
+	var total int32 = 0
+	var items []*domain.TransactionItem
+	for index, p := range products {
+		total += p.Price * int32(t.Items[index].Quantity)
+		items = append(items, &domain.TransactionItem{
+			ProductID: p.ID,
+			Qty:       t.Items[index].Quantity,
+			Price:     p.Price,
+		})
+	}
 
-	// products, err := s.productRepo.Read(ctx, pIds)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	for _, d := range t.Deposits {
+		total += int32(d.Quantity) * d.Price
+		items = append(items, &domain.TransactionItem{
+			ProductID: "deposit",
+			Qty:       d.Quantity,
+			Price:     d.Price,
+		})
+	}
 
-	// pMap := make(map[string]int32)
-	// for _, p := range products {
-	// 	pMap[p.ID] = p.Price
-	// }
+	var acc sql.NullString
+	if t.AccountID != "" {
+		acc = sql.NullString{String: t.AccountID, Valid: true}
+	} else {
+		acc = sql.NullString{Valid: false}
+	}
 
-	// var total int32 = 0
-	// var items []*domain.TransactionItem
-	// for _, item := range t.Items {
-	// 	total += pMap[item.ProductID] * int32(item.Quantity)
-	// 	items = append(items, &domain.TransactionItem{
-	// 		ProductID: item.ProductID,
-	// 		Qty:       int8(item.Quantity),
-	// 		Price:     pMap[item.ProductID],
-	// 	})
-	// }
+	transaction := &domain.Transaction{
+		PaymentOption: t.PaymentOption,
+		UserID:        userid,
+		AccountID:     acc,
+		Total:         total,
+		Items:         items,
+		TotalCredit:   0,
+	}
 
-	// transaction := &domain.Transaction{
-	// 	PaymentOption: t.PaymentOption,
-	// 	AccountType:   t.AccountType,
-	// 	UserID:        t.UserID,
-	// 	AccountID:     sql.NullString{String: t.AccountID, Valid: true},
-	// 	Total:         total,
-	// 	Items:         items,
-	// }
+	transaction, err = s.repo.Create(ctx, transaction)
 
-	// transaction, err = s.repo.Create(ctx, transaction)
+	return &ports.TransactionResponse{
+		TransactionID: transaction.ID,
+		Total:         transaction.Total,
+		ItemsLength:   len(transaction.Items),
+	}, nil
 
-	// return &ports.TransactionResponse{
-	// 	TransactionID: transaction.ID,
-	// 	Total:         transaction.Total,
-	// 	ItemsLength:   len(transaction.Items),
-	// }, nil
-	//
-	return nil, nil
+}
+
+func (s *TransactionService) CreateWithAccount(ctx context.Context, userid string, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
+
+	// Products
+	productIds := util.MapSlice(t.Items, func(i ports.ItemRequest) string {
+		return i.Id
+	})
+	products, err := s.productRepo.ReadByIds(ctx, productIds...)
+	if err != nil {
+		return nil, err
+	}
+
+	// Total Products
+	var total int32 = 0
+	var items []*domain.TransactionItem
+	for index, p := range products {
+		total += p.Price * int32(t.Items[index].Quantity)
+		items = append(items, &domain.TransactionItem{
+			ProductID: p.ID,
+			Qty:       t.Items[index].Quantity,
+			Price:     p.Price,
+		})
+	}
+
+	// Total Deposits
+	for _, d := range t.Deposits {
+		total += int32(d.Quantity) * d.Price
+		items = append(items, &domain.TransactionItem{
+			ProductID: "deposit",
+			Qty:       d.Quantity,
+			Price:     d.Price,
+		})
+	}
+
+	acc, err := s.accountService.GetById(ctx, t.AccountID)
+	if err != nil {
+		return nil, err
+	}
+
+	if acc.CreditBalance == 0 {
+		return nil, fmt.Errorf("Insufficient balance")
+	}
+
+	transaction, err := s.repo.Create(ctx, &domain.Transaction{
+		PaymentOption: t.PaymentOption,
+		UserID:        userid,
+		AccountID:     sql.NullString{String: t.AccountID, Valid: true},
+		Total:         total,
+		Items:         items,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	debitAmount, err := s.accountService.DebitAmount(ctx, userid, acc.Id, ports.DebitRequest{
+		Amount:        total,
+		TransactionId: transaction.ID,
+	})
+
+	transaction.TotalCredit = total - debitAmount.RemainingCash
+
+	updatedTransaction, err := s.repo.Update(ctx, *transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	if debitAmount.RemainingCash > 0 {
+		_, err := s.repo.Create(ctx, &domain.Transaction{
+			PaymentOption: domain.PaymentOptionCash,
+			UserID:        userid,
+			AccountID:     sql.NullString{String: t.AccountID, Valid: true},
+			Total:         debitAmount.RemainingCash,
+			TotalCredit:   0,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+	}
+	return &ports.TransactionResponse{
+		TransactionID: updatedTransaction.ID,
+		Total:         updatedTransaction.Total,
+		ItemsLength:   len(updatedTransaction.Items),
+	}, nil
 }
 
 func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResponse, error) {
@@ -83,10 +179,10 @@ func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResp
 			TransactionID: v.ID,
 			Total:         v.Total,
 			ItemsLength:   len(v.Items),
-			AccountType:   int(v.AccountType),
-			PaymentOption: int(v.PaymentOption),
-			User:          v.User.Username,
-			Account:       fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname),
+			// Account:       fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname),
+			// Account: *ports.AccountResponse{
+			// 	Firstname: v.Account.Firstname,
+			// },
 		})
 	}
 	return res, nil
@@ -103,10 +199,9 @@ func (s *TransactionService) ReadByID(ctx context.Context, id string) (*ports.Tr
 		TransactionID: t.ID,
 		Total:         t.Total,
 		ItemsLength:   len(t.Items),
-		AccountType:   int(t.AccountType),
-		PaymentOption: int(t.PaymentOption),
-		User:          t.User.Username,
-		Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
+		// AccountType:   int(t.AccountType),
+
+		// Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
 	}, nil
 }
 

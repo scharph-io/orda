@@ -9,22 +9,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type PaymentOption uint8
-
-const (
-	PaymentOptionNone PaymentOption = iota
-	PaymentOptionCash               // 1
-	PaymentOptionCard               // 2
-)
-
-type AccountType uint8
-
-const (
-	AccountTypeCash    AccountType = iota
-	AccountTypeFree                // 1
-	AccountTypePremium             // 2
-)
-
 func PasswordGenerator(passwordLength int) string {
 	// Character sets for generating passwords
 	lowerCase := "abcdefghijklmnopqrstuvwxyz" // lowercase
@@ -39,7 +23,7 @@ func PasswordGenerator(passwordLength int) string {
 	rng := rand.New(source)
 
 	// Generate password character by character
-	for n := 0; n < passwordLength; n++ {
+	for range passwordLength {
 		// Generate a random number to choose a character set
 		randNum := rng.Intn(3)
 
@@ -81,4 +65,12 @@ func ToAccountResponse(account *domain.Account) *ports.AccountResponse {
 		LastBalance:     account.LastBalance,
 		GroupId:         account.AccountGroupID,
 	}
+}
+
+// Map function for slices
+func MapSlice[T any, U any](input []T, fn func(T) U) (res []U) {
+	for _, v := range input {
+		res = append(res, fn(v))
+	}
+	return res
 }

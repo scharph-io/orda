@@ -9,57 +9,41 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 	selector: 'orda-cart',
 	imports: [CartActionsComponent, CartSubtotalComponent, CartItemComponent],
 	template: `
-		<div class="cart">
+		<div class="cart-items">
 			@for (item of items(); track $index) {
 				<orda-cart-item [item]="item"></orda-cart-item>
 			}
 			@if (items()?.length === 0) {
-				<span class="cartEmpty">{{ 'cart.empty' }}</span>
+				<span class="cartEmpty">{{ 'Warenkorb leer' }}</span>
 			}
 		</div>
-		<orda-cart-actions class="actions" [items]="items() ?? []" />
+
 		<orda-cart-subtotal class="subtotal" [subtotal]="subtotal() ?? 0" />
+		<orda-cart-actions class="actions" />
 	`,
 	styles: `
 		:host {
-			padding: 1em;
-			display: grid;
-			gap: 0.5em;
-			grid-auto-flow: row;
-			justify-content: center;
-			align-content: stretch;
-			align-items: stretch;
-			grid-template:
-				'cart' 1fr
-				'subtotal' min-content
-				'actions' min-content/ 1fr;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-content: center;
 		}
 
-		.cart {
-			grid-area: cart;
-			height: calc(100vh - 13em);
+		.cart-items {
+      flex-grow: 1;
 			overflow-y: auto;
+      padding: 0.75rem;
 		}
 
 		.actions {
-			justify-self: center;
-			align-self: start;
-			grid-area: actions;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-
-		.title {
-			justify-self: center;
-			align-self: center;
-			grid-area: title;
+      justify-self: center;
+      align-self: center;
+      height: 3em;
 		}
 
 		.subtotal {
 			justify-self: center;
 			align-self: center;
-			grid-area: subtotal;
 			height: 3em;
 		}
 
@@ -74,12 +58,4 @@ export class CartComponent {
 
 	items = toSignal(this.cart.items$);
 	subtotal = toSignal(this.cart.subtotal$);
-
-	// get items$(): Observable<CartItem[]> {
-	// 	return this.cart.items$;
-	// }
-
-	// get subtotal$(): Observable<number> {
-	// 	return this.cart.subtotal$;
-	// }
 }

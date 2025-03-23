@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -39,7 +38,6 @@ func (s *ViewService) ReadMany(ctx context.Context) ([]*ports.ViewResponse, erro
 		return nil, err
 	}
 
-	fmt.Println(views)
 	res := make([]*ports.ViewResponse, 0)
 	for _, v := range views {
 		res = append(res, &ports.ViewResponse{

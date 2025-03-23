@@ -45,19 +45,23 @@ import { AccountGroup } from '@orda.core/models/account';
 	template: ` <h2 mat-dialog-title>Group Deposit</h2>
 		<mat-dialog-content>
 			<form [formGroup]="formGroup">
-				<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
-					@for (val of DEPOSIT_VALUES; track val) {
-						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
-					}
-				</mat-button-toggle-group>
-				<mat-form-field>
-					<mat-label>Group</mat-label>
-					<mat-select formControlName="group">
-						@for (group of accountGroupService.entityResource.value(); track group.id) {
-							<mat-option [value]="group.id">{{ group.name | titlecase }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
+        <div class="dialog-flex">
+
+          <mat-form-field>
+            <mat-label>Group</mat-label>
+            <mat-select formControlName="group">
+              @for (group of accountGroupService.entityResource.value(); track group.id) {
+                <mat-option [value]="group.id">{{ group.name | titlecase }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-button-toggle-group formControlName="amount" aria-label="Font Style">
+            @for (val of DEPOSIT_VALUES; track val) {
+              <mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
+            }
+          </mat-button-toggle-group>
+        </div>
+
 			</form>
 		</mat-dialog-content>
 		<mat-dialog-actions>
@@ -65,7 +69,8 @@ import { AccountGroup } from '@orda.core/models/account';
 			<button mat-button [disabled]="formGroup.invalid" (click)="submit()">Deposit</button>
 		</mat-dialog-actions>
 		‚`,
-	styles: ``,
+	styles: `
+  `,
 })
 export class GroupDepositDialogComponent extends DialogTemplateComponent<AccountGroup> {
 	accountGroupService = inject(AccountGroupService);

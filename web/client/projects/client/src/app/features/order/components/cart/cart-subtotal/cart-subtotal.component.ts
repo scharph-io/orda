@@ -5,7 +5,8 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 	selector: 'orda-cart-subtotal',
 	imports: [OrdaCurrencyPipe, OrdaCurrencyPipe],
 	template: `
-		<span>{{ 'cart.subtotal' }}:</span>
+<!--		<span>{{ 'cart.subtotal' }}:</span>-->
+    <span>{{ 'Zwischensumme' }}:</span>
 		<span class="subtotal">{{ subtotal() | currency: 'EUR' }}</span>
 	`,
 	styles: `

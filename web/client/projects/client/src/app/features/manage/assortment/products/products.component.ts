@@ -218,19 +218,21 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-				<mat-form-field>
-					<mat-label>Name</mat-label>
-					<input matInput formControlName="name" />
-				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Description</mat-label>
-					<input matInput formControlName="desc" />
-				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Price</mat-label>
-					<input type="number" matInput formControlName="price" />
-				</mat-form-field>
-				<mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
+        <div class="dialog-flex">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="desc" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Price</mat-label>
+            <input type="number" matInput formControlName="price" />
+          </mat-form-field>
+          <mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
+        </div>
 			</form>
 		</ng-template>
 	`,

@@ -68,4 +68,8 @@ export class SessionService {
 				}),
 			);
 	}
+
+  public hasAdminRole() {
+    return this.user().role === 'admin';
+  }
 }

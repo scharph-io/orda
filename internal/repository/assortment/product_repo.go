@@ -34,13 +34,13 @@ func (r *ProductRepo) ReadById(ctx context.Context, id string) (*domain.Product,
 	return &product, nil
 }
 
-// func (r *ProductRepo) ReadByIds(ctx context.Context, ids []string) (domain.Products, error) {
-// 	var p domain.Products
-// 	if err := r.db.WithContext(ctx).Find(&p, ids).Error; err != nil {
-// 		return nil, err
-// 	}
-// 	return p, nil
-// }
+func (r *ProductRepo) ReadByIds(ctx context.Context, ids ...string) (domain.Products, error) {
+	var p domain.Products
+	if err := r.db.WithContext(ctx).Find(&p, ids).Error; err != nil {
+		return nil, err
+	}
+	return p, nil
+}
 
 func (r *ProductRepo) ReadByGroupId(ctx context.Context, id string) (domain.Products, error) {
 	var products domain.Products

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 
 export interface CartItem {
-	uuid: string;
+	id: string;
 	name: string;
 	desc?: string;
 	quantity: number;
@@ -31,10 +31,10 @@ export class OrderStoreService {
 	);
 
 	addItem(item: CartItem): void {
-		if (this._items.getValue().find((a) => a.uuid === item.uuid)) {
+		if (this._items.getValue().find((a) => a.id === item.id)) {
 			this._items.next(
 				this._items.getValue().map((a) =>
-					a.uuid === item.uuid
+					a.id === item.id
 						? {
 								...a,
 								quantity: item.quantity > 0 ? a.quantity + 1 : a.quantity - 1,
@@ -51,7 +51,7 @@ export class OrderStoreService {
 		if (item.quantity > 1 || item.quantity < -1) {
 			this._items.next(
 				this._items.getValue().map((a) =>
-					a.uuid === item.uuid
+					a.id === item.id
 						? {
 								...a,
 								quantity: item.quantity > 0 ? a.quantity - 1 : a.quantity + 1,
@@ -60,7 +60,7 @@ export class OrderStoreService {
 				),
 			);
 		} else {
-			this._items.next(this._items.getValue().filter((a) => a.uuid !== item.uuid));
+			this._items.next(this._items.getValue().filter((a) => a.id !== item.id));
 		}
 	}
 

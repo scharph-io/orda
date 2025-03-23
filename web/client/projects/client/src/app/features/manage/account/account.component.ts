@@ -240,22 +240,24 @@ export class AccountComponent extends EntityManager<Account> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-				<mat-form-field>
-					<mat-label>Firstname</mat-label>
-					<input matInput formControlName="firstname" />
-				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Lastname</mat-label>
-					<input matInput formControlName="lastname" />
-				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Group</mat-label>
-					<mat-select formControlName="group">
-						@for (ag of accountGroupService.entityResource.value(); track ag.id) {
-							<mat-option [value]="ag.id">{{ ag.name | titlecase }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
+        <div class="dialog-flex">
+          <mat-form-field>
+            <mat-label>Firstname</mat-label>
+            <input matInput formControlName="firstname" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Lastname</mat-label>
+            <input matInput formControlName="lastname" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Group</mat-label>
+            <mat-select formControlName="group">
+              @for (ag of accountGroupService.entityResource.value(); track ag.id) {
+                <mat-option [value]="ag.id">{{ ag.name | titlecase }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
 			</form>
 		</ng-template>
 	`,

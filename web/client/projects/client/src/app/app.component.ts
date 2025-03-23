@@ -23,10 +23,10 @@ export class AppComponent {
 	sessionService = inject(SessionService);
 	router = inject(Router);
 
-	logout() {
+  logout() {
 		this.sessionService.logout().subscribe({
 			next: () => {
-				this.router.navigate(['/login']);
+				return this.router.navigate(['/login']);
 			},
 			error: (err) => {
 				console.error(err);

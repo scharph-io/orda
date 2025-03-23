@@ -7,6 +7,12 @@ import (
 	"github.com/scharph/orda/internal/domain"
 )
 
+type ItemRequest struct {
+	Id       string `json:"id,omitzero"`
+	Quantity int8   `json:"qty"`
+	Price    int32  `json:"price,omitzero"`
+}
+
 type Item struct {
 	TransactionID string `json:"transaction_id,omitempty"`
 	ProductID     string `json:"product_id"` // Needed for request
@@ -15,21 +21,15 @@ type Item struct {
 }
 
 type TransactionRequest struct {
-	Items         []Item               `json:"items"`
-	AccountID     string               `json:"account_id"`
-	UserID        string               `json:"user_id"`
+	Items         []ItemRequest        `json:"items"`
+	Deposits      []ItemRequest        `json:"deposits"`
+	AccountID     string               `json:"account_id,omitempty"`
 	PaymentOption domain.PaymentOption `json:"payment_option"`
-	AccountType   domain.AccountType   `json:"account_type"`
 }
 
 type TransactionResponse struct {
 	TransactionID string `json:"transaction_id"`
-	// Items         []Item `json:"items"`
 	ItemsLength   int    `json:"items_length"`
-	Account       string `json:"account_id,omitempty"`
-	User          string `json:"user_id,omitempty"`
-	PaymentOption int    `json:"payment_option,omitempty"`
-	AccountType   int    `json:"account_type,omitempty"`
 	Total         int32  `json:"total"`
 }
 
@@ -46,7 +46,8 @@ type ITransactionItemRepository interface {
 }
 
 type ITransactionService interface {
-	Create(ctx context.Context, t TransactionRequest) (*TransactionResponse, error)
+	Create(ctx context.Context, userid string, t TransactionRequest) (*TransactionResponse, error)
+	CreateWithAccount(ctx context.Context, userid string, t TransactionRequest) (*TransactionResponse, error)
 	Read(ctx context.Context) ([]*TransactionResponse, error)
 	ReadByID(ctx context.Context, id string) (*TransactionResponse, error)
 	ReadItemsByTransactionID(ctx context.Context, transactionID string) ([]*TransactionResponse, error)

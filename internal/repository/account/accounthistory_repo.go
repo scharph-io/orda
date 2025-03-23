@@ -2,7 +2,6 @@ package account
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -20,15 +19,6 @@ func NewAccountHistoryRepo(db *gorm.DB) *AccountHistoryRepository {
 }
 
 func (r *AccountHistoryRepository) Create(ctx context.Context, logs ...domain.AccountHistory) ([]domain.AccountHistory, error) {
-
-	fmt.Println("Creating account history logs")
-	for _, log := range logs {
-		fmt.Println("Creating log:")
-		fmt.Println("Amount:", log.Amount)
-		fmt.Println("AccountID:", log.AccountID)
-		fmt.Println("AccountGroupID:", log.AccountGroupID)
-		fmt.Println("Transaction:", log.TransactionID)
-	}
 
 	if err := r.db.Create(&logs).Error; err != nil {
 		return nil, err

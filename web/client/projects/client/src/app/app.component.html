@@ -19,10 +19,13 @@
     <span>Home</span>
   </button>
 
-  <button mat-menu-item routerLink="manage">
-    <mat-icon>notifications_off</mat-icon>
-    <span>Manage</span>
-  </button>
+  @if(sessionService.hasAdminRole()) {
+    <button mat-menu-item routerLink="manage">
+      <mat-icon>tune</mat-icon>
+      <span>Manage</span>
+    </button>
+  }
+
 
   @if (sessionService.isAuthenticated()) {
     <button mat-menu-item (click)="logout()">
