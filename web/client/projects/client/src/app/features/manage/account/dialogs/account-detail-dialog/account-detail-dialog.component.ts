@@ -35,8 +35,8 @@ import { JsonPipe } from '@angular/common';
         </code>
       </pre>
 
-			<button mat-button>Delete</button>
-			<button mat-button>Edit</button>
+<!--			<button mat-button>Delete</button>-->
+<!--			<button mat-button>Edit</button>-->
 		</mat-dialog-content>
 		<mat-dialog-actions>
 			<button mat-button mat-dialog-close>Close</button>

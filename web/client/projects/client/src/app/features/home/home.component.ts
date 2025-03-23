@@ -58,7 +58,7 @@ export class HomeComponent {
 		{
 			title: 'Manage',
 			path: '/manage',
-			canActivate: () => this.sessionService.user().role === 'admin',
+			canActivate: () => this.sessionService.hasAdminRole(),
 		},
 		{
 			title: 'Order',

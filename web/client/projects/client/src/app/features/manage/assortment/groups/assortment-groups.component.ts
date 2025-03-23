@@ -139,14 +139,16 @@ export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-				<mat-form-field>
-					<mat-label>Name</mat-label>
-					<input matInput formControlName="name" />
-				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Description</mat-label>
-					<input matInput formControlName="desc" />
-				</mat-form-field>
+        <div class="dialog-flex">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="desc" />
+          </mat-form-field>
+        </div>
 			</form>
 		</ng-template>
 	`,

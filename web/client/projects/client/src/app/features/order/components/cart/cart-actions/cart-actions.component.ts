@@ -27,7 +27,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 		>
 			<mat-icon>shopping_cart_checkout</mat-icon>
 <!--			{{ 'cart.checkout' }}-->
-      Zahlung
+      Abrechnen
 		</button>
 	`,
 	styles: `
@@ -68,16 +68,21 @@ export class CartActionsComponent {
 		);
 
 		dialogRef.afterClosed().subscribe((result) => {
+
 			if (result && result > 0) {
-				this.snackBar.open(`Done`, undefined, {
+				this.snackBar.open(`Erfolgreich`, undefined, {
 					duration: 5000,
 				});
 				this.clearCart();
-			} else {
-				this.snackBar.open('Cancelled', undefined, {
+			} else if(result === 0) {
+				this.snackBar.open('Vorgang abgebrochen', undefined, {
 					duration: 5000,
 				});
-			}
+			} else {
+        this.snackBar.open('Fehler', undefined, {
+          duration: 5000,
+        });
+      }
 		});
 	}
 }

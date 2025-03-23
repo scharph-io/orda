@@ -31,7 +31,7 @@ import { Subject, takeUntil } from 'rxjs';
 			display: flex;
 			justify-content: space-between;
 			gap: 0.25rem;
-			/* height: calc(100vh - 64px); */
+      height: calc(100vh - 80px);
 		}
 
 		.products {
@@ -41,7 +41,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 		.cart {
 			background-color: lightgray;
-      width: 17rem;
+      /*width: 17rem;*/
 		}
 	`,
 })

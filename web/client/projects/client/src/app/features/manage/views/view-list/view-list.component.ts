@@ -143,6 +143,7 @@ export class ViewListComponent extends EntityManager<View> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
+        <div class="dialog-flex">
 				<mat-form-field>
 					<mat-label>Name</mat-label>
 					<input matInput formControlName="name" />
@@ -163,6 +164,7 @@ export class ViewListComponent extends EntityManager<View> {
 						}
 					</mat-select>
 				</mat-form-field>
+        </div>
 			</form>
 		</ng-template>
 	`,

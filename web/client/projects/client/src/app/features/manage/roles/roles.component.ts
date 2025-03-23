@@ -145,10 +145,12 @@ export class RolesComponent extends EntityManager<Role> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-				<mat-form-field>
-					<mat-label>Name</mat-label>
-					<input matInput formControlName="name" />
-				</mat-form-field>
+        <div class="dialog-flex">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+        </div>
 			</form>
 			<!-- can save {{ canSubmit() }} -->
 		</ng-template>

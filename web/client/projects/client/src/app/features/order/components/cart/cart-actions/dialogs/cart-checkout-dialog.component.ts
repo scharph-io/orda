@@ -112,7 +112,7 @@ interface AutoCompleteOption {
 <!--								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>-->
 							</div>
 						} @else {
-							<div class="error" [style.color]="'red'">{{ 'checkout.account-empty' }}</div>
+<!--							<div class="error" [style.color]="'red'">{{ 'checkout.account-empty' }}</div>-->
 							<div class="error" [style.color]="'red'">{{ 'Konto leer' }}</div>
 						}
 					}
@@ -122,12 +122,12 @@ interface AutoCompleteOption {
 		</mat-dialog-content>
 		<mat-dialog-actions align="end">
 <!--			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'checkout.cancel' }}</button>-->
-			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'Abbrechen' }}</button>
+			<button mat-button [mat-dialog-close]="0" cdkFocusInitial>{{ 'Abbrechen' }}</button>
 			@switch (paymentOptionControl.value) {
 				@case (PaymentOption.CASH) {
 					<button mat-button cdkFocusInitial (click)="checkout()">
 <!--						{{ 'checkout.cash.title' }}-->
-						{{ 'Abrechnen Bar' }}
+						{{ 'Barzahlung' }}
 					</button>
 				}
 				@case (PaymentOption.ACCOUNT) {
@@ -138,7 +138,7 @@ interface AutoCompleteOption {
 						(click)="checkout(PaymentOption.ACCOUNT, selectedAccount()?.id)"
 					>
 <!--						{{ 'checkout.account.title' }}-->
-						{{ 'Abrechnen Konto' }}
+						{{ 'Kontozahlung' }}
 					</button>
 				}
 			}
@@ -278,15 +278,16 @@ export class CartCheckoutDialogComponent implements OnInit {
 					.map((i: CartItem) => ({ qty: i.quantity, price: i.price }) as CheckoutRequestItem) ?? [],
 		} as CheckoutRequest;
 
-		console.log(JSON.stringify(checkoutData));
+		// console.log(JSON.stringify(checkoutData));
 
 		this.checkoutService.checkout(checkoutData).subscribe({
-			next: (res) => {
-				console.log(JSON.stringify(res));
+			next: () => {
+				// console.log(JSON.stringify(res));
 				this.dialogRef.close(1);
 			},
 			error: (err) => {
-				this.error = err;
+        console.log(err);
+        this.dialogRef.close(-1);
 			},
 		});
 	}
