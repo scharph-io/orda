@@ -11,31 +11,28 @@ import (
 )
 
 type TransactionService struct {
-	repo        ports.ITransactionRepository
-	itemRepo    ports.ITransactionItemRepository
-	productRepo ports.IProductRepository
+	repo           ports.ITransactionRepository
+	itemRepo       ports.ITransactionItemRepository
+	productRepo    ports.IProductRepository
+	accountService ports.IAccountService
 }
 
-func NewTransactionService(tr ports.ITransactionRepository, tir ports.ITransactionItemRepository, p ports.IProductRepository) *TransactionService {
+func NewTransactionService(tr ports.ITransactionRepository, tir ports.ITransactionItemRepository, p ports.IProductRepository, as ports.IAccountService) *TransactionService {
 	return &TransactionService{
-		repo:        tr,
-		itemRepo:    tir,
-		productRepo: p,
+		repo:           tr,
+		itemRepo:       tir,
+		productRepo:    p,
+		accountService: as,
 	}
 }
 
 var _ ports.ITransactionService = (*TransactionService)(nil)
 
 func (s *TransactionService) Create(ctx context.Context, userid string, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
-	// Deposit
-	if len(t.Deposits) > 0 {
-		fmt.Println(t.Deposits)
-	}
-
-	ids := util.MapSlice(t.Items, func(i ports.ItemRequest) string {
+	productIds := util.MapSlice(t.Items, func(i ports.ItemRequest) string {
 		return i.Id
 	})
-	products, err := s.productRepo.ReadByIds(ctx, ids...)
+	products, err := s.productRepo.ReadByIds(ctx, productIds...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +58,8 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 	}
 
 	var acc sql.NullString
-	if t.AccountID != nil {
-		acc = sql.NullString{String: *t.AccountID, Valid: true}
+	if t.AccountID != "" {
+		acc = sql.NullString{String: t.AccountID, Valid: true}
 	} else {
 		acc = sql.NullString{Valid: false}
 	}
@@ -73,6 +70,7 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 		AccountID:     acc,
 		Total:         total,
 		Items:         items,
+		TotalCredit:   0,
 	}
 
 	transaction, err = s.repo.Create(ctx, transaction)
@@ -83,6 +81,91 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 		ItemsLength:   len(transaction.Items),
 	}, nil
 
+}
+
+func (s *TransactionService) CreateWithAccount(ctx context.Context, userid string, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
+
+	// Products
+	productIds := util.MapSlice(t.Items, func(i ports.ItemRequest) string {
+		return i.Id
+	})
+	products, err := s.productRepo.ReadByIds(ctx, productIds...)
+	if err != nil {
+		return nil, err
+	}
+
+	// Total Products
+	var total int32 = 0
+	var items []*domain.TransactionItem
+	for index, p := range products {
+		total += p.Price * int32(t.Items[index].Quantity)
+		items = append(items, &domain.TransactionItem{
+			ProductID: p.ID,
+			Qty:       t.Items[index].Quantity,
+			Price:     p.Price,
+		})
+	}
+
+	// Total Deposits
+	for _, d := range t.Deposits {
+		total += int32(d.Quantity) * d.Price
+		items = append(items, &domain.TransactionItem{
+			ProductID: "deposit",
+			Qty:       d.Quantity,
+			Price:     d.Price,
+		})
+	}
+
+	acc, err := s.accountService.GetById(ctx, t.AccountID)
+	if err != nil {
+		return nil, err
+	}
+
+	if acc.CreditBalance == 0 {
+		return nil, fmt.Errorf("Insufficient balance")
+	}
+
+	transaction, err := s.repo.Create(ctx, &domain.Transaction{
+		PaymentOption: t.PaymentOption,
+		UserID:        userid,
+		AccountID:     sql.NullString{String: t.AccountID, Valid: true},
+		Total:         total,
+		Items:         items,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	debitAmount, err := s.accountService.DebitAmount(ctx, userid, acc.Id, ports.DebitRequest{
+		Amount:        total,
+		TransactionId: transaction.ID,
+	})
+
+	transaction.TotalCredit = total - debitAmount.RemainingCash
+
+	updatedTransaction, err := s.repo.Update(ctx, *transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	if debitAmount.RemainingCash > 0 {
+		_, err := s.repo.Create(ctx, &domain.Transaction{
+			PaymentOption: domain.PaymentOptionCash,
+			UserID:        userid,
+			AccountID:     sql.NullString{String: t.AccountID, Valid: true},
+			Total:         debitAmount.RemainingCash,
+			TotalCredit:   0,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+	}
+	return &ports.TransactionResponse{
+		TransactionID: updatedTransaction.ID,
+		Total:         updatedTransaction.Total,
+		ItemsLength:   len(updatedTransaction.Items),
+	}, nil
 }
 
 func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResponse, error) {

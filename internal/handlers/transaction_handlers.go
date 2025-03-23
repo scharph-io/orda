@@ -21,14 +21,19 @@ var _ ports.ITransactionHandlers = (*TransactionHandlers)(nil)
 func (h *TransactionHandlers) Create(c *fiber.Ctx) error {
 	req := ports.TransactionRequest{}
 	if err := c.BodyParser(&req); err != nil {
-		fmt.Println(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
-	res, err := h.transactionService.Create(c.Context(), c.Locals("userid").(string), req)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create transaction"})
-	}
+	var res *ports.TransactionResponse
+	var err error
 
+	if req.AccountID == "" {
+		res, err = h.transactionService.Create(c.Context(), c.Locals("userid").(string), req)
+	} else {
+		res, err = h.transactionService.CreateWithAccount(c.Context(), c.Locals("userid").(string), req)
+	}
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to create transaction: %s", err)})
+	}
 	return c.Status(fiber.StatusCreated).JSON(res)
 }
 
@@ -54,20 +59,6 @@ func (h *TransactionHandlers) ReadLimit(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
 }
-
-// func (h *TransactionHandlers) Update(c *fiber.Ctx) error {
-// 	req := ports.TransactionRequest{}
-// 	if err := c.BodyParser(&req); err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
-// 	}
-// 	id := c.Params("id")
-// 	res, err := h.transactionService.Update(c.Context(), id, req)
-// 	if err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to update transaction"})
-// 	}
-// 	return c.Status(fiber.StatusOK).JSON(res)
-// }
-//
 
 func (h *TransactionHandlers) Delete(c *fiber.Ctx) error {
 	id := c.Params("id")

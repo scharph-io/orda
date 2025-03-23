@@ -14,6 +14,16 @@ type DepositRequest struct {
 	TransactionId string               `json:"transactionid,omitzero"`
 }
 
+type DebitRequest struct {
+	Amount        int32  `json:"amount" validate:"required gt=0"`
+	TransactionId string `json:"transactionid,omitzero"`
+}
+
+type DebitResponse struct {
+	RemainingCash int32 `json:"remaining_cash"`
+	NewBalance    int32 `json:"new_balance"`
+}
+
 type DepositGroupRequest struct {
 	Amount int32  `json:"amount"`
 	UserId string `json:"userid,omitempty"`
@@ -85,6 +95,7 @@ type IAccountService interface {
 	Update(ctx context.Context, req AccountRequest) (*AccountResponse, error)
 	GetGroupAccounts(ctx context.Context, id string) ([]AccountResponse, error)
 	DepositAmount(ctx context.Context, userid, accountId string, req DepositRequest) (*AccountResponse, error)
+	DebitAmount(ctx context.Context, userid, accountId string, req DebitRequest) (*DebitResponse, error)
 	GetAccountHistory(ctx context.Context, accountid string) ([]*AccountHistoryResponse, error)
 	Delete(ctx context.Context, id string) (bool, error)
 }

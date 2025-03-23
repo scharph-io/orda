@@ -1,10 +1,9 @@
 export enum PaymentOption {
-	ACCOUNT,
 	CASH,
+	ACCOUNT,
 }
 
 export const PaymentOptionKeys = {
-	[PaymentOption.ACCOUNT]: 'payment.account',
 	[PaymentOption.CASH]: 'payment.cash',
-	// [PaymentOption.CARD]: 'payment.card',
+	[PaymentOption.ACCOUNT]: 'payment.account',
 };

@@ -67,13 +67,15 @@ export class CartActionsComponent {
 		);
 
 		dialogRef.afterClosed().subscribe((result) => {
-			console.log('The dialog was closed', result);
-
-			this.snackBar.open(`Checkout result: ${result}`, undefined, {
-				duration: 5000,
-			});
 			if (result && result > 0) {
+				this.snackBar.open(`Done`, undefined, {
+					duration: 5000,
+				});
 				this.clearCart();
+			} else {
+				this.snackBar.open('Cancelled', undefined, {
+					duration: 5000,
+				});
 			}
 		});
 	}

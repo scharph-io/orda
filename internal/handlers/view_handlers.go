@@ -25,7 +25,6 @@ func (h *ViewHandlers) Create(c *fiber.Ctx) error {
 
 	res, err := h.viewService.Create(c.Context(), req)
 	if err != nil {
-		fmt.Println(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to create view"})
 	}
 

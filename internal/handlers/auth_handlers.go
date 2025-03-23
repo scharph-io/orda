@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/scharph/orda/internal/accesscontrol"
@@ -138,7 +136,7 @@ func (h *AuthHandlers) RequireRole(role string) fiber.Handler {
 			})
 		}
 
-		fmt.Printf("User %s (%s) has required role %s\n", user.Username, user.Role, role)
+		// fmt.Printf("User %s (%s) has required role %s\n", user.Username, user.Role, role)
 		return c.Next()
 	}
 }

@@ -35,7 +35,6 @@ func (s *AccountService) CreateGroup(ctx context.Context, req ports.AccountGroup
 }
 
 func (s *AccountService) GetAllGroups(ctx context.Context) ([]ports.AccountGroupResponse, error) {
-	fmt.Println("GetAllGroups")
 	groups, err := s.groupRepo.Read(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -90,7 +89,6 @@ func (s *AccountService) DepositAmountGroup(ctx context.Context, userid, groupId
 
 	accs, err := s.repo.UpdateMany(ctx, accounts)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
@@ -231,7 +229,7 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId st
 	}
 
 	account.LastBalance = account.MainBalance + account.CreditBalance
-	if req.DepositType == domain.DepositTypePaid {
+	if req.DepositType == domain.DepositTypeCash {
 		account.MainBalance += req.Amount
 	} else if req.DepositType == domain.DepositTypeFree {
 		account.CreditBalance += req.Amount
@@ -248,8 +246,6 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId st
 		return nil, err
 	}
 
-	fmt.Println("Updated Account:", updatedAcc.ToString())
-
 	// Log deposit action
 	if err := s.accountHistoryService.Log(ctx, userid, ports.LogRequest{
 		Amount:        req.Amount,
@@ -260,6 +256,63 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId st
 		return nil, err
 	}
 	return util.ToAccountResponse(updatedAcc), err
+}
+
+func (s *AccountService) DebitAmount(ctx context.Context, userid, accountId string, req ports.DebitRequest) (*ports.DebitResponse, error) {
+	account, err := s.repo.ReadById(ctx, accountId)
+	if err != nil {
+		return nil, err
+	}
+
+	account.LastBalance = account.CreditBalance
+
+	diff := account.CreditBalance - req.Amount
+	if diff < 0 {
+		// Log debit action
+		if err := s.accountHistoryService.Log(ctx, userid, ports.LogRequest{
+			Amount:        account.CreditBalance,
+			AccountId:     &accountId,
+			DepositType:   domain.DepositTypeFree,
+			HistoryAction: domain.HistoryDebitAction,
+			TransactionId: &req.TransactionId,
+		}); err != nil {
+			return nil, err
+		}
+
+		account.CreditBalance = 0
+		account, err := s.repo.Update(ctx, *account)
+		if err != nil {
+			return nil, err
+		}
+
+		return &ports.DebitResponse{
+			RemainingCash: diff * -1,
+			NewBalance:    account.CreditBalance,
+		}, err
+	} else {
+		if err := s.accountHistoryService.Log(ctx, userid, ports.LogRequest{
+			Amount:        req.Amount,
+			AccountId:     &accountId,
+			DepositType:   domain.DepositTypeFree,
+			HistoryAction: domain.HistoryDebitAction,
+			TransactionId: &req.TransactionId,
+		}); err != nil {
+			return nil, err
+		}
+
+		account.CreditBalance -= req.Amount
+
+		updatedAcc, err := s.repo.Update(ctx, *account)
+		if err != nil {
+			return nil, err
+		}
+
+		return &ports.DebitResponse{
+			RemainingCash: 0,
+			NewBalance:    updatedAcc.CreditBalance,
+		}, err
+	}
+
 }
 
 func (s *AccountService) GetAccountHistory(ctx context.Context, accountid string) ([]*ports.AccountHistoryResponse, error) {

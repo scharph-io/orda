@@ -6,10 +6,17 @@ import (
 )
 
 type HistoryAction uint8
+type DepositType uint8
 
 const (
-	HistoryPaymentAction HistoryAction = iota
+	HistoryDebitAction HistoryAction = iota
 	HistoryDepositAction
+	HistoryBalanceResetAction
+)
+
+const (
+	DepositTypeFree DepositType = iota
+	DepositTypeCash
 )
 
 type AccountHistory struct {

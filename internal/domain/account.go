@@ -5,13 +5,6 @@ import (
 	"fmt"
 )
 
-type DepositType uint8
-
-const (
-	DepositTypeFree DepositType = iota
-	DepositTypePaid
-)
-
 type AccountGroup struct {
 	Base
 	Name     string
@@ -26,7 +19,7 @@ type Accounts []Account
 
 func (a *Accounts) Print() {
 	for _, account := range *a {
-		fmt.Println(account.ToString())
+		fmt.Println(account)
 	}
 }
 
@@ -45,6 +38,6 @@ type Account struct {
 	LastPaymentTime sql.NullTime
 }
 
-func (a *Account) ToString() string {
+func (a Account) String() string {
 	return fmt.Sprintf("[Account] ID: %s, Name: %s %s, MainBalance: %d (Credit: %d) Time: %s", a.ID, a.Firstname, a.Lastname, a.MainBalance, a.CreditBalance, a.LastDepositTime.Time.String())
 }

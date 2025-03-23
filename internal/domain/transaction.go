@@ -1,14 +1,22 @@
 package domain
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
-type PaymentOption int8
+type PaymentOption uint8
+
+const (
+	PaymentOptionCash PaymentOption = iota
+	PaymentOptionAccount
+)
 
 type Transaction struct {
 	Base
 	Items         []*TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
 	PaymentOption PaymentOption
 	Total         int32
+	TotalCredit   int32
 	UserID        string         `gorm:"size:36"`
 	User          User           `gorm:"foreignKey:UserID"`
 	AccountID     sql.NullString `gorm:"size:36"`

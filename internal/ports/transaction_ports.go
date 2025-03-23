@@ -23,7 +23,7 @@ type Item struct {
 type TransactionRequest struct {
 	Items         []ItemRequest        `json:"items"`
 	Deposits      []ItemRequest        `json:"deposits"`
-	AccountID     *string              `json:"account_id,omitempty"`
+	AccountID     string               `json:"account_id,omitempty"`
 	PaymentOption domain.PaymentOption `json:"payment_option"`
 }
 
@@ -47,6 +47,7 @@ type ITransactionItemRepository interface {
 
 type ITransactionService interface {
 	Create(ctx context.Context, userid string, t TransactionRequest) (*TransactionResponse, error)
+	CreateWithAccount(ctx context.Context, userid string, t TransactionRequest) (*TransactionResponse, error)
 	Read(ctx context.Context) ([]*TransactionResponse, error)
 	ReadByID(ctx context.Context, id string) (*TransactionResponse, error)
 	ReadItemsByTransactionID(ctx context.Context, transactionID string) ([]*TransactionResponse, error)

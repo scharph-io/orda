@@ -63,9 +63,11 @@ interface AutoCompleteOption {
 					<mat-button-toggle [value]="PaymentOption.CASH">{{
 						PaymentOptionKeys[PaymentOption.CASH]
 					}}</mat-button-toggle>
-					<mat-button-toggle [value]="PaymentOption.ACCOUNT">{{
-						PaymentOptionKeys[PaymentOption.ACCOUNT]
-					}}</mat-button-toggle>
+					@if (totalSum > 0) {
+						<mat-button-toggle [value]="PaymentOption.ACCOUNT">{{
+							PaymentOptionKeys[PaymentOption.ACCOUNT]
+						}}</mat-button-toggle>
+					}
 				</mat-button-toggle-group>
 			</div>
 			@if (paymentOptionControl.value === PaymentOption.ACCOUNT) {
@@ -93,20 +95,23 @@ interface AutoCompleteOption {
 					<button mat-button (click)="accountControl.reset()">Clear</button>
 				</div>
 				@if (selectedAccount() && error === '') {
+					@let balance = selectedAccount()?.credit_balance ?? 0;
 					@if (diff() > 0) {
 						<div class="error" [style.color]="'green'">
-							{{ selectedAccount()?.credit_balance | currency }} - {{ total() | currency }} =
+							{{ balance | currency }} - {{ total() | currency }} =
 							{{ diff() | currency }}
 						</div>
 					} @else {
-						<div class="error" [style.color]="'red'">
-							{{ selectedAccount()?.credit_balance | currency }} - {{ total() | currency }} =
-							{{ diff() | currency }}
-							<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>
-						</div>
+						@if (balance > 0) {
+							<div class="error" [style.color]="'red'">
+								{{ balance | currency }} - {{ total() | currency }} =
+								{{ diff() | currency }}
+								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>
+							</div>
+						} @else {
+							<div class="error" [style.color]="'red'">{{ 'checkout.account-empty' }}</div>
+						}
 					}
-
-					@if (diff() < 0) {}
 				}
 			}
 			<div class="error" [style.color]="'red'">{{ error }}</div>
@@ -120,9 +125,10 @@ interface AutoCompleteOption {
 					</button>
 				}
 				@case (PaymentOption.ACCOUNT) {
+					@let balance = selectedAccount()?.credit_balance ?? 0;
 					<button
 						mat-button
-						[disabled]="!accountControl.value"
+						[disabled]="!accountControl.value || balance === 0"
 						(click)="checkout(PaymentOption.ACCOUNT, selectedAccount()?.id)"
 					>
 						{{ 'checkout.account.title' }}
