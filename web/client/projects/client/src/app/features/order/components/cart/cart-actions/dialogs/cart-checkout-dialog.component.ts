@@ -61,11 +61,11 @@ interface AutoCompleteOption {
 
 			<div class="payment">
 				<mat-button-toggle-group [formControl]="paymentOptionControl" aria-label="Payment option">
-					<mat-button-toggle [value]="PaymentOption.CASH">{{
+					<mat-button-toggle style="background-color: lightgreen" [value]="PaymentOption.CASH">{{
 						PaymentOptionKeys[PaymentOption.CASH]
 					}}</mat-button-toggle>
 					@if (totalSum > 0) {
-						<mat-button-toggle [value]="PaymentOption.ACCOUNT">{{
+						<mat-button-toggle style="background-color: lightgoldenrodyellow" [value]="PaymentOption.ACCOUNT">{{
 							PaymentOptionKeys[PaymentOption.ACCOUNT]
 						}}</mat-button-toggle>
 					}
@@ -248,7 +248,7 @@ export class CartCheckoutDialogComponent implements OnInit {
 				.value()
 				?.filter((option) => option.lastname.toLowerCase().includes(filterValue))
 				.map(
-					(o) => ({ id: o.id, name: o.lastname, credit: o.credit_balance }) as AutoCompleteOption,
+					(o) => ({ id: o.id, name: `${o.lastname} ${o.firstname}`, credit: o.credit_balance }) as AutoCompleteOption,
 				) ?? []
 		);
 	}

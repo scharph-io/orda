@@ -4,6 +4,8 @@ export enum PaymentOption {
 }
 
 export const PaymentOptionKeys = {
-	[PaymentOption.CASH]: 'payment.cash',
-	[PaymentOption.ACCOUNT]: 'payment.account',
+	// [PaymentOption.CASH]: 'payment.cash',
+	[PaymentOption.CASH]: 'Barzahlung',
+	// [PaymentOption.ACCOUNT]: 'payment.account',
+	[PaymentOption.ACCOUNT]: 'Kontozahlung',
 };
