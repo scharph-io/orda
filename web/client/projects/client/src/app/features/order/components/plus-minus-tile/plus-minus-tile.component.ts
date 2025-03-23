@@ -10,9 +10,13 @@ const DEFAULT_DEPOSIT = 100;
 	imports: [MatIconModule],
 	template: `
 		<div class="item add" (click)="addToCart(1)" [title]="value()">
-			{{ key() }} <mat-icon>add</mat-icon>
+<!--			{{ key() }} <mat-icon>add</mat-icon>-->
+      Pfand <mat-icon>add</mat-icon>
 		</div>
-		<div class="item remove" (click)="addToCart(-1)">{{ key() }} <mat-icon>remove</mat-icon></div>
+		<div class="item remove" (click)="addToCart(-1)">
+<!--      {{ key() }} <mat-icon>remove</mat-icon>-->
+       Pfand <mat-icon>remove</mat-icon>
+    </div>
 	`,
 	styles: [
 		`

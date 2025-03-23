@@ -54,7 +54,8 @@ interface AutoCompleteOption {
 					<div class="item-0">
 						{{ totalSum | currency: 'EUR' }}
 					</div>
-					<div class="item-1">{{ 'cart.total' }}:</div>
+					<div class="item-1">{{ 'Summe' }}:</div>
+<!--					<div class="item-1">{{ 'cart.total' }}:</div>-->
 				</div>
 			</div>
 
@@ -73,7 +74,8 @@ interface AutoCompleteOption {
 			@if (paymentOptionControl.value === PaymentOption.ACCOUNT) {
 				<div class="account">
 					<mat-form-field class="example-full-width">
-						<mat-label>{{ 'checkout.account' }}</mat-label>
+<!--						<mat-label>{{ 'checkout.account' }}</mat-label>-->
+						<mat-label>{{ "Konto" }}</mat-label>
 						<input
 							type="text"
 							placeholder="Account"
@@ -106,10 +108,12 @@ interface AutoCompleteOption {
 							<div class="error" [style.color]="'red'">
 								{{ balance | currency }} - {{ total() | currency }} =
 								{{ diff() | currency }}
-								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>
+								<div>{{ 'Restbetrag' }} {{ diff() * -1 | currency }}</div>
+<!--								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>-->
 							</div>
 						} @else {
 							<div class="error" [style.color]="'red'">{{ 'checkout.account-empty' }}</div>
+							<div class="error" [style.color]="'red'">{{ 'Konto leer' }}</div>
 						}
 					}
 				}
@@ -117,11 +121,13 @@ interface AutoCompleteOption {
 			<div class="error" [style.color]="'red'">{{ error }}</div>
 		</mat-dialog-content>
 		<mat-dialog-actions align="end">
-			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'checkout.cancel' }}</button>
+<!--			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'checkout.cancel' }}</button>-->
+			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'Abbrechen' }}</button>
 			@switch (paymentOptionControl.value) {
 				@case (PaymentOption.CASH) {
 					<button mat-button cdkFocusInitial (click)="checkout()">
-						{{ 'checkout.cash.title' }}
+<!--						{{ 'checkout.cash.title' }}-->
+						{{ 'Abrechnen Bar' }}
 					</button>
 				}
 				@case (PaymentOption.ACCOUNT) {
@@ -131,7 +137,8 @@ interface AutoCompleteOption {
 						[disabled]="!accountControl.value || balance === 0"
 						(click)="checkout(PaymentOption.ACCOUNT, selectedAccount()?.id)"
 					>
-						{{ 'checkout.account.title' }}
+<!--						{{ 'checkout.account.title' }}-->
+						{{ 'Abrechnen Konto' }}
 					</button>
 				}
 			}

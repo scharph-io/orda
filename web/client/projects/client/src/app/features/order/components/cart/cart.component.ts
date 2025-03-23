@@ -14,7 +14,7 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 				<orda-cart-item [item]="item"></orda-cart-item>
 			}
 			@if (items()?.length === 0) {
-				<span class="cartEmpty">{{ 'cart.empty' }}</span>
+				<span class="cartEmpty">{{ 'Warenkorb leer' }}</span>
 			}
 		</div>
 

@@ -26,7 +26,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 			(click)="openCheckoutDialog()"
 		>
 			<mat-icon>shopping_cart_checkout</mat-icon>
-			{{ 'cart.checkout' }}
+<!--			{{ 'cart.checkout' }}-->
+      Zahlung
 		</button>
 	`,
 	styles: `
