@@ -9,6 +9,8 @@ type PaymentOption uint8
 const (
 	PaymentOptionCash PaymentOption = iota
 	PaymentOptionAccount
+	PaymentOptionFree
+	PaymentOptionSponsor
 )
 
 type Transaction struct {

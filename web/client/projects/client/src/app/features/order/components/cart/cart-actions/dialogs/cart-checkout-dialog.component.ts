@@ -61,13 +61,19 @@ interface AutoCompleteOption {
 
 			<div class="payment">
 				<mat-button-toggle-group [formControl]="paymentOptionControl" aria-label="Payment option">
-					<mat-button-toggle style="background-color: lightgreen" [value]="PaymentOption.CASH">{{
+					<mat-button-toggle [value]="PaymentOption.CASH">{{
 						PaymentOptionKeys[PaymentOption.CASH]
 					}}</mat-button-toggle>
 					@if (totalSum > 0) {
-						<mat-button-toggle style="background-color: lightgoldenrodyellow" [value]="PaymentOption.ACCOUNT">{{
-							PaymentOptionKeys[PaymentOption.ACCOUNT]
+						<mat-button-toggle [value]="PaymentOption.FREE">{{
+							PaymentOptionKeys[PaymentOption.FREE]
 						}}</mat-button-toggle>
+            <mat-button-toggle [value]="PaymentOption.SPONSOR">{{
+                PaymentOptionKeys[PaymentOption.SPONSOR]
+              }}</mat-button-toggle>
+            <mat-button-toggle [value]="PaymentOption.ACCOUNT">{{
+                PaymentOptionKeys[PaymentOption.ACCOUNT]
+              }}</mat-button-toggle>
 					}
 				</mat-button-toggle-group>
 			</div>
@@ -141,6 +147,19 @@ interface AutoCompleteOption {
 						{{ 'Kontozahlung' }}
 					</button>
 				}
+        @case (PaymentOption.FREE) {
+          <button mat-button cdkFocusInitial (click)="checkout(PaymentOption.FREE)">
+            <!--						{{ 'checkout.cash.title' }}-->
+            {{ 'Freizahlung' }}
+          </button>
+        }
+
+        @case (PaymentOption.SPONSOR) {
+          <button mat-button cdkFocusInitial (click)="checkout(PaymentOption.SPONSOR)">
+            <!--						{{ 'checkout.cash.title' }}-->
+            {{ 'Sponsorzahlung' }}
+          </button>
+        }
 			}
 			´
 		</mat-dialog-actions>
