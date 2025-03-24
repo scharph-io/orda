@@ -53,10 +53,11 @@ func (r *ProductRepo) ReadByGroupId(ctx context.Context, id string) (domain.Prod
 func (r *ProductRepo) Update(ctx context.Context, product domain.Product) (*domain.Product, error) {
 	if err := r.db.WithContext(ctx).Model(&product).Updates(
 		map[string]any{
-			"name":   product.Name,
-			"desc":   product.Desc,
-			"price":  product.Price,
-			"active": product.Active,
+			"name":    product.Name,
+			"desc":    product.Desc,
+			"price":   product.Price,
+			"active":  product.Active,
+			"deposit": product.Deposit,
 		}).Error; err != nil {
 		return nil, err
 	}
@@ -73,6 +74,47 @@ func (r *ProductRepo) Delete(ctx context.Context, p domain.Product) error {
 	return nil
 }
 
+// Deposit
+func (r *ProductRepo) GetDeposit(ctx context.Context, groupid string) (p *domain.Product, err error) {
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Where("product_group_id = ? AND deposit = ?", groupid, true).First(&p).Error; err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+func (r *ProductRepo) SetOrUpdateDeposit(ctx context.Context, groupid string, price int32) (v *domain.Product, err error) {
+
+	d, err := r.GetDeposit(ctx, groupid)
+	if err != nil {
+		return nil, err
+	}
+	if d == nil {
+		v = &domain.Product{ProductGroupID: groupid, Deposit: true, Price: price}
+		r.db.Create(v)
+		return v, nil
+	}
+	d.Price = price
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Save(d).Error; err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+func (r *ProductRepo) DeleteDeposit(ctx context.Context, groupid string) error {
+	d, err := r.GetDeposit(ctx, groupid)
+	if err != nil {
+		return err
+	}
+	if d == nil {
+		return nil
+	}
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Delete(d).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// Views
 func (r *ProductRepo) GetProductViews(ctx context.Context, p *domain.Product) ([]*domain.ViewProduct, error) {
 	var views []*domain.ViewProduct
 	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("product_id = ?", p.ID).Preload("View").Find(&views).Error; err != nil {

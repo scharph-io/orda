@@ -2,6 +2,8 @@ package domain
 
 import (
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type Roles []Role
@@ -13,6 +15,17 @@ type View struct {
 	Products Products `gorm:"many2many:view_products;constraint:OnDelete:CASCADE;"`
 	Roles    Roles    `gorm:"many2many:view_roles;constraint:OnDelete:CASCADE;"`
 	Deposit  uint
+}
+
+func (v *View) BeforeDelete(tx *gorm.DB) error {
+	// Remove associations in the join table without deleting the views themselves
+	if err := tx.Model(v).Association("Products").Clear(); err != nil {
+		return err
+	}
+	if err := tx.Model(v).Association("Roles").Clear(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (v View) String() string {

@@ -2,6 +2,8 @@ package domain
 
 import (
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type Products []Product
@@ -11,7 +13,7 @@ type ProductGroup struct {
 	Name     string
 	Desc     string
 	Products Products
-	Deposit  uint
+	// Deposit  uint
 }
 
 func (pg ProductGroup) String() string {
@@ -23,10 +25,19 @@ type Product struct {
 	Base
 	Name           string
 	Desc           string
-	Price          int32
+	Price          int32  `gorm:"default:0"`
 	ProductGroupID string `gorm:"size:36;not null"`
-	Active         bool
-	Views          []View `gorm:"many2many:view_products;"`
+	Active         bool   `gorm:"default:false"`
+	Views          []View `gorm:"many2many:view_products"`
+	Deposit        bool
+}
+
+func (p *Product) BeforeDelete(tx *gorm.DB) error {
+	// Remove associations in the join table without deleting the views themselves
+	if err := tx.Model(p).Association("Views").Clear(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (p Product) String() string {

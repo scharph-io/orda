@@ -8,25 +8,25 @@ import (
 )
 
 type ProductGroupRequest struct {
-	Name    string `json:"name"`
-	Desc    string `json:"desc"`
-	Deposit uint   `json:"deposit"`
+	Name string `json:"name"`
+	Desc string `json:"desc"`
 }
 
 type ProductGroupResponse struct {
-	ID       string           `json:"id"`
-	Name     string           `json:"name"`
-	Desc     string           `json:"desc"`
-	Products []ProductRequest `json:"products,omitempty"`
-	Deposit  uint             `json:"deposit"`
+	ID       string            `json:"id"`
+	Name     string            `json:"name"`
+	Desc     string            `json:"desc"`
+	Deposit  ProductResponse   `json:"deposit"`
+	Products []ProductResponse `json:"products,omitempty"`
 }
 
 type ProductRequest struct {
-	ID     string `json:"id,omitempty"`
-	Name   string `json:"name"`
-	Desc   string `json:"desc"`
-	Price  int32  `json:"price"`
-	Active bool   `json:"active"`
+	ID      string `json:"id,omitempty"`
+	Name    string `json:"name"`
+	Desc    string `json:"desc"`
+	Price   int32  `json:"price"`
+	Active  bool   `json:"active"`
+	Deposit bool   `json:"deposit"`
 }
 
 type ProductResponse struct {
@@ -37,6 +37,18 @@ type ProductResponse struct {
 	Active  bool   `json:"active,omitzero"`
 	GroupId string `json:"group_id,omitzero"`
 }
+
+type DepositProductRequest struct {
+	Price  int32 `json:"price"`
+	Active bool  `json:"active"`
+}
+
+// type DepositProductResponse struct {
+// 	ID      string `json:"id,omitempty"`
+// 	Price   int32  `json:"price"`
+// 	Active  bool   `json:"active,omitzero"`
+// 	GroupId string `json:"group_id,omitzero"`
+// }
 
 type IProductGroupRepository interface {
 	Create(ctx context.Context, productGroup domain.ProductGroup) (*domain.ProductGroup, error)
@@ -57,6 +69,11 @@ type IProductRepository interface {
 	Update(ctx context.Context, p domain.Product) (*domain.Product, error)
 	Delete(ctx context.Context, p domain.Product) error
 
+	// Deposit
+	GetDeposit(ctx context.Context, groupid string) (*domain.Product, error)
+	SetOrUpdateDeposit(ctx context.Context, groupid string, price int32) (*domain.Product, error)
+	DeleteDeposit(ctx context.Context, groupid string) error
+
 	// Views
 	GetProductViews(ctx context.Context, p *domain.Product) ([]*domain.ViewProduct, error)
 	AppendProductViews(ctx context.Context, p *domain.Product, vps ...*domain.ViewProduct) error
@@ -71,6 +88,10 @@ type IAssortmentService interface {
 	ReadProductGroup(ctx context.Context, id string) (*ProductGroupResponse, error)
 	UpdateProductGroup(ctx context.Context, id string, productGroup ProductGroupRequest) (*ProductGroupResponse, error)
 	DeleteProductGroup(ctx context.Context, id string) error
+
+	//Deposit
+	SetDepositToGroup(ctx context.Context, id string, dpr DepositProductRequest) error
+	RemoveDepositFromGroup(ctx context.Context, id string) error
 
 	// Products
 	ReadProducts(ctx context.Context) ([]*ProductResponse, error)
@@ -94,6 +115,10 @@ type IAssortmentHandlers interface {
 	ReadGroup(c *fiber.Ctx) error
 	UpdateGroup(c *fiber.Ctx) error
 	DeleteGroup(c *fiber.Ctx) error
+
+	// Deposit
+	SetDeposit(c *fiber.Ctx) error
+	RemoveDeposit(c *fiber.Ctx) error
 
 	// Products
 	ReadProducts(c *fiber.Ctx) error

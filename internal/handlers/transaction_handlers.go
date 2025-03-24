@@ -23,14 +23,17 @@ func (h *TransactionHandlers) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
+
+	req.PrintDetails()
+
 	var res *ports.TransactionResponse
 	var err error
 
-	if req.AccountID == "" {
-		res, err = h.transactionService.Create(c.Context(), c.Locals("userid").(string), req)
-	} else {
-		res, err = h.transactionService.CreateWithAccount(c.Context(), c.Locals("userid").(string), req)
-	}
+	// if req.AccountID == "" {
+	res, err = h.transactionService.Create(c.Context(), c.Locals("userid").(string), req)
+	// } else {
+	// 	res, err = h.transactionService.CreateWithAccount(c.Context(), c.Locals("userid").(string), req)
+	// }
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": fmt.Sprintf("Failed to create transaction: %s", err)})
 	}

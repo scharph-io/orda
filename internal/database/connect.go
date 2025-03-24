@@ -50,8 +50,20 @@ func Connect() {
 	)
 
 	log.Println(dsn)
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	DB, err = gorm.Open(mysql.New(
+		mysql.Config{
+			DSN: dsn,
+		},
+	), &gorm.Config{
 		Logger: newLogger,
+		NowFunc: func() time.Time {
+			tz, err := time.LoadLocation(config.GetConfig().Server.TZ)
+			if err != nil {
+				log.Fatal("Failed to load timezone. \n", err)
+				os.Exit(2)
+			}
+			return time.Now().In(tz)
+		},
 	})
 
 	if err != nil {

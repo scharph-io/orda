@@ -95,7 +95,6 @@ func (h *AssortmentHandlers) ReadProducts(c *fiber.Ctx) error {
 func (h *AssortmentHandlers) AddProducts(c *fiber.Ctx) error {
 	groupID := c.Params("id")
 	products := []ports.ProductRequest{}
-	result := 0
 	if err := c.BodyParser(&products); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
@@ -103,8 +102,28 @@ func (h *AssortmentHandlers) AddProducts(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to add products"})
 	}
-	result = len(products)
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("created %d product(s)", result)})
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": fmt.Sprintf("created %d product(s)", len(products))})
+}
+
+func (h *AssortmentHandlers) SetDeposit(c *fiber.Ctx) error {
+	depositItem := ports.DepositProductRequest{}
+	if err := c.BodyParser(&depositItem); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
+	}
+	err := h.assortmentService.SetDepositToGroup(c.Context(), c.Params("id"), depositItem)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to set deposit"})
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "deposit set successfully "})
+}
+
+func (h *AssortmentHandlers) RemoveDeposit(c *fiber.Ctx) error {
+	id := c.Params("id")
+	err := h.assortmentService.RemoveDepositFromGroup(c.Context(), id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove deposit"})
+	}
+	return c.SendStatus(fiber.StatusNoContent)
 }
 
 func (h *AssortmentHandlers) RemoveProduct(c *fiber.Ctx) error {

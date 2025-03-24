@@ -124,6 +124,8 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	group.Put("/:id", s.assortmentHandlers.UpdateGroup)
 	group.Delete("/:id", s.assortmentHandlers.DeleteGroup)
 	group.Post("/:id/products", s.assortmentHandlers.AddProducts)
+	group.Put("/:id/deposit", s.assortmentHandlers.SetDeposit)
+	group.Delete("/:id/deposit", s.assortmentHandlers.RemoveDeposit)
 
 	product := assortment.Group("/product")
 	product.Get("/", s.assortmentHandlers.ReadProducts)
