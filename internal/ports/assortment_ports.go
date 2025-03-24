@@ -71,7 +71,7 @@ type IProductRepository interface {
 
 	// Deposit
 	GetDeposit(ctx context.Context, groupid string) (*domain.Product, error)
-	SetOrUpdateDeposit(ctx context.Context, groupid string, price int32) (*domain.Product, error)
+	SetOrUpdateDeposit(ctx context.Context, groupid string, price int32, active bool) (*domain.Product, error)
 	DeleteDeposit(ctx context.Context, groupid string) error
 
 	// Views

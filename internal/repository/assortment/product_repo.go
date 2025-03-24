@@ -2,6 +2,7 @@ package assortment
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -82,36 +83,27 @@ func (r *ProductRepo) GetDeposit(ctx context.Context, groupid string) (p *domain
 	return p, nil
 }
 
-func (r *ProductRepo) SetOrUpdateDeposit(ctx context.Context, groupid string, price int32) (v *domain.Product, err error) {
-
-	d, err := r.GetDeposit(ctx, groupid)
-	if err != nil {
-		return nil, err
+func (r *ProductRepo) SetOrUpdateDeposit(ctx context.Context, groupid string, price int32, active bool) (dp *domain.Product, err error) {
+	if dp, err = r.GetDeposit(ctx, groupid); dp == nil {
+		dp = &domain.Product{ProductGroupID: groupid, Deposit: true, Price: price, Active: active}
+		err = r.db.Create(dp).Error
+		fmt.Println("Created new deposit:", dp.ID)
+	} else {
+		dp.Price = price
+		dp.Active = active
+		err = r.db.WithContext(ctx).Model(dp).Save(dp).Error
+		fmt.Println("Updated deposit", dp.ID)
 	}
-	if d == nil {
-		v = &domain.Product{ProductGroupID: groupid, Deposit: true, Price: price}
-		r.db.Create(v)
-		return v, nil
-	}
-	d.Price = price
-	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Save(d).Error; err != nil {
-		return nil, err
-	}
-	return d, nil
+	return dp, err
 }
 
 func (r *ProductRepo) DeleteDeposit(ctx context.Context, groupid string) error {
-	d, err := r.GetDeposit(ctx, groupid)
-	if err != nil {
-		return err
-	}
+	d, _ := r.GetDeposit(ctx, groupid)
 	if d == nil {
 		return nil
 	}
-	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Delete(d).Error; err != nil {
-		return err
-	}
-	return nil
+	fmt.Println("Delete deposit", d.ID)
+	return r.db.WithContext(ctx).Model(&domain.Product{}).Delete(d).Error
 }
 
 // Views

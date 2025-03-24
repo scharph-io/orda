@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -101,10 +102,11 @@ func (s *AssortmentService) DeleteProductGroup(ctx context.Context, id string) e
 // Deposit
 func (s *AssortmentService) SetDepositToGroup(ctx context.Context, id string, dpr ports.DepositProductRequest) error {
 	group, err := s.groups.ReadByID(ctx, id)
+	fmt.Println(group)
 	if err != nil {
 		return err
 	}
-	_, err = s.products.SetOrUpdateDeposit(ctx, group.ID, dpr.Price)
+	_, err = s.products.SetOrUpdateDeposit(ctx, group.ID, dpr.Price, dpr.Active)
 	return nil
 }
 
