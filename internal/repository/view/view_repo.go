@@ -36,7 +36,7 @@ func (r *ViewRepo) Read(ctx context.Context) ([]*domain.View, error) {
 func (r *ViewRepo) ReadByID(ctx context.Context, id string) (*domain.View, error) {
 	var view domain.View
 	if err := r.db.Model(&domain.View{}).
-		// Preload("Products").
+		Preload("Products").
 		Preload("Roles").
 		First(&view, "id = ?", id).Error; err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (r *ViewRepo) ReadByRoleId(ctx context.Context, roleId string) ([]*domain.V
 	}
 	var views []*domain.View
 
-	if err := r.db.Model(&domain.View{}).Where("id IN (?)", viewIds).Preload("Products").Find(&views).Error; err != nil {
+	if err := r.db.Model(&domain.View{}).Where("id IN (?)", viewIds).Preload("Products", "active = true").Find(&views).Error; err != nil {
 		return nil, err
 	}
 	return views, nil

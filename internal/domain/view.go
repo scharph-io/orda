@@ -14,7 +14,6 @@ type View struct {
 	Desc     string
 	Products Products `gorm:"many2many:view_products;constraint:OnDelete:CASCADE;"`
 	Roles    Roles    `gorm:"many2many:view_roles;constraint:OnDelete:CASCADE;"`
-	Deposit  uint
 }
 
 func (v *View) BeforeDelete(tx *gorm.DB) error {
@@ -29,7 +28,7 @@ func (v *View) BeforeDelete(tx *gorm.DB) error {
 }
 
 func (v View) String() string {
-	return fmt.Sprintf("[%s] %s (%d products, %d roles, deposit: %d)", v.ID, v.Name, len(v.Products), len(v.Roles), v.Deposit)
+	return fmt.Sprintf("[%s] %s (%d products, %d roles)", v.ID, v.Name, len(v.Products), len(v.Roles))
 }
 
 type ViewRole struct {

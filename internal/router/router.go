@@ -152,21 +152,9 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 
 	// Order
 	order := api.Group("/order")
-	// order.Post("/", s.orderHandlers.Create)
-	order.Get("/views", s.orderHandlers.GetViews)
-	order.Post("/checkout", s.transactionHandlers.Create)
-	// order.Get("/:id", s.orderHandlers.ReadOne)
-	// order.Put("/:id", s.orderHandlers.Update)
-	// order.Delete("/:id", s.orderHandlers.Delete)
-
-	// // Checkout
-	// checkout := api.Group("/checkout")
-	// checkout.Post("/", s.transactionHandlers.Create)
-
-	// // Transaction
-	// transaction := api.Group("/transaction")
-	// transaction.Get("/", middleware.Protected(), handler.GetAllTransactions)
-	// transaction.Delete("/:id", middleware.Protected(), handler.DeleteTransaction)
+	order.Get("/views", s.orderHandlers.GetOrderViews)
+	order.Get("/views/:id", s.orderHandlers.GetOrderProducts)
+	// order.Post("/checkout", s.transactionHandlers.Create)
 
 	// // Statistic
 	// statistic := api.Group("/statistic")

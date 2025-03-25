@@ -43,7 +43,7 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 						<div>
 							<button
 								title="delete assortment group"
-								class="red-btn"
+								class="delete-btn"
 								mat-icon-button
 								(click)="delete(assortmentGroup)"
 							>

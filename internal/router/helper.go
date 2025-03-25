@@ -53,7 +53,7 @@ func NewServer() *Server {
 	assortmentService := service.NewAssortmentService(productRepo, productGroupRepo)
 	viewService := service.NewViewService(viewRepo, viewProductRepo)
 	transactionService := service.NewTransactionService(transactionRepo, transactionItemRepo, productRepo, accountService)
-	orderService := service.NewOrderService(viewRepo, transactionRepo, accountRepo)
+	orderService := service.NewOrderService(viewRepo, viewProductRepo, transactionRepo, accountRepo)
 
 	// handlers
 	userHandlers := handlers.NewUserHandlers(userService)

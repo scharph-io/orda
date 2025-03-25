@@ -44,6 +44,7 @@ func (h *AssortmentHandlers) ReadGroups(c *fiber.Ctx) error {
 
 func (h *AssortmentHandlers) ReadGroup(c *fiber.Ctx) error {
 	id := c.Params("id")
+	fmt.Println("Reading group with ID:", id)
 	res, err := h.assortmentService.ReadProductGroup(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get group"})
@@ -106,7 +107,7 @@ func (h *AssortmentHandlers) AddProducts(c *fiber.Ctx) error {
 }
 
 func (h *AssortmentHandlers) SetDeposit(c *fiber.Ctx) error {
-	depositItem := ports.DepositProductRequest{}
+	depositItem := ports.DepositProduct{}
 	if err := c.BodyParser(&depositItem); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}

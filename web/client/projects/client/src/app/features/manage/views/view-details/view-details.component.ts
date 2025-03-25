@@ -11,16 +11,19 @@ import { MatInput } from '@angular/material/input';
 import { ViewService } from '@orda.features/data-access/services/view/view.service';
 import { ViewProduct } from '@orda.core/models/view';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
 	selector: 'orda-view-details',
 	imports: [MatTableModule, MatCheckboxModule, MatButton, MatFormField, MatInput, MatLabel],
 	template: `
-    <h2>{{ view.value()?.name }} ({{ view.value()?.desc }})</h2>
-
+    <h2>{{ view.value()?.name }} </h2>
+    @if (view.value()?.desc !== '') {
+      <p>Description: {{ view.value()?.desc }}</p>
+    }
     <mat-form-field>
       <mat-label>Filter</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium" #input />
+      <input matInput (keyup)="applyFilter($event)" #input />
     </mat-form-field>
     <button mat-button (click)="save()">Save</button>
     <div class="mat-elevation-z8 table-container">
@@ -101,6 +104,8 @@ export class ViewDetailsComponent {
 	private viewService = inject(ViewService);
 	private assortmentService = inject(AssortmentService);
 
+  private readonly snackBar = inject(MatSnackBar);
+
 	view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
 
 	view = rxResource({
@@ -167,6 +172,10 @@ export class ViewDetailsComponent {
 				this.logger.debug(
 					`successfully saved ${viewProductsToSave.length} products to view ${this.view_id()}`,
 				);
+        this.snackBar.open('Successfully saved products to view', 'Close', {
+          duration: 3000,
+          }
+        )
 			},
 			error: (err) => {
 				this.logger.error(

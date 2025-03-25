@@ -90,7 +90,7 @@ import { AccountGroupComponent } from '@orda.features/manage/account/group/group
 						<ng-container matColumnDef="actions">
 							<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
 							<td mat-cell *matCellDef="let row">
-								<button mat-icon-button (click)="delete(row)" [disabled]="hasMainBalance(row)">
+								<button class="delete-btn" mat-icon-button (click)="delete(row)" [disabled]="hasMainBalance(row)">
 									<mat-icon>delete</mat-icon>
 								</button>
 								<button mat-icon-button (click)="edit(row)">

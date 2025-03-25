@@ -22,9 +22,9 @@ func NewAssortmentService(products ports.IProductRepository, groups ports.IProdu
 // Product Groups
 func (s *AssortmentService) CreateProductGroup(ctx context.Context, productGroup ports.ProductGroupRequest) (*ports.ProductGroupResponse, error) {
 	group := domain.ProductGroup{
-		Name: productGroup.Name,
-		Desc: productGroup.Desc,
-		// Deposit: productGroup.Deposit,
+		Name:     productGroup.Name,
+		Desc:     productGroup.Desc,
+		Priority: productGroup.Priority,
 	}
 	created, err := s.groups.Create(ctx, group)
 	if err != nil {
@@ -32,10 +32,10 @@ func (s *AssortmentService) CreateProductGroup(ctx context.Context, productGroup
 	}
 
 	return &ports.ProductGroupResponse{
-		ID:   created.ID,
-		Name: created.Name,
-		Desc: created.Desc,
-		// Deposit: created.Deposit,
+		ID:       created.ID,
+		Name:     created.Name,
+		Desc:     created.Desc,
+		Priority: created.Priority,
 	}, nil
 }
 
@@ -48,10 +48,10 @@ func (s *AssortmentService) ReadProductGroups(ctx context.Context) ([]ports.Prod
 	var response []ports.ProductGroupResponse
 	for _, group := range groups {
 		response = append(response, ports.ProductGroupResponse{
-			ID:   group.ID,
-			Name: group.Name,
-			Desc: group.Desc,
-			// Deposit: group.Deposit,
+			ID:       group.ID,
+			Name:     group.Name,
+			Desc:     group.Desc,
+			Priority: group.Priority,
 		})
 	}
 	return response, nil
@@ -63,20 +63,29 @@ func (s *AssortmentService) ReadProductGroup(ctx context.Context, id string) (*p
 		return nil, err
 	}
 
-	return &ports.ProductGroupResponse{
-		ID:   group.ID,
-		Name: group.Name,
-		Desc: group.Desc,
-		// Deposit: group.Deposit,
-	}, nil
+	deposit, err := s.products.GetDeposit(ctx, group.ID)
+
+	res := &ports.ProductGroupResponse{
+		ID:       group.ID,
+		Name:     group.Name,
+		Desc:     group.Desc,
+		Priority: group.Priority,
+	}
+	if deposit != nil {
+		res.Deposit = &ports.ProductResponse{
+			Price:  deposit.Price,
+			Active: deposit.Active,
+		}
+	}
+	return res, nil
 }
 
 func (s *AssortmentService) UpdateProductGroup(ctx context.Context, id string, productGroup ports.ProductGroupRequest) (*ports.ProductGroupResponse, error) {
 	group := domain.ProductGroup{
-		Base: domain.Base{ID: id},
-		Name: productGroup.Name,
-		Desc: productGroup.Desc,
-		// Deposit: productGroup.Deposit,
+		Base:     domain.Base{ID: id},
+		Name:     productGroup.Name,
+		Desc:     productGroup.Desc,
+		Priority: productGroup.Priority,
 	}
 
 	updated, err := s.groups.Update(ctx, group)
@@ -85,10 +94,10 @@ func (s *AssortmentService) UpdateProductGroup(ctx context.Context, id string, p
 	}
 
 	return &ports.ProductGroupResponse{
-		ID:   updated.ID,
-		Name: updated.Name,
-		Desc: updated.Desc,
-		// Deposit: updated.Deposit,
+		ID:       updated.ID,
+		Name:     updated.Name,
+		Desc:     updated.Desc,
+		Priority: updated.Priority,
 	}, nil
 }
 
@@ -100,7 +109,7 @@ func (s *AssortmentService) DeleteProductGroup(ctx context.Context, id string) e
 }
 
 // Deposit
-func (s *AssortmentService) SetDepositToGroup(ctx context.Context, id string, dpr ports.DepositProductRequest) error {
+func (s *AssortmentService) SetDepositToGroup(ctx context.Context, id string, dpr ports.DepositProduct) error {
 	group, err := s.groups.ReadByID(ctx, id)
 	fmt.Println(group)
 	if err != nil {
@@ -237,17 +246,11 @@ func (s *AssortmentService) ToggleProduct(ctx context.Context, productID string)
 // Views
 func (s *AssortmentService) SetProductViews(ctx context.Context, id string, views ...*ports.ViewProductRequest) error {
 
-	// for _, view := range views {
-	// 	err := s.products.ReplaceProductViews(ctx, id, view)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
-	return nil
+	return fmt.Errorf("not implemented yet")
 }
 
 func (s *AssortmentService) AddProductViews(ctx context.Context, id string, views ...*ports.ViewProductRequest) error {
-	return nil
+	return fmt.Errorf("not implemented yet")
 }
 
 func (s *AssortmentService) RemoveProductViews(ctx context.Context, id string, viewIds ...string) error {

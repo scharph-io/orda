@@ -66,7 +66,7 @@ func (r *ProductGroupRepo) RemoveProducts(ctx context.Context, group *domain.Pro
 
 func (r *ProductGroupRepo) ReadProducts(ctx context.Context, group *domain.ProductGroup) (domain.Products, error) {
 	var products domain.Products
-	if err := r.db.WithContext(ctx).Model(&group).Association("Products").Find(&products); err != nil {
+	if err := r.db.WithContext(ctx).Model(&group).Association("Products").Find(&products, "deposit IS NULL"); err != nil {
 		return nil, err
 	}
 	return products, nil

@@ -32,72 +32,72 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 @Component({
 	selector: 'orda-assortment-view-details',
 	template: `
-		<div class="title-toolbar">
-			<h2>Assortment Products</h2>
-			<button mat-button (click)="create()">New</button>
-		</div>
-		<!--		@for (product of products.value(); track product.id) {-->
-		<!--			{{ product.name }} ({{ product.desc }}) {{ product.price | currency }}<br />-->
-		<!--		}-->
-		<mat-form-field>
-			<mat-label>Filter</mat-label>
-			<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
-		</mat-form-field>
+    <div class="title-toolbar">
+      <h2>{{ group.value()?.name }}</h2>
+      <button mat-button (click)="create()">New</button>
+    </div>
+    <!--		@for (product of products.value(); track product.id) {-->
+    <!--			{{ product.name }} ({{ product.desc }}) {{ product.price | currency }}<br />-->
+    <!--		}-->
+    <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
+    </mat-form-field>
 
-		<div class="mat-elevation-z8">
-			<table mat-table [dataSource]="dataSource()" matSort>
-				<ng-container matColumnDef="name">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-					<td mat-cell *matCellDef="let row">{{ row.name }}</td>
-				</ng-container>
+    <div class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource()" matSort>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+        </ng-container>
 
-				<ng-container matColumnDef="desc">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-					<td mat-cell *matCellDef="let row">{{ row.desc }}</td>
-				</ng-container>
+        <ng-container matColumnDef="desc">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+          <td mat-cell *matCellDef="let row">{{ row.desc }}</td>
+        </ng-container>
 
-				<ng-container matColumnDef="price">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
-					<td mat-cell *matCellDef="let row">{{ row.price | currency }}</td>
-				</ng-container>
-				<ng-container matColumnDef="active">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
-					<td mat-cell *matCellDef="let row">
-						<mat-slide-toggle [(ngModel)]="row.active" (change)="toggleProduct(row.id)" />
-					</td>
-				</ng-container>
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
+          <td mat-cell *matCellDef="let row">{{ row.price | currency }}</td>
+        </ng-container>
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
+          <td mat-cell *matCellDef="let row">
+            <mat-slide-toggle [(ngModel)]="row.active" (change)="toggleProduct(row.id)" />
+          </td>
+        </ng-container>
 
-				<ng-container matColumnDef="actions">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
-					<td mat-cell *matCellDef="let row">
-						<button mat-icon-button (click)="delete(row)">
-							<mat-icon>delete</mat-icon>
-						</button>
-						<button mat-icon-button (click)="edit(row)">
-							<mat-icon>edit</mat-icon>
-						</button>
-						<button mat-icon-button (click)="duplicate(row)">
-							<mat-icon>control_point_duplicate</mat-icon>
-						</button>
-						<!--						<button mat-icon-button (click)="deposit(row)">-->
-						<!--							<mat-icon>add_business</mat-icon>-->
-						<!--						</button>-->
-						<!--						<button mat-icon-button (click)="info(row)">-->
-						<!--							<mat-icon>info</mat-icon>-->
-						<!--						</button>-->
-					</td>
-				</ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button (click)="delete(row)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button (click)="edit(row)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="duplicate(row)">
+              <mat-icon>control_point_duplicate</mat-icon>
+            </button>
+            <!--						<button mat-icon-button (click)="deposit(row)">-->
+            <!--							<mat-icon>add_business</mat-icon>-->
+            <!--						</button>-->
+            <!--						<button mat-icon-button (click)="info(row)">-->
+            <!--							<mat-icon>info</mat-icon>-->
+            <!--						</button>-->
+          </td>
+        </ng-container>
 
-				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
-				<!-- Row shown when there is no matching data. -->
-				<tr class="mat-row" *matNoDataRow>
-					<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-				</tr>
-			</table>
-		</div>
-	`,
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+        </tr>
+      </table>
+    </div>
+  `,
 	imports: [
 		MatButtonModule,
 		MatTableModule,
@@ -121,6 +121,11 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 	assortmentService = inject(AssortmentService);
 
 	group_id = signal<string>(this.route.snapshot.paramMap.get('id') ?? '');
+
+	group = rxResource({
+		request: () => (this.group_id()),
+    loader: ({ request }) => this.assortmentService.readGroupById(request)
+	});
 
 	products = rxResource({
 		loader: () => this.assortmentService.readProducts(this.group_id()),

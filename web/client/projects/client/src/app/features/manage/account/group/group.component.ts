@@ -38,7 +38,7 @@ import { AccountService } from '@orda.features/data-access/services/account/acco
 					<div class="item">
 						<p>{{ ag.name | titlecase }}</p>
 						<div>
-							<button title="delete group" class="red-btn" mat-icon-button (click)="delete(ag)">
+							<button title="delete group" class="delete-btn" mat-icon-button (click)="delete(ag)">
 								<mat-icon>delete</mat-icon>
 							</button>
 							<button title="edit group" mat-icon-button (click)="edit(ag)">

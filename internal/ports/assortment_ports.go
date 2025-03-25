@@ -8,8 +8,9 @@ import (
 )
 
 type ProductGroupRequest struct {
-	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Name     string `json:"name"`
+	Desc     string `json:"desc"`
+	Priority int    `json:"priority"`
 }
 
 type ProductGroupResponse struct {
@@ -18,6 +19,7 @@ type ProductGroupResponse struct {
 	Desc     string            `json:"desc"`
 	Deposit  *ProductResponse  `json:"deposit,omitempty"`
 	Products []ProductResponse `json:"products,omitempty"`
+	Priority int               `json:"priority"`
 }
 
 type ProductRequest struct {
@@ -31,14 +33,14 @@ type ProductRequest struct {
 
 type ProductResponse struct {
 	ID      string `json:"id,omitempty"`
-	Name    string `json:"name"`
-	Desc    string `json:"desc"`
+	Name    string `json:"name,omitempty"`
+	Desc    string `json:"desc,omitempty"`
 	Price   int32  `json:"price"`
-	Active  bool   `json:"active,omitzero"`
+	Active  bool   `json:"active,omitempty"`
 	GroupId string `json:"group_id,omitzero"`
 }
 
-type DepositProductRequest struct {
+type DepositProduct struct {
 	Price  int32 `json:"price"`
 	Active bool  `json:"active"`
 }
@@ -83,7 +85,7 @@ type IAssortmentService interface {
 	DeleteProductGroup(ctx context.Context, id string) error
 
 	//Deposit
-	SetDepositToGroup(ctx context.Context, id string, dpr DepositProductRequest) error
+	SetDepositToGroup(ctx context.Context, id string, dpr DepositProduct) error
 	RemoveDepositFromGroup(ctx context.Context, id string) error
 
 	// Products

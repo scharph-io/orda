@@ -46,10 +46,10 @@ import { rxResource } from '@angular/core/rxjs-interop';
 							[state]="{ name: view.name }"
 							routerLinkActive="router-link-active"
 						>
-							{{ view.name | titlecase }} ({{view.desc}})
+							{{ view.name | titlecase }}
 						</p>
 						<div>
-							<button title="delete view" class="red-btn" mat-icon-button (click)="delete(view)">
+							<button title="delete view" class="delete-btn" mat-icon-button (click)="delete(view)">
 								<mat-icon>delete</mat-icon>
 							</button>
 							<button title="edit assortment group" mat-icon-button (click)="edit(view)">
