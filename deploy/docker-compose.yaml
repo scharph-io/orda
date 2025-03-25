@@ -59,7 +59,7 @@ services:
       resources:
         limits:
           cpus: "1.0"
-          memory: 500M
+          memory: 600M
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
       start_period: 5s

@@ -16,7 +16,7 @@ type ProductGroupResponse struct {
 	ID       string            `json:"id"`
 	Name     string            `json:"name"`
 	Desc     string            `json:"desc"`
-	Deposit  ProductResponse   `json:"deposit"`
+	Deposit  *ProductResponse  `json:"deposit,omitempty"`
 	Products []ProductResponse `json:"products,omitempty"`
 }
 
@@ -42,13 +42,6 @@ type DepositProductRequest struct {
 	Price  int32 `json:"price"`
 	Active bool  `json:"active"`
 }
-
-// type DepositProductResponse struct {
-// 	ID      string `json:"id,omitempty"`
-// 	Price   int32  `json:"price"`
-// 	Active  bool   `json:"active,omitzero"`
-// 	GroupId string `json:"group_id,omitzero"`
-// }
 
 type IProductGroupRepository interface {
 	Create(ctx context.Context, productGroup domain.ProductGroup) (*domain.ProductGroup, error)
