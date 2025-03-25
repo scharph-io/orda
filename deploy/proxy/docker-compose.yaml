@@ -1,37 +1,32 @@
 services:
-  reverse-proxy:
-    image: traefik:v2.11
-    command:
-      - --api.dashboard=true
-
-      - --providers.docker=true
-      - --providers.file.directory=/etc/traefik/dynamic
-      - --providers.file.watch=true
-
-      - --entrypoints.web.address=:80
-      - --entrypoints.web.http.redirections.entryPoint.to=websecure
-      - --entrypoints.web.http.redirections.entryPoint.scheme=https
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.websecure.http.tls=true
-
-      - --accesslog.filepath=/var/log/traefik/access.log
-      - --accesslog.bufferingsize=100
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.traefik.rule: Host(`proxy.schartis.at`)
-      traefik.http.routers.traefik.service: api@internal
-      traefik.http.routers.traefik.entrypoints: websecure
+  traefik:
+    image: traefik:v3.3.4
+    container_name: traefik
     ports:
-      - "80:80"
       - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./certs:/etc/certs/
-      - ./traefik.yaml:/etc/traefik/dynamic/certs-traefik.yaml
-      - ./log:/var/log/traefik
     environment:
-      - TZ=Europe/Vienna
+      - CF_API_EMAIL=${CF_API_EMAIL}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "traefik-certs:/letsencrypt"
+      - "./traefik.yaml:/traefik.yaml:ro" # Traefik config file
+      - ./log:/var/log/traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`proxy.schartis.at`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=philipp:$$2y$$05$$8OR3lTI6U8EeMVIUkCpsMeGQqVsEbOruOS245PtDPaBbUd5USpiQu"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth"
     networks:
-      - web
+      - proxy
+
+volumes:
+  traefik-certs:
+    name: traefik-certs
+
 networks:
-  web:
+  proxy:
+    external: true

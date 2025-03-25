@@ -22,21 +22,12 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 		Index:      "index.html",
 	}))
 
-	// app.Use(requestid.New(requestid.Config{
-	// 	Header: "X-Custom-Header",
-	// 	Generator: func() string {
-	// 		return "static-id"
-	// 	},
-	// }))
-
-	// app.Use(cors.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:4200",
 		AllowCredentials: true,
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
 		AllowHeaders:     "Origin, Content-Type, Accept",
-	},
-	))
+	}))
 
 	// app.Use(csrf.New())
 
