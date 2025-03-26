@@ -20,13 +20,14 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 				animationDuration="0ms"
 				dynamicHeight="false"
 			>
-				@for (group of data.value() | keyvalue; track group.key) {
+				@for (group of data.value()?.products | keyvalue; track group.key) {
 					@let products = group.value;
 					@if (products.length > 0) {
 						<mat-tab [label]="groupName(group.key)">
 							<orda-order-grid
 								[products]="products"
-								[style.margin.em]="0.5"
+								[deposit]="data.value()?.deposits?.get(group.key)"
+								[style.margin.rem]="0.5"
 								[gridCols]="gridCols"
 							/>
 						</mat-tab>

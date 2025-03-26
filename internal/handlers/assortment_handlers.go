@@ -79,7 +79,6 @@ func (h *AssortmentHandlers) DeleteGroup(c *fiber.Ctx) error {
 
 func (h *AssortmentHandlers) ReadProducts(c *fiber.Ctx) error {
 	groupid := c.Query("group_id", "")
-
 	res := make([]*ports.ProductResponse, 0)
 	var err error
 	if groupid != "" {
@@ -151,7 +150,6 @@ func (h *AssortmentHandlers) UpdateProduct(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
-
 	req.ID = productID
 	res, err := h.assortmentService.UpdateProduct(c.Context(), req)
 	if err != nil {
@@ -177,7 +175,6 @@ func (h *AssortmentHandlers) SetOrAddViews(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
-
 	if overwrite {
 		err := h.assortmentService.SetProductViews(c.Context(), productID, req...)
 		if err != nil {

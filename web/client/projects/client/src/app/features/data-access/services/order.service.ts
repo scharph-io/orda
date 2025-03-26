@@ -6,6 +6,11 @@ import { View, ViewProduct } from '@orda.core/models/view';
 import { API_ENDPOINTS } from '@orda.core/constants';
 import { HOST } from '@orda.core/config/config';
 
+interface OrderDate {
+	products: Map<string, Partial<ViewProduct>[]>;
+	deposits: Map<string, Partial<ViewProduct>>;
+}
+
 @Injectable({
 	providedIn: 'root',
 })
@@ -22,7 +27,7 @@ export class OrderService {
 		return this.httpClient.get<Partial<View>[]>(`${this.HOST}${API_ENDPOINTS.ORDER}/views`);
 	}
 
-  public getViewProducts(viewId: string) {
-    return this.httpClient.get<Map<string, Partial<ViewProduct>[]>>(`${this.HOST}${API_ENDPOINTS.ORDER}/views/${viewId}`);
-  }
+	public getViewProducts(viewId: string) {
+		return this.httpClient.get<OrderDate>(`${this.HOST}${API_ENDPOINTS.ORDER}/views/${viewId}`);
+	}
 }

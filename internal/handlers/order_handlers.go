@@ -47,3 +47,11 @@ func (h *OrdaHandlers) GetOrderProducts(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(products)
 
 }
+
+func (h *OrdaHandlers) GetOrderViewProducts(c *fiber.Ctx) error {
+	products, err := h.ordaService.GetOrderViewProducts(c.Context(), c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(products)
+}

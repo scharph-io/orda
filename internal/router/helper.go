@@ -40,7 +40,6 @@ func NewServer() *Server {
 	productRepo := assortment.NewProductRepo(db)
 
 	viewRepo := view.NewViewRepository(db)
-	// viewRoleRepo := view.NewViewRoleRepo(db)
 	viewProductRepo := view.NewViewProductRepo(db)
 
 	transactionRepo := transaction.NewTransactionRepository(db)
@@ -53,7 +52,7 @@ func NewServer() *Server {
 	assortmentService := service.NewAssortmentService(productRepo, productGroupRepo)
 	viewService := service.NewViewService(viewRepo, viewProductRepo)
 	transactionService := service.NewTransactionService(transactionRepo, transactionItemRepo, productRepo, accountService)
-	orderService := service.NewOrderService(viewRepo, viewProductRepo, transactionRepo, accountRepo)
+	orderService := service.NewOrderService(viewRepo, viewProductRepo, transactionRepo, accountRepo, productRepo)
 
 	// handlers
 	userHandlers := handlers.NewUserHandlers(userService)
@@ -76,23 +75,3 @@ func NewServer() *Server {
 		orderHandlers,
 	}
 }
-
-// func createAssortmentHandler() *handler.AssortmentHandler {
-// 	return handler.NewAssortmentHandler(
-// 		service.NewAssortmentService(
-// 			repository.NewGroupRepo(database.DB),
-// 			repository.NewProductRepo(database.DB),
-// 		),
-// 	)
-// }
-
-// func createViewHandler() *handler.ViewHandler {
-// 	return handler.NewViewHandler(
-// 		service.NewViewService(
-// 			repository.NewViewRepo(database.DB),
-// 			repository.NewViewProductRepo(database.DB),
-// 			repository.NewProductRepo(database.DB),
-// 			repository.NewGroupRepo(database.DB),
-// 		),
-// 	)
-// }

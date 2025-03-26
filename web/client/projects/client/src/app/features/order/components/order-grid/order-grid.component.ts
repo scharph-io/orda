@@ -23,6 +23,18 @@ import { PlusMinusTileComponent } from '@orda.features/order/components/plus-min
 			<!-- <mat-grid-tile [colspan]="2">
 				<orda-plus-minus-tile [key]="'deposit'" [value]="view().deposit ?? 100" />
 			</mat-grid-tile> -->
+			@if (deposit(); as deposit) {
+				<mat-grid-tile
+					matRipple
+					[matRippleCentered]="false"
+					[matRippleDisabled]="false"
+					[matRippleUnbounded]="false"
+					(click)="addProduct(deposit)"
+				>
+					Deposit{{ deposit.price }}
+					<!-- <orda-product-tile [product]="vp" /> -->
+				</mat-grid-tile>
+			}
 
 			@for (vp of products(); track vp.id) {
 				<mat-grid-tile
@@ -47,6 +59,7 @@ import { PlusMinusTileComponent } from '@orda.features/order/components/plus-min
 })
 export class OrderGridComponent {
 	products = input.required<Partial<ViewProduct>[]>();
+	deposit = input<Partial<ViewProduct>>();
 	gridCols = input<number>(6);
 
 	cart = inject(OrderStoreService);
