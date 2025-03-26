@@ -12,8 +12,8 @@ import { RouterModule } from '@angular/router';
 		<mat-grid-list cols="4" rowHeight="2:1">
 			@for (v of viewService.views.value(); track v.id) {
 				<mat-grid-tile mat-ripple [routerLink]="['view', v.id]">
-          {{ v.name }} ({{v.products_count}})
-        </mat-grid-tile>
+					{{ v.name }} ({{ v.products_count }})
+				</mat-grid-tile>
 			}
 		</mat-grid-list>
 	`,
@@ -21,4 +21,8 @@ import { RouterModule } from '@angular/router';
 })
 export class OrderComponent {
 	viewService = inject(OrderService);
+
+	constructor() {
+		this.viewService.views.reload();
+	}
 }

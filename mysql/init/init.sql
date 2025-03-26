@@ -202,7 +202,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO `users` (`id`, `created_at`, `updated_at`, `deleted_at`, `username`, `password`, `role_id`) VALUES
-('0195c25a4d907cfd89e56b6b3ef45595',	'2025-03-23 09:34:12.882',	'2025-03-23 09:34:12.882',	NULL,	'admin',	'$2a$14$iENc0vej.dOlkZ9pl2A0COUOeSWyV3McpVwIDQqdTV6AiwMkR2Apm',	'0195c25a4d907d7ca2c74413713b6af8'),
-('0195c25c753074eea3fae3eeff3f5644',	'2025-03-23 09:36:34.096',	'2025-03-23 09:36:34.096',	NULL,	'user',	'$2a$14$iENc0vej.dOlkZ9pl2A0COUOeSWyV3McpVwIDQqdTV6AiwMkR2Apm',	'0195c25bb0847bbd92db858493588db5');
+('0195c25a4d907cfd89e56b6b3ef45595',	'2025-03-23 09:34:12.882',	'2025-03-23 09:34:12.882',	NULL,	'admin',	'admin',	'0195c25a4d907d7ca2c74413713b6af8'),
+('0195c25c753074eea3fae3eeff3f5644',	'2025-03-23 09:36:34.096',	'2025-03-23 09:36:34.096',	NULL,	'user',	'admin',	'0195c25bb0847bbd92db858493588db5');
 
 -- 2025-03-24 08:40:22 UTC

@@ -19,6 +19,10 @@ export class AssortmentService {
 		loader: () => this.readGroups(),
 	});
 
+	constructor() {
+		this.groups.reload();
+	}
+
 	public createGroup(ag: Partial<AssortmentGroup>): Observable<AssortmentGroup> {
 		this.logger.debug('[create]', ag, this.constructor.name);
 		return this.httpClient

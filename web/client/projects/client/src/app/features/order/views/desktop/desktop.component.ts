@@ -6,35 +6,38 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 import { OrderService } from '@orda.features/data-access/services/order.service';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { JsonPipe } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
+import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
 
 @Component({
 	selector: 'orda-order-desktop',
-	imports: [MatTabsModule, OrderGridComponent, CartComponent, JsonPipe],
+	imports: [MatTabsModule, OrderGridComponent, CartComponent, KeyValuePipe],
 	template: `
-    <!--    @let groups = data.value();-->
-    <!--    @for (e of groups?.entries(); track e[0]) {-->
-    <!--      {{ e[1] | json}}-->
-    <!--    }-->
-    {{ data.value()?.keys() | json }}
-    <!--    <div [class]="viewClass">-->
-    <!--		<mat-tab-group-->
-    <!--			class="products"-->
-    <!--			mat-align-tabs="center"-->
-    <!--			animationDuration="0ms"-->
-    <!--			dynamicHeight="false"-->
-    <!--		>-->
-    <!--			@for (v of orderService.views.value(); track v.id) {-->
-    <!--				@if (v.products && v.products.length > 0) {-->
-    <!--					<mat-tab [label]="v.name ?? ''">-->
-    <!--						<orda-order-grid [view]="v" [style.margin.em]="0.5" [gridCols]="gridCols" />-->
-    <!--					</mat-tab>-->
-    <!--				}-->
-    <!--			}-->
-    <!--		</mat-tab-group>-->
-    <!--		<orda-cart class="cart" [style.flex-basis]="cartSize" />-->
-    <!--	</div>-->
-  `,
+		<div [class]="viewClass">
+			<mat-tab-group
+				class="products"
+				mat-align-tabs="center"
+				animationDuration="0ms"
+				dynamicHeight="false"
+			>
+				@for (group of data.value() | keyvalue; track group.key) {
+					@let products = group.value;
+					@if (products.length > 0) {
+						<mat-tab [label]="groupName(group.key)">
+							<orda-order-grid
+								[products]="products"
+								[style.margin.em]="0.5"
+								[gridCols]="gridCols"
+							/>
+						</mat-tab>
+					}
+				} @empty {
+					<div>Empty</div>
+				}
+			</mat-tab-group>
+			<orda-cart class="cart" [style.flex-basis]="cartSize" />
+		</div>
+	`,
 	styles: `
 		.desktop-container {
 			display: flex;
@@ -66,6 +69,7 @@ export class OrderDesktopComponent implements OnInit {
 	view = input.required<string>();
 
 	orderService = inject(OrderService);
+	assortmentService = inject(AssortmentService);
 
 	data = rxResource({
 		request: () => this.view(),
@@ -124,5 +128,11 @@ export class OrderDesktopComponent implements OnInit {
 					this.gridCols = 4;
 				}
 			});
+	}
+
+	groupName(id: string) {
+		return (
+			this.assortmentService.groups.value()?.find((group) => group.id === id)?.name ?? 'unknown'
+		);
 	}
 }

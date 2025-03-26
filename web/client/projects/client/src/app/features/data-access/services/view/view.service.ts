@@ -33,7 +33,6 @@ export class ViewService extends EntityService<View> {
 	}
 
 	update(id: string, v: Partial<View>) {
-		console.log(v);
 		return this.httpClient
 			.put<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}`, v)
 			.pipe(catchError(this.handleError));
