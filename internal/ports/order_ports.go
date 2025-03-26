@@ -15,7 +15,7 @@ type OrderDepositMap map[string]ViewProductResponse
 
 type OrderViewProducts struct {
 	ProductGroupsMap OrderProductsMap `json:"products"`
-	GroupDepositMap  OrderDepositMap  `json:"deposits"`
+	GroupDepositMap  OrderDepositMap  `json:"deposits,omitempty"`
 }
 
 type IOrderService interface {

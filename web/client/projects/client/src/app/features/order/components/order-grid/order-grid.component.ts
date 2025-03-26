@@ -20,19 +20,16 @@ import { PlusMinusTileComponent } from '@orda.features/order/components/plus-min
 	],
 	template: `
 		<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
-			<!-- <mat-grid-tile [colspan]="2">
-				<orda-plus-minus-tile [key]="'deposit'" [value]="view().deposit ?? 100" />
-			</mat-grid-tile> -->
+
 			@if (deposit(); as deposit) {
 				<mat-grid-tile
 					matRipple
 					[matRippleCentered]="false"
 					[matRippleDisabled]="false"
 					[matRippleUnbounded]="false"
-					(click)="addProduct(deposit)"
+          [colspan]="2"
 				>
-					Deposit{{ deposit.price }}
-					<!-- <orda-product-tile [product]="vp" /> -->
+          <orda-plus-minus-tile [deposit]="deposit"/>
 				</mat-grid-tile>
 			}
 
@@ -73,4 +70,6 @@ export class OrderGridComponent {
 			desc: p.desc,
 		});
 	}
+
+
 }

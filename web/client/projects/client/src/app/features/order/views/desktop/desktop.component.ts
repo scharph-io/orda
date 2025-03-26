@@ -6,39 +6,44 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 import { OrderService } from '@orda.features/data-access/services/order.service';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { KeyValuePipe } from '@angular/common';
+import { JsonPipe, KeyValuePipe } from '@angular/common';
 import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
 
 @Component({
 	selector: 'orda-order-desktop',
-	imports: [MatTabsModule, OrderGridComponent, CartComponent, KeyValuePipe],
+	imports: [MatTabsModule, OrderGridComponent, CartComponent, KeyValuePipe, JsonPipe],
 	template: `
-		<div [class]="viewClass">
-			<mat-tab-group
-				class="products"
-				mat-align-tabs="center"
-				animationDuration="0ms"
-				dynamicHeight="false"
-			>
-				@for (group of data.value()?.products | keyvalue; track group.key) {
-					@let products = group.value;
-					@if (products.length > 0) {
-						<mat-tab [label]="groupName(group.key)">
-							<orda-order-grid
-								[products]="products"
-								[deposit]="data.value()?.deposits?.get(group.key)"
-								[style.margin.rem]="0.5"
-								[gridCols]="gridCols"
-							/>
-						</mat-tab>
-					}
-				} @empty {
-					<div>Empty</div>
-				}
-			</mat-tab-group>
-			<orda-cart class="cart" [style.flex-basis]="cartSize" />
-		</div>
-	`,
+
+    <div [class]="viewClass">
+      <mat-tab-group
+        class="products"
+        mat-align-tabs="center"
+        animationDuration="0ms"
+        dynamicHeight="false"
+      >
+        @let obj = data.value();
+        @if (obj !== undefined) {
+          @let productsMap = obj.products;
+            @for (group of productsMap | keyvalue; track group.key) {
+              @let products = group.value;
+              @if (products.length > 0) {
+                  <mat-tab [label]="groupName(group.key)">
+                    <orda-order-grid
+                      [products]="products"
+                      [deposit]="obj.deposits !== undefined ? obj.deposits[group.key] : undefined"
+                      [style.margin.rem]="0.5"
+                      [gridCols]="gridCols"
+                    />
+                  </mat-tab>
+                }
+              } @empty {
+                <div>Empty</div>
+              }
+        }
+      </mat-tab-group>
+      <orda-cart class="cart" [style.flex-basis]="cartSize" />
+    </div>
+  `,
 	styles: `
 		.desktop-container {
 			display: flex;
@@ -136,4 +141,6 @@ export class OrderDesktopComponent implements OnInit {
 			this.assortmentService.groups.value()?.find((group) => group.id === id)?.name ?? 'unknown'
 		);
 	}
+
+  protected readonly Object = Object;
 }
