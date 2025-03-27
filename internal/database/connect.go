@@ -49,7 +49,13 @@ func Connect() {
 		},
 	)
 
-	log.Println(dsn)
+	sanitizedDsn := fmt.Sprintf("%s:****@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		c.User,
+		c.Host,
+		c.Port,
+		c.Name,
+	)
+	log.Println(sanitizedDsn)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: newLogger,
 	})
