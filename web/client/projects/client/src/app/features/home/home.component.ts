@@ -20,12 +20,7 @@ interface Tile {
 
 		<div class="container">
 			<h3>Menu</h3>
-			<mat-grid-list
-				style="width: 50%"
-				[cols]="primaryTiles().length"
-				rowHeight="5rem"
-				[gutterSize]="'0.5rem'"
-			>
+			<mat-grid-list [cols]="primaryTiles().length * 2" [gutterSize]="'0.5rem'">
 				@for (tile of primaryTiles(); track tile) {
 					@if (tile.canActivate ? tile.canActivate() : true) {
 						<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
@@ -35,6 +30,13 @@ interface Tile {
 				}
 			</mat-grid-list>
 		</div>
+
+		<h2>TODOs for v0.2.1</h2>
+		<ul>
+			<li>Colors</li>
+			<li>Order UI settings set grid cols to auto, 2-5</li>
+			<li>Manual deposit</li>
+		</ul>
 
 		<!--		https://lucide.dev/guide/packages/lucide-angular-->
 		<!--		https://sebastianviereck.de/httponly-und-secure-cookies-in-angular/-->
