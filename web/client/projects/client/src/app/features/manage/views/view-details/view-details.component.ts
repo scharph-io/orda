@@ -17,73 +17,78 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 	selector: 'orda-view-details',
 	imports: [MatTableModule, MatCheckboxModule, MatButton, MatFormField, MatInput, MatLabel],
 	template: `
-    <h2>{{ view.value()?.name }} </h2>
-    @if (view.value()?.desc !== '') {
-      <p>Description: {{ view.value()?.desc }}</p>
-    }
-    <mat-form-field>
-      <mat-label>Filter</mat-label>
-      <input matInput (keyup)="applyFilter($event)" #input />
-    </mat-form-field>
-    <button mat-button (click)="save()">Save</button>
-    <div class="mat-elevation-z8 table-container">
-      <table
-        mat-table
-        [dataSource]="availableProductsDataSource()"
-        [style]="{ 'max-height': '20vh', overflow: 'auto' }"
-      >
-        <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef>
-            <mat-checkbox
-              (change)="$event ? toggleAllRows() : null"
-              [checked]="selection().hasValue() && isAllSelected()"
-              [indeterminate]="selection().hasValue() && !isAllSelected()"
-            >
-            </mat-checkbox>
-          </th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox
-              (click)="$event.stopPropagation()"
-              (change)="$event ? selection().toggle(row.id) : null"
-              [checked]="selection().isSelected(row.id)"
-            >
-            </mat-checkbox>
-          </td>
-        </ng-container>
-        <!-- Position Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-        </ng-container>
+		<h2>{{ view.value()?.name }}</h2>
+		@if (view.value()?.desc !== '') {
+			<p>Description: {{ view.value()?.desc }}</p>
+		}
+		<mat-form-field>
+			<mat-label>Filter</mat-label>
+			<input matInput (keyup)="applyFilter($event)" #input />
+		</mat-form-field>
+		<button mat-button (click)="save()">Save</button>
+		<div class="mat-elevation-z8 table-container">
+			<table
+				mat-table
+				[dataSource]="availableProductsDataSource()"
+				[style]="{ 'max-height': '20vh', overflow: 'auto' }"
+			>
+				<ng-container matColumnDef="select">
+					<th mat-header-cell *matHeaderCellDef>
+						<mat-checkbox
+							(change)="$event ? toggleAllRows() : null"
+							[checked]="selection().hasValue() && isAllSelected()"
+							[indeterminate]="selection().hasValue() && !isAllSelected()"
+						>
+						</mat-checkbox>
+					</th>
+					<td mat-cell *matCellDef="let row">
+						<mat-checkbox
+							(click)="$event.stopPropagation()"
+							(change)="$event ? selection().toggle(row.id) : null"
+							[checked]="selection().isSelected(row.id)"
+						>
+						</mat-checkbox>
+					</td>
+				</ng-container>
+				<!-- Position Column -->
+				<ng-container matColumnDef="name">
+					<th mat-header-cell *matHeaderCellDef>Name</th>
+					<td mat-cell *matCellDef="let element">{{ element.name }}</td>
+				</ng-container>
 
-        <!-- Name Column -->
-        <ng-container matColumnDef="desc">
-          <th mat-header-cell *matHeaderCellDef>Desc</th>
-          <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
-        </ng-container>
+				<!-- Name Column -->
+				<ng-container matColumnDef="desc">
+					<th mat-header-cell *matHeaderCellDef>Desc</th>
+					<td mat-cell *matCellDef="let element">{{ element.desc }}</td>
+				</ng-container>
 
-        <!-- Weight Column -->
-        <ng-container matColumnDef="group">
-          <th mat-header-cell *matHeaderCellDef>Group</th>
-          <td mat-cell *matCellDef="let element">{{ getGroupName(element.group_id) }}</td>
-        </ng-container>
+				<!-- Weight Column -->
+				<ng-container matColumnDef="group">
+					<th mat-header-cell *matHeaderCellDef>Group</th>
+					<td mat-cell *matCellDef="let element">{{ getGroupName(element.group_id) }}</td>
+				</ng-container>
 
-        <!--			&lt;!&ndash; Symbol Column &ndash;&gt;-->
-        <!--			<ng-container matColumnDef="actions">-->
-        <!--				<th mat-header-cell *matHeaderCellDef>Actions</th>-->
-        <!--				<td mat-cell *matCellDef="let element">{{ element.active }}</td>-->
-        <!--			</ng-container>-->
+				<ng-container matColumnDef="color">
+					<th mat-header-cell *matHeaderCellDef>Color</th>
+					<td mat-cell *matCellDef="let element">red</td>
+				</ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+				<!--			&lt;!&ndash; Symbol Column &ndash;&gt;-->
+				<!--			<ng-container matColumnDef="actions">-->
+				<!--				<th mat-header-cell *matHeaderCellDef>Actions</th>-->
+				<!--				<td mat-cell *matCellDef="let element">{{ element.active }}</td>-->
+				<!--			</ng-container>-->
 
-        <!-- Row shown when there is no matching data. -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-        </tr>
-      </table>
-    </div>
-  `,
+				<tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+				<!-- Row shown when there is no matching data. -->
+				<tr class="mat-row" *matNoDataRow>
+					<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+				</tr>
+			</table>
+		</div>
+	`,
 	styles: `
 		/* app.component.scss */
 
@@ -97,19 +102,19 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 	`,
 })
 export class ViewDetailsComponent {
-	// displayedColumns: string[] = ['select', 'name', 'desc', 'group', 'actions'];
-	displayedColumns: string[] = ['select', 'name', 'desc', 'group'];
+	displayedColumns: string[] = ['select', 'name', 'desc', 'group', 'color'];
 
 	private logger = inject(OrdaLogger);
 	private viewService = inject(ViewService);
 	private assortmentService = inject(AssortmentService);
 
-  private readonly snackBar = inject(MatSnackBar);
+	private readonly snackBar = inject(MatSnackBar);
 
 	view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
 
 	view = rxResource({
-		loader: () => this.viewService.readById(this.view_id()),
+		request: () => this.view_id(),
+		loader: ({ request }) => this.viewService.readById(request),
 	});
 
 	availableProducts = rxResource({
@@ -172,10 +177,9 @@ export class ViewDetailsComponent {
 				this.logger.debug(
 					`successfully saved ${viewProductsToSave.length} products to view ${this.view_id()}`,
 				);
-        this.snackBar.open('Successfully saved products to view', 'Close', {
-          duration: 3000,
-          }
-        )
+				this.snackBar.open('Successfully saved products to view', 'Close', {
+					duration: 3000,
+				});
 			},
 			error: (err) => {
 				this.logger.error(

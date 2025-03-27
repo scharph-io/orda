@@ -7,6 +7,7 @@ import (
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type ProductRepo struct {
@@ -21,7 +22,7 @@ var _ ports.IProductRepository = (*ProductRepo)(nil)
 
 func (r *ProductRepo) Read(ctx context.Context) ([]*domain.Product, error) {
 	products := make([]*domain.Product, 0)
-	if err := r.db.WithContext(ctx).Find(&products).Error; err != nil {
+	if err := r.db.WithContext(ctx).Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}, Desc: true}).Find(&products).Error; err != nil {
 		return nil, err
 	}
 	return products, nil
@@ -45,7 +46,7 @@ func (r *ProductRepo) ReadByIds(ctx context.Context, ids ...string) (domain.Prod
 
 func (r *ProductRepo) ReadByGroupId(ctx context.Context, id string) (domain.Products, error) {
 	var products domain.Products
-	if err := r.db.WithContext(ctx).Where("product_group_id = ?", id).Find(&products).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("product_group_id = ?", id).Order("name, price").Find(&products).Error; err != nil {
 		return nil, err
 	}
 	return products, nil
@@ -84,7 +85,7 @@ func (r *ProductRepo) GetDeposit(ctx context.Context, groupid string) (p *domain
 }
 
 func (r *ProductRepo) SetOrUpdateDeposit(ctx context.Context, groupid string, price int32, active bool) (dp *domain.Product, err error) {
-	if dp, err = r.GetDeposit(ctx, groupid); dp == nil {
+	if dp, _ = r.GetDeposit(ctx, groupid); dp == nil {
 		dp = &domain.Product{ProductGroupID: groupid, Deposit: true, Price: price, Active: active}
 		err = r.db.Create(dp).Error
 		fmt.Println("Created new deposit:", dp.ID)

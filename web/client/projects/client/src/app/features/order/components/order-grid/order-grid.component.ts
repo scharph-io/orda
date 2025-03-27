@@ -7,6 +7,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { ViewProduct } from '@orda.core/models/view';
 import { ProductTileComponent } from '@orda.features/order/components/product-tile/product-tile.component';
 import { PlusMinusTileComponent } from '@orda.features/order/components/plus-minus-tile/plus-minus-tile.component';
+import { OrdaColorService } from '@orda.shared/utils/color';
 
 @Component({
 	selector: 'orda-order-grid',
@@ -20,21 +21,26 @@ import { PlusMinusTileComponent } from '@orda.features/order/components/plus-min
 	],
 	template: `
 		<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
-
 			@if (deposit(); as deposit) {
 				<mat-grid-tile
 					matRipple
 					[matRippleCentered]="false"
 					[matRippleDisabled]="false"
 					[matRippleUnbounded]="false"
-          [colspan]="2"
+					[colspan]="2"
 				>
-          <orda-plus-minus-tile [deposit]="deposit"/>
+					<orda-plus-minus-tile [deposit]="deposit" />
 				</mat-grid-tile>
 			}
 
 			@for (vp of products(); track vp.id) {
 				<mat-grid-tile
+					[style]="{
+						'background-color':
+							vp.color && vp.color.startsWith('#')
+								? colorService.hextoHSLString(vp.color, 0.33)
+								: '',
+					}"
 					matRipple
 					[matRippleCentered]="false"
 					[matRippleDisabled]="false"
@@ -55,6 +61,7 @@ import { PlusMinusTileComponent } from '@orda.features/order/components/plus-min
 	`,
 })
 export class OrderGridComponent {
+	colorService = inject(OrdaColorService);
 	products = input.required<Partial<ViewProduct>[]>();
 	deposit = input<Partial<ViewProduct>>();
 	gridCols = input<number>(6);
@@ -70,6 +77,4 @@ export class OrderGridComponent {
 			desc: p.desc,
 		});
 	}
-
-
 }
