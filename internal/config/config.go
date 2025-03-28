@@ -18,7 +18,6 @@ type Config struct {
 		Port         int
 		Host         string
 		TZ           string
-		SSL          bool
 		EnforcerFile string
 	}
 	Database struct {

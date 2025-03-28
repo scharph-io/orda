@@ -37,7 +37,7 @@ import {
 					<div class="item">
 						<p>{{ role.name | titlecase }}</p>
 						<div>
-							<button title="delete role" class="red-btn" mat-icon-button (click)="delete(role)">
+							<button title="delete role" class="delete-btn" mat-icon-button (click)="delete(role)">
 								<mat-icon>delete</mat-icon>
 							</button>
 							<button title="edit role" mat-icon-button (click)="edit(role)">

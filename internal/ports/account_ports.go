@@ -7,24 +7,24 @@ import (
 	"github.com/scharph/orda/internal/domain"
 )
 
-type DepositRequest struct {
+type AccDepositRequest struct {
 	Amount        int32                `json:"amount" validate:"required gt=0"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
 	HistoryAction domain.HistoryAction `json:"history_type" validate:"required"`
 	TransactionId string               `json:"transactionid,omitzero"`
 }
 
-type DebitRequest struct {
+type AccDebitRequest struct {
 	Amount        int32  `json:"amount" validate:"required gt=0"`
 	TransactionId string `json:"transactionid,omitzero"`
 }
 
-type DebitResponse struct {
+type AccDebitResponse struct {
 	RemainingCash int32 `json:"remaining_cash"`
 	NewBalance    int32 `json:"new_balance"`
 }
 
-type DepositGroupRequest struct {
+type AccDepositGroupRequest struct {
 	Amount int32  `json:"amount"`
 	UserId string `json:"userid,omitempty"`
 }
@@ -85,7 +85,7 @@ type IAccountService interface {
 	CreateGroup(ctx context.Context, req AccountGroupRequest) (*AccountGroupResponse, error)
 	GetAllGroups(ctx context.Context) ([]AccountGroupResponse, error)
 	DeleteGroup(ctx context.Context, id string) (bool, error)
-	DepositAmountGroup(ctx context.Context, userid, groupId string, req DepositGroupRequest) (*AccountGroupResponse, error)
+	DepositAmountGroup(ctx context.Context, userid, groupId string, req AccDepositGroupRequest) (*AccountGroupResponse, error)
 	GetAccountGroupHistory(ctx context.Context, groupid string) ([]*AccountHistoryResponse, error)
 
 	// Account
@@ -94,8 +94,8 @@ type IAccountService interface {
 	GetById(ctx context.Context, id string) (*AccountResponse, error)
 	Update(ctx context.Context, req AccountRequest) (*AccountResponse, error)
 	GetGroupAccounts(ctx context.Context, id string) ([]AccountResponse, error)
-	DepositAmount(ctx context.Context, userid, accountId string, req DepositRequest) (*AccountResponse, error)
-	DebitAmount(ctx context.Context, userid, accountId string, req DebitRequest) (*DebitResponse, error)
+	DepositAmount(ctx context.Context, userid, accountId string, req AccDepositRequest) (*AccountResponse, error)
+	DebitAmount(ctx context.Context, userid, accountId string, req AccDebitRequest) (*AccDebitResponse, error)
 	GetAccountHistory(ctx context.Context, accountid string) ([]*AccountHistoryResponse, error)
 	Delete(ctx context.Context, id string) (bool, error)
 }

@@ -19,27 +19,23 @@ func NewRoleRepo(db *gorm.DB) *RoleRepo {
 }
 
 func (r *RoleRepo) Create(ctx context.Context, role *domain.Role) (*domain.Role, error) {
-	res := r.db.WithContext(ctx).Create(&role)
-	if res.Error != nil {
-		return nil, res.Error
+	if err := r.db.WithContext(ctx).Create(&role).Error; err != nil {
+		return nil, err
 	}
 	return role, nil
 }
 
 func (r *RoleRepo) Update(ctx context.Context, id string, role *domain.Role) (*domain.Role, error) {
-	res := r.db.WithContext(ctx).Model(&domain.Role{}).Where("id = ?", id).Updates(&role)
-	if res.Error != nil {
-		return nil, res.Error
+	if err := r.db.WithContext(ctx).Model(&domain.Role{}).Where("id = ?", id).Updates(&role).Error; err != nil {
+		return nil, err
 	}
 	return role, nil
 }
 
 func (r *RoleRepo) Delete(ctx context.Context, id string) (bool, error) {
-
 	if err := r.db.WithContext(ctx).Model(&domain.ViewRole{}).Delete(&domain.ViewRole{}, "role_id = ?", id).Error; err != nil {
 		return false, err
 	}
-
 	if err := r.db.WithContext(ctx).Unscoped().Delete(&domain.Role{}, "id = ?", id).Error; err != nil {
 		return false, err
 	}

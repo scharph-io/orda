@@ -37,6 +37,10 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 		return nil, err
 	}
 
+	for _, p := range products {
+		fmt.Println(p)
+	}
+
 	var total int32 = 0
 	var items []*domain.TransactionItem
 	for index, p := range products {
@@ -83,10 +87,10 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 
 }
 
-func (s *TransactionService) CreateWithAccount(ctx context.Context, userid string, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
+func (s *TransactionService) CreateWithAccount(ctx context.Context, userid string, req ports.TransactionRequest) (*ports.TransactionResponse, error) {
 
 	// Products
-	productIds := util.MapSlice(t.Items, func(i ports.ItemRequest) string {
+	productIds := util.MapSlice(req.Items, func(i ports.ItemRequest) string {
 		return i.Id
 	})
 	products, err := s.productRepo.ReadByIds(ctx, productIds...)
@@ -94,20 +98,24 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		return nil, err
 	}
 
+	for _, p := range products {
+		fmt.Println(p)
+	}
+
 	// Total Products
 	var total int32 = 0
 	var items []*domain.TransactionItem
 	for index, p := range products {
-		total += p.Price * int32(t.Items[index].Quantity)
+		total += p.Price * int32(req.Items[index].Quantity)
 		items = append(items, &domain.TransactionItem{
 			ProductID: p.ID,
-			Qty:       t.Items[index].Quantity,
+			Qty:       req.Items[index].Quantity,
 			Price:     p.Price,
 		})
 	}
 
 	// Total Deposits
-	for _, d := range t.Deposits {
+	for _, d := range req.Deposits {
 		total += int32(d.Quantity) * d.Price
 		items = append(items, &domain.TransactionItem{
 			ProductID: "deposit",
@@ -116,7 +124,7 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		})
 	}
 
-	acc, err := s.accountService.GetById(ctx, t.AccountID)
+	acc, err := s.accountService.GetById(ctx, req.AccountID)
 	if err != nil {
 		return nil, err
 	}
@@ -126,9 +134,9 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 	}
 
 	transaction, err := s.repo.Create(ctx, &domain.Transaction{
-		PaymentOption: t.PaymentOption,
+		PaymentOption: req.PaymentOption,
 		UserID:        userid,
-		AccountID:     sql.NullString{String: t.AccountID, Valid: true},
+		AccountID:     sql.NullString{String: req.AccountID, Valid: true},
 		Total:         total,
 		Items:         items,
 	})
@@ -136,7 +144,7 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		return nil, err
 	}
 
-	debitAmount, err := s.accountService.DebitAmount(ctx, userid, acc.Id, ports.DebitRequest{
+	debitAmount, err := s.accountService.DebitAmount(ctx, userid, acc.Id, ports.AccDebitRequest{
 		Amount:        total,
 		TransactionId: transaction.ID,
 	})
@@ -152,7 +160,7 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		_, err := s.repo.Create(ctx, &domain.Transaction{
 			PaymentOption: domain.PaymentOptionCash,
 			UserID:        userid,
-			AccountID:     sql.NullString{String: t.AccountID, Valid: true},
+			AccountID:     sql.NullString{String: req.AccountID, Valid: true},
 			Total:         debitAmount.RemainingCash,
 			TotalCredit:   0,
 		})

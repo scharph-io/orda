@@ -8,10 +8,9 @@ import (
 )
 
 type ViewRequest struct {
-	Name    string   `json:"name" validate:"required"`
-	Roles   []string `json:"roles" validate:"required"`
-	Deposit uint     `json:"deposit"`
-	Desc    string   `json:"desc"`
+	Name  string   `json:"name" validate:"required"`
+	Roles []string `json:"roles" validate:"required"`
+	Desc  string   `json:"desc"`
 }
 
 type ViewResponse struct {
@@ -20,9 +19,8 @@ type ViewResponse struct {
 	Desc          string                 `json:"desc"`
 	Roles         []*RoleResponse        `json:"roles,omitzero"`
 	Products      []*ViewProductResponse `json:"products,omitzero"`
-	RolesCount    int                    `json:"roles_count"`
+	RolesCount    int                    `json:"roles_count,omitempty"`
 	ProductsCount int                    `json:"products_count"`
-	Deposit       uint                   `json:"deposit"`
 }
 
 // add assortment to views

@@ -46,7 +46,6 @@ func (s *ViewService) ReadMany(ctx context.Context) ([]*ports.ViewResponse, erro
 			Desc:          v.Desc,
 			RolesCount:    len(v.Roles),
 			ProductsCount: len(v.Products),
-			Deposit:       v.Deposit,
 		})
 	}
 	return res, nil
@@ -96,7 +95,6 @@ func (s *ViewService) ReadOne(ctx context.Context, id string) (*ports.ViewRespon
 		Products:      products,
 		RolesCount:    len(roles),
 		ProductsCount: len(products),
-		Deposit:       view.Deposit,
 	}, nil
 }
 

@@ -1,0 +1,51 @@
+networks:
+  proxy:
+    external: true
+  internal:
+    external: true
+services:
+  adminer:
+    image: adminer
+    environment:
+      - ADMINER_DEFAULT_SERVER=db
+      - ADMINER_DESIGN=nette
+      - ADMINER_DEFAULT_DB_NAME=orda
+      - ADMINER_DEFAULT_DB_HOST=db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`adminer.schartis.at`)"
+      - "traefik.http.routers.adminer.tls=true"
+      - "traefik.http.routers.adminer.tls.certresolver=letsencrypt"
+      - "traefik.docker.network=proxy"
+    networks:
+      - proxy
+      - internal
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    hostname: metabase
+    volumes:
+      - /dev/urandom:/dev/random:ro
+    ports:
+      - 3000:3000
+    environment:
+      MB_DB_TYPE: mysql
+      MB_DB_DBNAME: orda
+      MB_DB_PORT: 3306
+      MB_DB_USER: orda
+      MB_DB_PASS: orda
+      MB_DB_HOST: db
+    networks:
+      - proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.metabase.rule=Host(`metabase.schartis.at`)"
+      - "traefik.http.routers.metabase.tls=true"
+      - "traefik.http.routers.metabase.tls.certresolver=letsencrypt"
+      - "traefik.docker.network=proxy"
+    healthcheck:
+      test: curl --fail -I http://localhost:3000/api/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5

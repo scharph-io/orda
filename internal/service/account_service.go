@@ -71,7 +71,7 @@ func (s *AccountService) GetGroupAccounts(ctx context.Context, id string) ([]por
 	return res, nil
 }
 
-func (s *AccountService) DepositAmountGroup(ctx context.Context, userid, groupId string, req ports.DepositGroupRequest) (*ports.AccountGroupResponse, error) {
+func (s *AccountService) DepositAmountGroup(ctx context.Context, userid, groupId string, req ports.AccDepositGroupRequest) (*ports.AccountGroupResponse, error) {
 
 	group, err := s.groupRepo.ReadById(ctx, groupId)
 	if err != nil {
@@ -222,7 +222,7 @@ func (s *AccountService) Update(ctx context.Context, req ports.AccountRequest) (
 	return util.ToAccountResponse(updatedAcc), err
 }
 
-func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId string, req ports.DepositRequest) (*ports.AccountResponse, error) {
+func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId string, req ports.AccDepositRequest) (*ports.AccountResponse, error) {
 	account, err := s.repo.ReadById(ctx, accountId)
 	if err != nil {
 		return nil, err
@@ -258,7 +258,7 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId st
 	return util.ToAccountResponse(updatedAcc), err
 }
 
-func (s *AccountService) DebitAmount(ctx context.Context, userid, accountId string, req ports.DebitRequest) (*ports.DebitResponse, error) {
+func (s *AccountService) DebitAmount(ctx context.Context, userid, accountId string, req ports.AccDebitRequest) (*ports.AccDebitResponse, error) {
 	account, err := s.repo.ReadById(ctx, accountId)
 	if err != nil {
 		return nil, err
@@ -285,7 +285,7 @@ func (s *AccountService) DebitAmount(ctx context.Context, userid, accountId stri
 			return nil, err
 		}
 
-		return &ports.DebitResponse{
+		return &ports.AccDebitResponse{
 			RemainingCash: diff * -1,
 			NewBalance:    account.CreditBalance,
 		}, err
@@ -307,7 +307,7 @@ func (s *AccountService) DebitAmount(ctx context.Context, userid, accountId stri
 			return nil, err
 		}
 
-		return &ports.DebitResponse{
+		return &ports.AccDebitResponse{
 			RemainingCash: 0,
 			NewBalance:    updatedAcc.CreditBalance,
 		}, err

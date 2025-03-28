@@ -1,19 +1,33 @@
 import { Component, inject } from '@angular/core';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { OrderService } from '@orda.features/data-access/services/order.service';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatIconModule } from '@angular/material/icon';
-import { OrderDesktopComponent } from '@orda.features/order/views/desktop/desktop.component';
+import { MatRipple } from '@angular/material/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
 	selector: 'orda-order',
-	imports: [MatTabsModule, MatIconModule, OrderDesktopComponent],
-	template: ` <orda-order-desktop [views]="orderService.views.value() ?? []" /> `,
+	imports: [MatGridListModule, MatRipple, RouterModule],
+	template: `
+		<h1>Order Views</h1>
+		@let views = viewService.views.value() ?? [];
+		@if (views.length === 0) {
+			<p>No views available</p>
+		} @else {
+			<mat-grid-list cols="4" rowHeight="2:1">
+				@for (v of viewService.views.value(); track v.id) {
+					<mat-grid-tile mat-ripple [routerLink]="['view', v.id]">
+						{{ v.name }} ({{ v.products_count }})
+					</mat-grid-tile>
+				}
+			</mat-grid-list>
+		}
+	`,
 	styles: ``,
 })
 export class OrderComponent {
-	orderService = inject(OrderService);
+	viewService = inject(OrderService);
 
 	constructor() {
-		this.orderService.views.reload();
+		this.viewService.views.reload();
 	}
 }

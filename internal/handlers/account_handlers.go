@@ -120,7 +120,7 @@ func (h *AccountHandlers) GetGroupAccounts(c *fiber.Ctx) error {
 func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	var req ports.DepositRequest
+	var req ports.AccDepositRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request",
@@ -142,7 +142,7 @@ func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
 
 func (h *AccountHandlers) DepositGroup(c *fiber.Ctx) error {
 	id := c.Params("id")
-	req := ports.DepositGroupRequest{}
+	req := ports.AccDepositGroupRequest{}
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit data"})
 	}

@@ -32,6 +32,7 @@ type AccountHistory struct {
 	Transaction    Transaction
 	UserID         string `gorm:"size:36"`
 	User           User
+	Reason         string
 }
 
 func (h AccountHistory) ToString() string {

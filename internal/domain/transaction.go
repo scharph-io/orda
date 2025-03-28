@@ -26,10 +26,9 @@ type Transaction struct {
 }
 
 type TransactionItem struct {
-	TransactionID string `gorm:"primaryKey;index;size:36"`
-	ProductID     string `gorm:"primaryKey;index;size:36"`
-	// Think about deposit. with this deposit does not work
-	// Product       Product `gorm:"foreignKey:ProductID"`
-	Qty   int8
-	Price int32
+	TransactionID string  `gorm:"primaryKey;index;size:36"`
+	ProductID     string  `gorm:"primaryKey;index;size:36"`
+	Product       Product `gorm:"foreignKey:ProductID"`
+	Qty           int8
+	Price         int32
 }

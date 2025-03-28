@@ -34,7 +34,7 @@ export interface ConfirmDialogData {
 		<mat-dialog-actions>
 			<button mat-button [mat-dialog-close]="false">Cancel</button>
 			@if (!blocked) {
-				<button mat-button [mat-dialog-close]="true">Yes</button>
+				<button class="delete-btn" mat-flat-button [mat-dialog-close]="true">Delete</button>
 			}
 		</mat-dialog-actions>`,
 	styles: ``,

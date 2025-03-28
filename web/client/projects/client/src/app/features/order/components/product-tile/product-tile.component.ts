@@ -51,5 +51,5 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 	],
 })
 export class ProductTileComponent {
-	product = input.required<ViewProduct>();
+	product = input.required<Partial<ViewProduct>>();
 }

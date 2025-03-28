@@ -38,7 +38,7 @@ import { StrongPasswordRegx } from '@orda.core/constants';
 						@for (user of userService.entityResource.value(); track user.id) {
 							{{ user.username }} ({{ user.role }})
 							<button mat-button (click)="edit(user)">Edit</button>
-							<button mat-button (click)="delete(user)">Delete</button>
+							<button mat-flat-button class="delete-btn" (click)="delete(user)">Delete</button>
 							<br />
 						}
 					</div>
