@@ -85,6 +85,7 @@ type IAssortmentService interface {
 	DeleteProductGroup(ctx context.Context, id string) error
 
 	//Deposit
+	// GetDepositFromGroup(ctx context.Context, id string) (*ProductResponse, error)
 	SetDepositToGroup(ctx context.Context, id string, dpr DepositProduct) error
 	RemoveDepositFromGroup(ctx context.Context, id string) error
 
@@ -112,6 +113,7 @@ type IAssortmentHandlers interface {
 	DeleteGroup(c *fiber.Ctx) error
 
 	// Deposit
+	// GetDeposit(c *fiber.Ctx) error
 	SetDeposit(c *fiber.Ctx) error
 	RemoveDeposit(c *fiber.Ctx) error
 

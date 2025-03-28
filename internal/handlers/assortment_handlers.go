@@ -44,7 +44,7 @@ func (h *AssortmentHandlers) ReadGroups(c *fiber.Ctx) error {
 
 func (h *AssortmentHandlers) ReadGroup(c *fiber.Ctx) error {
 	id := c.Params("id")
-	fmt.Println("Reading group with ID:", id)
+	fmt.Println("AH< Reading group with ID:", id)
 	res, err := h.assortmentService.ReadProductGroup(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get group"})

@@ -119,7 +119,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	group.Delete("/:id/deposit", s.assortmentHandlers.RemoveDeposit)
 
 	product := assortment.Group("/product")
-	product.Get("/", s.assortmentHandlers.ReadProducts)
+	product.Get("/", s.assortmentHandlers.ReadProducts) // uses query group_id
 	product.Get("/:id", s.assortmentHandlers.ReadProductById)
 	product.Put("/:id", s.assortmentHandlers.UpdateProduct)
 	product.Patch("/:id/toggle", s.assortmentHandlers.ToggleProduct)

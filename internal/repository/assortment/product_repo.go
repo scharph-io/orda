@@ -2,7 +2,6 @@ package assortment
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -46,7 +45,7 @@ func (r *ProductRepo) ReadByIds(ctx context.Context, ids ...string) (domain.Prod
 
 func (r *ProductRepo) ReadByGroupId(ctx context.Context, id string) (domain.Products, error) {
 	var products domain.Products
-	if err := r.db.WithContext(ctx).Where("product_group_id = ?", id).Order("name, price").Find(&products).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("product_group_id = ?", id).Order("name, price").Find(&products, "deposit IS NULL").Error; err != nil {
 		return nil, err
 	}
 	return products, nil
@@ -88,12 +87,10 @@ func (r *ProductRepo) SetOrUpdateDeposit(ctx context.Context, groupid string, pr
 	if dp, _ = r.GetDeposit(ctx, groupid); dp == nil {
 		dp = &domain.Product{ProductGroupID: groupid, Deposit: true, Price: price, Active: active}
 		err = r.db.Create(dp).Error
-		fmt.Println("Created new deposit:", dp.ID)
 	} else {
 		dp.Price = price
 		dp.Active = active
 		err = r.db.WithContext(ctx).Model(dp).Save(dp).Error
-		fmt.Println("Updated deposit", dp.ID)
 	}
 	return dp, err
 }
@@ -103,8 +100,7 @@ func (r *ProductRepo) DeleteDeposit(ctx context.Context, groupid string) error {
 	if d == nil {
 		return nil
 	}
-	fmt.Println("Delete deposit", d.ID)
-	return r.db.WithContext(ctx).Model(&domain.Product{}).Delete(d).Error
+	return r.db.WithContext(ctx).Model(&domain.Product{}).Unscoped().Delete(d).Error
 }
 
 // Views

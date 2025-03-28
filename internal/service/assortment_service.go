@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
+	"gorm.io/gorm"
 )
 
 type AssortmentService struct {
@@ -62,8 +64,10 @@ func (s *AssortmentService) ReadProductGroup(ctx context.Context, id string) (*p
 	if err != nil {
 		return nil, err
 	}
-
-	deposit, err := s.products.GetDeposit(ctx, group.ID)
+	deposit, err := s.products.GetDeposit(ctx, id)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
 
 	res := &ports.ProductGroupResponse{
 		ID:       group.ID,
@@ -109,6 +113,21 @@ func (s *AssortmentService) DeleteProductGroup(ctx context.Context, id string) e
 }
 
 // Deposit
+// func (s *AssortmentService) GetDepositFromGroup(ctx context.Context, id string) (*ports.ProductResponse, error) {
+// 	d, err := s.products.GetDeposit(ctx, id)
+// 	if errors.Is(err, gorm.ErrRecordNotFound) {
+// 		return nil, nil
+// 	} else if err != nil {
+// 		return nil, err
+// 	}
+// 	return &ports.ProductResponse{
+// 		Price:   d.Price,
+// 		Active:  d.Active,
+// 		GroupId: d.ProductGroupID,
+// 	}, nil
+
+// }
+
 func (s *AssortmentService) SetDepositToGroup(ctx context.Context, id string, dpr ports.DepositProduct) error {
 	group, err := s.groups.ReadByID(ctx, id)
 	fmt.Println(group)
@@ -116,7 +135,8 @@ func (s *AssortmentService) SetDepositToGroup(ctx context.Context, id string, dp
 		return err
 	}
 	_, err = s.products.SetOrUpdateDeposit(ctx, group.ID, dpr.Price, dpr.Active)
-	return nil
+	return err
+
 }
 
 func (s *AssortmentService) RemoveDepositFromGroup(ctx context.Context, id string) error {
