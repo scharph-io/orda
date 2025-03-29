@@ -21,7 +21,7 @@ var _ ports.IProductRepository = (*ProductRepo)(nil)
 
 func (r *ProductRepo) Read(ctx context.Context) ([]*domain.Product, error) {
 	products := make([]*domain.Product, 0)
-	if err := r.db.WithContext(ctx).Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}, Desc: true}).Find(&products).Error; err != nil {
+	if err := r.db.WithContext(ctx).Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}, Desc: true}).Find(&products, "deposit IS NULL").Error; err != nil {
 		return nil, err
 	}
 	return products, nil

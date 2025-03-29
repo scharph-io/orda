@@ -55,20 +55,76 @@ body {
 }
 
 .delete-btn {
-  @include mat.icon-button-overrides(
-      (
-        icon-color: #da2525,
-      )
-  );
-  @include mat.button-overrides((
-    text-label-text-color: lightgrey,
-    container-color: red,
-  ));
+	@include mat.icon-button-overrides(
+		(
+			icon-color: #da2525,
+		)
+	);
+	@include mat.button-overrides(
+		(
+			text-label-text-color: lightgrey,
+			container-color: red,
+		)
+	);
+}
+
+.inactive-btn {
+	@include mat.icon-button-overrides(
+		(
+			icon-color: #da2525,
+		)
+	);
+	@include mat.button-overrides(
+		(
+			text-label-text-color: lightgrey,
+			container-color: red,
+		)
+	);
+}
+
+.inactive-btn {
+	@include mat.icon-button-overrides(
+		(
+			icon-color: #da2525,
+		)
+	);
+	@include mat.button-overrides(
+		(
+			text-label-text-color: lightgrey,
+			container-color: red,
+		)
+	);
+}
+.active-btn {
+	@include mat.icon-button-overrides(
+		(
+			icon-color: white,
+		)
+	);
+	@include mat.button-overrides(
+		(
+			// text-label-text-color: lightgrey,
+			container-color: hsl(131, 80%, 41%)
+		)
+	);
+}
+
+.inactive-btn {
+	@include mat.icon-button-overrides(
+		(
+			icon-color: grey,
+		)
+	);
+	@include mat.button-overrides(
+		(
+			// text-label-text-color: lightgrey,
+			container-color: hsl(39, 80%, 50%)
+		)
+	);
 }
 
 .dialog-flex {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
 }
-

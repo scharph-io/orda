@@ -27,10 +27,18 @@ import { MatSelect } from '@angular/material/select';
 import { RoleService } from '@orda.features/data-access/services/role.service';
 import { MatOption } from '@angular/material/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { MatGridListModule } from '@angular/material/grid-list';
 
 @Component({
 	selector: 'orda-view-list',
-	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule],
+	imports: [
+		MatButtonModule,
+		MatListModule,
+		MatIcon,
+		TitleCasePipe,
+		RouterModule,
+		MatGridListModule,
+	],
 	template: `
 		<div class="title-toolbar">
 			<h2>View</h2>
@@ -42,7 +50,44 @@ import { rxResource } from '@angular/core/rxjs-interop';
 		@if (views.length === 0) {
 			<p>No views available. Add <button mat-button (click)="create()">New</button></p>
 		} @else {
-			<mat-list role="list">
+			<mat-grid-list cols="3">
+				@for (view of views; track view.id) {
+					<mat-grid-tile [style]="{ 'background-color': 'lightgrey' }">
+						<div class="container">
+							<div
+								class="title"
+								[routerLink]="[view.id]"
+								[state]="{ name: view.name }"
+								routerLinkActive="router-link-active"
+							>
+								<h3>{{ view.name | titlecase }}</h3>
+							</div>
+							<div
+								class="info"
+								[routerLink]="[view.id]"
+								[state]="{ name: view.name }"
+								routerLinkActive="router-link-active"
+							>
+								{{ view.products_count }} products
+							</div>
+							<div class="actions">
+								<button
+									title="delete view"
+									class="delete-btn"
+									mat-icon-button
+									(click)="delete(view)"
+								>
+									<mat-icon>delete</mat-icon>
+								</button>
+								<button title="edit" mat-icon-button (click)="edit(view)">
+									<mat-icon>edit</mat-icon>
+								</button>
+							</div>
+						</div>
+					</mat-grid-tile>
+				}
+			</mat-grid-list>
+			<!-- <mat-list role="list">
 				@for (view of views; track view.id) {
 					<mat-list-item role="listitem">
 						<div class="item">
@@ -52,6 +97,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 								routerLinkActive="router-link-active"
 							>
 								{{ view.name | titlecase }}
+								{{ view.products_count ? '(' + view.products_count + ')' : '' }}
 							</p>
 							<div>
 								<button
@@ -69,13 +115,13 @@ import { rxResource } from '@angular/core/rxjs-interop';
 						</div>
 					</mat-list-item>
 				}
-			</mat-list>
+			</mat-list> -->
 		}
 	`,
 	styles: `
 		.item {
 			display: flex;
-			flex-direction: row;
+			flex-direction: column;
 			justify-content: space-between;
 			align-items: center;
 		}
@@ -84,6 +130,32 @@ import { rxResource } from '@angular/core/rxjs-interop';
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
+		}
+
+		.container {
+			display: grid;
+			grid-template-columns: 1fr 1.5fr;
+			grid-template-rows: 1fr 0.5fr 0.5fr;
+			gap: 5px 5px;
+			grid-template-areas:
+				'title title'
+				'info info'
+				'. actions';
+		}
+		.title {
+			justify-self: center;
+			align-self: end;
+			grid-area: title;
+		}
+		.info {
+			justify-self: center;
+			align-self: center;
+			grid-area: info;
+		}
+		.actions {
+			justify-self: center;
+			align-self: center;
+			grid-area: actions;
 		}
 	`,
 })

@@ -1,4 +1,3 @@
-import { JsonPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import {
 	FormsModule,
@@ -36,15 +35,11 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 		FormsModule,
 		ReactiveFormsModule,
 		MatSlideToggle,
-		JsonPipe,
 	],
 	template: ` <h2 mat-dialog-title>Deposit</h2>
 		<mat-dialog-content>
-			{{ data | json }}
 			<form [formGroup]="formGroup">
-				<mat-slide-toggle formControlName="active">{{
-					formGroup.value.active ? 'active' : 'inactive'
-				}}</mat-slide-toggle>
+				<mat-slide-toggle formControlName="active" />
 				@if (formGroup.value.active) {
 					<mat-form-field>
 						<mat-label>Price</mat-label>
@@ -66,7 +61,7 @@ export class DepositDialogComponent {
 	protected readonly dialogRef: MatDialogRef<DepositDialogComponent, number> = inject(MatDialogRef);
 
 	formGroup = new FormGroup({
-		price: new FormControl(0, [Validators.required]),
+		price: new FormControl(0, [Validators.required, Validators.min(50)]),
 		active: new FormControl(true, Validators.required),
 	});
 
