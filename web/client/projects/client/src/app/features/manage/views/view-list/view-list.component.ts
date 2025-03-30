@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
@@ -28,6 +28,7 @@ import { RoleService } from '@orda.features/data-access/services/role.service';
 import { MatOption } from '@angular/material/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.service';
 
 @Component({
 	selector: 'orda-view-list',
@@ -50,7 +51,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 		@if (views.length === 0) {
 			<p>No views available. Add <button mat-button (click)="create()">New</button></p>
 		} @else {
-			<mat-grid-list cols="3">
+			<mat-grid-list [cols]="gridCols()" rowHeight="1:1">
 				@for (view of views; track view.id) {
 					<mat-grid-tile [style]="{ 'background-color': 'lightgrey' }">
 						<div class="container">
@@ -161,10 +162,23 @@ import { MatGridListModule } from '@angular/material/grid-list';
 })
 export class ViewListComponent extends EntityManager<View> {
 	viewService = inject(ViewService);
+	viewBreakpointService = inject(ViewBreakpointService);
 	logger = inject(OrdaLogger);
+
+	gridCols = signal(5);
 
 	constructor() {
 		super();
+		this.viewBreakpointService.getBreakpoint().subscribe((breakpoint) => {
+			console.log('breakpoint', breakpoint);
+			if (breakpoint === 'mobile') {
+				this.gridCols.set(3);
+			} else if (breakpoint === 'tablet') {
+				this.gridCols.set(4);
+			} else {
+				this.gridCols.set(8);
+			}
+		});
 	}
 
 	create() {
