@@ -2,7 +2,6 @@ package ports
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,25 +23,14 @@ type Item struct {
 
 type TransactionRequest struct {
 	Items         []ItemRequest        `json:"items"`
-	Deposits      []ItemRequest        `json:"deposits"`
 	AccountID     string               `json:"account_id,omitempty"`
 	PaymentOption domain.PaymentOption `json:"payment_option"`
-}
-
-func (t *TransactionRequest) Validate() error {
-	if len(t.Items) == 0 && len(t.Deposits) == 0 {
-		return errors.New("no items or deposits provided")
-	}
-	return nil
 }
 
 func (t *TransactionRequest) CalculateTotal() int32 {
 	total := int32(0)
 	for _, item := range t.Items {
 		total += item.Price * int32(item.Quantity)
-	}
-	for _, deposit := range t.Deposits {
-		total += deposit.Price * int32(deposit.Quantity)
 	}
 	return total
 }
@@ -55,10 +43,7 @@ func (tr *TransactionRequest) PrintDetails() {
 	for _, item := range tr.Items {
 		fmt.Printf(" - ItemID: %s, Quantity: %d\n", item.Id, item.Quantity)
 	}
-	fmt.Println("Depositis:")
-	for _, item := range tr.Deposits {
-		fmt.Printf(" - ItemID: %s, Quantity: %d, Price: %d\n", item.Id, item.Quantity, item.Price)
-	}
+
 	fmt.Println("##############")
 }
 

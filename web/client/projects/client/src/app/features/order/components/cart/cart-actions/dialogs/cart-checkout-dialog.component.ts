@@ -288,13 +288,8 @@ export class CartCheckoutDialogComponent implements OnInit {
 			payment_option: option,
 			account_id,
 			items:
-				this.items()
-					?.filter((i: CartItem) => i.id !== 'deposit')
-					.map((i: CartItem) => ({ id: i.id, qty: i.quantity }) as CheckoutRequestItem) ?? [],
-			deposits:
-				this.items()
-					?.filter((i: CartItem) => i.id === 'deposit')
-					.map((i: CartItem) => ({ qty: i.quantity, price: i.price }) as CheckoutRequestItem) ?? [],
+				this.items()?.map((i: CartItem) => ({ id: i.id, qty: i.quantity }) as CheckoutRequestItem) ?? [],
+
 		} as CheckoutRequest;
 
 		// console.log(JSON.stringify(checkoutData));

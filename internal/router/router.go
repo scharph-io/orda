@@ -153,9 +153,8 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	// Order
 	order := api.Group("/order")
 	order.Get("/views", s.orderHandlers.GetOrderViews)
-	// order.Get("/views/:id", s.orderHandlers.GetOrderProducts)
 	order.Get("/views/:id", s.orderHandlers.GetOrderViewProducts)
-	// order.Post("/checkout", s.transactionHandlers.Create)
+	order.Post("/checkout", s.transactionHandlers.Create)
 
 	// // Statistic
 	// statistic := api.Group("/statistic")

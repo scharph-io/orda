@@ -42,22 +42,13 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 	}
 
 	var total int32 = 0
-	var items []*domain.TransactionItem
+	var items []domain.TransactionItem
 	for index, p := range products {
 		total += p.Price * int32(t.Items[index].Quantity)
-		items = append(items, &domain.TransactionItem{
+		items = append(items, domain.TransactionItem{
 			ProductID: p.ID,
 			Qty:       t.Items[index].Quantity,
 			Price:     p.Price,
-		})
-	}
-
-	for _, d := range t.Deposits {
-		total += int32(d.Quantity) * d.Price
-		items = append(items, &domain.TransactionItem{
-			ProductID: "deposit",
-			Qty:       d.Quantity,
-			Price:     d.Price,
 		})
 	}
 
@@ -104,23 +95,13 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 
 	// Total Products
 	var total int32 = 0
-	var items []*domain.TransactionItem
+	var items []domain.TransactionItem
 	for index, p := range products {
 		total += p.Price * int32(req.Items[index].Quantity)
-		items = append(items, &domain.TransactionItem{
+		items = append(items, domain.TransactionItem{
 			ProductID: p.ID,
 			Qty:       req.Items[index].Quantity,
 			Price:     p.Price,
-		})
-	}
-
-	// Total Deposits
-	for _, d := range req.Deposits {
-		total += int32(d.Quantity) * d.Price
-		items = append(items, &domain.TransactionItem{
-			ProductID: "deposit",
-			Qty:       d.Quantity,
-			Price:     d.Price,
 		})
 	}
 

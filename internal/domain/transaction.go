@@ -15,7 +15,7 @@ const (
 
 type Transaction struct {
 	Base
-	Items         []*TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
+	Items         []TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
 	PaymentOption PaymentOption
 	Total         int32
 	TotalCredit   int32
