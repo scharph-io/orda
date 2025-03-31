@@ -51,44 +51,44 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 		@if (views.length === 0) {
 			<p>No views available. Add <button mat-button (click)="create()">New</button></p>
 		} @else {
-			<mat-grid-list [cols]="gridCols()" rowHeight="1:1">
-				@for (view of views; track view.id) {
-					<mat-grid-tile [style]="{ 'background-color': 'lightgrey' }">
-						<div class="container">
-							<div
-								class="title"
-								[routerLink]="[view.id]"
-								[state]="{ name: view.name }"
-								routerLinkActive="router-link-active"
-							>
-								<h3>{{ view.name | titlecase }}</h3>
-							</div>
-							<div
-								class="info"
-								[routerLink]="[view.id]"
-								[state]="{ name: view.name }"
-								routerLinkActive="router-link-active"
-							>
-								{{ view.products_count }} products
-							</div>
-							<div class="actions">
-								<button
-									title="delete view"
-									class="delete-btn"
-									mat-icon-button
-									(click)="delete(view)"
-								>
-									<mat-icon>delete</mat-icon>
-								</button>
-								<button title="edit" mat-icon-button (click)="edit(view)">
-									<mat-icon>edit</mat-icon>
-								</button>
-							</div>
-						</div>
-					</mat-grid-tile>
-				}
-			</mat-grid-list>
-			<!-- <mat-list role="list">
+<!--			<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">-->
+<!--				@for (view of views; track view.id) {-->
+<!--					<mat-grid-tile [style]="{ 'background-color': 'lightgrey' }">-->
+<!--						<div class="container">-->
+<!--							<div-->
+<!--								class="title"-->
+<!--								[routerLink]="[view.id]"-->
+<!--								[state]="{ name: view.name }"-->
+<!--								routerLinkActive="router-link-active"-->
+<!--							>-->
+<!--                <p>{{ view.name | titlecase }}</p>-->
+<!--							</div>-->
+<!--							<div-->
+<!--								class="info"-->
+<!--								[routerLink]="[view.id]"-->
+<!--								[state]="{ name: view.name }"-->
+<!--								routerLinkActive="router-link-active"-->
+<!--							>-->
+<!--								{{ view.products_count}} products-->
+<!--							</div>-->
+<!--							<div class="actions">-->
+<!--								<button-->
+<!--									title="delete view"-->
+<!--									class="delete-btn"-->
+<!--									mat-icon-button-->
+<!--									(click)="delete(view)"-->
+<!--								>-->
+<!--									<mat-icon>delete</mat-icon>-->
+<!--								</button>-->
+<!--								<button title="edit" mat-icon-button (click)="edit(view)">-->
+<!--									<mat-icon>edit</mat-icon>-->
+<!--								</button>-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</mat-grid-tile>-->
+<!--				}-->
+<!--			</mat-grid-list>-->
+			<mat-list role="list">
 				@for (view of views; track view.id) {
 					<mat-list-item role="listitem">
 						<div class="item">
@@ -98,33 +98,34 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 								routerLinkActive="router-link-active"
 							>
 								{{ view.name | titlecase }}
-								{{ view.products_count ? '(' + view.products_count + ')' : '' }}
+                @if(view.desc !== '') {
+                  ({{ view.desc | titlecase }})
+                }
 							</p>
-							<div>
-								<button
-									title="delete view"
-									class="delete-btn"
-									mat-icon-button
-									(click)="delete(view)"
-								>
-									<mat-icon>delete</mat-icon>
-								</button>
-								<button title="edit assortment group" mat-icon-button (click)="edit(view)">
-									<mat-icon>edit</mat-icon>
-								</button>
+              <button
+                title="delete view"
+                class="delete-btn"
+                mat-icon-button
+                (click)="delete(view)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+              <button title="edit assortment group" mat-icon-button (click)="edit(view)">
+                <mat-icon>edit</mat-icon>
+              </button>
+
 							</div>
-						</div>
+
 					</mat-list-item>
 				}
-			</mat-list> -->
+			</mat-list>
 		}
 	`,
 	styles: `
 		.item {
 			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-			align-items: center;
+			flex-direction: row;
+      align-items: center;
 		}
 
 		.title-toolbar {
@@ -133,31 +134,7 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 			justify-content: space-between;
 		}
 
-		.container {
-			display: grid;
-			grid-template-columns: 1fr 1.5fr;
-			grid-template-rows: 1fr 0.5fr 0.5fr;
-			gap: 5px 5px;
-			grid-template-areas:
-				'title title'
-				'info info'
-				'. actions';
-		}
-		.title {
-			justify-self: center;
-			align-self: end;
-			grid-area: title;
-		}
-		.info {
-			justify-self: center;
-			align-self: center;
-			grid-area: info;
-		}
-		.actions {
-			justify-self: center;
-			align-self: center;
-			grid-area: actions;
-		}
+
 	`,
 })
 export class ViewListComponent extends EntityManager<View> {
@@ -172,11 +149,11 @@ export class ViewListComponent extends EntityManager<View> {
 		this.viewBreakpointService.getBreakpoint().subscribe((breakpoint) => {
 			console.log('breakpoint', breakpoint);
 			if (breakpoint === 'mobile') {
-				this.gridCols.set(3);
-			} else if (breakpoint === 'tablet') {
 				this.gridCols.set(4);
+			} else if (breakpoint === 'tablet') {
+				this.gridCols.set(6);
 			} else {
-				this.gridCols.set(8);
+				this.gridCols.set(7);
 			}
 		});
 	}

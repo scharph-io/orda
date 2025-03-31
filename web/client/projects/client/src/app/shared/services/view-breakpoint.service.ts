@@ -26,18 +26,14 @@ export class ViewBreakpointService {
 
 	getBreakpoint(): Observable<string> {
 		return this.breakpointObserver
-			.observe([Breakpoints.Handset, Breakpoints.Tablet, Breakpoints.Large])
+			.observe([Breakpoints.HandsetPortrait, Breakpoints.TabletLandscape, Breakpoints.WebLandscape])
 			.pipe(
 				map(() => {
-					// console.log('result');
-					// for (const key in result.breakpoints) {
-					// 	console.log(key, result.breakpoints[key], result.breakpoints[Breakpoints.Handset]);
-					// }
-					if (this.breakpointObserver.isMatched(Breakpoints.Handset)) {
+					if (this.breakpointObserver.isMatched(Breakpoints.HandsetPortrait)) {
 						return 'mobile';
-					} else if (this.breakpointObserver.isMatched(Breakpoints.Tablet)) {
+					} else if (this.breakpointObserver.isMatched(Breakpoints.TabletLandscape)) {
 						return 'tablet';
-					} else if (this.breakpointObserver.isMatched(Breakpoints.Large)) {
+					} else if (this.breakpointObserver.isMatched(Breakpoints.WebLandscape)) {
 						return 'large';
 					}
 					return 'unknown';

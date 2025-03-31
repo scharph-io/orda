@@ -34,11 +34,12 @@ import { OrdaColorService } from '@orda.shared/utils/color';
 			}
 
 			@for (vp of products(); track vp.id) {
+        @let color = vp.color ?? '';
 				<mat-grid-tile
 					[style]="{
 						'background-color':
-							vp.color && vp.color.startsWith('#')
-								? colorService.hextoHSLString(vp.color, 0.33)
+							color.startsWith('#')
+								? colorService.hextoHSLString(color, 0.33)
 								: '',
 					}"
 					matRipple
@@ -64,7 +65,7 @@ export class OrderGridComponent {
 	colorService = inject(OrdaColorService);
 	products = input.required<Partial<ViewProduct>[]>();
 	deposit = input<Partial<ViewProduct>>();
-	gridCols = input<number>(6);
+	gridCols = input<number>(2);
 
 	cart = inject(OrderStoreService);
 

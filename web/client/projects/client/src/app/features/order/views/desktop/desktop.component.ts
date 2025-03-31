@@ -48,7 +48,7 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 			display: flex;
 			justify-content: space-between;
 			gap: 0.25rem;
-			height: calc(100vh - 80px);
+			height: calc(100vh - 72px);
 		}
 
 		.desktop-container-vert {
@@ -56,7 +56,7 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 			flex-direction: column;
 			justify-content: space-between;
 			gap: 0.25rem;
-			height: calc(100vh - 80px);
+			height: calc(100vh - 72px);
 		}
 
 		.products {
@@ -109,7 +109,7 @@ export class OrderDesktopComponent implements OnInit {
 					console.log('screens matches Small');
 					this.viewClass = 'desktop-container';
 					this.cartSize = '10em';
-					this.gridCols = 3;
+					this.gridCols = 6;
 				} else if (breakpoints[Breakpoints.Medium]) {
 					console.log('screens matches Medium');
 					this.viewClass = 'desktop-container';
@@ -124,13 +124,13 @@ export class OrderDesktopComponent implements OnInit {
 					console.log('screens matches XLarge');
 					this.viewClass = 'desktop-container';
 					this.cartSize = '20em';
-					this.gridCols = 10;
+					this.gridCols = 8;
 				} else if (breakpoints[Breakpoints.HandsetPortrait]) {
 					console.log('screens matches HandsetPortrait');
 					this.viewClass = 'desktop-container-vert';
 					this.isMobilePortrait.set(true);
 					this.cartSize = '2em';
-					this.gridCols = 4;
+					this.gridCols = 2;
 				}
 			});
 	}
@@ -141,5 +141,4 @@ export class OrderDesktopComponent implements OnInit {
 		);
 	}
 
-	protected readonly Object = Object;
 }
