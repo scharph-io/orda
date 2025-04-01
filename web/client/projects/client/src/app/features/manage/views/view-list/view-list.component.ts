@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
@@ -29,6 +29,7 @@ import { MatOption } from '@angular/material/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.service';
+import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 
 @Component({
 	selector: 'orda-view-list',
@@ -51,43 +52,43 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 		@if (views.length === 0) {
 			<p>No views available. Add <button mat-button (click)="create()">New</button></p>
 		} @else {
-<!--			<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">-->
-<!--				@for (view of views; track view.id) {-->
-<!--					<mat-grid-tile [style]="{ 'background-color': 'lightgrey' }">-->
-<!--						<div class="container">-->
-<!--							<div-->
-<!--								class="title"-->
-<!--								[routerLink]="[view.id]"-->
-<!--								[state]="{ name: view.name }"-->
-<!--								routerLinkActive="router-link-active"-->
-<!--							>-->
-<!--                <p>{{ view.name | titlecase }}</p>-->
-<!--							</div>-->
-<!--							<div-->
-<!--								class="info"-->
-<!--								[routerLink]="[view.id]"-->
-<!--								[state]="{ name: view.name }"-->
-<!--								routerLinkActive="router-link-active"-->
-<!--							>-->
-<!--								{{ view.products_count}} products-->
-<!--							</div>-->
-<!--							<div class="actions">-->
-<!--								<button-->
-<!--									title="delete view"-->
-<!--									class="delete-btn"-->
-<!--									mat-icon-button-->
-<!--									(click)="delete(view)"-->
-<!--								>-->
-<!--									<mat-icon>delete</mat-icon>-->
-<!--								</button>-->
-<!--								<button title="edit" mat-icon-button (click)="edit(view)">-->
-<!--									<mat-icon>edit</mat-icon>-->
-<!--								</button>-->
-<!--							</div>-->
-<!--						</div>-->
-<!--					</mat-grid-tile>-->
-<!--				}-->
-<!--			</mat-grid-list>-->
+			<!--			<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">-->
+			<!--				@for (view of views; track view.id) {-->
+			<!--					<mat-grid-tile [style]="{ 'background-color': 'lightgrey' }">-->
+			<!--						<div class="container">-->
+			<!--							<div-->
+			<!--								class="title"-->
+			<!--								[routerLink]="[view.id]"-->
+			<!--								[state]="{ name: view.name }"-->
+			<!--								routerLinkActive="router-link-active"-->
+			<!--							>-->
+			<!--                <p>{{ view.name | titlecase }}</p>-->
+			<!--							</div>-->
+			<!--							<div-->
+			<!--								class="info"-->
+			<!--								[routerLink]="[view.id]"-->
+			<!--								[state]="{ name: view.name }"-->
+			<!--								routerLinkActive="router-link-active"-->
+			<!--							>-->
+			<!--								{{ view.products_count}} products-->
+			<!--							</div>-->
+			<!--							<div class="actions">-->
+			<!--								<button-->
+			<!--									title="delete view"-->
+			<!--									class="delete-btn"-->
+			<!--									mat-icon-button-->
+			<!--									(click)="delete(view)"-->
+			<!--								>-->
+			<!--									<mat-icon>delete</mat-icon>-->
+			<!--								</button>-->
+			<!--								<button title="edit" mat-icon-button (click)="edit(view)">-->
+			<!--									<mat-icon>edit</mat-icon>-->
+			<!--								</button>-->
+			<!--							</div>-->
+			<!--						</div>-->
+			<!--					</mat-grid-tile>-->
+			<!--				}-->
+			<!--			</mat-grid-list>-->
 			<mat-list role="list">
 				@for (view of views; track view.id) {
 					<mat-list-item role="listitem">
@@ -98,24 +99,17 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 								routerLinkActive="router-link-active"
 							>
 								{{ view.name | titlecase }}
-                @if(view.desc !== '') {
-                  ({{ view.desc | titlecase }})
-                }
+								@if (view.desc !== '') {
+									({{ view.desc | titlecase }})
+								}
 							</p>
-              <button
-                title="delete view"
-                class="delete-btn"
-                mat-icon-button
-                (click)="delete(view)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-              <button title="edit assortment group" mat-icon-button (click)="edit(view)">
-                <mat-icon>edit</mat-icon>
-              </button>
-
-							</div>
-
+							<button title="delete view" class="delete-btn" mat-icon-button (click)="delete(view)">
+								<mat-icon>delete</mat-icon>
+							</button>
+							<button title="edit assortment group" mat-icon-button (click)="edit(view)">
+								<mat-icon>edit</mat-icon>
+							</button>
+						</div>
 					</mat-list-item>
 				}
 			</mat-list>
@@ -125,7 +119,7 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 		.item {
 			display: flex;
 			flex-direction: row;
-      align-items: center;
+			align-items: center;
 		}
 
 		.title-toolbar {
@@ -133,8 +127,6 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 			align-items: center;
 			justify-content: space-between;
 		}
-
-
 	`,
 })
 export class ViewListComponent extends EntityManager<View> {
@@ -142,20 +134,10 @@ export class ViewListComponent extends EntityManager<View> {
 	viewBreakpointService = inject(ViewBreakpointService);
 	logger = inject(OrdaLogger);
 
-	gridCols = signal(5);
+	gridCols = inject(GridColSizeService).size;
 
 	constructor() {
 		super();
-		this.viewBreakpointService.getBreakpoint().subscribe((breakpoint) => {
-			console.log('breakpoint', breakpoint);
-			if (breakpoint === 'mobile') {
-				this.gridCols.set(4);
-			} else if (breakpoint === 'tablet') {
-				this.gridCols.set(6);
-			} else {
-				this.gridCols.set(7);
-			}
-		});
 	}
 
 	create() {

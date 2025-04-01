@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { Router } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
+import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 
 interface Tile {
 	title: string;
@@ -20,7 +21,7 @@ interface Tile {
 
 		<div class="container">
 			<h3>Menu</h3>
-			<mat-grid-list [cols]="primaryTiles().length * 2" [gutterSize]="'0.5rem'">
+			<mat-grid-list [cols]="gridCol.size()" [gutterSize]="'0.5rem'">
 				@for (tile of primaryTiles(); track tile) {
 					@if (tile.canActivate ? tile.canActivate() : true) {
 						<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
@@ -55,6 +56,8 @@ interface Tile {
 export class HomeComponent {
 	sessionService = inject(SessionService);
 	private readonly router = inject(Router);
+
+	gridCol = inject(GridColSizeService);
 
 	primaryTiles = signal<Tile[]>([
 		{

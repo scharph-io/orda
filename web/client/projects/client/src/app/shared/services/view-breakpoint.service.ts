@@ -1,6 +1,19 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { inject, Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
+
+export type B = Extract<
+	keyof typeof Breakpoints,
+	'XSmall' | 'Small' | 'Medium' | 'Large' | 'XLarge'
+>;
+
+const BREAKPOINTS_VALUES = [
+	Breakpoints.XSmall,
+	Breakpoints.Small,
+	Breakpoints.Medium,
+	Breakpoints.Large,
+	Breakpoints.XLarge,
+];
 
 @Injectable({
 	providedIn: 'root',
@@ -8,36 +21,24 @@ import { Observable, map } from 'rxjs';
 export class ViewBreakpointService {
 	private breakpointObserver = inject(BreakpointObserver);
 
-	isMobile(): Observable<boolean> {
-		return this.breakpointObserver
-			.observe([Breakpoints.Handset])
-			.pipe(map((result) => result.matches));
-	}
-
-	isTablet(): Observable<boolean> {
-		return this.breakpointObserver
-			.observe([Breakpoints.Tablet])
-			.pipe(map((result) => result.matches));
-	}
-
-	isDesktop(): Observable<boolean> {
-		return this.breakpointObserver.observe([Breakpoints.Web]).pipe(map((result) => result.matches));
-	}
-
-	getBreakpoint(): Observable<string> {
-		return this.breakpointObserver
-			.observe([Breakpoints.HandsetPortrait, Breakpoints.TabletLandscape, Breakpoints.WebLandscape])
-			.pipe(
-				map(() => {
-					if (this.breakpointObserver.isMatched(Breakpoints.HandsetPortrait)) {
-						return 'mobile';
-					} else if (this.breakpointObserver.isMatched(Breakpoints.TabletLandscape)) {
-						return 'tablet';
-					} else if (this.breakpointObserver.isMatched(Breakpoints.WebLandscape)) {
-						return 'large';
-					}
-					return 'unknown';
-				}),
-			);
+	getBreakpoint(): Observable<B> {
+		return this.breakpointObserver.observe(BREAKPOINTS_VALUES).pipe(
+			map(() => {
+				if (this.breakpointObserver.isMatched(Breakpoints.XSmall)) {
+					return 'XSmall';
+				} else if (this.breakpointObserver.isMatched(Breakpoints.Small)) {
+					return 'Small';
+				} else if (this.breakpointObserver.isMatched(Breakpoints.Medium)) {
+					return 'Medium';
+				} else if (this.breakpointObserver.isMatched(Breakpoints.Large)) {
+					return 'Large';
+				} else {
+					return 'XLarge';
+				}
+			}),
+			tap((breakpoint) => {
+				console.log('Current breakpoint:', breakpoint);
+			}), // Log the current breakpoint
+		);
 	}
 }
