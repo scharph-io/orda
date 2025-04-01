@@ -8,8 +8,8 @@ const FORMATS: Record<B, number> = {
 	XSmall: 2,
 	Small: 4,
 	Medium: 5,
-	Large: 8,
-	XLarge: 10,
+	Large: 6,
+	XLarge: 8,
 };
 
 @Injectable({

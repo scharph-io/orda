@@ -57,7 +57,6 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 			flex-direction: column;
 			justify-content: space-between;
 			gap: 0.25rem;
-			height: calc(100vh - 72px);
 		}
 
 		.products {
@@ -67,7 +66,6 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 
 		.cart {
 			background-color: lightgray;
-			/*width: 17rem;*/
 		}
 	`,
 })
@@ -98,9 +96,12 @@ export class OrderDesktopComponent {
 				case 'XSmall':
 				case 'Small':
 					this.viewClass.set('desktop-container-vert');
-					this.cartSize.set('17.5em');
+					this.cartSize.set('5em');
 					break;
 				case 'Medium':
+					this.viewClass.set('desktop-container');
+					this.cartSize.set('15em');
+					break;
 				case 'Large':
 				case 'XLarge':
 					this.viewClass.set('desktop-container');
