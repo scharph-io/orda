@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { catchError, EMPTY, Observable, tap } from 'rxjs';
+import { catchError, EMPTY, Observable } from 'rxjs';
 import { AssortmentGroup, AssortmentProduct } from '@orda.core/models/assortment';
 import { API_ENDPOINTS } from '@orda.core/constants';
 import { HttpClient } from '@angular/common/http';
@@ -39,10 +39,9 @@ export class AssortmentService {
 
 	public readGroupById(id: string): Observable<AssortmentGroup> {
 		this.logger.debug('[readGroupById]', id, this.constructor.name);
-
 		return this.httpClient
 			.get<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}`)
-			.pipe(tap(console.log), catchError(this.handleError));
+			.pipe(catchError(this.handleError));
 	}
 
 	public updateGroup(id: string, ag: Partial<AssortmentGroup>): Observable<AssortmentGroup> {
@@ -117,13 +116,6 @@ export class AssortmentService {
 			)
 			.pipe(catchError(this.handleError));
 	}
-
-	// public getDeposit(id: string) {
-	// 	console.log('getDeposit', id);
-	// 	return this.httpClient
-	// 		.get<GroupDeposit>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}/deposit`)
-	// 		.pipe(tap(console.log), catchError(this.handleError));
-	// }
 
 	public setDeposit(id: string, price: number, active = true) {
 		return this.httpClient

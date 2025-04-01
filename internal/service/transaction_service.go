@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sync"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -11,6 +12,7 @@ import (
 )
 
 type TransactionService struct {
+	mu             sync.Mutex
 	repo           ports.ITransactionRepository
 	itemRepo       ports.ITransactionItemRepository
 	productRepo    ports.IProductRepository
@@ -29,16 +31,14 @@ func NewTransactionService(tr ports.ITransactionRepository, tir ports.ITransacti
 var _ ports.ITransactionService = (*TransactionService)(nil)
 
 func (s *TransactionService) Create(ctx context.Context, userid string, t ports.TransactionRequest) (*ports.TransactionResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	productIds := util.MapSlice(t.Items, func(i ports.ItemRequest) string {
 		return i.Id
 	})
 	products, err := s.productRepo.ReadByIds(ctx, productIds...)
 	if err != nil {
 		return nil, err
-	}
-
-	for _, p := range products {
-		fmt.Println(p)
 	}
 
 	var total int32 = 0
@@ -69,6 +69,9 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 	}
 
 	transaction, err = s.repo.Create(ctx, transaction)
+	if err != nil {
+		return nil, err
+	}
 
 	return &ports.TransactionResponse{
 		TransactionID: transaction.ID,
@@ -79,7 +82,8 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 }
 
 func (s *TransactionService) CreateWithAccount(ctx context.Context, userid string, req ports.TransactionRequest) (*ports.TransactionResponse, error) {
-
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	// Products
 	productIds := util.MapSlice(req.Items, func(i ports.ItemRequest) string {
 		return i.Id
@@ -89,8 +93,12 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		return nil, err
 	}
 
-	for _, p := range products {
-		fmt.Println(p)
+	if len(req.Items) == 0 {
+		return nil, fmt.Errorf("no items found")
+	}
+
+	if len(req.Items) != len(products) {
+		return nil, fmt.Errorf("invalid product ids")
 	}
 
 	// Total Products
@@ -111,7 +119,7 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 	}
 
 	if acc.CreditBalance == 0 {
-		return nil, fmt.Errorf("Insufficient balance")
+		return nil, fmt.Errorf("insufficient balance")
 	}
 
 	transaction, err := s.repo.Create(ctx, &domain.Transaction{
@@ -129,6 +137,9 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		Amount:        total,
 		TransactionId: transaction.ID,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	transaction.TotalCredit = total - debitAmount.RemainingCash
 

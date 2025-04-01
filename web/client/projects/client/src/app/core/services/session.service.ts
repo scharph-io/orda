@@ -19,19 +19,19 @@ export class SessionService {
 
 	constructor() {
 		this.logger.debug('Init SessionService');
-		if(localStorage.getItem('user')) {
-      this.checkSession().subscribe({
-        next: (res) => {
-          this.user.set(res);
-          localStorage.setItem('user', JSON.stringify(res));
-          this.logger.debug('SessionService restored');
-        },
-        error: (err) => {
-          this.logger.error(err);
-          this.logout()
-        }
-      })
-    }
+		if (localStorage.getItem('user')) {
+			this.checkSession().subscribe({
+				next: (res) => {
+					this.user.set(res);
+					localStorage.setItem('user', JSON.stringify(res));
+					this.logger.debug('SessionService restored');
+				},
+				error: (err) => {
+					this.logger.error(err);
+					this.logout();
+				},
+			});
+		}
 	}
 
 	checkSession() {
@@ -69,7 +69,7 @@ export class SessionService {
 			);
 	}
 
-  public hasAdminRole() {
-    return this.user().role === 'admin';
-  }
+	public hasAdminRole() {
+		return this.user().role === 'admin';
+	}
 }
