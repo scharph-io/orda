@@ -20,7 +20,7 @@ import { OrdaColorService } from '@orda.shared/utils/color';
 		PlusMinusTileComponent,
 	],
 	template: `
-		<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">
+		<mat-grid-list [cols]="gridCols()"  gutterSize="0.5rem">
 			@if (deposit(); as deposit) {
 				<mat-grid-tile
 					matRipple
@@ -34,12 +34,13 @@ import { OrdaColorService } from '@orda.shared/utils/color';
 			}
 
 			@for (vp of products(); track vp.id) {
-				@let color = vp.color ?? '';
+        @let color = vp.color ?? '';
 				<mat-grid-tile
 					[style]="{
-						'background-color': color.startsWith('#')
-							? colorService.hextoHSLString(color, 0.33)
-							: '',
+						'background-color':
+							color.startsWith('#')
+								? colorService.hextoHSLString(color, 0.33)
+								: '',
 					}"
 					matRipple
 					[matRippleCentered]="false"

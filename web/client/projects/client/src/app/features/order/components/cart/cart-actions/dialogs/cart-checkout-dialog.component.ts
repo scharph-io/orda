@@ -289,7 +289,6 @@ export class CartCheckoutDialogComponent implements OnInit {
 			account_id,
 			items:
 				this.items()?.map((i: CartItem) => ({ id: i.id, qty: i.quantity }) as CheckoutRequestItem) ?? [],
-
 		} as CheckoutRequest;
 
 		// console.log(JSON.stringify(checkoutData));

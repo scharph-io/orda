@@ -2,7 +2,6 @@ import { Component, effect, inject, input, signal } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { OrderGridComponent } from '@orda.features/order/components/order-grid/order-grid.component';
 import { CartComponent } from '@orda.features/order/components/cart/cart.component';
-import { Subject } from 'rxjs';
 import { OrderService } from '@orda.features/data-access/services/order.service';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { KeyValuePipe } from '@angular/common';
@@ -30,7 +29,7 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 							<mat-tab [label]="groupName(group.key)">
 								<orda-order-grid
 									[products]="products"
-									[deposit]="obj.deposits !== undefined ? obj.deposits[group.key] : undefined"
+									[deposit]="obj.deposits[group.key]"
 									[style.margin.rem]="0.5"
 									[gridCols]="gridCols()"
 								/>
@@ -57,11 +56,16 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 			flex-direction: column;
 			justify-content: space-between;
 			gap: 0.25rem;
+      height: calc(100vh - 62px);
+      .cart {
+        height: 10rem;
+      }
 		}
 
 		.products {
 			flex-grow: 1;
 			flex-basis: fit-content;
+      overflow: scroll;
 		}
 
 		.cart {
@@ -87,8 +91,6 @@ export class OrderDesktopComponent {
 
 	viewBreakpoints = toSignal(inject(ViewBreakpointService).getBreakpoint());
 
-	destroyed$ = new Subject<void>();
-
 	constructor() {
 		effect(() => {
 			const breakpoint = this.viewBreakpoints();
@@ -96,16 +98,19 @@ export class OrderDesktopComponent {
 				case 'XSmall':
 				case 'Small':
 					this.viewClass.set('desktop-container-vert');
-					this.cartSize.set('5em');
+          this.isMobilePortrait.set(true);
+          this.cartSize.set('1rem');
 					break;
 				case 'Medium':
 					this.viewClass.set('desktop-container');
-					this.cartSize.set('15em');
+          this.isMobilePortrait.set(false);
+					this.cartSize.set('17em');
 					break;
 				case 'Large':
 				case 'XLarge':
 					this.viewClass.set('desktop-container');
-					this.cartSize.set('17.5em');
+          this.isMobilePortrait.set(false);
+					this.cartSize.set('20em');
 					break;
 			}
 		});

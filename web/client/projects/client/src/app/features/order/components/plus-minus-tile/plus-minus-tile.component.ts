@@ -33,7 +33,7 @@ import { ViewProduct } from '@orda.core/models/view';
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: 0.8rem;
+				font-size: 1rem;
 			}
 
 			.add {
@@ -56,7 +56,7 @@ export class PlusMinusTileComponent {
 	addToCart(factor: number) {
 		this.cart.addItem({
 			id: this.deposit().id ?? '',
-			name: "deposit",
+			name: "Pfand",
 			quantity: factor,
 			price: this.deposit().price ?? 0,
 		});
