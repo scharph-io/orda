@@ -63,34 +63,7 @@ body {
 	@include mat.button-overrides(
 		(
 			text-label-text-color: lightgrey,
-			//container-color: red,
-		)
-	);
-}
-
-.active-btn {
-	@include mat.icon-button-overrides(
-		(
-			icon-color: white,
-		)
-	);
-	@include mat.button-overrides(
-		(
-			// text-label-text-color: lightgrey,
-			filled-container-color: hsl(131, 80%, 41%)
-		)
-	);
-}
-
-.inactive-btn {
-	@include mat.icon-button-overrides(
-		(
-			icon-color: grey,
-		)
-	);
-	@include mat.button-overrides(
-		(
-			filled-container-color: hsl(39, 80%, 50%)
+			filled-container-color: red,
 		)
 	);
 }

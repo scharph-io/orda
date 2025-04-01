@@ -140,5 +140,4 @@ export class OrderDesktopComponent implements OnInit {
 			this.assortmentService.groups.value()?.find((group) => group.id === id)?.name ?? 'unknown'
 		);
 	}
-
 }
