@@ -63,7 +63,17 @@ export class OrdaColorService {
 	}
 
 	public hextoHSLString(hex: string, alpha?: number) {
-		const hsl = this.hexToHSL(hex);
+		let hsl = {
+			h: 10,
+			s: 10,
+			l: 10,
+		} as HSL;
+		try {
+			hsl = this.hexToHSL(hex.toLowerCase());
+			console.log(hsl);
+		} catch (error) {
+			console.error(`Error converting hex to HSL: ${error}`);
+		}
 		return `hsl(${hsl.l},${hsl.s}%,${hsl.l}%${alpha ? `,${alpha}` : ``})`;
 	}
 }

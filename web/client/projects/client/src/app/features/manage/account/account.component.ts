@@ -340,7 +340,14 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 					@for (val of DEPOSIT_VALUES; track val) {
 						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
 					}
+					<mat-button-toggle [value]="-1">Custom</mat-button-toggle>
 				</mat-button-toggle-group>
+				@if (formGroup.value.amount === -1) {
+					<mat-form-field>
+						<mat-label>Amount</mat-label>
+						<input matInput type="number" formControlName="customAmount" />
+					</mat-form-field>
+				}
 			</form>
 		</ng-template>
 	`,
@@ -351,6 +358,7 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 
 	formGroup = new FormGroup({
 		amount: new FormControl(0, [Validators.required]),
+		customAmount: new FormControl(0, [Validators.required]),
 	});
 
 	constructor() {
@@ -358,14 +366,29 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 	}
 
 	public submit = () => {
-		this.accountService
-			.deposit(this.inputData?.id ?? '', {
-				amount: this.formGroup.value.amount ?? 0,
-				userid: 'anon',
-				history_type: 0,
-				deposit_type: 0,
-			})
-			.subscribe(this.closeObserver);
+		if (this.formGroup.value?.amount) {
+			if (this.formGroup.value.amount == -1) {
+				this.formGroup.patchValue({
+					amount: this.formGroup.value.customAmount,
+				});
+
+				this.accountService
+					.deposit(this.inputData?.id ?? '', {
+						amount: this.formGroup.value.customAmount ?? 0,
+						history_type: 0,
+						deposit_type: 0,
+					})
+					.subscribe(this.closeObserver);
+			} else {
+				this.accountService
+					.deposit(this.inputData?.id ?? '', {
+						amount: this.formGroup.value.amount ?? 0,
+						history_type: 0,
+						deposit_type: 0,
+					})
+					.subscribe(this.closeObserver);
+			}
+		}
 	};
 	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 }

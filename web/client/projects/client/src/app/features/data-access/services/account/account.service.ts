@@ -5,10 +5,9 @@ import { API_ENDPOINTS } from '@orda.core/constants';
 import { HttpClient } from '@angular/common/http';
 import { HOST } from '@orda.core/config/config';
 
-export interface DepositRequest {
+export interface AccDepositRequest {
 	amount: number;
-	userid: string;
-	transactionid?: string;
+	transaction_id?: string;
 	history_type: number;
 	deposit_type: number;
 }
@@ -44,7 +43,7 @@ export class AccountService {
 		return this.httpClient.put<Account>(`${this.HOST}${API_ENDPOINTS.ACCOUNT}/${id}`, t);
 	}
 
-	deposit(id: string, deposit: DepositRequest): Observable<Account> {
+	deposit(id: string, deposit: AccDepositRequest): Observable<Account> {
 		return this.httpClient.post<Account>(
 			`${this.HOST}${API_ENDPOINTS.ACCOUNT}/${id}/deposit`,
 			deposit,
