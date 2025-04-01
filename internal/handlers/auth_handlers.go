@@ -35,6 +35,7 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 			"error": "Invalid credentials",
 		})
 	}
+
 	if !util.VerifyPassword(req.Password, user.Password) {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid credentials",

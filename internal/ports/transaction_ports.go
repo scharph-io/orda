@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/domain"
@@ -22,9 +23,28 @@ type Item struct {
 
 type TransactionRequest struct {
 	Items         []ItemRequest        `json:"items"`
-	Deposits      []ItemRequest        `json:"deposits"`
 	AccountID     string               `json:"account_id,omitempty"`
 	PaymentOption domain.PaymentOption `json:"payment_option"`
+}
+
+func (t *TransactionRequest) CalculateTotal() int32 {
+	total := int32(0)
+	for _, item := range t.Items {
+		total += item.Price * int32(item.Quantity)
+	}
+	return total
+}
+
+func (tr *TransactionRequest) PrintDetails() {
+	fmt.Println("##### Transaction Request:")
+	fmt.Printf("AccountID: %s\n", tr.AccountID)
+	fmt.Printf("PaymentOption: %d\n", tr.PaymentOption)
+	fmt.Println("Items:")
+	for _, item := range tr.Items {
+		fmt.Printf(" - ItemID: %s, Quantity: %d\n", item.Id, item.Quantity)
+	}
+
+	fmt.Println("##############")
 }
 
 type TransactionResponse struct {

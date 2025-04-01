@@ -90,7 +90,12 @@ import { AccountGroupComponent } from '@orda.features/manage/account/group/group
 						<ng-container matColumnDef="actions">
 							<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
 							<td mat-cell *matCellDef="let row">
-								<button mat-icon-button (click)="delete(row)" [disabled]="hasMainBalance(row)">
+								<button
+									class="delete-btn"
+									mat-icon-button
+									(click)="delete(row)"
+									[disabled]="hasMainBalance(row)"
+								>
 									<mat-icon>delete</mat-icon>
 								</button>
 								<button mat-icon-button (click)="edit(row)">
@@ -240,24 +245,24 @@ export class AccountComponent extends EntityManager<Account> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-        <div class="dialog-flex">
-          <mat-form-field>
-            <mat-label>Firstname</mat-label>
-            <input matInput formControlName="firstname" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Lastname</mat-label>
-            <input matInput formControlName="lastname" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Group</mat-label>
-            <mat-select formControlName="group">
-              @for (ag of accountGroupService.entityResource.value(); track ag.id) {
-                <mat-option [value]="ag.id">{{ ag.name | titlecase }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
+				<div class="dialog-flex">
+					<mat-form-field>
+						<mat-label>Firstname</mat-label>
+						<input matInput formControlName="firstname" />
+					</mat-form-field>
+					<mat-form-field>
+						<mat-label>Lastname</mat-label>
+						<input matInput formControlName="lastname" />
+					</mat-form-field>
+					<mat-form-field>
+						<mat-label>Group</mat-label>
+						<mat-select formControlName="group">
+							@for (ag of accountGroupService.entityResource.value(); track ag.id) {
+								<mat-option [value]="ag.id">{{ ag.name | titlecase }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				</div>
 			</form>
 		</ng-template>
 	`,
@@ -335,7 +340,14 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 					@for (val of DEPOSIT_VALUES; track val) {
 						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
 					}
+					<mat-button-toggle [value]="-1">Custom</mat-button-toggle>
 				</mat-button-toggle-group>
+				@if (formGroup.value.amount === -1) {
+					<mat-form-field>
+						<mat-label>Amount</mat-label>
+						<input matInput type="number" formControlName="customAmount" />
+					</mat-form-field>
+				}
 			</form>
 		</ng-template>
 	`,
@@ -346,6 +358,7 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 
 	formGroup = new FormGroup({
 		amount: new FormControl(0, [Validators.required]),
+		customAmount: new FormControl(0, [Validators.required]),
 	});
 
 	constructor() {
@@ -353,14 +366,29 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 	}
 
 	public submit = () => {
-		this.accountService
-			.deposit(this.inputData?.id ?? '', {
-				amount: this.formGroup.value.amount ?? 0,
-				userid: 'anon',
-				history_type: 0,
-				deposit_type: 0,
-			})
-			.subscribe(this.closeObserver);
+		if (this.formGroup.value?.amount) {
+			if (this.formGroup.value.amount == -1) {
+				this.formGroup.patchValue({
+					amount: this.formGroup.value.customAmount,
+				});
+
+				this.accountService
+					.deposit(this.inputData?.id ?? '', {
+						amount: this.formGroup.value.customAmount ?? 0,
+						history_type: 0,
+						deposit_type: 0,
+					})
+					.subscribe(this.closeObserver);
+			} else {
+				this.accountService
+					.deposit(this.inputData?.id ?? '', {
+						amount: this.formGroup.value.amount ?? 0,
+						history_type: 0,
+						deposit_type: 0,
+					})
+					.subscribe(this.closeObserver);
+			}
+		}
 	};
 	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 }

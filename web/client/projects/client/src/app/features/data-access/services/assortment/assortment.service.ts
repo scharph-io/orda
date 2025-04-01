@@ -19,6 +19,10 @@ export class AssortmentService {
 		loader: () => this.readGroups(),
 	});
 
+	constructor() {
+		this.groups.reload();
+	}
+
 	public createGroup(ag: Partial<AssortmentGroup>): Observable<AssortmentGroup> {
 		this.logger.debug('[create]', ag, this.constructor.name);
 		return this.httpClient
@@ -35,7 +39,6 @@ export class AssortmentService {
 
 	public readGroupById(id: string): Observable<AssortmentGroup> {
 		this.logger.debug('[readGroupById]', id, this.constructor.name);
-
 		return this.httpClient
 			.get<AssortmentGroup>(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}`)
 			.pipe(catchError(this.handleError));
@@ -111,6 +114,18 @@ export class AssortmentService {
 				`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/product/${id}/toggle`,
 				undefined,
 			)
+			.pipe(catchError(this.handleError));
+	}
+
+	public setDeposit(id: string, price: number, active = true) {
+		return this.httpClient
+			.put(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}/deposit`, { price, active })
+			.pipe(catchError(this.handleError));
+	}
+
+	public removeDeposit(id: string) {
+		return this.httpClient
+			.delete(`${this.HOST}${API_ENDPOINTS.ASSORTMENT}/group/${id}/deposit`)
 			.pipe(catchError(this.handleError));
 	}
 

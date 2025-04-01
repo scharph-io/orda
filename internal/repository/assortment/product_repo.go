@@ -6,6 +6,7 @@ import (
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type ProductRepo struct {
@@ -20,7 +21,7 @@ var _ ports.IProductRepository = (*ProductRepo)(nil)
 
 func (r *ProductRepo) Read(ctx context.Context) ([]*domain.Product, error) {
 	products := make([]*domain.Product, 0)
-	if err := r.db.WithContext(ctx).Find(&products).Error; err != nil {
+	if err := r.db.WithContext(ctx).Order("name").Order(clause.OrderByColumn{Column: clause.Column{Name: "desc"}, Desc: true}).Find(&products, "deposit IS NULL").Error; err != nil {
 		return nil, err
 	}
 	return products, nil
@@ -44,7 +45,7 @@ func (r *ProductRepo) ReadByIds(ctx context.Context, ids ...string) (domain.Prod
 
 func (r *ProductRepo) ReadByGroupId(ctx context.Context, id string) (domain.Products, error) {
 	var products domain.Products
-	if err := r.db.WithContext(ctx).Where("product_group_id = ?", id).Find(&products).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("product_group_id = ?", id).Order("name, price").Find(&products, "deposit IS NULL").Error; err != nil {
 		return nil, err
 	}
 	return products, nil
@@ -53,10 +54,11 @@ func (r *ProductRepo) ReadByGroupId(ctx context.Context, id string) (domain.Prod
 func (r *ProductRepo) Update(ctx context.Context, product domain.Product) (*domain.Product, error) {
 	if err := r.db.WithContext(ctx).Model(&product).Updates(
 		map[string]any{
-			"name":   product.Name,
-			"desc":   product.Desc,
-			"price":  product.Price,
-			"active": product.Active,
+			"name":    product.Name,
+			"desc":    product.Desc,
+			"price":   product.Price,
+			"active":  product.Active,
+			"deposit": product.Deposit,
 		}).Error; err != nil {
 		return nil, err
 	}
@@ -73,6 +75,35 @@ func (r *ProductRepo) Delete(ctx context.Context, p domain.Product) error {
 	return nil
 }
 
+// Deposit
+func (r *ProductRepo) GetDeposit(ctx context.Context, groupid string) (p *domain.Product, err error) {
+	if err := r.db.WithContext(ctx).Model(&domain.Product{}).Where("product_group_id = ? AND deposit = ?", groupid, true).First(&p).Error; err != nil {
+		return nil, err
+	}
+	return p, nil
+}
+
+func (r *ProductRepo) SetOrUpdateDeposit(ctx context.Context, groupid string, price int32, active bool) (dp *domain.Product, err error) {
+	if dp, _ = r.GetDeposit(ctx, groupid); dp == nil {
+		dp = &domain.Product{ProductGroupID: groupid, Deposit: true, Price: price, Active: active}
+		err = r.db.Create(dp).Error
+	} else {
+		dp.Price = price
+		dp.Active = active
+		err = r.db.WithContext(ctx).Model(dp).Save(dp).Error
+	}
+	return dp, err
+}
+
+func (r *ProductRepo) DeleteDeposit(ctx context.Context, groupid string) error {
+	d, _ := r.GetDeposit(ctx, groupid)
+	if d == nil {
+		return nil
+	}
+	return r.db.WithContext(ctx).Model(&domain.Product{}).Unscoped().Delete(d).Error
+}
+
+// Views
 func (r *ProductRepo) GetProductViews(ctx context.Context, p *domain.Product) ([]*domain.ViewProduct, error) {
 	var views []*domain.ViewProduct
 	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("product_id = ?", p.ID).Preload("View").Find(&views).Error; err != nil {

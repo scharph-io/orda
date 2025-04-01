@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { Router } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
+import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 
 interface Tile {
 	title: string;
@@ -19,13 +20,8 @@ interface Tile {
 		</h2>
 
 		<div class="container">
-			<h3>Menu</h3>
-			<mat-grid-list
-				style="width: 50%"
-				[cols]="primaryTiles().length"
-				rowHeight="5rem"
-				[gutterSize]="'0.5rem'"
-			>
+			<h3>Home</h3>
+			<mat-grid-list [cols]="gridCol.size()" [gutterSize]="'0.5rem'">
 				@for (tile of primaryTiles(); track tile) {
 					@if (tile.canActivate ? tile.canActivate() : true) {
 						<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
@@ -35,6 +31,13 @@ interface Tile {
 				}
 			</mat-grid-list>
 		</div>
+
+		<!-- <h2>TODOs for v0.2.1</h2>
+		<ul>
+			<li>Colors</li>
+			<li>Order UI settings set grid cols to auto, 2-5</li>
+			<li>Manual deposit</li>
+		</ul> -->
 
 		<!--		https://lucide.dev/guide/packages/lucide-angular-->
 		<!--		https://sebastianviereck.de/httponly-und-secure-cookies-in-angular/-->
@@ -46,13 +49,15 @@ interface Tile {
 		}
 
 		mat-grid-tile {
-			background-color: rgba(67, 98, 191, 0.67);
+			background-color: lightgray;
 		}
 	`,
 })
 export class HomeComponent {
 	sessionService = inject(SessionService);
 	private readonly router = inject(Router);
+
+	gridCol = inject(GridColSizeService);
 
 	primaryTiles = signal<Tile[]>([
 		{

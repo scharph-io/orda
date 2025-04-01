@@ -43,7 +43,7 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 						<div>
 							<button
 								title="delete assortment group"
-								class="red-btn"
+								class="delete-btn"
 								mat-icon-button
 								(click)="delete(assortmentGroup)"
 							>
@@ -139,16 +139,16 @@ export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-        <div class="dialog-flex">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Description</mat-label>
-            <input matInput formControlName="desc" />
-          </mat-form-field>
-        </div>
+				<div class="dialog-flex">
+					<mat-form-field>
+						<mat-label>Name</mat-label>
+						<input matInput formControlName="name" />
+					</mat-form-field>
+					<mat-form-field>
+						<mat-label>Description</mat-label>
+						<input matInput formControlName="desc" />
+					</mat-form-field>
+				</div>
 			</form>
 		</ng-template>
 	`,

@@ -32,7 +32,7 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 		.cart-items {
       flex-grow: 1;
 			overflow-y: auto;
-      padding: 0.75rem;
+      padding: 0.5rem;
 		}
 
 		.actions {

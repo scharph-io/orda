@@ -15,7 +15,7 @@ const (
 
 type Transaction struct {
 	Base
-	Items         []*TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
+	Items         []TransactionItem `gorm:"constraint:OnDelete:CASCADE"`
 	PaymentOption PaymentOption
 	Total         int32
 	TotalCredit   int32
@@ -26,10 +26,9 @@ type Transaction struct {
 }
 
 type TransactionItem struct {
-	TransactionID string `gorm:"primaryKey;index;size:36"`
-	ProductID     string `gorm:"primaryKey;index;size:36"`
-	// Think about deposit. with this deposit does not work
-	// Product       Product `gorm:"foreignKey:ProductID"`
-	Qty   int8
-	Price int32
+	TransactionID string  `gorm:"primaryKey;index;size:36"`
+	ProductID     string  `gorm:"primaryKey;index;size:36"`
+	Product       Product `gorm:"foreignKey:ProductID"`
+	Qty           int8
+	Price         int32
 }

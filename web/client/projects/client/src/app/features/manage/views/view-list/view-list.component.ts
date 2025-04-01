@@ -27,45 +27,98 @@ import { MatSelect } from '@angular/material/select';
 import { RoleService } from '@orda.features/data-access/services/role.service';
 import { MatOption } from '@angular/material/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.service';
+import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 
 @Component({
 	selector: 'orda-view-list',
-	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule],
+	imports: [
+		MatButtonModule,
+		MatListModule,
+		MatIcon,
+		TitleCasePipe,
+		RouterModule,
+		MatGridListModule,
+	],
 	template: `
 		<div class="title-toolbar">
 			<h2>View</h2>
 			<button mat-button (click)="create()">New</button>
 		</div>
 
-		<mat-list role="list">
-			@for (view of viewService.entityResource.value(); track view.id) {
-				<mat-list-item role="listitem">
-					<div class="item">
-						<p
-							[routerLink]="[view.id]"
-							[state]="{ name: view.name }"
-							routerLinkActive="router-link-active"
-						>
-							{{ view.name | titlecase }} ({{view.desc}})
-						</p>
-						<div>
-							<button title="delete view" class="red-btn" mat-icon-button (click)="delete(view)">
+		@let views = viewService.entityResource.value() ?? [];
+
+		@if (views.length === 0) {
+			<p>No views available. Add <button mat-button (click)="create()">New</button></p>
+		} @else {
+			<!--			<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">-->
+			<!--				@for (view of views; track view.id) {-->
+			<!--					<mat-grid-tile [style]="{ 'background-color': 'lightgrey' }">-->
+			<!--						<div class="container">-->
+			<!--							<div-->
+			<!--								class="title"-->
+			<!--								[routerLink]="[view.id]"-->
+			<!--								[state]="{ name: view.name }"-->
+			<!--								routerLinkActive="router-link-active"-->
+			<!--							>-->
+			<!--                <p>{{ view.name | titlecase }}</p>-->
+			<!--							</div>-->
+			<!--							<div-->
+			<!--								class="info"-->
+			<!--								[routerLink]="[view.id]"-->
+			<!--								[state]="{ name: view.name }"-->
+			<!--								routerLinkActive="router-link-active"-->
+			<!--							>-->
+			<!--								{{ view.products_count}} products-->
+			<!--							</div>-->
+			<!--							<div class="actions">-->
+			<!--								<button-->
+			<!--									title="delete view"-->
+			<!--									class="delete-btn"-->
+			<!--									mat-icon-button-->
+			<!--									(click)="delete(view)"-->
+			<!--								>-->
+			<!--									<mat-icon>delete</mat-icon>-->
+			<!--								</button>-->
+			<!--								<button title="edit" mat-icon-button (click)="edit(view)">-->
+			<!--									<mat-icon>edit</mat-icon>-->
+			<!--								</button>-->
+			<!--							</div>-->
+			<!--						</div>-->
+			<!--					</mat-grid-tile>-->
+			<!--				}-->
+			<!--			</mat-grid-list>-->
+			<mat-list role="list">
+				@for (view of views; track view.id) {
+					<mat-list-item role="listitem">
+						<div class="item">
+							<p
+								[routerLink]="[view.id]"
+								[state]="{ name: view.name }"
+								routerLinkActive="router-link-active"
+							>
+								{{ view.name | titlecase }}
+								@if (view.desc !== '') {
+									({{ view.desc | titlecase }})
+								}
+							</p>
+							<button title="delete view" class="delete-btn" mat-icon-button (click)="delete(view)">
 								<mat-icon>delete</mat-icon>
 							</button>
 							<button title="edit assortment group" mat-icon-button (click)="edit(view)">
 								<mat-icon>edit</mat-icon>
 							</button>
 						</div>
-					</div>
-				</mat-list-item>
-			}
-		</mat-list>
+					</mat-list-item>
+				}
+			</mat-list>
+		}
 	`,
 	styles: `
 		.item {
 			display: flex;
 			flex-direction: row;
-			justify-content: space-between;
 			align-items: center;
 		}
 
@@ -78,7 +131,10 @@ import { rxResource } from '@angular/core/rxjs-interop';
 })
 export class ViewListComponent extends EntityManager<View> {
 	viewService = inject(ViewService);
+	viewBreakpointService = inject(ViewBreakpointService);
 	logger = inject(OrdaLogger);
+
+	gridCols = inject(GridColSizeService).size;
 
 	constructor() {
 		super();
@@ -143,37 +199,37 @@ export class ViewListComponent extends EntityManager<View> {
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-        <div class="dialog-flex">
-				<mat-form-field>
-					<mat-label>Name</mat-label>
-					<input matInput formControlName="name" />
-				</mat-form-field>
-				<mat-form-field>
-					<mat-label>Description</mat-label>
-					<input matInput formControlName="desc" />
-				</mat-form-field>
-<!--        <mat-form-field>-->
-<!--          <mat-label>Deposit</mat-label>-->
-<!--          <input matInput type="number" formControlName="deposit" />-->
-<!--        </mat-form-field>-->
-				<mat-form-field>
-					<mat-label>Roles</mat-label>
-					<mat-select formControlName="roles" multiple [value]="viewDetails.value()">
-						@for (role of roleService.entityResource.value(); track role.id) {
-							<mat-option [value]="role.id">{{ role.name }}</mat-option>
-						}
-					</mat-select>
-				</mat-form-field>
-        </div>
+				<div class="dialog-flex">
+					<mat-form-field>
+						<mat-label>Name</mat-label>
+						<input matInput formControlName="name" />
+					</mat-form-field>
+					<mat-form-field>
+						<mat-label>Description</mat-label>
+						<input matInput formControlName="desc" />
+					</mat-form-field>
+					<!--        <mat-form-field>-->
+					<!--          <mat-label>Deposit</mat-label>-->
+					<!--          <input matInput type="number" formControlName="deposit" />-->
+					<!--        </mat-form-field>-->
+					<mat-form-field>
+						<mat-label>Roles</mat-label>
+						<mat-select formControlName="roles" multiple [value]="viewDetails.value()">
+							@for (role of roleService.entityResource.value(); track role.id) {
+								<mat-option [value]="role.id">{{ role.name }}</mat-option>
+							}
+						</mat-select>
+					</mat-form-field>
+				</div>
 			</form>
 		</ng-template>
 	`,
 	styles: `
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-  `,
+		form {
+			display: flex;
+			flex-direction: column;
+		}
+	`,
 })
 class ViewListDialogComponent extends DialogTemplateComponent<View> {
 	viewService = inject(ViewService);
@@ -190,7 +246,7 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 			Validators.maxLength(25),
 			Validators.minLength(3),
 		]),
-    desc: new FormControl('',[Validators.maxLength(40)]),
+		desc: new FormControl('', [Validators.maxLength(40)]),
 		roles: new FormControl([]),
 		deposit: new FormControl(0, [Validators.required, Validators.min(0)]),
 	});
@@ -201,7 +257,7 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 		this.formGroup.patchValue({
 			name: this.inputData?.name,
 			deposit: this.inputData?.deposit,
-      desc: this.inputData?.desc,
+			desc: this.inputData?.desc,
 		});
 	}
 
@@ -210,7 +266,7 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 			this.viewService
 				.update(this.inputData?.id ?? '', {
 					name: this.formGroup.value.name ?? '',
-          desc: this.formGroup.value.desc ?? '',
+					desc: this.formGroup.value.desc ?? '',
 				})
 				.pipe(
 					switchMap(() =>
@@ -223,8 +279,8 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 				.create({
 					name: this.formGroup.value.name ?? '',
 					// deposit: this.formGroup.value.deposit ?? 0,
-          deposit: 100,
-          desc: this.formGroup.value.desc ?? '',
+					deposit: 100,
+					desc: this.formGroup.value.desc ?? '',
 				})
 				.pipe(
 					switchMap((view) => this.viewService.setRoles(view.id, this.formGroup.value.roles ?? [])),

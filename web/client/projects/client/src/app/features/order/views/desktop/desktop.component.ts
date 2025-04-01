@@ -1,114 +1,124 @@
-import { Component, input, OnInit, signal } from '@angular/core';
-import { View } from '@orda.core/models/view';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { OrderGridComponent } from '@orda.features/order/components/order-grid/order-grid.component';
 import { CartComponent } from '@orda.features/order/components/cart/cart.component';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Subject, takeUntil } from 'rxjs';
+import { OrderService } from '@orda.features/data-access/services/order.service';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { KeyValuePipe } from '@angular/common';
+import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
+import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
+import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.service';
 
 @Component({
 	selector: 'orda-order-desktop',
-	imports: [MatTabsModule, OrderGridComponent, CartComponent],
+	imports: [MatTabsModule, OrderGridComponent, CartComponent, KeyValuePipe],
 	template: `
-    <div [class]="viewClass">
-		<mat-tab-group
-			class="products"
-			mat-align-tabs="center"
-			animationDuration="0ms"
-			dynamicHeight="false"
-		>
-			@for (v of views(); track v.id) {
-				@if (v.products && v.products.length > 0) {
-					<mat-tab [label]="v.name ?? ''">
-						<orda-order-grid [view]="v" [style.margin.em]="0.5" [gridCols]="gridCols" />
-					</mat-tab>
+		<div [class]="viewClass()">
+			<mat-tab-group
+				class="products"
+				mat-align-tabs="center"
+				animationDuration="0ms"
+				dynamicHeight="false"
+			>
+				@let obj = data.value();
+				@if (obj !== undefined) {
+					@let productsMap = obj.products;
+					@for (group of productsMap | keyvalue; track group.key) {
+						@let products = group.value;
+						@if (products.length > 0) {
+							<mat-tab [label]="groupName(group.key)">
+								<orda-order-grid
+									[products]="products"
+									[deposit]="obj.deposits[group.key]"
+									[style.margin.rem]="0.5"
+									[gridCols]="gridCols()"
+								/>
+							</mat-tab>
+						}
+					} @empty {
+						<div>Empty</div>
+					}
 				}
-			}
-		</mat-tab-group>
-		<orda-cart class="cart" [style.flex-basis]="cartSize" />
-	</div>`,
+			</mat-tab-group>
+			<orda-cart class="cart" [style.flex-basis]="cartSize()" />
+		</div>
+	`,
 	styles: `
 		.desktop-container {
 			display: flex;
 			justify-content: space-between;
 			gap: 0.25rem;
-      height: calc(100vh - 80px);
+			height: calc(100vh - 72px);
 		}
 
-    .desktop-container-vert {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 0.25rem;
-      height: calc(100vh - 80px);
-    }
+		.desktop-container-vert {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			gap: 0.25rem;
+      height: calc(100vh - 62px);
+      .cart {
+        height: 10rem;
+      }
+		}
 
 		.products {
 			flex-grow: 1;
 			flex-basis: fit-content;
+      overflow: hidden;
 		}
 
 		.cart {
-			background-color: lightgray;
-      /*width: 17rem;*/
+			background-color: rgba(21, 94, 149, 0.2);
 		}
 	`,
 })
-export class OrderDesktopComponent implements OnInit {
-	views = input.required<Partial<View>[]>();
+export class OrderDesktopComponent {
+	view = input.required<string>();
 
-  cartSize?: string;
-  viewClass = 'desktop-container';
+	orderService = inject(OrderService);
+	assortmentService = inject(AssortmentService);
 
-  isMobilePortrait = signal<boolean>(false);
-  gridCols = 3;
+	data = rxResource({
+		request: () => this.view(),
+		loader: ({ request }) => this.orderService.getViewProducts(request),
+	});
 
-  destroyed$ = new Subject<void>();
+	gridCols = inject(GridColSizeService).size;
+	cartSize = signal<string>('17.5em');
+	viewClass = signal<string>('desktop-container');
+	isMobilePortrait = signal<boolean>(false);
 
+	viewBreakpoints = toSignal(inject(ViewBreakpointService).getBreakpoint());
 
-  constructor(private responsive: BreakpointObserver) {}
-
-  ngOnInit() {
-    this.cartSize = '30em';
-    this.responsive
-      .observe([
-        Breakpoints.HandsetPortrait,
-        Breakpoints.Small,
-        Breakpoints.Medium,
-        Breakpoints.Large,
-        Breakpoints.XLarge,
-      ])
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe((result) => {
-        const breakpoints = result.breakpoints;
-        this.isMobilePortrait.set(false);
-        if (breakpoints[Breakpoints.Small]) {
-          console.log('screens matches Small');
-          this.viewClass = 'desktop-container';
-          this.cartSize = '10em';
-          this.gridCols = 3;
-        } else if (breakpoints[Breakpoints.Medium]) {
-          console.log('screens matches Medium');
-          this.viewClass = 'desktop-container';
-          this.cartSize = '15em';
-          this.gridCols = 6;
-        } else if (breakpoints[Breakpoints.Large]) {
-          console.log('screens matches Large');
-          this.viewClass = 'desktop-container';
-          this.cartSize = '17.5em';
-          this.gridCols = 8;
-        } else if (breakpoints[Breakpoints.XLarge]) {
-          console.log('screens matches XLarge');
-          this.viewClass = 'desktop-container';
-          this.cartSize = '20em';
-          this.gridCols = 10;
-        } else if (breakpoints[Breakpoints.HandsetPortrait]) {
-          console.log('screens matches HandsetPortrait');
-          this.viewClass = 'desktop-container-vert';
+	constructor() {
+		effect(() => {
+			const breakpoint = this.viewBreakpoints();
+			switch (breakpoint) {
+				case 'XSmall':
+				case 'Small':
+					this.viewClass.set('desktop-container-vert');
           this.isMobilePortrait.set(true);
-          this.cartSize = '2em';
-          this.gridCols = 4;
-        }
-      });
-  }
+          this.cartSize.set('1rem');
+					break;
+				case 'Medium':
+					this.viewClass.set('desktop-container');
+          this.isMobilePortrait.set(false);
+					this.cartSize.set('17em');
+					break;
+				case 'Large':
+				case 'XLarge':
+					this.viewClass.set('desktop-container');
+          this.isMobilePortrait.set(false);
+					this.cartSize.set('20em');
+					break;
+			}
+		});
+	}
+
+	groupName(id: string) {
+		return (
+			this.assortmentService.groups.value()?.find((group) => group.id === id)?.name ?? 'unknown'
+		);
+	}
 }

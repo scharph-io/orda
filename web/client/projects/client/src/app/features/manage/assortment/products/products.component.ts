@@ -3,7 +3,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 import { EntityManager } from '@orda.shared/utils/entity-manager';
-import { AssortmentProduct } from '@orda.core/models/assortment';
+import { AssortmentProduct, GroupDeposit } from '@orda.core/models/assortment';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
@@ -28,77 +28,98 @@ import {
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { DepositDialogComponent } from './deposit-dialog.component';
+import { NgClass } from '@angular/common';
 
 @Component({
 	selector: 'orda-assortment-view-details',
 	template: `
-		<div class="title-toolbar">
-			<h2>Assortment Products</h2>
-			<button mat-button (click)="create()">New</button>
-		</div>
-		<!--		@for (product of products.value(); track product.id) {-->
-		<!--			{{ product.name }} ({{ product.desc }}) {{ product.price | currency }}<br />-->
-		<!--		}-->
-		<mat-form-field>
-			<mat-label>Filter</mat-label>
-			<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
-		</mat-form-field>
+		<h2>{{ group.value()?.name }}</h2>
+		@if (group.value(); as g) {
+			<div class="title-toolbar">
+				<button mat-button (click)="create()">New</button>
 
-		<div class="mat-elevation-z8">
-			<table mat-table [dataSource]="dataSource()" matSort>
-				<ng-container matColumnDef="name">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-					<td mat-cell *matCellDef="let row">{{ row.name }}</td>
-				</ng-container>
+				<button
+					mat-flat-button
+					(click)="openDepositDialog()"
+          [title]="g.deposit?.active ? 'active' : 'inactive'"
+					[ngClass]="g.deposit ? (g.deposit.active ? 'active-btn' : 'inactive-btn') : ''"
+				>
+					Deposit
+					@if (g.deposit) {
+						{{ g.deposit.price | currency }}
+					}
+				</button>
+			</div>
+			<mat-form-field>
+				<mat-label>Filter</mat-label>
+				<input matInput (keyup)="applyFilter($event)" #input />
+				@if (input.value) {
+					<button matSuffix mat-icon-button aria-label="Clear" (click)="input.value = ''">
+						<mat-icon>close</mat-icon>
+					</button>
+				}
+			</mat-form-field>
 
-				<ng-container matColumnDef="desc">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-					<td mat-cell *matCellDef="let row">{{ row.desc }}</td>
-				</ng-container>
+			<div class="mat-elevation-z8">
+				<table mat-table [dataSource]="dataSource()" matSort>
+					<ng-container matColumnDef="name">
+						<th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+						<td mat-cell *matCellDef="let row">{{ row.name }}</td>
+					</ng-container>
 
-				<ng-container matColumnDef="price">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
-					<td mat-cell *matCellDef="let row">{{ row.price | currency }}</td>
-				</ng-container>
-				<ng-container matColumnDef="active">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
-					<td mat-cell *matCellDef="let row">
-						<mat-slide-toggle [(ngModel)]="row.active" (change)="toggleProduct(row.id)" />
-					</td>
-				</ng-container>
+					<ng-container matColumnDef="desc">
+						<th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+						<td mat-cell *matCellDef="let row">{{ row.desc }}</td>
+					</ng-container>
 
-				<ng-container matColumnDef="actions">
-					<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
-					<td mat-cell *matCellDef="let row">
-						<button mat-icon-button (click)="delete(row)">
-							<mat-icon>delete</mat-icon>
-						</button>
-						<button mat-icon-button (click)="edit(row)">
-							<mat-icon>edit</mat-icon>
-						</button>
-						<button mat-icon-button (click)="duplicate(row)">
-							<mat-icon>control_point_duplicate</mat-icon>
-						</button>
-						<!--						<button mat-icon-button (click)="deposit(row)">-->
-						<!--							<mat-icon>add_business</mat-icon>-->
-						<!--						</button>-->
-						<!--						<button mat-icon-button (click)="info(row)">-->
-						<!--							<mat-icon>info</mat-icon>-->
-						<!--						</button>-->
-					</td>
-				</ng-container>
+					<ng-container matColumnDef="price">
+						<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
+						<td mat-cell *matCellDef="let row">{{ row.price | currency }}</td>
+					</ng-container>
+					<ng-container matColumnDef="active">
+						<th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
+						<td mat-cell *matCellDef="let row">
+							<mat-slide-toggle [(ngModel)]="row.active" (change)="toggleProduct(row.id)" />
+						</td>
+					</ng-container>
 
-				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+					<ng-container matColumnDef="actions">
+						<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+						<td mat-cell *matCellDef="let row">
+							<button mat-icon-button class="delete-btn" (click)="delete(row)">
+								<mat-icon>delete</mat-icon>
+							</button>
+							<button mat-icon-button (click)="edit(row)">
+								<mat-icon>edit</mat-icon>
+							</button>
+							<button mat-icon-button (click)="duplicate(row)">
+								<mat-icon>control_point_duplicate</mat-icon>
+							</button>
+							<!--						<button mat-icon-button (click)="deposit(row)">-->
+							<!--							<mat-icon>add_business</mat-icon>-->
+							<!--						</button>-->
+							<!--						<button mat-icon-button (click)="info(row)">-->
+							<!--							<mat-icon>info</mat-icon>-->
+							<!--						</button>-->
+						</td>
+					</ng-container>
 
-				<!-- Row shown when there is no matching data. -->
-				<tr class="mat-row" *matNoDataRow>
-					<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-				</tr>
-			</table>
-		</div>
+					<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+					<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+					<!-- Row shown when there is no matching data. -->
+					<tr class="mat-row" *matNoDataRow>
+						<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+					</tr>
+				</table>
+			</div>
+		} @else {
+			loading...
+		}
 	`,
 	imports: [
+		NgClass,
 		MatButtonModule,
 		MatTableModule,
 		MatSortModule,
@@ -111,7 +132,13 @@ import { MatSlideToggle } from '@angular/material/slide-toggle';
 		MatSlideToggle,
 		FormsModule,
 	],
-	styles: ``,
+	styles: `
+		.title-toolbar {
+			display: flex;
+			justify-content: start;
+			align-items: center;
+		}
+	`,
 })
 export class AssortmentProductsComponent extends EntityManager<AssortmentProduct> {
 	displayedColumns: string[] = ['name', 'desc', 'price', 'active', 'actions'];
@@ -121,6 +148,10 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 	assortmentService = inject(AssortmentService);
 
 	group_id = signal<string>(this.route.snapshot.paramMap.get('id') ?? '');
+	group = rxResource({
+		request: () => this.group_id(),
+		loader: ({ request }) => this.assortmentService.readGroupById(request),
+	});
 
 	products = rxResource({
 		loader: () => this.assortmentService.readProducts(this.group_id()),
@@ -196,6 +227,17 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 			this.dataSource().paginator?.firstPage();
 		}
 	}
+
+	openDepositDialog() {
+		this.dialogClosed<
+			DepositDialogComponent,
+			{ groupId: string; deposit: GroupDeposit | undefined },
+			number
+		>(DepositDialogComponent, {
+			groupId: this.group_id(),
+			deposit: this.group.value()?.deposit,
+		}).subscribe(() => this.group.reload());
+	}
 }
 
 @Component({
@@ -218,21 +260,21 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
-        <div class="dialog-flex">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Description</mat-label>
-            <input matInput formControlName="desc" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Price</mat-label>
-            <input type="number" matInput formControlName="price" />
-          </mat-form-field>
-          <mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
-        </div>
+				<div class="dialog-flex">
+					<mat-form-field>
+						<mat-label>Name</mat-label>
+						<input matInput formControlName="name" />
+					</mat-form-field>
+					<mat-form-field>
+						<mat-label>Description</mat-label>
+						<input matInput formControlName="desc" />
+					</mat-form-field>
+					<mat-form-field>
+						<mat-label>Price</mat-label>
+						<input type="number" matInput formControlName="price" />
+					</mat-form-field>
+					<mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
+				</div>
 			</form>
 		</ng-template>
 	`,

@@ -13,7 +13,6 @@ export interface CheckoutRequestItem {
 
 export interface CheckoutRequest {
 	items: CheckoutRequestItem[];
-	deposits: CheckoutRequestItem[];
 	payment_option: PaymentOption;
 	account_id?: string;
 }

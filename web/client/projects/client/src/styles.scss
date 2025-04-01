@@ -54,24 +54,34 @@ body {
 	margin: 0.25rem;
 }
 
-.red-btn {
+.delete-btn {
 	@include mat.icon-button-overrides(
 		(
 			icon-color: #da2525,
 		)
 	);
-	@include mat.button-overrides(
-		(
-			filled-container-color: orange,
-			filled-label-text-color: red,
-		)
-	);
+}
+
+.active-btn {
+  @include mat.button-overrides(
+      (
+        filled-label-text-color: white,
+        filled-container-color: green,
+      )
+  );
+}
+
+.inactive-btn {
+  @include mat.button-overrides(
+      (
+        filled-label-text-color: black,
+        filled-container-color: #F4D160,
+      )
+  );
 }
 
 .dialog-flex {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  height: max-conten;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
 }
-

@@ -1,15 +1,15 @@
 import { Component, inject, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { OrderStoreService } from '@orda.features/order/services/order-store.service';
+import { ViewProduct } from '@orda.core/models/view';
 
-const DEFAULT_DEPOSIT = 100;
 
 @Component({
 	selector: 'orda-plus-minus-tile',
 	standalone: true,
 	imports: [MatIconModule],
 	template: `
-		<div class="item add" (click)="addToCart(1)" [title]="value()">
+		<div class="item add" (click)="addToCart(1)" [title]="deposit()">
 <!--			{{ key() }} <mat-icon>add</mat-icon>-->
       Pfand <mat-icon>add</mat-icon>
 		</div>
@@ -33,33 +33,32 @@ const DEFAULT_DEPOSIT = 100;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: 0.8rem;
+				font-size: 1rem;
 			}
 
 			.add {
-				background-color: #4caf50;
+				background-color: hsla(115 75% 37% / 0.65);
 				color: white;
 			}
 
 			.remove {
-				background-color: #f44336;
+				background-color: hsla(1 68% 51% / 0.75);
 				color: white;
 			}
 		`,
 	],
 })
 export class PlusMinusTileComponent {
-	key = input.required<string>();
-	value = input.required<number>();
 
+  deposit = input.required<Partial<ViewProduct>>()
 	cart = inject(OrderStoreService);
 
 	addToCart(factor: number) {
 		this.cart.addItem({
-			id: this.key(),
-			name: this.key(),
+			id: this.deposit().id ?? '',
+			name: "Pfand",
 			quantity: factor,
-			price: this.value() === 0 ? DEFAULT_DEPOSIT : this.value(),
+			price: this.deposit().price ?? 0,
 		});
 	}
 }

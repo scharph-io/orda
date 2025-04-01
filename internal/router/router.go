@@ -22,21 +22,12 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 		Index:      "index.html",
 	}))
 
-	// app.Use(requestid.New(requestid.Config{
-	// 	Header: "X-Custom-Header",
-	// 	Generator: func() string {
-	// 		return "static-id"
-	// 	},
-	// }))
-
-	// app.Use(cors.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:4200",
 		AllowCredentials: true,
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
 		AllowHeaders:     "Origin, Content-Type, Accept",
-	},
-	))
+	}))
 
 	// app.Use(csrf.New())
 
@@ -124,9 +115,11 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	group.Put("/:id", s.assortmentHandlers.UpdateGroup)
 	group.Delete("/:id", s.assortmentHandlers.DeleteGroup)
 	group.Post("/:id/products", s.assortmentHandlers.AddProducts)
+	group.Put("/:id/deposit", s.assortmentHandlers.SetDeposit)
+	group.Delete("/:id/deposit", s.assortmentHandlers.RemoveDeposit)
 
 	product := assortment.Group("/product")
-	product.Get("/", s.assortmentHandlers.ReadProducts)
+	product.Get("/", s.assortmentHandlers.ReadProducts) // uses query group_id
 	product.Get("/:id", s.assortmentHandlers.ReadProductById)
 	product.Put("/:id", s.assortmentHandlers.UpdateProduct)
 	product.Patch("/:id/toggle", s.assortmentHandlers.ToggleProduct)
@@ -159,21 +152,9 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 
 	// Order
 	order := api.Group("/order")
-	// order.Post("/", s.orderHandlers.Create)
-	order.Get("/views", s.orderHandlers.GetViews)
+	order.Get("/views", s.orderHandlers.GetOrderViews)
+	order.Get("/views/:id", s.orderHandlers.GetOrderViewProducts)
 	order.Post("/checkout", s.transactionHandlers.Create)
-	// order.Get("/:id", s.orderHandlers.ReadOne)
-	// order.Put("/:id", s.orderHandlers.Update)
-	// order.Delete("/:id", s.orderHandlers.Delete)
-
-	// // Checkout
-	// checkout := api.Group("/checkout")
-	// checkout.Post("/", s.transactionHandlers.Create)
-
-	// // Transaction
-	// transaction := api.Group("/transaction")
-	// transaction.Get("/", middleware.Protected(), handler.GetAllTransactions)
-	// transaction.Delete("/:id", middleware.Protected(), handler.DeleteTransaction)
 
 	// // Statistic
 	// statistic := api.Group("/statistic")
