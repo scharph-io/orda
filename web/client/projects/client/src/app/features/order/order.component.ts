@@ -15,12 +15,12 @@ import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 		@if (views.length === 0) {
 			<p>No views available</p>
 		} @else {
-			<mat-grid-list cols="4" rowHeight="1:1">
+			<mat-grid-list [cols]="gridCols()" rowHeight="1:1">
 				@for (v of viewService.views.value(); track v.id) {
 					<mat-grid-tile
 						mat-ripple
 						[routerLink]="['view', v.id]"
-						[style]="{ 'background-color': 'lightblue' }"
+						[style]="{ 'background-color': 'lightgrey' }"
 					>
 						{{ v.name }} ({{ v.products_count }})
 					</mat-grid-tile>

@@ -37,7 +37,7 @@ export class ViewBreakpointService {
 				}
 			}),
 			tap((breakpoint) => {
-				console.log('Current breakpoint:', breakpoint);
+				console.debug('Current breakpoint:', breakpoint);
 			}), // Log the current breakpoint
 		);
 	}
