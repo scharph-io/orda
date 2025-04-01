@@ -50,7 +50,7 @@ import { AccountGroup } from '@orda.core/models/account';
 						<mat-label>Group</mat-label>
 						<mat-select formControlName="group">
 							@for (group of accountGroupService.entityResource.value(); track group.id) {
-								<mat-option [value]="group.id">{{ group.name | titlecase }}</mat-option>
+								<mat-option [value]="group.id">{{ group.name }}</mat-option>
 							}
 						</mat-select>
 					</mat-form-field>

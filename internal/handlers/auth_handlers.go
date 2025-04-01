@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/scharph/orda/internal/accesscontrol"
@@ -38,15 +36,10 @@ func (h *AuthHandlers) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// TEMPORARAY
-	if user.Password == "admin" && user.Password == req.Password {
-		fmt.Println("ADMIN BYPASS")
-	} else {
-		if !util.VerifyPassword(req.Password, user.Password) {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Invalid credentials",
-			})
-		}
+	if !util.VerifyPassword(req.Password, user.Password) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid credentials",
+		})
 	}
 
 	sess, err := h.sessionStore.Get(c)

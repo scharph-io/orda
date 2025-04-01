@@ -65,11 +65,11 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 		.products {
 			flex-grow: 1;
 			flex-basis: fit-content;
-      overflow: scroll;
+      overflow: hidden;
 		}
 
 		.cart {
-			background-color: lightgray;
+			background-color: rgba(21, 94, 149, 0.2);
 		}
 	`,
 })

@@ -60,12 +60,24 @@ body {
 			icon-color: #da2525,
 		)
 	);
-	@include mat.button-overrides(
-		(
-			text-label-text-color: lightgrey,
-			filled-container-color: red,
-		)
-	);
+}
+
+.active-btn {
+  @include mat.button-overrides(
+      (
+        filled-label-text-color: white,
+        filled-container-color: green,
+      )
+  );
+}
+
+.inactive-btn {
+  @include mat.button-overrides(
+      (
+        filled-label-text-color: black,
+        filled-container-color: #F4D160,
+      )
+  );
 }
 
 .dialog-flex {

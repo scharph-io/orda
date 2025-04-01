@@ -37,12 +37,12 @@ import { ViewProduct } from '@orda.core/models/view';
 			}
 
 			.add {
-				background-color: #4caf50;
+				background-color: hsla(115 75% 37% / 0.65);
 				color: white;
 			}
 
 			.remove {
-				background-color: #f44336;
+				background-color: hsla(1 68% 51% / 0.75);
 				color: white;
 			}
 		`,

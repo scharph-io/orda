@@ -14,7 +14,6 @@ import {
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
-import { TitleCasePipe } from '@angular/common';
 import { MatInput } from '@angular/material/input';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { filter, switchMap } from 'rxjs';
@@ -26,7 +25,7 @@ import { AccountService } from '@orda.features/data-access/services/account/acco
 
 @Component({
 	selector: 'orda-account-groups',
-	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe],
+	imports: [MatButtonModule, MatListModule, MatIcon],
 	template: `
 		<div class="title-toolbar">
 			<button mat-button (click)="create()">New</button>
@@ -36,7 +35,7 @@ import { AccountService } from '@orda.features/data-access/services/account/acco
 			@for (ag of accountGroupService.entityResource.value(); track ag.id) {
 				<mat-list-item group="listitem">
 					<div class="item">
-						<p>{{ ag.name | titlecase }}</p>
+						<p>{{ ag.name }}</p>
 						<div>
 							<button title="delete group" class="delete-btn" mat-icon-button (click)="delete(ag)">
 								<mat-icon>delete</mat-icon>

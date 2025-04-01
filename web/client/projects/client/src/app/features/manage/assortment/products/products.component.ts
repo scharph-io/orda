@@ -29,7 +29,7 @@ import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { DepositDialogComponent } from './deposit-dialog.component';
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
 	selector: 'orda-assortment-view-details',
@@ -42,6 +42,7 @@ import { CommonModule } from '@angular/common';
 				<button
 					mat-flat-button
 					(click)="openDepositDialog()"
+          [title]="g.deposit?.active ? 'active' : 'inactive'"
 					[ngClass]="g.deposit ? (g.deposit.active ? 'active-btn' : 'inactive-btn') : ''"
 				>
 					Deposit
@@ -86,7 +87,7 @@ import { CommonModule } from '@angular/common';
 					<ng-container matColumnDef="actions">
 						<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
 						<td mat-cell *matCellDef="let row">
-							<button mat-icon-button (click)="delete(row)">
+							<button mat-icon-button class="delete-btn" (click)="delete(row)">
 								<mat-icon>delete</mat-icon>
 							</button>
 							<button mat-icon-button (click)="edit(row)">
@@ -118,7 +119,7 @@ import { CommonModule } from '@angular/common';
 		}
 	`,
 	imports: [
-		CommonModule,
+		NgClass,
 		MatButtonModule,
 		MatTableModule,
 		MatSortModule,
