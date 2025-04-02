@@ -2,7 +2,6 @@ package view
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -20,7 +19,6 @@ func NewViewProductRepo(db *gorm.DB) *ViewProductRepo {
 var _ ports.IViewProductRepository = (*ViewProductRepo)(nil)
 
 func (r *ViewProductRepo) ReadByViewID(ctx context.Context, view_id string) ([]*domain.ViewProduct, error) {
-	fmt.Println("ReadbyID")
 	var viewProducts []*domain.ViewProduct
 	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("view_id = ?", view_id).Preload("Product").Find(&viewProducts).Error; err != nil {
 		return nil, err
