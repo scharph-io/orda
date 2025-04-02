@@ -6,11 +6,6 @@ import { View, ViewProduct } from '@orda.core/models/view';
 import { API_ENDPOINTS } from '@orda.core/constants';
 import { HOST } from '@orda.core/config/config';
 
-// interface OrderData {
-// 	products: Map<string, Partial<ViewProduct>[]>;
-// 	deposits: Map<string, Partial<ViewProduct>>;
-// }
-
 interface OrderData {
 	products: Record<string, Partial<ViewProduct>[]>;
 	deposits: Record<string, Partial<ViewProduct>>;

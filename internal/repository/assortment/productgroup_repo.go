@@ -2,7 +2,6 @@ package assortment
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -66,9 +65,8 @@ func (r *ProductGroupRepo) RemoveProducts(ctx context.Context, group *domain.Pro
 }
 
 func (r *ProductGroupRepo) ReadProducts(ctx context.Context, group *domain.ProductGroup) (domain.Products, error) {
-	fmt.Println("Reading products for group:", group.ID)
 	var products domain.Products
-	if err := r.db.WithContext(ctx).Model(&group).Association("Products").Find(&products, "Products.deposit IS NULL"); err != nil {
+	if err := r.db.WithContext(ctx).Model(&group).Association("Products").Find(&products, "Products.deposit IS NULL OR Products.deposit = 0"); err != nil {
 		return nil, err
 	}
 	return products, nil

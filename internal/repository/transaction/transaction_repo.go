@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"context"
-	"time"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -42,12 +41,20 @@ func (r *TransactionRepository) ReadByID(ctx context.Context, id string) (*domai
 	return &t, nil
 }
 
-func (r *TransactionRepository) ReadByDate(ctx context.Context, date time.Time) ([]*domain.Transaction, error) {
+func (r *TransactionRepository) ReadByDate(ctx context.Context, date string) ([]*domain.Transaction, error) {
 	var t []*domain.Transaction
-	if err := r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("created_at = ?", date.Format(time.RFC822)).Preload("Items").Find(&t).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ?", date).Preload("Items").Find(&t).Error; err != nil {
 		return nil, err
 	}
 	return t, nil
+}
+
+func (r *TransactionRepository) ReadSummaryByDate(ctx context.Context, date string) (int32, error) {
+	var total int32
+	if err := r.db.WithContext(ctx).Model(&domain.Transaction{}).Select("SUM(total) as total").Where("DATE(created_at) = ?", date).Find(&total).Error; err != nil {
+		return 0, err
+	}
+	return total, nil
 }
 
 func (r *TransactionRepository) Update(ctx context.Context, t domain.Transaction) (*domain.Transaction, error) {

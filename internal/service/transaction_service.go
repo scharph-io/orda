@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -190,6 +189,33 @@ func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResp
 
 }
 
+func (s *TransactionService) ReadByDate(ctx context.Context, date string) ([]*ports.TransactionResponse, error) {
+	t, err := s.repo.ReadByDate(ctx, date)
+	if err != nil {
+		return nil, err
+	}
+	var res []*ports.TransactionResponse
+	for _, v := range t {
+		res = append(res, &ports.TransactionResponse{
+			TransactionID: v.ID,
+			Total:         v.Total,
+			ItemsLength:   len(v.Items),
+		})
+	}
+	return res, nil
+}
+
+func (s *TransactionService) ReadSummaryByDate(ctx context.Context, date string) (*ports.TransactionSummaryResponse, error) {
+	total, err := s.repo.ReadSummaryByDate(ctx, date)
+
+	if err != nil {
+		return nil, err
+	}
+	return &ports.TransactionSummaryResponse{
+		Total: total,
+	}, nil
+}
+
 func (s *TransactionService) ReadByID(ctx context.Context, id string) (*ports.TransactionResponse, error) {
 
 	t, err := s.repo.ReadByID(ctx, id)
@@ -204,23 +230,6 @@ func (s *TransactionService) ReadByID(ctx context.Context, id string) (*ports.Tr
 
 		// Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
 	}, nil
-}
-
-func (s *TransactionService) ReadByDate(ctx context.Context, date time.Time) ([]*ports.TransactionResponse, error) {
-
-	// t, err := s.repo.ReadByID(ctx, id)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return &ports.TransactionResponse{
-	// 	TransactionID: t.ID,
-	// 	Total:         t.Total,
-	// 	ItemsLength:   len(t.Items),
-	// 	// AccountType:   int(t.AccountType),
-
-	// 	// Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
-	// }, nil
-	return nil, fmt.Errorf("Not implemented")
 }
 
 func (s *TransactionService) ReadItemsByTransactionID(ctx context.Context, transactionID string) ([]*ports.TransactionResponse, error) {
