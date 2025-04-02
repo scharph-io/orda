@@ -20,7 +20,6 @@ import { DEPOSIT_VALUES } from '@orda.core/constants';
 import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
-import { TitleCasePipe } from '@angular/common';
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { AccountGroup } from '@orda.core/models/account';
 
@@ -40,7 +39,6 @@ import { AccountGroup } from '@orda.core/models/account';
 		OrdaCurrencyPipe,
 		MatOption,
 		MatSelect,
-		TitleCasePipe,
 	],
 	template: ` <h2 mat-dialog-title>Group Deposit</h2>
 		<mat-dialog-content>

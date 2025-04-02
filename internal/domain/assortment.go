@@ -30,7 +30,7 @@ type Product struct {
 	ProductGroup   ProductGroup `gorm:"foreignKey:ProductGroupID;references:ID"`
 	Active         bool         `gorm:"default:false"`
 	Views          []View       `gorm:"many2many:view_products"`
-	Deposit        bool
+	Deposit        bool         `gorm:"default:false"`
 }
 
 func (p *Product) BeforeDelete(tx *gorm.DB) error {

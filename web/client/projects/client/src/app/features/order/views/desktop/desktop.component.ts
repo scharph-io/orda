@@ -29,14 +29,14 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 							<mat-tab [label]="groupName(group.key)">
 								<orda-order-grid
 									[products]="products"
-									[deposit]="obj.deposits[group.key]"
+									[deposit]="obj.deposits ? obj.deposits[group.key] : undefined"
 									[style.margin.rem]="0.5"
 									[gridCols]="gridCols()"
 								/>
 							</mat-tab>
 						}
 					} @empty {
-						<div>Empty</div>
+						<div>Leer</div>
 					}
 				}
 			</mat-tab-group>
@@ -56,16 +56,16 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 			flex-direction: column;
 			justify-content: space-between;
 			gap: 0.25rem;
-      height: calc(100vh - 62px);
-      .cart {
-        height: 10rem;
-      }
+			height: calc(100vh - 62px);
+			.cart {
+				height: 10rem;
+			}
 		}
 
 		.products {
 			flex-grow: 1;
 			flex-basis: fit-content;
-      overflow: hidden;
+			overflow: hidden;
 		}
 
 		.cart {
@@ -98,18 +98,18 @@ export class OrderDesktopComponent {
 				case 'XSmall':
 				case 'Small':
 					this.viewClass.set('desktop-container-vert');
-          this.isMobilePortrait.set(true);
-          this.cartSize.set('1rem');
+					this.isMobilePortrait.set(true);
+					this.cartSize.set('1rem');
 					break;
 				case 'Medium':
 					this.viewClass.set('desktop-container');
-          this.isMobilePortrait.set(false);
+					this.isMobilePortrait.set(false);
 					this.cartSize.set('17em');
 					break;
 				case 'Large':
 				case 'XLarge':
 					this.viewClass.set('desktop-container');
-          this.isMobilePortrait.set(false);
+					this.isMobilePortrait.set(false);
 					this.cartSize.set('20em');
 					break;
 			}

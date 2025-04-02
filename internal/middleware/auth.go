@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/domain"
@@ -15,11 +17,14 @@ func AuthInit() {
 
 	var adminUser domain.User
 	if db.Where("username = ?", "admin").First(&adminUser).RowsAffected == 0 {
-		// initialPassword := "admin"
-
-		// if os.Getenv("APP_ENV") == "production" {
-		initialPassword := util.PasswordGenerator(30)
-		// }
+		initialPassword := "admin"
+		if os.Getenv("APP_ENV") == "production" {
+			initialPassword = util.PasswordGenerator(30)
+		} else {
+			fmt.Println("# # # # # # # # # # # # # # # # # # # # # # # # # #")
+			fmt.Println("# # # DEVELOPMENT MODE - UNSAFE PASSWORD USED # # #")
+			fmt.Println("# # # # # # # # # # # # # # # # # # # # # # # # # #")
+		}
 
 		hashed, err := util.HashPassword(initialPassword)
 		if err != nil {

@@ -15,7 +15,7 @@ FLUSH PRIVILEGES;
 -- Adminer 5.0.6 MySQL 8.3.0 dump
 
 SET NAMES utf8;
--- SET time_zone = '+00:00';
+SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
@@ -267,41 +267,5 @@ INSERT INTO `products` (`id`, `created_at`, `updated_at`, `deleted_at`, `name`, 
 ('p-100', NOW() - INTERVAL 155 DAY, NOW() - INTERVAL 70 DAY, NULL, 'Wall Clock', 'Silent sweep movement clock in brass finish', 4999, '0195e1376bed7cdcbb8a3f65d4317de5', 1),
 ('p-101', NOW() - INTERVAL 154 DAY, NOW() - INTERVAL 69 DAY, NULL, 'Cotton Bath Towel', 'Plush organic cotton bath towel', 2999, '0195e1376bed7cdcbb8a3f65d4317de5', 1);
 
-
-DROP TABLE IF EXISTS `roles`;
-CREATE TABLE `roles` (
-  `id` varchar(36) NOT NULL,
-  `created_at` datetime(3) DEFAULT NULL,
-  `updated_at` datetime(3) DEFAULT NULL,
-  `deleted_at` datetime(3) DEFAULT NULL,
-  `name` longtext,
-  PRIMARY KEY (`id`),
-  KEY `idx_roles_deleted_at` (`deleted_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-INSERT INTO `roles` (`id`, `created_at`, `updated_at`, `deleted_at`, `name`) VALUES
-('0195c25a4d907d7ca2c74413713b6af8',	'2025-03-23 09:34:12.881',	'2025-03-23 09:34:12.881',	NULL,	'admin'),
-('0195c25bb0847bbd92db858493588db5',	'2025-03-23 09:35:43.749',	'2025-03-23 09:35:43.749',	NULL,	'user');
-
-
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
-  `id` varchar(36) NOT NULL,
-  `created_at` datetime(3) DEFAULT NULL,
-  `updated_at` datetime(3) DEFAULT NULL,
-  `deleted_at` datetime(3) DEFAULT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` longtext NOT NULL,
-  `role_id` varchar(36) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_users_username` (`username`),
-  KEY `idx_users_deleted_at` (`deleted_at`),
-  KEY `fk_roles_users` (`role_id`),
-  CONSTRAINT `fk_roles_users` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-INSERT INTO `users` (`id`, `created_at`, `updated_at`, `deleted_at`, `username`, `password`, `role_id`) VALUES
-('0195c25a4d907cfd89e56b6b3ef45595',	'2025-03-23 09:34:12.882',	'2025-03-23 09:34:12.882',	NULL,	'admin',	'admin',	'0195c25a4d907d7ca2c74413713b6af8'),
-('0195c25c753074eea3fae3eeff3f5644',	'2025-03-23 09:36:34.096',	'2025-03-23 09:36:34.096',	NULL,	'user',	'admin',	'0195c25bb0847bbd92db858493588db5');
 
 -- 2025-03-24 08:40:22 UTC
