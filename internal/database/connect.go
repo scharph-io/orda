@@ -25,12 +25,13 @@ func Connect() {
 
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
 	// "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&serverTimezone=%s",
 		c.User,
 		c.Password,
 		c.Host,
 		c.Port,
 		c.Name,
+		config.GetConfig().Server.TZ,
 	)
 	/*
 		NOTE:
