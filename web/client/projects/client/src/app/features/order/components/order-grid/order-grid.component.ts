@@ -20,39 +20,38 @@ import { OrdaColorService } from '@orda.shared/utils/color';
 		PlusMinusTileComponent,
 	],
 	template: `
-    <mat-grid-list [cols]="gridCols()" gutterSize="0.5rem">
-      @if (deposit(); as deposit) {
-        <mat-grid-tile
-          matRipple
-          [matRippleCentered]="false"
-          [matRippleDisabled]="false"
-          [matRippleUnbounded]="false"
-          [colspan]="2"
-        >
-          <orda-plus-minus-tile [deposit]="deposit" />
-        </mat-grid-tile>
-      }
+		<mat-grid-list [cols]="gridCols()" gutterSize="0.5rem">
+			@if (deposit(); as deposit) {
+				<mat-grid-tile
+					matRipple
+					[matRippleCentered]="false"
+					[matRippleDisabled]="false"
+					[matRippleUnbounded]="false"
+					[colspan]="2"
+				>
+					<orda-plus-minus-tile [deposit]="deposit" />
+				</mat-grid-tile>
+			}
 
-      @for (vp of products(); track vp.id) {
-        @let color = vp.color ?? '';
-        <mat-grid-tile
-          [style]="{
-						'background-color':
-							color.startsWith('#')
-								? colorService.hexToHSLString(color, 0.33)
-								: color,
+			@for (vp of products(); track vp.id) {
+				@let color = vp.color ?? '';
+				<mat-grid-tile
+					[style]="{
+						'background-color': color.startsWith('#')
+							? colorService.hexToHSLString(color, 0.33)
+							: color,
 					}"
-          matRipple
-          [matRippleCentered]="false"
-          [matRippleDisabled]="false"
-          [matRippleUnbounded]="false"
-          (click)="addProduct(vp)"
-        >
-          <orda-product-tile [product]="vp" />
-        </mat-grid-tile>
-      }
-    </mat-grid-list>
-  `,
+					matRipple
+					[matRippleCentered]="false"
+					[matRippleDisabled]="false"
+					[matRippleUnbounded]="false"
+					(click)="addProduct(vp)"
+				>
+					<orda-product-tile [product]="vp" />
+				</mat-grid-tile>
+			}
+		</mat-grid-list>
+	`,
 	styles: `
 		mat-grid-tile {
 			cursor: pointer;

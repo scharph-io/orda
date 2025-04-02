@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -203,6 +204,23 @@ func (s *TransactionService) ReadByID(ctx context.Context, id string) (*ports.Tr
 
 		// Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
 	}, nil
+}
+
+func (s *TransactionService) ReadByDate(ctx context.Context, date time.Time) ([]*ports.TransactionResponse, error) {
+
+	// t, err := s.repo.ReadByID(ctx, id)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return &ports.TransactionResponse{
+	// 	TransactionID: t.ID,
+	// 	Total:         t.Total,
+	// 	ItemsLength:   len(t.Items),
+	// 	// AccountType:   int(t.AccountType),
+
+	// 	// Account:       fmt.Sprintf("%s %s", t.Account.Firstname, t.Account.Lastname),
+	// }, nil
+	return nil, fmt.Errorf("Not implemented")
 }
 
 func (s *TransactionService) ReadItemsByTransactionID(ctx context.Context, transactionID string) ([]*ports.TransactionResponse, error) {

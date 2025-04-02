@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/ports"
@@ -58,6 +59,19 @@ func (h *TransactionHandlers) ReadLimit(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNoContent).JSON([]string{})
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
+}
+
+func (h *TransactionHandlers) ReadDate(c *fiber.Ctx) error {
+	// res, err := h.transactionService.Read(c.Context())
+	// if err != nil {
+	// 	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get transactions"})
+	// }
+	// if res == nil {
+	// 	return c.Status(fiber.StatusNoContent).JSON([]string{})
+	// }
+	//
+	date := c.Query("key string", time.Now().Format(time.RFC3339))
+	return c.Status(fiber.StatusOK).JSON(date)
 }
 
 func (h *TransactionHandlers) Delete(c *fiber.Ctx) error {

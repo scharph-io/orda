@@ -3,6 +3,7 @@ package ports
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/domain"
@@ -56,6 +57,8 @@ type TransactionResponse struct {
 type ITransactionRepository interface {
 	Create(ctx context.Context, transaction *domain.Transaction) (*domain.Transaction, error)
 	Read(ctx context.Context) ([]*domain.Transaction, error)
+	ReadByDate(ctx context.Context, date time.Time) ([]*domain.Transaction, error)
+
 	ReadByID(ctx context.Context, id string) (*domain.Transaction, error)
 	Update(ctx context.Context, transaction domain.Transaction) (*domain.Transaction, error)
 	Delete(ctx context.Context, transaction domain.Transaction) error
@@ -70,6 +73,7 @@ type ITransactionService interface {
 	CreateWithAccount(ctx context.Context, userid string, t TransactionRequest) (*TransactionResponse, error)
 	Read(ctx context.Context) ([]*TransactionResponse, error)
 	ReadByID(ctx context.Context, id string) (*TransactionResponse, error)
+	ReadByDate(ctx context.Context, date time.Time) ([]*TransactionResponse, error)
 	ReadItemsByTransactionID(ctx context.Context, transactionID string) ([]*TransactionResponse, error)
 	Update(ctx context.Context, t TransactionRequest) (*TransactionResponse, error)
 	Delete(ctx context.Context, id string) error
@@ -79,5 +83,6 @@ type ITransactionHandlers interface {
 	Create(c *fiber.Ctx) error
 	ReadById(c *fiber.Ctx) error
 	ReadLimit(c *fiber.Ctx) error
+	ReadDate(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
 }
