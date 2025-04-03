@@ -49,7 +49,6 @@ func Connect() {
 		},
 	)
 
-	log.Println(dsn)
 	DB, err = gorm.Open(mysql.New(
 		mysql.Config{
 			DSN: dsn,
@@ -62,6 +61,8 @@ func Connect() {
 				log.Fatal("Failed to load timezone. \n", err)
 				os.Exit(2)
 			}
+			fmt.Println("Timezone: ", tz)
+			fmt.Println("Current time: ", time.Now().In(tz))
 			return time.Now().In(tz)
 		},
 	})

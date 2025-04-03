@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/accesscontrol"
@@ -21,8 +22,11 @@ func main() {
 	serverC := config.GetConfig().Server
 
 	app := fiber.New(fiber.Config{
-		AppName: fmt.Sprintf("orda %s", version),
+		AppName: fmt.Sprintf("orda %s - %s", version, date),
 	})
+
+	loc, _ := time.LoadLocation(serverC.TZ)
+	time.Local = loc
 
 	database.Connect()
 	middleware.AuthInit()
