@@ -130,7 +130,6 @@ func (s *AssortmentService) DeleteProductGroup(ctx context.Context, id string) e
 
 func (s *AssortmentService) SetDepositToGroup(ctx context.Context, id string, dpr ports.DepositProduct) error {
 	group, err := s.groups.ReadByID(ctx, id)
-	fmt.Println(group)
 	if err != nil {
 		return err
 	}

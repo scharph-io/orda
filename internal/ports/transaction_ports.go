@@ -48,21 +48,23 @@ func (tr *TransactionRequest) PrintDetails() {
 }
 
 type TransactionResponse struct {
-	TransactionID string `json:"transaction_id"`
-	CreatedAt     string `json:"created_at"`
-	ItemsLength   int    `json:"items_length"`
-	Total         int32  `json:"total"`
+	TransactionID string               `json:"transaction_id"`
+	CreatedAt     string               `json:"created_at"`
+	ItemsLength   int                  `json:"items_length"`
+	PaymentOption domain.PaymentOption `json:"payment_option"`
+	Total         int32                `json:"total"`
+	AccountId     string               `json:"account_id,omitempty"`
 }
 
 type TransactionSummaryResponse struct {
-	Total int32 `json:"total"`
+	Totals map[uint8]int32 `json:"totals"`
 }
 
 type ITransactionRepository interface {
 	Create(ctx context.Context, transaction *domain.Transaction) (*domain.Transaction, error)
 	Read(ctx context.Context) ([]*domain.Transaction, error)
-	ReadByDate(ctx context.Context, date string, payment_option uint8) ([]*domain.Transaction, error)
-	ReadSummaryByDate(ctx context.Context, date string, payment_option uint8) (int32, error)
+	ReadByDate(ctx context.Context, date string, payment_option ...uint8) ([]*domain.Transaction, error)
+	ReadSummaryByDate(ctx context.Context, date string, payment_option ...uint8) (int32, error)
 
 	ReadByID(ctx context.Context, id string) (*domain.Transaction, error)
 	Update(ctx context.Context, transaction domain.Transaction) (*domain.Transaction, error)

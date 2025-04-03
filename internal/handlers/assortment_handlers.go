@@ -80,7 +80,6 @@ func (h *AssortmentHandlers) ReadProducts(c *fiber.Ctx) error {
 	groupid := c.Query("group_id", "")
 	res := make([]*ports.ProductResponse, 0)
 	var err error
-	fmt.Println("group id:", groupid)
 	if groupid != "" {
 		res, err = h.assortmentService.ReadProductsGroupById(c.Context(), groupid)
 	} else {

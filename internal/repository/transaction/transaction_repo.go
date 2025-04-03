@@ -41,20 +41,27 @@ func (r *TransactionRepository) ReadByID(ctx context.Context, id string) (*domai
 	return &t, nil
 }
 
-func (r *TransactionRepository) ReadByDate(ctx context.Context, date string, payment_option uint8) ([]*domain.Transaction, error) {
+func (r *TransactionRepository) ReadByDate(ctx context.Context, date string, payment_option ...uint8) ([]*domain.Transaction, error) {
 	var t []*domain.Transaction
-	if err := r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ? AND payment_option = ?", date, payment_option).Preload("Items").Find(&t).Error; err != nil {
-		return nil, err
+	var err error
+	if len(payment_option) == 0 {
+		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ?", date).Preload("Items").Find(&t).Error
+	} else {
+		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ? AND payment_option = ?", date, payment_option[0]).Preload("Items").Find(&t).Error
 	}
-	return t, nil
+	return t, err
 }
 
-func (r *TransactionRepository) ReadSummaryByDate(ctx context.Context, date string, payment_option uint8) (int32, error) {
+func (r *TransactionRepository) ReadSummaryByDate(ctx context.Context, date string, payment_option ...uint8) (int32, error) {
 	var total int32
-	if err := r.db.WithContext(ctx).Model(&domain.Transaction{}).Select("SUM(total) as total").Where("DATE(created_at) = ? AND payment_option = ?", date, payment_option).Find(&total).Error; err != nil {
-		return 0, err
+	var err error
+	tx := r.db.WithContext(ctx).Model(&domain.Transaction{}).Select("SUM(total) as total")
+	if len(payment_option) == 0 {
+		err = tx.Where("DATE(created_at) = ?", date).Scan(&total).Error
+	} else {
+		err = tx.Where("DATE(created_at) = ? AND payment_option = ?", date, payment_option[0]).Scan(&total).Error
 	}
-	return total, nil
+	return total, err
 }
 
 func (r *TransactionRepository) Update(ctx context.Context, t domain.Transaction) (*domain.Transaction, error) {

@@ -24,7 +24,6 @@ func (h *TransactionHandlers) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
 	}
-	// req.PrintDetails()
 	var res *ports.TransactionResponse
 	var err error
 	if req.AccountID == "" {
@@ -53,9 +52,6 @@ func (h *TransactionHandlers) ReadById(c *fiber.Ctx) error {
 func (h *TransactionHandlers) Read(c *fiber.Ctx) error {
 
 	date := c.Query("date", time.Now().Format("2006-01-02"))
-
-	fmt.Println(date)
-
 	res, err := h.transactionService.ReadByDate(c.Context(), date)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get transactions"})

@@ -197,22 +197,33 @@ func (s *TransactionService) ReadByDate(ctx context.Context, date string) ([]*po
 	var res []*ports.TransactionResponse
 	for _, v := range t {
 		res = append(res, &ports.TransactionResponse{
+			CreatedAt:     v.CreatedAt.Format("2006-01-02 15:04:05"),
 			TransactionID: v.ID,
 			Total:         v.Total,
 			ItemsLength:   len(v.Items),
+			PaymentOption: v.PaymentOption,
+			AccountId:     v.AccountID.String,
 		})
 	}
 	return res, nil
 }
 
 func (s *TransactionService) ReadSummaryByDate(ctx context.Context, date string) (*ports.TransactionSummaryResponse, error) {
-	total, err := s.repo.ReadSummaryByDate(ctx, date)
+	totals := make(map[uint8]int32)
+	cash, _ := s.repo.ReadSummaryByDate(ctx, date, uint8(domain.PaymentOptionCash))
+	totals[uint8(domain.PaymentOptionCash)] = cash
 
-	if err != nil {
-		return nil, err
-	}
+	acc, _ := s.repo.ReadSummaryByDate(ctx, date, uint8(domain.PaymentOptionAccount))
+	totals[uint8(domain.PaymentOptionAccount)] = acc
+
+	free, _ := s.repo.ReadSummaryByDate(ctx, date, uint8(domain.PaymentOptionFree))
+	totals[uint8(domain.PaymentOptionFree)] = free
+
+	credit, _ := s.repo.ReadSummaryByDate(ctx, date, uint8(domain.PaymentOptionSponsor))
+	totals[uint8(domain.PaymentOptionSponsor)] = credit
+
 	return &ports.TransactionSummaryResponse{
-		Total: total,
+		Totals: totals,
 	}, nil
 }
 

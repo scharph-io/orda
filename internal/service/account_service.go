@@ -37,7 +37,6 @@ func (s *AccountService) CreateGroup(ctx context.Context, req ports.AccountGroup
 func (s *AccountService) GetAllGroups(ctx context.Context) ([]ports.AccountGroupResponse, error) {
 	groups, err := s.groupRepo.Read(ctx)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	var res []ports.AccountGroupResponse
