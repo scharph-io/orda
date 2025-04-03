@@ -61,8 +61,6 @@ func Connect() {
 				log.Fatal("Failed to load timezone. \n", err)
 				os.Exit(2)
 			}
-			fmt.Println("Timezone: ", tz)
-			fmt.Println("Current time: ", time.Now().In(tz))
 			return time.Now().In(tz)
 		},
 	})
@@ -78,20 +76,8 @@ func Connect() {
 	}
 
 	log.Println("Connection Opened to Database")
-	// // DB.AutoMigrate(&model.Category{}, &model.Product{}, &model.Transaction{}, &model.TransactionItem{})
-
-	// if err := DB.SetupJoinTable(&model.View{}, "Products", &model.ViewProduct{}); err != nil {
-	// 	log.Fatal("Failed to setup join table. \n", err)
-	// 	return
-	// }
-	//
-	// if err := DB.SetupJoinTable(&domain.View{}, "Roles", &domain.Role{}); err != nil {
-	// 	log.Fatal("Failed to setup join table. \n", err)
-	// 	return
-	// }
 
 	if err := DB.AutoMigrate(
-
 		&domain.Role{},
 		&domain.User{},
 
