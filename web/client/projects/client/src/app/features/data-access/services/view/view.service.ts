@@ -21,6 +21,7 @@ export class ViewService extends EntityService<View> {
 	}
 
 	readById(id: string) {
+		console.log('readById', id);
 		return this.httpClient
 			.get<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}`)
 			.pipe(catchError(this.handleError));

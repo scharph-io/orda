@@ -85,7 +85,7 @@ export class OrderDesktopComponent {
 	});
 
 	gridCols = inject(GridColSizeService).size;
-	cartSize = signal<string>('17.5em');
+	cartSize = signal<string>('18.5em');
 	viewClass = signal<string>('desktop-container');
 	isMobilePortrait = signal<boolean>(false);
 
@@ -104,13 +104,13 @@ export class OrderDesktopComponent {
 				case 'Medium':
 					this.viewClass.set('desktop-container');
 					this.isMobilePortrait.set(false);
-					this.cartSize.set('17em');
+					this.cartSize.set('18em');
 					break;
 				case 'Large':
 				case 'XLarge':
 					this.viewClass.set('desktop-container');
 					this.isMobilePortrait.set(false);
-					this.cartSize.set('20em');
+					this.cartSize.set('22em');
 					break;
 			}
 		});

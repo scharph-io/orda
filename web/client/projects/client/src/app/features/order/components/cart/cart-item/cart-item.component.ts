@@ -21,9 +21,7 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 				<div class="desc">{{ item().desc }}</div>
 			}
 			<div class="quantity">{{ item().quantity }}</div>
-			<div class="sum">
-				{{ item().price * item().quantity | currency: 'EUR' }}
-			</div>
+			<div class="sum">{{ item().price * item().quantity | currency: 'EUR' }}</div>
 			<div class="rm">
 				<mat-icon (click)="removeItem(item())" [style]="{ color: 'grey' }">delete</mat-icon>
 			</div>
@@ -31,57 +29,58 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 		<mat-divider></mat-divider>
 	`,
 	styles: `
-    .container {
-      display: grid;
-      gap: 0.25em;
-      grid-auto-flow: row;
-      grid-template: 'title quantity sum rm' 1fr / auto 1fr 5em 2em;
-      width: auto;
-    }
+		.container {
+			display: grid;
+			grid-auto-flow: row;
+			grid-template: 'title quantity sum rm' 1fr / auto 1fr 6rem 2rem;
+			width: auto;
+		}
 
-    .container-with-desc {
-      grid-template:
+		.container-with-desc {
+			grid-template:
 				'title quantity sum rm' 1fr
-				'desc quantity sum rm' 1fr / auto 0.15fr 5em 2em;
-    }
+				'desc quantity sum rm' 1fr / auto 0.15fr 6rem 2rem;
+		}
 
-    .title {
-      grid-area: title;
-      display: flex;
-      align-items: center;
-    }
+		.title {
+			grid-area: title;
+			display: flex;
+			align-items: center;
+		}
 
-    .desc {
-      grid-area: desc;
-      font-size: 0.75rem;
-      text-overflow: ellipsis;
-      line-height: 1.5em;
-      overflow: hidden;
-      white-space: nowrap;
-      width: 100%;
-    }
+		.desc {
+			grid-area: desc;
+			font-size: 0.75rem;
+			text-overflow: ellipsis;
+			line-height: 1.5em;
+			overflow: hidden;
+			white-space: nowrap;
+			width: 100%;
+		}
 
-    .quantity {
-      grid-area: quantity;
-      display: flex;
-      justify-content: right;
-      align-items: center;
-    }
+		.quantity {
+			grid-area: quantity;
+			display: flex;
+			justify-content: right;
+			align-items: center;
+			font-variant-numeric: tabular-nums;
+		}
 
-    .sum {
-      grid-area: sum;
-      display: flex;
-      justify-content: right;
-      align-items: center;
-    }
+		.sum {
+			grid-area: sum;
+			display: flex;
+			justify-content: right;
+			align-items: center;
+			font-variant-numeric: tabular-nums;
+		}
 
-    .rm {
-      grid-area: rm;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  `,
+		.rm {
+			grid-area: rm;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+	`,
 })
 export class CartItemComponent {
 	item = input.required<CartItem>();

@@ -23,22 +23,22 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 	`,
 	styles: `
 		:host {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-content: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-around;
+			align-content: center;
 		}
 
 		.cart-items {
-      flex-grow: 1;
+			flex-grow: 1;
 			overflow-y: auto;
-      padding: 0.5rem;
+			padding: 0.5rem;
 		}
 
 		.actions {
-      justify-self: center;
-      align-self: center;
-      height: 3em;
+			justify-self: center;
+			align-self: center;
+			height: 4em;
 		}
 
 		.subtotal {
