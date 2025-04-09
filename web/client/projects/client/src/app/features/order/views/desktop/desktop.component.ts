@@ -107,7 +107,6 @@ export class OrderDesktopComponent {
 					this.cartSize.set('18em');
 					break;
 				case 'Large':
-				case 'XLarge':
 					this.viewClass.set('desktop-container');
 					this.isMobilePortrait.set(false);
 					this.cartSize.set('22em');
