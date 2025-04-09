@@ -14,12 +14,7 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 	imports: [MatTabsModule, OrderGridComponent, CartComponent, KeyValuePipe],
 	template: `
 		<div [class]="viewClass()">
-			<mat-tab-group
-				class="products"
-				mat-align-tabs="center"
-				animationDuration="0ms"
-				dynamicHeight="false"
-			>
+			<mat-tab-group mat-stretch-tabs class="products" animationDuration="0ms">
 				@let obj = data.value();
 				@if (obj !== undefined) {
 					@let productsMap = obj.products;
@@ -104,7 +99,7 @@ export class OrderDesktopComponent {
 				case 'Medium':
 					this.viewClass.set('desktop-container');
 					this.isMobilePortrait.set(false);
-					this.cartSize.set('18em');
+					this.cartSize.set('17.5em');
 					break;
 				case 'Large':
 					this.viewClass.set('desktop-container');

@@ -86,7 +86,6 @@ export class GroupDepositDialogComponent extends DialogTemplateComponent<Account
 		this.accountGroupService
 			.deposit(this.formGroup.value.group ?? '', {
 				amount: this.formGroup.value.amount ?? 0,
-				userid: 'anon',
 			})
 			.subscribe(this.closeObserver);
 	};
