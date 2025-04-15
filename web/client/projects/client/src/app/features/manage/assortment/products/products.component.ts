@@ -42,7 +42,7 @@ import { NgClass } from '@angular/common';
 				<button
 					mat-flat-button
 					(click)="openDepositDialog()"
-          [title]="g.deposit?.active ? 'active' : 'inactive'"
+					[title]="g.deposit?.active ? 'active' : 'inactive'"
 					[ngClass]="g.deposit ? (g.deposit.active ? 'active-btn' : 'inactive-btn') : ''"
 				>
 					Deposit

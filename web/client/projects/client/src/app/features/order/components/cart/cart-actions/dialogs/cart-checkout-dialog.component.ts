@@ -55,7 +55,7 @@ interface AutoCompleteOption {
 						{{ totalSum | currency: 'EUR' }}
 					</div>
 					<div class="item-1">{{ 'Summe' }}:</div>
-<!--					<div class="item-1">{{ 'cart.total' }}:</div>-->
+					<!--					<div class="item-1">{{ 'cart.total' }}:</div>-->
 				</div>
 			</div>
 
@@ -68,20 +68,20 @@ interface AutoCompleteOption {
 						<mat-button-toggle [value]="PaymentOption.FREE">{{
 							PaymentOptionKeys[PaymentOption.FREE]
 						}}</mat-button-toggle>
-            <mat-button-toggle [value]="PaymentOption.SPONSOR">{{
-                PaymentOptionKeys[PaymentOption.SPONSOR]
-              }}</mat-button-toggle>
-            <mat-button-toggle [value]="PaymentOption.ACCOUNT">{{
-                PaymentOptionKeys[PaymentOption.ACCOUNT]
-              }}</mat-button-toggle>
+						<mat-button-toggle [value]="PaymentOption.SPONSOR">{{
+							PaymentOptionKeys[PaymentOption.SPONSOR]
+						}}</mat-button-toggle>
+						<mat-button-toggle [value]="PaymentOption.ACCOUNT">{{
+							PaymentOptionKeys[PaymentOption.ACCOUNT]
+						}}</mat-button-toggle>
 					}
 				</mat-button-toggle-group>
 			</div>
 			@if (paymentOptionControl.value === PaymentOption.ACCOUNT) {
 				<div class="account">
 					<mat-form-field class="example-full-width">
-<!--						<mat-label>{{ 'checkout.account' }}</mat-label>-->
-						<mat-label>{{ "Konto" }}</mat-label>
+						<!--						<mat-label>{{ 'checkout.account' }}</mat-label>-->
+						<mat-label>{{ 'Konto' }}</mat-label>
 						<input
 							type="text"
 							placeholder="Account"
@@ -115,10 +115,10 @@ interface AutoCompleteOption {
 								{{ balance | currency }} - {{ total() | currency }} =
 								{{ diff() | currency }}
 								<div>{{ 'Restbetrag' }} {{ diff() * -1 | currency }}</div>
-<!--								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>-->
+								<!--								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>-->
 							</div>
 						} @else {
-<!--							<div class="error" [style.color]="'red'">{{ 'checkout.account-empty' }}</div>-->
+							<!--							<div class="error" [style.color]="'red'">{{ 'checkout.account-empty' }}</div>-->
 							<div class="error" [style.color]="'red'">{{ 'Konto leer' }}</div>
 						}
 					}
@@ -127,12 +127,12 @@ interface AutoCompleteOption {
 			<div class="error" [style.color]="'red'">{{ error }}</div>
 		</mat-dialog-content>
 		<mat-dialog-actions align="end">
-<!--			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'checkout.cancel' }}</button>-->
+			<!--			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'checkout.cancel' }}</button>-->
 			<button mat-button [mat-dialog-close]="0" cdkFocusInitial>{{ 'Abbrechen' }}</button>
 			@switch (paymentOptionControl.value) {
 				@case (PaymentOption.CASH) {
 					<button mat-button cdkFocusInitial (click)="checkout()">
-<!--						{{ 'checkout.cash.title' }}-->
+						<!--						{{ 'checkout.cash.title' }}-->
 						{{ 'Barzahlung' }}
 					</button>
 				}
@@ -143,23 +143,23 @@ interface AutoCompleteOption {
 						[disabled]="!accountControl.value || balance === 0"
 						(click)="checkout(PaymentOption.ACCOUNT, selectedAccount()?.id)"
 					>
-<!--						{{ 'checkout.account.title' }}-->
+						<!--						{{ 'checkout.account.title' }}-->
 						{{ 'Kontozahlung' }}
 					</button>
 				}
-        @case (PaymentOption.FREE) {
-          <button mat-button cdkFocusInitial (click)="checkout(PaymentOption.FREE)">
-            <!--						{{ 'checkout.cash.title' }}-->
-            {{ 'Freizahlung' }}
-          </button>
-        }
+				@case (PaymentOption.FREE) {
+					<button mat-button cdkFocusInitial (click)="checkout(PaymentOption.FREE)">
+						<!--						{{ 'checkout.cash.title' }}-->
+						{{ 'Freizahlung' }}
+					</button>
+				}
 
-        @case (PaymentOption.SPONSOR) {
-          <button mat-button cdkFocusInitial (click)="checkout(PaymentOption.SPONSOR)">
-            <!--						{{ 'checkout.cash.title' }}-->
-            {{ 'Sponsorzahlung' }}
-          </button>
-        }
+				@case (PaymentOption.SPONSOR) {
+					<button mat-button cdkFocusInitial (click)="checkout(PaymentOption.SPONSOR)">
+						<!--						{{ 'checkout.cash.title' }}-->
+						{{ 'Sponsorzahlung' }}
+					</button>
+				}
 			}
 			´
 		</mat-dialog-actions>
@@ -267,7 +267,12 @@ export class CartCheckoutDialogComponent implements OnInit {
 				.value()
 				?.filter((option) => option.lastname.toLowerCase().includes(filterValue))
 				.map(
-					(o) => ({ id: o.id, name: `${o.lastname} ${o.firstname}`, credit: o.credit_balance }) as AutoCompleteOption,
+					(o) =>
+						({
+							id: o.id,
+							name: `${o.lastname} ${o.firstname}`,
+							credit: o.credit_balance,
+						}) as AutoCompleteOption,
 				) ?? []
 		);
 	}
@@ -288,7 +293,9 @@ export class CartCheckoutDialogComponent implements OnInit {
 			payment_option: option,
 			account_id,
 			items:
-				this.items()?.map((i: CartItem) => ({ id: i.id, qty: i.quantity }) as CheckoutRequestItem) ?? [],
+				this.items()?.map(
+					(i: CartItem) => ({ id: i.id, qty: i.quantity }) as CheckoutRequestItem,
+				) ?? [],
 		} as CheckoutRequest;
 
 		// console.log(JSON.stringify(checkoutData));
@@ -299,8 +306,8 @@ export class CartCheckoutDialogComponent implements OnInit {
 				this.dialogRef.close(1);
 			},
 			error: (err) => {
-        console.log(err);
-        this.dialogRef.close(-1);
+				console.log(err);
+				this.dialogRef.close(-1);
 			},
 		});
 	}

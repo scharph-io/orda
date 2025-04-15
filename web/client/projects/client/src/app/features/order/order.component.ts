@@ -10,41 +10,41 @@ import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 	selector: 'orda-order',
 	imports: [MatGridListModule, MatRipple, RouterModule],
 	template: `
-    <h1>Bestellseiten</h1>
-    @let views = viewService.views.value() ?? [];
-    @if (views.length === 0) {
-      <p>No views available</p>
-    } @else {
-      <mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5rem">
-        @for (v of viewService.views.value(); track v.id) {
-          <mat-grid-tile
-            mat-ripple
-            [routerLink]="['view', v.id]"
-            [style]="{ 'background-color': 'rgba(75, 67, 118, 0.5)' }"
-          >
-            <div class="container">
-              <div class="title">{{ v.name }}</div>
-              <div class="cnt">{{ v.products_count }} Produkte</div>
-            </div>
-          </mat-grid-tile>
-        }
-      </mat-grid-list>
-    }
-  `,
+		<h1>Bestellseiten</h1>
+		@let views = viewService.views.value() ?? [];
+		@if (views.length === 0) {
+			<p>No views available</p>
+		} @else {
+			<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5rem">
+				@for (v of viewService.views.value(); track v.id) {
+					<mat-grid-tile
+						mat-ripple
+						[routerLink]="['view', v.id]"
+						[style]="{ 'background-color': 'rgba(75, 67, 118, 0.5)' }"
+					>
+						<div class="container">
+							<div class="title">{{ v.name }}</div>
+							<div class="cnt">{{ v.products_count }} Produkte</div>
+						</div>
+					</mat-grid-tile>
+				}
+			</mat-grid-list>
+		}
+	`,
 	styles: `
-    .container{
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      align-content: center;
-    }
+		.container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			align-content: center;
+		}
 
-    .title{
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-  `,
+		.title {
+			font-size: 1.5em;
+			font-weight: bold;
+		}
+	`,
 })
 export class OrderComponent {
 	viewService = inject(OrderService);

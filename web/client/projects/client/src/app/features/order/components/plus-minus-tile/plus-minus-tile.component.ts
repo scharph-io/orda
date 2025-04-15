@@ -3,20 +3,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { OrderStoreService } from '@orda.features/order/services/order-store.service';
 import { ViewProduct } from '@orda.core/models/view';
 
-
 @Component({
 	selector: 'orda-plus-minus-tile',
 	standalone: true,
 	imports: [MatIconModule],
 	template: `
 		<div class="item add" (click)="addToCart(1)" [title]="deposit()">
-<!--			{{ key() }} <mat-icon>add</mat-icon>-->
-      Pfand <mat-icon>add</mat-icon>
+			<!--			{{ key() }} <mat-icon>add</mat-icon>-->
+			Pfand <mat-icon>add</mat-icon>
 		</div>
 		<div class="item remove" (click)="addToCart(-1)">
-<!--      {{ key() }} <mat-icon>remove</mat-icon>-->
-       Pfand <mat-icon>remove</mat-icon>
-    </div>
+			<!--      {{ key() }} <mat-icon>remove</mat-icon>-->
+			Pfand <mat-icon>remove</mat-icon>
+		</div>
 	`,
 	styles: [
 		`
@@ -49,14 +48,13 @@ import { ViewProduct } from '@orda.core/models/view';
 	],
 })
 export class PlusMinusTileComponent {
-
-  deposit = input.required<Partial<ViewProduct>>()
+	deposit = input.required<Partial<ViewProduct>>();
 	cart = inject(OrderStoreService);
 
 	addToCart(factor: number) {
 		this.cart.addItem({
 			id: this.deposit().id ?? '',
-			name: "Pfand",
+			name: 'Pfand',
 			quantity: factor,
 			price: this.deposit().price ?? 0,
 		});
