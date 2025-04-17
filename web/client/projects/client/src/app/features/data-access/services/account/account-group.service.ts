@@ -6,7 +6,6 @@ import { catchError } from 'rxjs';
 
 export interface DepositGroupRequest {
 	amount: number;
-	userid: string;
 }
 
 @Injectable({

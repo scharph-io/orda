@@ -33,11 +33,13 @@ import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/tra
 
 		<h2>Zusammenfassung</h2>
 		<h3>Einnahmen</h3>
-		@for (total of summary.value()?.totals | keyvalue; track total) {
-			<p>
-				{{ PaymentOptionKeys[keyToNumber(total.key)] }}:
-				{{ total.value | currency }}
-			</p>
+		@if (summary.value(); as sum) {
+			@for (total of sum.totals | keyvalue; track total) {
+				<p>
+					{{ PaymentOptionKeys[keyToNumber(total.key)] }}:
+					{{ total.value | currency }}
+				</p>
+			}
 		}
 
 		<h2>Transaktionen</h2>

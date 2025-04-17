@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
 import { B, ViewBreakpointService } from './view-breakpoint.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -9,7 +9,6 @@ const FORMATS: Record<B, number> = {
 	Small: 4,
 	Medium: 5,
 	Large: 6,
-	XLarge: 8,
 };
 
 @Injectable({

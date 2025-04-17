@@ -348,6 +348,10 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 						<input matInput type="number" formControlName="customAmount" />
 					</mat-form-field>
 				}
+				<mat-form-field>
+					<mat-label>Reason</mat-label>
+					<input matInput type="string" formControlName="reason" placeholder="Optional" />
+				</mat-form-field>
 			</form>
 		</ng-template>
 	`,
@@ -359,6 +363,7 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 	formGroup = new FormGroup({
 		amount: new FormControl(0, [Validators.required]),
 		customAmount: new FormControl(0, [Validators.required]),
+		reason: new FormControl(''),
 	});
 
 	constructor() {
