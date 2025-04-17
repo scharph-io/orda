@@ -236,6 +236,12 @@ func (s *TransactionService) ReadProductSummary(ctx context.Context, from, to ti
 	return res, err
 }
 
+func (s *TransactionService) ReadViewSummary(ctx context.Context, from, to time.Time) (ports.TransactionViewSummaryResponse, error) {
+	res := ports.TransactionViewSummaryResponse{}
+	err := s.repo.RunQuery(ctx, database.Q_transaction_views_between_datetime, from, to).Scan(&res).Error
+	return res, err
+}
+
 func (s *TransactionService) ReadByID(ctx context.Context, id string) (*ports.TransactionResponse, error) {
 
 	t, err := s.repo.ReadByID(ctx, id)

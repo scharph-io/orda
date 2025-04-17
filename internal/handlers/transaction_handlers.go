@@ -85,6 +85,12 @@ func (h *TransactionHandlers) ReadSummary(c *fiber.Ctx) error {
 	if resProductSummary == nil {
 		return c.Status(fiber.StatusOK).JSON([]string{})
 	}
+
+	resViewSummary, _ := h.transactionService.ReadViewSummary(c.Context(), from, to)
+	if resViewSummary == nil {
+		return c.Status(fiber.StatusOK).JSON([]string{})
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"period": map[string]time.Time{
 			"from": from,
@@ -93,6 +99,7 @@ func (h *TransactionHandlers) ReadSummary(c *fiber.Ctx) error {
 		"summary": map[string]any{
 			"payments": resPaymentSummary,
 			"products": resProductSummary,
+			"views":    resViewSummary,
 		},
 	})
 }

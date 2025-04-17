@@ -68,6 +68,12 @@ type TransactionProductSummaryResponse []struct {
 	TotalQuantity int32  `json:"total_quantity"`
 }
 
+type TransactionViewSummaryResponse []struct {
+	Name           string `json:"name"`
+	SumTotal       int32  `json:"sum_total"`
+	SumCreditTotal int32  `json:"sum_credit_total"`
+}
+
 type ITransactionRepository interface {
 	Create(ctx context.Context, transaction *domain.Transaction) (*domain.Transaction, error)
 	Read(ctx context.Context) ([]*domain.Transaction, error)
@@ -90,6 +96,7 @@ type ITransactionService interface {
 	ReadByDate(ctx context.Context, date string) ([]*TransactionResponse, error)
 	ReadPaymentSummary(ctx context.Context, from, to time.Time) (TransactionPaymentSummaryResponse, error)
 	ReadProductSummary(ctx context.Context, from, to time.Time) (TransactionProductSummaryResponse, error)
+	ReadViewSummary(ctx context.Context, from, to time.Time) (TransactionViewSummaryResponse, error)
 	ReadItemsByTransactionID(ctx context.Context, transactionID string) ([]*TransactionResponse, error)
 	Update(ctx context.Context, t TransactionRequest) (*TransactionResponse, error)
 	Delete(ctx context.Context, id string) error
