@@ -3,9 +3,11 @@ package ports
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/domain"
+	"gorm.io/gorm"
 )
 
 type ItemRequest struct {
@@ -25,6 +27,7 @@ type TransactionRequest struct {
 	Items         []ItemRequest        `json:"items"`
 	AccountID     string               `json:"account_id,omitempty"`
 	PaymentOption domain.PaymentOption `json:"payment_option"`
+	ViewId        string               `json:"view_id"`
 }
 
 func (t *TransactionRequest) CalculateTotal() int32 {
@@ -54,21 +57,25 @@ type TransactionResponse struct {
 	PaymentOption domain.PaymentOption `json:"payment_option"`
 	Total         int32                `json:"total"`
 	AccountId     string               `json:"account_id,omitempty"`
+	ViewId        string               `json:"view_id,omitempty"`
 }
 
-type TransactionSummaryResponse struct {
-	Totals map[uint8]int32 `json:"totals"`
+type TransactionPaymentSummaryResponse map[uint8]int32
+
+type TransactionProductSummaryResponse []struct {
+	Name          string `json:"name"`
+	Desc          string `json:"desc"`
+	TotalQuantity int32  `json:"total_quantity"`
 }
 
 type ITransactionRepository interface {
 	Create(ctx context.Context, transaction *domain.Transaction) (*domain.Transaction, error)
 	Read(ctx context.Context) ([]*domain.Transaction, error)
 	ReadByDate(ctx context.Context, date string, payment_option ...uint8) ([]*domain.Transaction, error)
-	ReadSummaryByDate(ctx context.Context, date string, payment_option ...uint8) (int32, error)
-
 	ReadByID(ctx context.Context, id string) (*domain.Transaction, error)
 	Update(ctx context.Context, transaction domain.Transaction) (*domain.Transaction, error)
 	Delete(ctx context.Context, transaction domain.Transaction) error
+	RunQuery(ctx context.Context, query string, args ...any) *gorm.DB
 }
 
 type ITransactionItemRepository interface {
@@ -81,7 +88,8 @@ type ITransactionService interface {
 	Read(ctx context.Context) ([]*TransactionResponse, error)
 	ReadByID(ctx context.Context, id string) (*TransactionResponse, error)
 	ReadByDate(ctx context.Context, date string) ([]*TransactionResponse, error)
-	ReadSummaryByDate(ctx context.Context, date string) (*TransactionSummaryResponse, error)
+	ReadPaymentSummary(ctx context.Context, from, to time.Time) (TransactionPaymentSummaryResponse, error)
+	ReadProductSummary(ctx context.Context, from, to time.Time) (TransactionProductSummaryResponse, error)
 	ReadItemsByTransactionID(ctx context.Context, transactionID string) ([]*TransactionResponse, error)
 	Update(ctx context.Context, t TransactionRequest) (*TransactionResponse, error)
 	Delete(ctx context.Context, id string) error

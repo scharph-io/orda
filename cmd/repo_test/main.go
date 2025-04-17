@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 	"runtime/debug"
+	"time"
 
 	"github.com/scharph/orda/internal/database"
-	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/repository"
+	"github.com/scharph/orda/internal/repository/account"
 	"github.com/scharph/orda/internal/repository/assortment"
 	"github.com/scharph/orda/internal/repository/transaction"
 	"github.com/scharph/orda/internal/repository/user"
 	"github.com/scharph/orda/internal/repository/view"
+	"github.com/scharph/orda/internal/service"
 )
 
 var (
@@ -29,6 +31,10 @@ var (
 	tir ports.ITransactionItemRepository
 
 	sr ports.ISummaryRepository
+
+	ac  ports.IAccountRepository
+	acg ports.IAccountGroupRepository
+	ach ports.IAccountHistoryRepository
 
 	ctx = context.Background()
 )
@@ -58,79 +64,44 @@ func main() {
 
 	sr = repository.NewSummaryRepository(db)
 
-	// sr.Create(ctx, &domain.Summary{
+	ac = account.NewAccountRepo(db)
+	acg = account.NewAccountGroupRepo(db)
+	ach = account.NewAccountHistoryRepo(db)
+
+	as := service.NewAccountService(ac, acg, ach)
+	ts := service.NewTransactionService(tr, tir, pr, as)
+
+	x, err := ts.ReadPaymentSummary(ctx, time.Now().Add(time.Hour*24*-14), time.Now())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	y, err := ts.ReadProductSummary(ctx, time.Now().Add(time.Hour*24*-14), time.Now())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for k, v := range x {
+		fmt.Printf("%d -> %d\n", k, v)
+	}
+
+	for _, f := range y {
+		fmt.Println(f.TotalQuantity, f.Name, f.Desc)
+	}
+
+	// reate(ctx, &domain.Summary{
 	// 	Type: 0,
 	// 	Content: map[string]any{
 	// 		"test": 12,
 	// 	},
 	// })
 
-	summaries, err := sr.Read(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	for _, summary := range summaries {
-		fmt.Println(summary)
-	}
+	// summaries, err := sr.Read(ctx)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// for _, summary := range summaries {
+	// 	fmt.Println(summary)
+	// }
 
-}
-
-func CreateView(name string) *domain.View {
-	v, err := vr.Create(ctx,
-		domain.View{
-			Name: name,
-		},
-	)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return v
-}
-
-func GetView(id string) *domain.View {
-	v, err := vr.ReadByID(ctx, id)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return v
-}
-
-func GetViews() []*domain.View {
-	v, err := vr.Read(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return v
-}
-
-func GetRoles() []*domain.Role {
-	r, err := r.Read(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return r
-}
-
-func GetUsers() []domain.User {
-	u, err := u.Read(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return u
-}
-
-func GetTransactions() []*domain.Transaction {
-	t, err := tr.Read(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return t
-}
-
-func GetViewProductsByViewId(id string) []*domain.ViewProduct {
-	vp, err := vpr.ReadByViewID(ctx, id)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return vp
 }

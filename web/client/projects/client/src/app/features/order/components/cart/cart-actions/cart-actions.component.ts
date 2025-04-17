@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -50,6 +50,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class CartActionsComponent {
 	cart = inject(OrderStoreService);
+	view_id = input.required<string>();
 	dialog = inject(MatDialog);
 	private readonly snackBar = inject(MatSnackBar);
 
@@ -60,12 +61,15 @@ export class CartActionsComponent {
 	}
 
 	openCheckoutDialog() {
-		const dialogRef = this.dialog.open<CartCheckoutDialogComponent, undefined, number>(
+		const dialogRef = this.dialog.open<CartCheckoutDialogComponent, { view_id: string }, number>(
 			CartCheckoutDialogComponent,
 			{
 				width: 'auto',
 				minWidth: '25rem',
 				height: '25rem',
+				data: {
+					view_id: this.view_id(),
+				},
 			},
 		);
 
