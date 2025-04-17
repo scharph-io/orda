@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { OrderStoreService } from '@orda.features/order/services/order-store.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CartActionsComponent } from '@orda.features/order/components/cart/cart-actions/cart-actions.component';
@@ -19,7 +19,7 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 		</div>
 
 		<orda-cart-subtotal class="subtotal" [subtotal]="subtotal() ?? 0" />
-		<orda-cart-actions class="actions" />
+		<orda-cart-actions class="actions" [view_id]="view_id()" />
 	`,
 	styles: `
 		:host {
@@ -55,6 +55,8 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 })
 export class CartComponent {
 	cart = inject(OrderStoreService);
+
+	view_id = input.required<string>();
 
 	items = toSignal(this.cart.items$);
 	subtotal = toSignal(this.cart.subtotal$);

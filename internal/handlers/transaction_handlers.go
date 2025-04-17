@@ -63,12 +63,45 @@ func (h *TransactionHandlers) Read(c *fiber.Ctx) error {
 }
 
 func (h *TransactionHandlers) ReadSummary(c *fiber.Ctx) error {
-	date := c.Query("date", time.Now().Format("2006-01-02"))
-	res, _ := h.transactionService.ReadSummaryByDate(c.Context(), date)
-	if res == nil {
+	layout := "2006-01-02 15:04:05"
+	fromDateString := c.Query("from", time.Time{}.Format(layout))
+	toDateString := c.Query("to", time.Now().Format(layout))
+
+	from, err := time.Parse(layout, fromDateString)
+	to, err := time.Parse(layout, toDateString)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid date format"})
+	}
+
+	if from.After(to) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid date range"})
+	}
+
+	resPaymentSummary, _ := h.transactionService.ReadPaymentSummary(c.Context(), from, to)
+	if resPaymentSummary == nil {
 		return c.Status(fiber.StatusOK).JSON([]string{})
 	}
-	return c.Status(fiber.StatusOK).JSON(res)
+	resProductSummary, _ := h.transactionService.ReadProductSummary(c.Context(), from, to)
+	if resProductSummary == nil {
+		return c.Status(fiber.StatusOK).JSON([]string{})
+	}
+
+	resViewSummary, _ := h.transactionService.ReadViewSummary(c.Context(), from, to)
+	if resViewSummary == nil {
+		return c.Status(fiber.StatusOK).JSON([]string{})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"period": map[string]time.Time{
+			"from": from,
+			"to":   to,
+		},
+		"summary": map[string]any{
+			"payments": resPaymentSummary,
+			"products": resProductSummary,
+			"views":    resViewSummary,
+		},
+	})
 }
 
 func (h *TransactionHandlers) Delete(c *fiber.Ctx) error {

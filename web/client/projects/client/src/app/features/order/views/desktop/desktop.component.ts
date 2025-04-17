@@ -35,7 +35,7 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 					}
 				}
 			</mat-tab-group>
-			<orda-cart class="cart" [style.flex-basis]="cartSize()" />
+			<orda-cart class="cart" [style.flex-basis]="cartSize()" [view_id]="view()" />
 		</div>
 	`,
 	styles: `

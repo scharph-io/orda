@@ -52,18 +52,6 @@ func (r *TransactionRepository) ReadByDate(ctx context.Context, date string, pay
 	return t, err
 }
 
-func (r *TransactionRepository) ReadSummaryByDate(ctx context.Context, date string, payment_option ...uint8) (int32, error) {
-	var total int32
-	var err error
-	tx := r.db.WithContext(ctx).Model(&domain.Transaction{}).Select("SUM(total) as total")
-	if len(payment_option) == 0 {
-		err = tx.Where("DATE(created_at) = ?", date).Scan(&total).Error
-	} else {
-		err = tx.Where("DATE(created_at) = ? AND payment_option = ?", date, payment_option[0]).Scan(&total).Error
-	}
-	return total, err
-}
-
 func (r *TransactionRepository) Update(ctx context.Context, t domain.Transaction) (*domain.Transaction, error) {
 	if err := r.db.WithContext(ctx).Model(&t).Updates(t).Error; err != nil {
 		return nil, err
@@ -76,6 +64,10 @@ func (r *TransactionRepository) Delete(ctx context.Context, t domain.Transaction
 		return err
 	}
 	return nil
+}
+
+func (r *TransactionRepository) RunQuery(ctx context.Context, query string, args ...any) *gorm.DB {
+	return r.db.WithContext(ctx).Raw(query, args...)
 }
 
 type TransactionItemRepository struct {
