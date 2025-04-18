@@ -71,4 +71,25 @@ const (
 		ORDER BY
 		  v.name ASC
 		`
+
+	Q_transaction_unique_dates = `
+		SELECT 
+			DATE(created_at) AS unique_date, 
+			COUNT(*) AS entry_count
+		FROM transactions
+		GROUP BY unique_date
+		ORDER BY unique_date;
+	`
+
+	Q_transaction_nearest_timestamp = `
+		SELECT *
+		FROM transactions
+		WHERE DATE(created_at) = (
+			SELECT DATE(created_at)
+			FROM transactions
+			WHERE created_at > CURDATE()
+			ORDER BY created_at DESC
+			LIMIT 1
+		)
+	`
 )
