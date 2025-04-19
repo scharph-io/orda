@@ -30,7 +30,6 @@ export class ViewsComponent implements OnInit {
 			},
 		});
 
-		,// this;.view.reload();
 		this.router.events.subscribe((event) => {
 			if (event instanceof NavigationStart) {
 				this.toolbarTitleService.title.set('');
