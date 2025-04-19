@@ -4,5 +4,5 @@ import { Injectable, signal } from '@angular/core';
 	providedIn: 'root',
 })
 export class ToolbarTitleService {
-	title = signal('ssdsd');
+	title = signal('');
 }

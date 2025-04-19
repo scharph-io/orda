@@ -57,6 +57,7 @@ type TransactionResponse struct {
 	PaymentOption domain.PaymentOption `json:"payment_option"`
 	Total         int32                `json:"total"`
 	AccountId     string               `json:"account_id,omitempty"`
+	AccountName   string               `json:"account_name,omitempty"`
 	ViewId        string               `json:"view_id,omitempty"`
 }
 
@@ -71,7 +72,7 @@ type TransactionProductSummaryResponse []struct {
 type TransactionViewSummaryResponse []struct {
 	Name           string `json:"name"`
 	SumTotal       int32  `json:"sum_total"`
-	SumCreditTotal int32  `json:"sum_credit_total"`
+	SumTotalCredit int32  `json:"sum_total_credit"`
 }
 
 type ITransactionRepository interface {
@@ -106,6 +107,7 @@ type ITransactionHandlers interface {
 	Create(c *fiber.Ctx) error
 	ReadById(c *fiber.Ctx) error
 	Read(c *fiber.Ctx) error
-	ReadSummary(c *fiber.Ctx) error
+	ReadSummaryAt(c *fiber.Ctx) error
+	ReadSummaryFromTo(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
 }

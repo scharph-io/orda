@@ -59,11 +59,11 @@ const (
 	Q_transaction_views_between_datetime = `
 		SELECT
 		  v.name AS name,
-		  SUM(transactions.total) AS sum_total,
-		  SUM(transactions.total_credit) AS sum_total_credit
+		  SUM(t.total) AS sum_total,
+		  SUM(t.total_credit) AS sum_total_credit
 		FROM
-		  transactions
-		LEFT JOIN views AS v ON transactions.view_id = v.id
+		  transactions t
+		LEFT JOIN views AS v ON t.view_id = v.id
 		WHERE
 			(t.created_at BETWEEN ? AND ?)
 		GROUP BY
@@ -73,8 +73,8 @@ const (
 		`
 
 	Q_transaction_unique_dates = `
-		SELECT 
-			DATE(created_at) AS unique_date, 
+		SELECT
+			DATE(created_at) AS unique_date,
 			COUNT(*) AS entry_count
 		FROM transactions
 		GROUP BY unique_date
@@ -91,5 +91,18 @@ const (
 			ORDER BY created_at DESC
 			LIMIT 1
 		)
+	`
+
+	Q_transaction_deposits = `
+	SELECT
+		SUM(CASE WHEN qty > 0 THEN qty ELSE 0 END) deposit_in,
+		SUM(CASE WHEN qty < 0 THEN qty ELSE 0 END) deposit_out,
+		SUM(qty) deposit_sum
+	FROM transaction_items ti
+	JOIN products p ON ti.product_id = p.id
+	JOIN transactions t ON ti.transaction_id = t.id
+	WHERE
+		p.deposit = 1 AND
+		(t.created_at BETWEEN ? AND ?)
 	`
 )

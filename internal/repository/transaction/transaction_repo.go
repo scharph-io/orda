@@ -45,9 +45,9 @@ func (r *TransactionRepository) ReadByDate(ctx context.Context, date string, pay
 	var t []*domain.Transaction
 	var err error
 	if len(payment_option) == 0 {
-		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ?", date).Preload("Items").Find(&t).Error
+		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ?", date).Preload("Items").Preload("Account").Find(&t).Error
 	} else {
-		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ? AND payment_option = ?", date, payment_option[0]).Preload("Items").Find(&t).Error
+		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ? AND payment_option = ?", date, payment_option[0]).Preload("Items").Preload("Account").Find(&t).Error
 	}
 	return t, err
 }

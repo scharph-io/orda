@@ -201,7 +201,7 @@ func (s *TransactionService) ReadByDate(ctx context.Context, date string) ([]*po
 	}
 	var res []*ports.TransactionResponse
 	for _, v := range t {
-		res = append(res, &ports.TransactionResponse{
+		acc := &ports.TransactionResponse{
 			CreatedAt:     v.CreatedAt.Format("2006-01-02 15:04:05"),
 			TransactionID: v.ID,
 			Total:         v.Total,
@@ -209,7 +209,11 @@ func (s *TransactionService) ReadByDate(ctx context.Context, date string) ([]*po
 			PaymentOption: v.PaymentOption,
 			AccountId:     v.AccountID.String,
 			ViewId:        v.ViewID,
-		})
+		}
+		if v.AccountID.Valid {
+			acc.AccountName = fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname)
+		}
+		res = append(res, acc)
 	}
 	return res, nil
 }
