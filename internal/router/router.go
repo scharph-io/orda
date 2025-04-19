@@ -130,7 +130,8 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	//Transactions
 	transactions := api.Group("/transactions")
 	transactions.Get("/", s.transactionHandlers.Read)
-	transactions.Get("/summary", s.transactionHandlers.ReadSummary)
+	transactions.Get("/summary", s.transactionHandlers.ReadSummaryFromTo)
+	transactions.Get("/summarybydate", s.transactionHandlers.ReadSummaryAt)
 	transactions.Post("/", s.transactionHandlers.Create)
 	transactions.Get("/:id", s.transactionHandlers.ReadById)
 	transactions.Delete("/:id", s.transactionHandlers.Delete)
