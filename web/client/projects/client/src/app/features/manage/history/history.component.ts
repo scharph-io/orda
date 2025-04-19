@@ -1,15 +1,13 @@
-import { Component, inject } from '@angular/core';
-import { TransactionService } from '@orda.features/data-access/services/transaction.service';
+import { Component } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
-import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
-import { DatePipe, KeyValuePipe } from '@angular/common';
-import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/transaction';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatTab, MatTabGroup } from '@angular/material/tabs';
+import { TransactionsComponent } from '@orda.features/manage/history/transactions/transactions.component';
+import { StatisticsComponent } from '@orda.features/manage/history/statistics/statistics.component';
 
 @Component({
 	selector: 'orda-history',
@@ -19,9 +17,11 @@ import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/tra
 		MatInputModule,
 		MatDatepickerModule,
 		ReactiveFormsModule,
-		OrdaCurrencyPipe,
-		DatePipe,
-		KeyValuePipe,
+
+		MatTabGroup,
+		MatTab,
+		TransactionsComponent,
+		StatisticsComponent,
 	],
 	template: `
 		<mat-form-field>
@@ -30,53 +30,20 @@ import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/tra
 			<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 			<mat-datepicker #picker></mat-datepicker>
 		</mat-form-field>
-
-		<h2>Zusammenfassung</h2>
-		<h3>Einnahmen</h3>
-		@for (total of summary.value()?.totals | keyvalue; track total) {
-			<p>
-				{{ PaymentOptionKeys[keyToNumber(total.key)] }}:
-				{{ total.value | currency }}
-			</p>
-		}
-
-		<h2>Transaktionen</h2>
-		@let obj = data.value();
-		@for (item of obj; track item.transaction_id) {
-			<p>
-				{{ item.created_at | date: 'medium' }} |
-				{{ PaymentOptionKeys[keyToNumber(item.payment_option)] }} - {{ item.total | currency }} |
-				@if (item.account_id) {
-					AccountId: {{ item.account_id }}
-				}
-			</p>
-		} @empty {
-			leer
-		}
+		<mat-tab-group animationDuration="0ms">
+			<mat-tab label="Transaktionen">
+				<orda-transactions [date]="dateChanged() ?? ''" />
+			</mat-tab>
+			<mat-tab label="Statistik">
+				<orda-statistics [date]="dateChanged() ?? ''" />
+			</mat-tab>
+		</mat-tab-group>
 	`,
 	styles: ``,
 })
 export class HistoryComponent {
-	transactionService = inject(TransactionService);
-
-	PaymentOption = PaymentOption;
-	PaymentOptionKeys = PaymentOptionKeys;
-
 	readonly date = new FormControl(new Date().toISOString());
-
-	changed = toSignal(this.date.valueChanges.pipe(tap((x) => console.log(x))));
-
-	data = rxResource({
-		request: () => this.changed(),
-		loader: ({ request }) => this.transactionService.getTransactionsByDate(request ?? undefined),
+	dateChanged = toSignal(this.date.valueChanges, {
+		initialValue: new Date().toISOString(),
 	});
-
-	summary = rxResource({
-		request: () => this.changed(),
-		loader: ({ request }) => this.transactionService.getSummaryByDate(request ?? undefined),
-	});
-
-	keyToNumber = (key: string | number) => {
-		return Number(key) as PaymentOption;
-	};
 }

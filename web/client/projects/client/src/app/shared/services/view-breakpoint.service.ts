@@ -1,18 +1,14 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { inject, Injectable } from '@angular/core';
-import { Observable, map, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 
-export type B = Extract<
-	keyof typeof Breakpoints,
-	'XSmall' | 'Small' | 'Medium' | 'Large' | 'XLarge'
->;
+export type B = Extract<keyof typeof Breakpoints, 'XSmall' | 'Small' | 'Medium' | 'Large'>;
 
 const BREAKPOINTS_VALUES = [
 	Breakpoints.XSmall,
 	Breakpoints.Small,
 	Breakpoints.Medium,
 	Breakpoints.Large,
-	Breakpoints.XLarge,
 ];
 
 @Injectable({
@@ -30,10 +26,8 @@ export class ViewBreakpointService {
 					return 'Small';
 				} else if (this.breakpointObserver.isMatched(Breakpoints.Medium)) {
 					return 'Medium';
-				} else if (this.breakpointObserver.isMatched(Breakpoints.Large)) {
-					return 'Large';
 				} else {
-					return 'XLarge';
+					return 'Large';
 				}
 			}),
 			tap((breakpoint) => {

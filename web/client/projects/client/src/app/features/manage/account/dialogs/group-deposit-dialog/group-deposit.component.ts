@@ -22,6 +22,7 @@ import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { AccountGroup } from '@orda.core/models/account';
+import { MatInput } from '@angular/material/input';
 
 @Component({
 	selector: 'orda-group-deposit-dialog',
@@ -39,6 +40,7 @@ import { AccountGroup } from '@orda.core/models/account';
 		OrdaCurrencyPipe,
 		MatOption,
 		MatSelect,
+		MatInput,
 	],
 	template: ` <h2 mat-dialog-title>Group Deposit</h2>
 		<mat-dialog-content>
@@ -57,6 +59,10 @@ import { AccountGroup } from '@orda.core/models/account';
 							<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
 						}
 					</mat-button-toggle-group>
+					<mat-form-field>
+						<mat-label>Reason</mat-label>
+						<input matInput type="string" formControlName="reason" placeholder="Optional" />
+					</mat-form-field>
 				</div>
 			</form>
 		</mat-dialog-content>
@@ -73,13 +79,13 @@ export class GroupDepositDialogComponent extends DialogTemplateComponent<Account
 	formGroup = new FormGroup({
 		amount: new FormControl(0, [Validators.required]),
 		group: new FormControl('', [Validators.required]),
+		reason: new FormControl(''),
 	});
 
 	public submit = () => {
 		this.accountGroupService
 			.deposit(this.formGroup.value.group ?? '', {
 				amount: this.formGroup.value.amount ?? 0,
-				userid: 'anon',
 			})
 			.subscribe(this.closeObserver);
 	};

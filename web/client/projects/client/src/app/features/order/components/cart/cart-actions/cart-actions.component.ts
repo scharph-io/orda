@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,28 +26,31 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 			(click)="openCheckoutDialog()"
 		>
 			<mat-icon>shopping_cart_checkout</mat-icon>
-<!--			{{ 'cart.checkout' }}-->
-      Abrechnen
+			<!--			{{ 'cart.checkout' }}-->
+			Abrechnen
 		</button>
 	`,
 	styles: `
 		:host {
 			display: flex;
-			/* flex-direction: row;
-			// height: 3.5em;
-			// width: 100%;
-			// gap: 0.25em; */
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			gap: 0.5em;
 		}
 
-		/* button {
-		// 	font-size: 1.1em;
-		// 	width: 100%;
-		// 	height: 100%;
-		// } */
+		button {
+			&.item-1 {
+				height: 3.5rem;
+				width: 70%;
+				font-size: 1.25rem;
+			}
+		}
 	`,
 })
 export class CartActionsComponent {
 	cart = inject(OrderStoreService);
+	view_id = input.required<string>();
 	dialog = inject(MatDialog);
 	private readonly snackBar = inject(MatSnackBar);
 
@@ -58,31 +61,33 @@ export class CartActionsComponent {
 	}
 
 	openCheckoutDialog() {
-		const dialogRef = this.dialog.open<CartCheckoutDialogComponent, undefined, number>(
+		const dialogRef = this.dialog.open<CartCheckoutDialogComponent, { view_id: string }, number>(
 			CartCheckoutDialogComponent,
 			{
 				width: 'auto',
 				minWidth: '25rem',
 				height: '25rem',
+				data: {
+					view_id: this.view_id(),
+				},
 			},
 		);
 
 		dialogRef.afterClosed().subscribe((result) => {
-
 			if (result && result > 0) {
 				this.snackBar.open(`Erfolgreich`, undefined, {
 					duration: 5000,
 				});
 				this.clearCart();
-			} else if(result === 0) {
+			} else if (result === 0) {
 				this.snackBar.open('Vorgang abgebrochen', undefined, {
 					duration: 5000,
 				});
 			} else {
-        this.snackBar.open('Fehler', undefined, {
-          duration: 5000,
-        });
-      }
+				this.snackBar.open('Fehler', undefined, {
+					duration: 5000,
+				});
+			}
 		});
 	}
 }

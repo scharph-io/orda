@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { PaymentOption } from '../utils/transaction';
+import { PaymentOption } from '../../order/utils/transaction';
 import { HOST } from '@orda.core/config/config';
 import { API_ENDPOINTS } from '@orda.core/constants';
 
@@ -15,6 +15,7 @@ export interface CheckoutRequest {
 	items: CheckoutRequestItem[];
 	payment_option: PaymentOption;
 	account_id?: string;
+	view_id: string;
 }
 
 export interface CheckoutResponse {

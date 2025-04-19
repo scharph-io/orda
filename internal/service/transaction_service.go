@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
+	"time"
 
+	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/util"
@@ -66,6 +68,7 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 		Total:         total,
 		Items:         items,
 		TotalCredit:   0,
+		ViewID:        t.ViewId,
 	}
 
 	transaction, err = s.repo.Create(ctx, transaction)
@@ -128,6 +131,7 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		AccountID:     sql.NullString{String: req.AccountID, Valid: true},
 		Total:         total,
 		Items:         items,
+		ViewID:        req.ViewId,
 	})
 	if err != nil {
 		return nil, err
@@ -179,6 +183,7 @@ func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResp
 			TransactionID: v.ID,
 			Total:         v.Total,
 			ItemsLength:   len(v.Items),
+			ViewId:        v.ViewID,
 			// Account:       fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname),
 			// Account: *ports.AccountResponse{
 			// 	Firstname: v.Account.Firstname,
@@ -196,35 +201,49 @@ func (s *TransactionService) ReadByDate(ctx context.Context, date string) ([]*po
 	}
 	var res []*ports.TransactionResponse
 	for _, v := range t {
-		res = append(res, &ports.TransactionResponse{
+		acc := &ports.TransactionResponse{
 			CreatedAt:     v.CreatedAt.Format("2006-01-02 15:04:05"),
 			TransactionID: v.ID,
 			Total:         v.Total,
 			ItemsLength:   len(v.Items),
 			PaymentOption: v.PaymentOption,
 			AccountId:     v.AccountID.String,
-		})
+			ViewId:        v.ViewID,
+		}
+		if v.AccountID.Valid {
+			acc.AccountName = fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname)
+		}
+		res = append(res, acc)
 	}
 	return res, nil
 }
 
-func (s *TransactionService) ReadSummaryByDate(ctx context.Context, date string) (*ports.TransactionSummaryResponse, error) {
-	totals := make(map[uint8]int32)
-	cash, _ := s.repo.ReadSummaryByDate(ctx, date, uint8(domain.PaymentOptionCash))
-	totals[uint8(domain.PaymentOptionCash)] = cash
+func (s *TransactionService) ReadPaymentSummary(ctx context.Context, from, to time.Time) (ports.TransactionPaymentSummaryResponse, error) {
+	res := []struct {
+		PaymentOption uint8
+		Sum           int32
+	}{}
+	err := s.repo.RunQuery(ctx, database.Q_transaction_history_date, from, to).Scan(&res).Error
+	if err != nil {
+		return nil, err
+	}
+	summary := make(ports.TransactionPaymentSummaryResponse)
+	for _, v := range res {
+		summary[v.PaymentOption] = v.Sum
+	}
+	return summary, err
+}
 
-	acc, _ := s.repo.ReadSummaryByDate(ctx, date, uint8(domain.PaymentOptionAccount))
-	totals[uint8(domain.PaymentOptionAccount)] = acc
+func (s *TransactionService) ReadProductSummary(ctx context.Context, from, to time.Time) (ports.TransactionProductSummaryResponse, error) {
+	res := ports.TransactionProductSummaryResponse{}
+	err := s.repo.RunQuery(ctx, database.Q_transaction_products_between_datetime, from, to).Scan(&res).Error
+	return res, err
+}
 
-	free, _ := s.repo.ReadSummaryByDate(ctx, date, uint8(domain.PaymentOptionFree))
-	totals[uint8(domain.PaymentOptionFree)] = free
-
-	credit, _ := s.repo.ReadSummaryByDate(ctx, date, uint8(domain.PaymentOptionSponsor))
-	totals[uint8(domain.PaymentOptionSponsor)] = credit
-
-	return &ports.TransactionSummaryResponse{
-		Totals: totals,
-	}, nil
+func (s *TransactionService) ReadViewSummary(ctx context.Context, from, to time.Time) (ports.TransactionViewSummaryResponse, error) {
+	res := ports.TransactionViewSummaryResponse{}
+	err := s.repo.RunQuery(ctx, database.Q_transaction_views_between_datetime, from, to).Scan(&res).Error
+	return res, err
 }
 
 func (s *TransactionService) ReadByID(ctx context.Context, id string) (*ports.TransactionResponse, error) {

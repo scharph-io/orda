@@ -5,6 +5,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
+import { ToolbarTitleService } from '@orda.shared/services/toolbar-title.service';
 
 @Component({
 	selector: 'orda-root',
@@ -22,8 +23,9 @@ export class AppComponent {
 	title = 'orda';
 	sessionService = inject(SessionService);
 	router = inject(Router);
+	toolbarTitleService = inject(ToolbarTitleService);
 
-  logout() {
+	logout() {
 		this.sessionService.logout().subscribe({
 			next: () => {
 				return this.router.navigate(['/login']);

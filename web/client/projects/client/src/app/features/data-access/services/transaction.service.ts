@@ -34,8 +34,9 @@ export class TransactionService {
 				day: '2-digit',
 			}).format(Date.parse(date));
 		}
+
 		return this.httpClient.get<TransactionSummary>(
-			`${this.HOST}${API_ENDPOINTS.TRANSACTION}/summary${date ? `?date=${date}` : ''}`,
+			`${this.HOST}${API_ENDPOINTS.TRANSACTION}/summarybydate${date ? `?date=${date}` : ''}`,
 		);
 	}
 }

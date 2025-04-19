@@ -23,6 +23,8 @@ type Transaction struct {
 	User          User           `gorm:"foreignKey:UserID"`
 	AccountID     sql.NullString `gorm:"size:36"`
 	Account       Account        `gorm:"foreignKey:AccountID"`
+	ViewID        string         `gorm:"size:36"`
+	View          View           `gorm:"foreignKey:ViewID"`
 }
 
 type TransactionItem struct {

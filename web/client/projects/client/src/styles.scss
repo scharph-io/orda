@@ -63,21 +63,21 @@ body {
 }
 
 .active-btn {
-  @include mat.button-overrides(
-      (
-        filled-label-text-color: white,
-        filled-container-color: green,
-      )
-  );
+	@include mat.button-overrides(
+		(
+			filled-label-text-color: white,
+			filled-container-color: green,
+		)
+	);
 }
 
 .inactive-btn {
-  @include mat.button-overrides(
-      (
-        filled-label-text-color: black,
-        filled-container-color: #F4D160,
-      )
-  );
+	@include mat.button-overrides(
+		(
+			filled-label-text-color: black,
+			filled-container-color: #f4d160,
+		)
+	);
 }
 
 .dialog-flex {

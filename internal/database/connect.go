@@ -95,6 +95,8 @@ func Connect() {
 		&domain.View{},
 		&domain.ViewRole{},
 		&domain.ViewProduct{},
+
+		&domain.Summary{},
 	); err != nil {
 		log.Fatal("Failed to migrate database. \n", err)
 		return
