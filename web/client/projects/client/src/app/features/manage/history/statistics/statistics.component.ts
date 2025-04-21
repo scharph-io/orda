@@ -10,19 +10,17 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 	imports: [DatePipe, KeyValuePipe, OrdaCurrencyPipe],
 	template: `
 		@let stats = summary.value();
-		<h2>Zusammenfassung</h2>
-
 		@if (stats) {
 			{{ stats.period.from | date: 'short' }} - {{ stats.period.to | date: 'short' }}
 
-			@if (stats.summary.payments) {
+			@if (stats.summary.payments && stats.summary.payments[0]) {
 				<h3>Zahlungsübersicht</h3>
 				@let payments = stats.summary.payments;
 				@for (x of payments | keyvalue; track x.key) {
 					<p>{{ PaymentOptionKeys[keyToNumber(x.key)] }}: {{ x.value | currency }}</p>
 				}
 			}
-			@if (stats.summary.products) {
+			@if (stats.summary.products && stats.summary.products.length > 0) {
 				<h3>Produktstatistik</h3>
 				@let products = stats.summary.products;
 				@for (x of products; track $index) {
@@ -30,7 +28,7 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 				}
 			}
 
-			@if (stats.summary.views) {
+			@if (stats.summary.views && stats.summary.views.length > 0) {
 				<h3>Bestellansichten</h3>
 				@let views = stats.summary.views;
 

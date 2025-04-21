@@ -16,6 +16,7 @@ func AuthInit() {
 	db := database.DB
 
 	var adminUser domain.User
+
 	if db.Where("username = ?", "admin").First(&adminUser).RowsAffected == 0 {
 		initialPassword := "admin"
 		if os.Getenv("APP_ENV") == "production" {
@@ -43,5 +44,13 @@ func AuthInit() {
 		}
 		log.Println("User and Role 'admin' created")
 		log.Printf("Initial Password: '%s'", initialPassword)
+	} else if db.Where("username = ?", "admin").First(&adminUser).RowsAffected == 1 && os.Getenv("APP_ENV") != "production" {
+		log.Println("### Overwrite Admin User For NON PRODUCTION ENVIRONMENT")
+		adminUser.Password, _ = util.HashPassword("admin")
+		if err := db.Save(&adminUser).Error; err != nil {
+			log.Fatalf("Error saving admin user: %v\n", err)
+		}
+	} else {
+		log.Println("User and Role 'admin' already exist")
 	}
 }
