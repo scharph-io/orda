@@ -6,32 +6,32 @@ Use the docker-compose file to start the application.
 Configure the environment variables compose file.
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
 
 ## Development
 
+### Prereq
+
+```bash
+## database and adminer for local development
+make dev-up / dev-down / dev-logs
+```
+
 To start the application locally in development mode, use the following command:
 
 ```bash
-## Start the application
-docker-compose -f local.docker-compose.yml up
+## Start backend
+make run
 
-## Stop the application
-docker-compose -f local.docker-compose.yml down [-v]
+## Start frontend
+make run-ui
 
 ```
 
+## Todos
+
 ## Notes
 
-https://www.digitalocean.com/community/tutorials/how-to-use-traefik-v2-as-a-reverse-proxy-for-docker-containers-on-ubuntu-20-04
-
-## TODO
-
-Preisfaktor Pro gruppe
-
-Einkaufspreis und Verkaufspreis
-
-wenn einkaufpreis nicht angegeben dann einkaufspreis = verkaufspreis / preisfaktor
-
 Uses scopes: https://gorm.io/docs/advanced_query.html#Applying-Scopes-in-Queries
+Hooks: https://gorm.io/docs/hooks.html

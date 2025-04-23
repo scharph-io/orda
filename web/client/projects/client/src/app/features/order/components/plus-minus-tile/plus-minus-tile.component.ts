@@ -8,11 +8,17 @@ import { ViewProduct } from '@orda.core/models/view';
 	standalone: true,
 	imports: [MatIconModule],
 	template: `
-		<div class="item add" (click)="addToCart(1)" [title]="deposit()">
+		<div
+			class="item add"
+			(click)="addToCart(1)"
+			(keyup)="addToCart(1)"
+			[title]="deposit()"
+			aria-hidden="true"
+		>
 			<!--			{{ key() }} <mat-icon>add</mat-icon>-->
 			Pfand <mat-icon>add</mat-icon>
 		</div>
-		<div class="item remove" (click)="addToCart(-1)">
+		<div class="item remove" (click)="addToCart(-1)" (keyup)="addToCart(-1)" aria-hidden="true">
 			<!--      {{ key() }} <mat-icon>remove</mat-icon>-->
 			Pfand <mat-icon>remove</mat-icon>
 		</div>
