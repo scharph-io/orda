@@ -35,13 +35,10 @@ func NewServer() *Server {
 	accountRepo := account.NewAccountRepo(db)
 	accountGroupRepo := account.NewAccountGroupRepo(db)
 	accountHistoryRepo := account.NewAccountHistoryRepo(db)
-
 	productGroupRepo := assortment.NewProductGroupRepo(db)
 	productRepo := assortment.NewProductRepo(db)
-
 	viewRepo := view.NewViewRepository(db)
 	viewProductRepo := view.NewViewProductRepo(db)
-
 	transactionRepo := transaction.NewTransactionRepository(db)
 	transactionItemRepo := transaction.NewTransactionItemRepository(db)
 
