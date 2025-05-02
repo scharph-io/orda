@@ -79,6 +79,7 @@ type ITransactionRepository interface {
 	Create(ctx context.Context, transaction *domain.Transaction) (*domain.Transaction, error)
 	Read(ctx context.Context) ([]*domain.Transaction, error)
 	ReadByDate(ctx context.Context, date string, payment_option ...uint8) ([]*domain.Transaction, error)
+	ReadByDateRange(ctx context.Context, from, to time.Time, payment_option ...uint8) ([]*domain.Transaction, error)
 	ReadByID(ctx context.Context, id string) (*domain.Transaction, error)
 	Update(ctx context.Context, transaction domain.Transaction) (*domain.Transaction, error)
 	Delete(ctx context.Context, transaction domain.Transaction) error
@@ -95,6 +96,7 @@ type ITransactionService interface {
 	Read(ctx context.Context) ([]*TransactionResponse, error)
 	ReadByID(ctx context.Context, id string) (*TransactionResponse, error)
 	ReadByDate(ctx context.Context, date string) ([]*TransactionResponse, error)
+	ReadByDateRange(ctx context.Context, from, to time.Time) ([]*TransactionResponse, error)
 	ReadPaymentSummary(ctx context.Context, from, to time.Time) (TransactionPaymentSummaryResponse, error)
 	ReadProductSummary(ctx context.Context, from, to time.Time) (TransactionProductSummaryResponse, error)
 	ReadViewSummary(ctx context.Context, from, to time.Time) (TransactionViewSummaryResponse, error)

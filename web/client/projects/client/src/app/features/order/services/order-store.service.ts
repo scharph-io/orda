@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 
 export interface CartItem {
@@ -12,6 +12,52 @@ export interface CartItem {
 @Injectable({ providedIn: 'root' })
 export class OrderStoreService {
 	private _items: BehaviorSubject<CartItem[]> = new BehaviorSubject<CartItem[]>([]);
+
+	public items = signal<CartItem[]>([]);
+
+	public totalQty = computed(() => this.items().filter((a) => a.quantity !== 0));
+
+	public subtotal = computed(() =>
+		this.items().reduce((acc, product) => acc + product.price * product.quantity, 0),
+	);
+
+	public addItem2(item: CartItem): void {
+		if (this.items().find((a) => a.id === item.id)) {
+			this.items.update((items) =>
+				items.map((a) =>
+					a.id === item.id
+						? {
+								...a,
+								quantity: item.quantity > 0 ? a.quantity + 1 : a.quantity - 1,
+							}
+						: a,
+				),
+			);
+		} else {
+			this.items.update((items) => [...items, item]);
+		}
+	}
+
+	public removeItem2(item: CartItem): void {
+		if (item.quantity > 1 || item.quantity < -1) {
+			this.items.update((items) =>
+				items.map((a) =>
+					a.id === item.id
+						? {
+								...a,
+								quantity: item.quantity > 0 ? a.quantity - 1 : a.quantity + 1,
+							}
+						: a,
+				),
+			);
+		} else {
+			this.items.update((items) => items.filter((a) => a.id !== item.id));
+		}
+	}
+
+	public clear2(): void {
+		this.items.update(() => []);
+	}
 
 	public readonly items$: Observable<CartItem[]> = this._items
 		.asObservable()

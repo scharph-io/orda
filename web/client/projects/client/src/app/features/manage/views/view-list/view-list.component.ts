@@ -1,8 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
-import { TitleCasePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { filter, map, switchMap } from 'rxjs';
@@ -28,8 +27,7 @@ import { RoleService } from '@orda.features/data-access/services/role.service';
 import { MatOption } from '@angular/material/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.service';
-import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 @Component({
 	selector: 'orda-view-list',
@@ -37,104 +35,81 @@ import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 		MatButtonModule,
 		MatListModule,
 		MatIcon,
-		TitleCasePipe,
 		RouterModule,
 		MatGridListModule,
+		MatTableModule,
 	],
 	template: `
 		<div class="title-toolbar">
-			<h2>View</h2>
-			<button mat-button (click)="create()">New</button>
+			<h2>Bestellseiten verwalten</h2>
+			<button mat-button (click)="create()">Neu</button>
 		</div>
 
 		@let views = viewService.entityResource.value() ?? [];
 
 		@if (views.length === 0) {
-			<p>No views available. Add <button mat-button (click)="create()">New</button></p>
+			<p>No views available. Add <button mat-button (click)="create()">Neu</button></p>
 		} @else {
-			<!--			<mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5em">-->
-			<!--				@for (view of views; track view.id) {-->
-			<!--					<mat-grid-tile [style]="{ 'background-color': 'lightgrey' }">-->
-			<!--						<div class="container">-->
-			<!--							<div-->
-			<!--								class="title"-->
-			<!--								[routerLink]="[view.id]"-->
-			<!--								[state]="{ name: view.name }"-->
-			<!--								routerLinkActive="router-link-active"-->
-			<!--							>-->
-			<!--                <p>{{ view.name | titlecase }}</p>-->
-			<!--							</div>-->
-			<!--							<div-->
-			<!--								class="info"-->
-			<!--								[routerLink]="[view.id]"-->
-			<!--								[state]="{ name: view.name }"-->
-			<!--								routerLinkActive="router-link-active"-->
-			<!--							>-->
-			<!--								{{ view.products_count}} products-->
-			<!--							</div>-->
-			<!--							<div class="actions">-->
-			<!--								<button-->
-			<!--									title="delete view"-->
-			<!--									class="delete-btn"-->
-			<!--									mat-icon-button-->
-			<!--									(click)="delete(view)"-->
-			<!--								>-->
-			<!--									<mat-icon>delete</mat-icon>-->
-			<!--								</button>-->
-			<!--								<button title="edit" mat-icon-button (click)="edit(view)">-->
-			<!--									<mat-icon>edit</mat-icon>-->
-			<!--								</button>-->
-			<!--							</div>-->
-			<!--						</div>-->
-			<!--					</mat-grid-tile>-->
-			<!--				}-->
-			<!--			</mat-grid-list>-->
-			<mat-list role="list">
-				@for (view of views; track view.id) {
-					<mat-list-item role="listitem">
-						<div class="item">
-							<p
-								[routerLink]="[view.id]"
-								[state]="{ name: view.name }"
-								routerLinkActive="router-link-active"
-							>
-								{{ view.name | titlecase }}
-								@if (view.desc !== '') {
-									({{ view.desc | titlecase }})
-								}
-							</p>
-							<button title="delete view" class="delete-btn" mat-icon-button (click)="delete(view)">
-								<mat-icon>delete</mat-icon>
-							</button>
-							<button title="edit assortment group" mat-icon-button (click)="edit(view)">
-								<mat-icon>edit</mat-icon>
-							</button>
-						</div>
-					</mat-list-item>
-				}
-			</mat-list>
+			<table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 demo-table">
+				<ng-container matColumnDef="name">
+					<th mat-header-cell *matHeaderCellDef>Name</th>
+					<td mat-cell *matCellDef="let element">{{ element.name }}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="desc">
+					<th mat-header-cell *matHeaderCellDef>Beschreibung</th>
+					<td mat-cell *matCellDef="let element">{{ element.desc }}</td>
+				</ng-container>
+
+				<ng-container matColumnDef="actions">
+					<th mat-header-cell *matHeaderCellDef></th>
+					<td mat-cell *matCellDef="let element">
+						<button
+							title="delete view"
+							class="delete-btn"
+							mat-icon-button
+							(click)="delete(element)"
+						>
+							<mat-icon>delete</mat-icon>
+						</button>
+						<button title="edit view" mat-icon-button (click)="edit(element)">
+							<mat-icon>edit</mat-icon>
+						</button>
+						<button
+							title="view settings"
+							mat-icon-button
+							[routerLink]="[element.id]"
+							[state]="{ name: element.name }"
+							routerLinkActive="router-link-active"
+						>
+							<mat-icon>settings</mat-icon>
+						</button>
+					</td>
+				</ng-container>
+
+				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
+			</table>
 		}
 	`,
 	styles: `
-		.item {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-		}
-
 		.title-toolbar {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
+			padding: 0 0.5rem;
 		}
 	`,
 })
 export class ViewListComponent extends EntityManager<View> {
 	viewService = inject(ViewService);
-	viewBreakpointService = inject(ViewBreakpointService);
 	logger = inject(OrdaLogger);
 
-	gridCols = inject(GridColSizeService).size;
+	displayedColumns: string[] = ['name', 'desc', 'actions'];
+
+	dataSource = computed(
+		() => new MatTableDataSource(this.viewService.entityResource.value() ?? []),
+	);
 
 	constructor() {
 		super();
@@ -208,10 +183,6 @@ export class ViewListComponent extends EntityManager<View> {
 						<mat-label>Description</mat-label>
 						<input matInput formControlName="desc" />
 					</mat-form-field>
-					<!--        <mat-form-field>-->
-					<!--          <mat-label>Deposit</mat-label>-->
-					<!--          <input matInput type="number" formControlName="deposit" />-->
-					<!--        </mat-form-field>-->
 					<mat-form-field>
 						<mat-label>Roles</mat-label>
 						<mat-select formControlName="roles" multiple [value]="viewDetails.value()">
@@ -278,7 +249,6 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 			this.viewService
 				.create({
 					name: this.formGroup.value.name ?? '',
-					// deposit: this.formGroup.value.deposit ?? 0,
 					deposit: 100,
 					desc: this.formGroup.value.desc ?? '',
 				})
@@ -288,9 +258,4 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 				.subscribe(this.closeObserver);
 		}
 	};
-
-	// private equal = (a: string[], b: string[]) => {
-	// 	if (a.length !== b.length) return false;
-	// 	return JSON.stringify([...new Set(a)].sort()) === JSON.stringify([...new Set(b)].sort());
-	// };
 }

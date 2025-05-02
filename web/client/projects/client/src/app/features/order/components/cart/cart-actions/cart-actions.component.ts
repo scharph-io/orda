@@ -76,16 +76,16 @@ export class CartActionsComponent {
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result && result > 0) {
 				this.snackBar.open(`Erfolgreich`, undefined, {
-					duration: 5000,
+					duration: 1500,
 				});
 				this.clearCart();
 			} else if (result === 0) {
 				this.snackBar.open('Vorgang abgebrochen', undefined, {
-					duration: 5000,
+					duration: 2000,
 				});
 			} else {
 				this.snackBar.open('Fehler', undefined, {
-					duration: 5000,
+					duration: 3000,
 				});
 			}
 		});

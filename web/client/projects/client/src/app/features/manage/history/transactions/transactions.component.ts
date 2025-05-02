@@ -102,7 +102,7 @@ export class TransactionsComponent {
 
 	displayedColumns: string[] = ['created', 'payment_option', 'account', 'total', 'actions'];
 	dataSource = computed(() => {
-		return new MatTableDataSource(this.data.value());
+		return new MatTableDataSource(this.data.value()?.reverse());
 	});
 
 	keyToNumber = (key: string | number) => {

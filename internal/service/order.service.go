@@ -83,9 +83,7 @@ func (s *OrderService) GetOrderProducts(ctx context.Context, viewid string) (por
 			})
 		}
 	}
-
 	return productsMap, nil
-
 }
 
 func (s *OrderService) GetOrderViewProducts(ctx context.Context, viewid string) (*ports.OrderViewProducts, error) {

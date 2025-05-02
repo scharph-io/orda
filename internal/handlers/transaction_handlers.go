@@ -50,9 +50,16 @@ func (h *TransactionHandlers) ReadById(c *fiber.Ctx) error {
 }
 
 func (h *TransactionHandlers) Read(c *fiber.Ctx) error {
+	dateString := c.Query("date", time.Time{}.Format("2006-01-02"))
+	loc, _ := time.LoadLocation("Europe/Vienna")
+	from, err := time.ParseInLocation("2006-01-02 15:04:05", fmt.Sprintf("%s 06:00:00", dateString), loc)
+	if err != nil {
+		fmt.Print(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid 'from' date format"})
+	}
 
-	date := c.Query("date", time.Now().Format("2006-01-02"))
-	res, err := h.transactionService.ReadByDate(c.Context(), date)
+	to := from.AddDate(0, 0, 1)
+	res, err := h.transactionService.ReadByDateRange(c.Context(), from.Local(), to.Local())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get transactions"})
 	}
@@ -65,9 +72,10 @@ func (h *TransactionHandlers) Read(c *fiber.Ctx) error {
 func (h *TransactionHandlers) ReadSummaryAt(c *fiber.Ctx) error {
 	dateString := c.Query("date", time.Time{}.Format("2006-01-02"))
 	loc, _ := time.LoadLocation("Europe/Vienna")
-	from, err := time.ParseInLocation("2006-01-02 00:00:00", fmt.Sprintf("%s 00:00:00", dateString), loc)
+	from, err := time.ParseInLocation("2006-01-02 15:04:05", fmt.Sprintf("%s 06:00:00", dateString), loc)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid 'to' date format"})
+		fmt.Print(err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid 'from' date format"})
 	}
 
 	to := from.AddDate(0, 0, 1)
@@ -84,6 +92,11 @@ func (h *TransactionHandlers) ReadSummaryAt(c *fiber.Ctx) error {
 	if resViewSummary == nil {
 		return c.Status(fiber.StatusOK).JSON([]string{})
 	}
+
+	// resDepositSummary, _ := h.transactionService.ReadDepositSummary(c.Context(), from.Local(), to.Local())
+	// if resDepositSummary == nil {
+	// 	return c.Status(fiber.StatusOK).JSON([]string{})
+	// }
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"period": map[string]time.Time{

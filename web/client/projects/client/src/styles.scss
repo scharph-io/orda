@@ -5,7 +5,8 @@
 
 html,
 body {
-	height: 100%;
+  height: 100vh;
+  //overflow: hidden;
 }
 
 body {
@@ -13,6 +14,7 @@ body {
 
 	font-family: Inter, 'Helvetica Neue', sans-serif;
 	// background-image: url('../public/background.svg');
+
 
 	color-scheme: light dark;
 	@include mat.theme(
@@ -84,4 +86,8 @@ body {
 	display: flex;
 	flex-direction: column;
 	gap: 0.25rem;
+}
+
+.mat-mdc-tab-body-content {
+  scrollbar-width: thin;
 }

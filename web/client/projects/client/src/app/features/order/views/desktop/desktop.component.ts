@@ -8,12 +8,13 @@ import { KeyValuePipe } from '@angular/common';
 import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
 import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.service';
+import { CartMobileComponent } from '@orda.features/order/components/cart-mobile/cart-mobile.component';
 
 @Component({
 	selector: 'orda-order-desktop',
-	imports: [MatTabsModule, OrderGridComponent, CartComponent, KeyValuePipe],
+	imports: [MatTabsModule, OrderGridComponent, CartComponent, KeyValuePipe, CartMobileComponent],
 	template: `
-		<div [class]="viewClass()">
+		<div class="container" [class]="viewClass()">
 			<mat-tab-group mat-stretch-tabs class="products" animationDuration="0ms">
 				@let obj = data.value();
 				@if (obj !== undefined) {
@@ -21,7 +22,7 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 					@for (group of productsMap | keyvalue; track group.key) {
 						@let products = group.value;
 						@if (products.length > 0) {
-							<mat-tab [label]="groupName(group.key)">
+							<mat-tab [label]="groupName(group.key)" style="scrollbar-width: none;">
 								<orda-order-grid
 									[products]="products"
 									[deposit]="obj.deposits ? obj.deposits[group.key] : undefined"
@@ -35,26 +36,28 @@ import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.ser
 					}
 				}
 			</mat-tab-group>
-			<orda-cart class="cart" [style.flex-basis]="cartSize()" [view_id]="view()" />
+			@if (!isMobilePortrait()) {
+				<orda-cart class="cart" [style.flex-basis]="cartSize()" [view_id]="view()" />
+			} @else {
+				<orda-cart-mobile class="cart" [view_id]="view()" />
+			}
 		</div>
 	`,
 	styles: `
-		.desktop-container {
-			display: flex;
-			justify-content: space-between;
-			gap: 0.25rem;
-			height: calc(100vh - 72px);
+		mat-tab-group {
+			scrollbar-width: thin;
 		}
 
-		.desktop-container-vert {
+		.container {
 			display: flex;
-			flex-direction: column;
 			justify-content: space-between;
 			gap: 0.25rem;
-			height: calc(100vh - 62px);
-			.cart {
-				height: 10rem;
-			}
+			height: calc(100vh - 68px);
+		}
+
+		.portrait {
+			flex-direction: column;
+			height: calc(100vh - 64px);
 		}
 
 		.products {
@@ -92,17 +95,16 @@ export class OrderDesktopComponent {
 			switch (breakpoint) {
 				case 'XSmall':
 				case 'Small':
-					this.viewClass.set('desktop-container-vert');
+					this.viewClass.set('portrait');
 					this.isMobilePortrait.set(true);
-					this.cartSize.set('1rem');
 					break;
 				case 'Medium':
-					this.viewClass.set('desktop-container');
+					this.viewClass.set('');
 					this.isMobilePortrait.set(false);
 					this.cartSize.set('17.5em');
 					break;
 				case 'Large':
-					this.viewClass.set('desktop-container');
+					this.viewClass.set('');
 					this.isMobilePortrait.set(false);
 					this.cartSize.set('22em');
 					break;

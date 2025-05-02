@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"context"
+	"time"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -48,6 +49,17 @@ func (r *TransactionRepository) ReadByDate(ctx context.Context, date string, pay
 		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ?", date).Preload("Items").Preload("Account").Find(&t).Error
 	} else {
 		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("DATE(created_at) = ? AND payment_option = ?", date, payment_option[0]).Preload("Items").Preload("Account").Find(&t).Error
+	}
+	return t, err
+}
+
+func (r *TransactionRepository) ReadByDateRange(ctx context.Context, from, to time.Time, payment_option ...uint8) ([]*domain.Transaction, error) {
+	var t []*domain.Transaction
+	var err error
+	if len(payment_option) == 0 {
+		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("created_at BETWEEN ? AND ?", from, to).Preload("Items").Preload("Account").Find(&t).Error
+	} else {
+		err = r.db.WithContext(ctx).Model(&domain.Transaction{}).Where("created_at BETWEEN ? AND ? AND payment_option = ?", from, to, payment_option[0]).Preload("Items").Preload("Account").Find(&t).Error
 	}
 	return t, err
 }

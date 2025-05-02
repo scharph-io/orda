@@ -218,6 +218,30 @@ func (s *TransactionService) ReadByDate(ctx context.Context, date string) ([]*po
 	return res, nil
 }
 
+func (s *TransactionService) ReadByDateRange(ctx context.Context, from, to time.Time) ([]*ports.TransactionResponse, error) {
+	t, err := s.repo.ReadByDateRange(ctx, from, to)
+	if err != nil {
+		return nil, err
+	}
+	var res []*ports.TransactionResponse
+	for _, v := range t {
+		acc := &ports.TransactionResponse{
+			CreatedAt:     v.CreatedAt.Format("2006-01-02 15:04:05"),
+			TransactionID: v.ID,
+			Total:         v.Total,
+			ItemsLength:   len(v.Items),
+			PaymentOption: v.PaymentOption,
+			AccountId:     v.AccountID.String,
+			ViewId:        v.ViewID,
+		}
+		if v.AccountID.Valid {
+			acc.AccountName = fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname)
+		}
+		res = append(res, acc)
+	}
+	return res, nil
+}
+
 func (s *TransactionService) ReadPaymentSummary(ctx context.Context, from, to time.Time) (ports.TransactionPaymentSummaryResponse, error) {
 	res := []struct {
 		PaymentOption uint8
