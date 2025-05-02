@@ -34,16 +34,16 @@ export class ManageComponent {
 	gridColumns = inject(GridColSizeService).size;
 
 	primaryTiles = signal<Tile[]>([
-		{ title: 'Views', path: '/manage/views' },
+		{ title: 'Bestellseiten', path: '/manage/views' },
 
 		{
-			title: 'Assortment',
+			title: 'Sortiment',
 			path: '/manage/assortment',
 		},
-		{ title: 'Account', path: '/manage/accounts' },
+		{ title: 'Konten', path: '/manage/accounts' },
 
-		{ title: 'Users', path: '/manage/users' },
-		{ title: 'History', path: '/manage/history' },
+		{ title: 'Benutzer', path: '/manage/users' },
+		{ title: 'Statistik', path: '/manage/history' },
 	]);
 
 	navigateTo(path: string) {

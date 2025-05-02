@@ -42,13 +42,13 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 	template: `
 		<div class="title-toolbar">
 			<h2>Bestellseiten verwalten</h2>
-			<button mat-button (click)="create()">New</button>
+			<button mat-button (click)="create()">Neu</button>
 		</div>
 
 		@let views = viewService.entityResource.value() ?? [];
 
 		@if (views.length === 0) {
-			<p>No views available. Add <button mat-button (click)="create()">New</button></p>
+			<p>No views available. Add <button mat-button (click)="create()">Neu</button></p>
 		} @else {
 			<table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 demo-table">
 				<ng-container matColumnDef="name">
