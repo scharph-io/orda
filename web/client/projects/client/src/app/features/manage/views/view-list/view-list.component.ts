@@ -2,7 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
-import { TitleCasePipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { filter, map, switchMap } from 'rxjs';
@@ -10,7 +9,13 @@ import {
 	ConfirmDialogComponent,
 	ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+	FormControl,
+	FormGroup,
+	FormsModule,
+	ReactiveFormsModule,
+	Validators,
+} from '@angular/forms';
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -30,11 +35,10 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 		MatButtonModule,
 		MatListModule,
 		MatIcon,
-		TitleCasePipe,
 		RouterModule,
 		MatGridListModule,
-		MatTableModule
-	],,
+		MatTableModule,
+	],
 	template: `
 		<div class="title-toolbar">
 			<h2>Ansichten verwalten</h2>
@@ -63,20 +67,28 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 				<ng-container matColumnDef="actions">
 					<th mat-header-cell *matHeaderCellDef>Actions</th>
 					<td mat-cell *matCellDef="let element">
-						<button title="delete view" class="delete-btn" mat-icon-button (click)="delete(element)">
+						<button
+							title="delete view"
+							class="delete-btn"
+							mat-icon-button
+							(click)="delete(element)"
+						>
 							<mat-icon>delete</mat-icon>
 						</button>
 						<button title="edit view" mat-icon-button (click)="edit(element)">
 							<mat-icon>edit</mat-icon>
 						</button>
-						<button title="view settings" mat-icon-button [routerLink]="[element.id]"
-										[state]="{ name: element.name }"
-										routerLinkActive="router-link-active">
+						<button
+							title="view settings"
+							mat-icon-button
+							[routerLink]="[element.id]"
+							[state]="{ name: element.name }"
+							routerLinkActive="router-link-active"
+						>
 							<mat-icon>settings</mat-icon>
 						</button>
 					</td>
 				</ng-container>
-
 
 				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 				<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
@@ -103,8 +115,9 @@ export class ViewListComponent extends EntityManager<View> {
 
 	displayedColumns: string[] = ['name', 'desc', 'actions'];
 
-
-	dataSource = computed(() => new MatTableDataSource(this.viewService.entityResource.value() ?? []));
+	dataSource = computed(
+		() => new MatTableDataSource(this.viewService.entityResource.value() ?? []),
+	);
 
 	constructor() {
 		super();
