@@ -146,13 +146,11 @@ func (h *ViewHandlers) SetOrAddProducts(c *fiber.Ctx) error {
 
 func (h *ViewHandlers) RemoveProducts(c *fiber.Ctx) error {
 	id := c.Params("id")
-	productIds := []string{}
-	if err := c.BodyParser(&productIds); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid data"})
-	}
-	err := h.viewService.RemoveProducts(c.Context(), id, productIds...)
+	productId := c.Params("productId")
+
+	err := h.viewService.RemoveProducts(c.Context(), id, productId)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove products"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove product(s)", "details": err.Error()})
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }

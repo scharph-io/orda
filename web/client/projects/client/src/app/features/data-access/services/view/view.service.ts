@@ -50,18 +50,26 @@ export class ViewService extends EntityService<View> {
 			.pipe(catchError(this.handleError));
 	}
 
-	setProducts(id: string, viewProducts: Partial<ViewProduct>[]) {
+	setProducts(view_id: string, viewProducts: Partial<ViewProduct>[]) {
 		return this.httpClient
-			.put<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}/products?overwrite=true`, viewProducts)
+			.put<View>(
+				`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products?overwrite=true`,
+				viewProducts,
+			)
 			.pipe(catchError(this.handleError));
 	}
 
-	addProducts(id: string, viewProducts: Partial<ViewProduct>[]) {
+	addProducts(view_id: string, viewProducts: Partial<ViewProduct>[]) {
 		return this.httpClient
-			.put<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${id}/products`, viewProducts)
+			.put<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products`, viewProducts)
 			.pipe(catchError(this.handleError));
 	}
 
+	removeProduct(view_id: string, productId: string) {
+		return this.httpClient
+			.delete<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products/${productId}`)
+			.pipe(catchError(this.handleError));
+	}
 	getProducts(view_id: string) {
 		return this.httpClient
 			.get<ViewProduct[]>(`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products`)
