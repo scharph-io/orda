@@ -51,19 +51,16 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 			<p>No views available. Add <button mat-button (click)="create()">New</button></p>
 		} @else {
 			<table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 demo-table">
-				<!-- Position Column -->
 				<ng-container matColumnDef="name">
 					<th mat-header-cell *matHeaderCellDef>Name</th>
 					<td mat-cell *matCellDef="let element">{{ element.name }}</td>
 				</ng-container>
 
-				<!-- Name Column -->
 				<ng-container matColumnDef="desc">
 					<th mat-header-cell *matHeaderCellDef>Description</th>
 					<td mat-cell *matCellDef="let element">{{ element.desc }}</td>
 				</ng-container>
 
-				<!-- Weight Column -->
 				<ng-container matColumnDef="actions">
 					<th mat-header-cell *matHeaderCellDef>Actions</th>
 					<td mat-cell *matCellDef="let element">
@@ -96,16 +93,11 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 		}
 	`,
 	styles: `
-		.item {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-		}
-
 		.title-toolbar {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
+			padding: 0 0.5rem;
 		}
 	`,
 })
