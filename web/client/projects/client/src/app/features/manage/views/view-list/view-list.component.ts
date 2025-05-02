@@ -41,7 +41,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 	],
 	template: `
 		<div class="title-toolbar">
-			<h2>Ansichten verwalten</h2>
+			<h2>Bestellseiten verwalten</h2>
 			<button mat-button (click)="create()">New</button>
 		</div>
 
@@ -57,12 +57,12 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 				</ng-container>
 
 				<ng-container matColumnDef="desc">
-					<th mat-header-cell *matHeaderCellDef>Description</th>
+					<th mat-header-cell *matHeaderCellDef>Beschreibung</th>
 					<td mat-cell *matCellDef="let element">{{ element.desc }}</td>
 				</ng-container>
 
 				<ng-container matColumnDef="actions">
-					<th mat-header-cell *matHeaderCellDef>Actions</th>
+					<th mat-header-cell *matHeaderCellDef></th>
 					<td mat-cell *matCellDef="let element">
 						<button
 							title="delete view"

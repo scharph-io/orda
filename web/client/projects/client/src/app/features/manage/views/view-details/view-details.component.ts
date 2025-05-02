@@ -17,10 +17,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 	selector: 'orda-view-details',
 	imports: [MatTableModule, MatCheckboxModule, MatButton, MatFormField, MatInput, MatLabel],
 	template: `
-		<h2>{{ view.value()?.name }}</h2>
-		@if (view.value()?.desc !== '') {
-			<p>Description: {{ view.value()?.desc }}</p>
-		}
+		<div class="title">
+			<h2>{{ view.value()?.name }}</h2>
+			<p>{{ view.value()?.desc }}</p>
+		</div>
+
 		<mat-form-field>
 			<mat-label>Filter</mat-label>
 			<input matInput (keyup)="applyFilter($event)" #input />
@@ -70,7 +71,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 				<ng-container matColumnDef="color">
 					<th mat-header-cell *matHeaderCellDef>Color</th>
-					<td mat-cell *matCellDef="let element">red</td>
+					<td mat-cell *matCellDef="let element" [id]="element.id">{{ element.color }}</td>
 				</ng-container>
 
 				<!--			&lt;!&ndash; Symbol Column &ndash;&gt;-->
@@ -80,7 +81,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 				<!--			</ng-container>-->
 
 				<tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-				<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
 
 				<!-- Row shown when there is no matching data. -->
 				<tr class="mat-row" *matNoDataRow>
@@ -91,6 +92,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 	`,
 	styles: `
 		/* app.component.scss */
+		.title {
+			display: flex;
+			flex-direction: row;
+			align-items: baseline;
+			gap: 0.5rem;
+		}
 
 		.table-container {
 			/*--mat-table-row-item-container-height: 2rem;*/
