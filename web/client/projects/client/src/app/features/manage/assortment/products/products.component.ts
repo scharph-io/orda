@@ -106,7 +106,7 @@ import { NgClass } from '@angular/common';
 					</ng-container>
 
 					<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-					<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+					<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
 
 					<!-- Row shown when there is no matching data. -->
 					<tr class="mat-row" *matNoDataRow>
