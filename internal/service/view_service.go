@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
@@ -219,6 +220,7 @@ func (s *ViewService) AddProducts(ctx context.Context, id string, products ...*p
 func (s *ViewService) RemoveProducts(ctx context.Context, id string, productsIds ...string) error {
 	view, err := s.repo.ReadByID(ctx, id)
 	if err != nil {
+		fmt.Printf("Failed to read view: %v\n", err)
 		return err
 	}
 	return s.repo.RemoveViewProducts(ctx, view, productsIds...)

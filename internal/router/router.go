@@ -150,7 +150,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 
 	views.Get("/:id/products", s.viewHandlers.GetProducts)
 	views.Put("/:id/products", s.viewHandlers.SetOrAddProducts)
-	views.Delete("/:id/products", s.viewHandlers.RemoveProducts)
+	views.Delete("/:id/products/:productId", s.viewHandlers.RemoveProducts)
 
 	// Order
 	order := api.Group("/order")
