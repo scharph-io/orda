@@ -100,11 +100,21 @@ func (h *ViewHandlers) GetRoles(c *fiber.Ctx) error {
 
 func (h *ViewHandlers) GetProducts(c *fiber.Ctx) error {
 	id := c.Params("id")
-	products, err := h.viewService.GetProducts(c.Context(), id)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to get products"})
+	t := c.Query("type", "map")
+	if t == "array" {
+		products, err := h.viewService.GetProducts(c.Context(), id)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to get products"})
+		}
+		return c.Status(fiber.StatusOK).JSON(products)
+
+	} else {
+		products, err := h.viewService.GetProductsMap(c.Context(), id)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to get products"})
+		}
+		return c.Status(fiber.StatusOK).JSON(products)
 	}
-	return c.Status(fiber.StatusOK).JSON(products)
 }
 
 func (h *ViewHandlers) RemoveRoles(c *fiber.Ctx) error {
@@ -153,4 +163,12 @@ func (h *ViewHandlers) RemoveProducts(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Failed to remove product(s)", "details": err.Error()})
 	}
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+func (h *ViewHandlers) SetPosition(c *fiber.Ctx) error {
+	return nil
+}
+
+func (h *ViewHandlers) SetColor(c *fiber.Ctx) error {
+	return nil
 }

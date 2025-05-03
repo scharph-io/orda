@@ -181,6 +181,39 @@ func (s *ViewService) GetProducts(ctx context.Context, id string) ([]*ports.View
 	return productResponses, nil
 }
 
+func (s *ViewService) GetProductsMap(ctx context.Context, id string) (ports.OrderProductsMap, error) {
+	view, err := s.repo.ReadByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	vps, err := s.productRepo.ReadByViewID(ctx, view.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	productsMap := make(ports.OrderProductsMap, 0)
+	for _, vp := range vps {
+		groupId := vp.Product.ProductGroupID
+		if productsMap[groupId] == nil {
+			productsMap[groupId] = make([]ports.ViewProductResponse, 0)
+		}
+		productsMap[groupId] = append(productsMap[groupId], ports.ViewProductResponse{
+			ProductResponse: ports.ProductResponse{
+				ID:     vp.ProductId,
+				Price:  vp.Product.Price,
+				Name:   vp.Product.Name,
+				Desc:   vp.Product.Desc,
+				Active: vp.Product.Active,
+			},
+			Color:    vp.Color,
+			Position: vp.Position,
+		})
+
+	}
+	return productsMap, nil
+}
+
 func (s *ViewService) SetProducts(ctx context.Context, id string, products ...*ports.ViewProductRequest) error {
 	view, err := s.repo.ReadByID(ctx, id)
 	if err != nil {
@@ -224,4 +257,12 @@ func (s *ViewService) RemoveProducts(ctx context.Context, id string, productsIds
 		return err
 	}
 	return s.repo.RemoveViewProducts(ctx, view, productsIds...)
+}
+
+func (s *ViewService) SetProductColor(ctx context.Context, id, productsId, color string) error {
+	return nil
+}
+
+func (s *ViewService) SetProductPosition(ctx context.Context, id, productsId string, position int32) error {
+	return nil
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EntityService } from '@orda.shared/utils/entity-service';
-import { View, ViewProduct } from '@orda.core/models/view';
+import { View, ViewProduct, ViewProductsMap } from '@orda.core/models/view';
 import { API_ENDPOINTS } from '@orda.core/constants';
 import { catchError } from 'rxjs';
 
@@ -70,9 +70,10 @@ export class ViewService extends EntityService<View> {
 			.delete<View>(`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products/${productId}`)
 			.pipe(catchError(this.handleError));
 	}
-	getProducts(view_id: string) {
+
+	getProductsMap(view_id: string) {
 		return this.httpClient
-			.get<ViewProduct[]>(`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products`)
+			.get<ViewProductsMap>(`${this.HOST}${API_ENDPOINTS.VIEW}/${view_id}/products`)
 			.pipe(catchError(this.handleError));
 	}
 }

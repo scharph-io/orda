@@ -20,7 +20,7 @@ var _ ports.IViewProductRepository = (*ViewProductRepo)(nil)
 
 func (r *ViewProductRepo) ReadByViewID(ctx context.Context, view_id string) ([]*domain.ViewProduct, error) {
 	var viewProducts []*domain.ViewProduct
-	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("view_id = ?", view_id).Preload("Product").Find(&viewProducts).Error; err != nil {
+	if err := r.db.WithContext(ctx).Model(&domain.ViewProduct{}).Where("view_id = ?", view_id).Preload("Product").Order("Position asc").Find(&viewProducts).Error; err != nil {
 		return nil, err
 	}
 	return viewProducts, nil

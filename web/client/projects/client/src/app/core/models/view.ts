@@ -20,3 +20,6 @@ export interface ViewProduct {
 	color: string;
 	product_id: string;
 }
+
+export type ViewProductsMap = Record<string, ViewProduct[]>
+

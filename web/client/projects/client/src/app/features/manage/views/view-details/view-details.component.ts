@@ -3,47 +3,53 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatButton } from '@angular/material/button';
 import { ViewService } from '@orda.features/data-access/services/view/view.service';
+import { KeyValuePipe } from '@angular/common';
+import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
 
 @Component({
 	selector: 'orda-view-details',
-	imports: [MatTableModule, MatCheckboxModule, MatButton, MatIcon],
+	imports: [MatTableModule, MatCheckboxModule, KeyValuePipe, MatIcon, MatButton],
 	template: `
 		<div class="title">
 			<h2>{{ view.value()?.name }}</h2>
 			@if (view.value()?.desc !== '') {
-				<p>{{ view.value()?.desc }} {{ view_id() }}</p>
+				<p>{{ view.value()?.desc }}</p>
 			}
 		</div>
-		<table mat-table [dataSource]="productsDataSource()">
-			<ng-container matColumnDef="pos">
-				<th mat-header-cell *matHeaderCellDef>Position</th>
-				<td mat-cell *matCellDef="let element">{{ element.position }}</td>
-			</ng-container>
-			<ng-container matColumnDef="name">
-				<th mat-header-cell *matHeaderCellDef>Name</th>
-				<td mat-cell *matCellDef="let element">{{ element.name }}</td>
-			</ng-container>
+		@for (item of productsDataSource() | keyvalue; track item.key) {
+			<h3>{{ getGroupName(item.key) }}</h3>
+			<table mat-table [dataSource]="item.value">
+				<ng-container matColumnDef="pos">
+					<th mat-header-cell *matHeaderCellDef>Position</th>
+					<td mat-cell *matCellDef="let element">{{ element.position }}</td>
+				</ng-container>
+				<ng-container matColumnDef="name">
+					<th mat-header-cell *matHeaderCellDef>Name</th>
+					<td mat-cell *matCellDef="let element">{{ element.name }}</td>
+				</ng-container>
 
-			<ng-container matColumnDef="desc">
-				<th mat-header-cell *matHeaderCellDef>Description</th>
-				<td mat-cell *matCellDef="let element">{{ element.desc }}</td>
-			</ng-container>
+				<ng-container matColumnDef="desc">
+					<th mat-header-cell *matHeaderCellDef>Description</th>
+					<td mat-cell *matCellDef="let element">{{ element.desc }}</td>
+				</ng-container>
 
-			<ng-container matColumnDef="actions">
-				<th mat-header-cell *matHeaderCellDef>Actions</th>
-				<td mat-cell *matCellDef="let element">
-					<button mat-button (click)="removeProduct(element.id)">
-						<mat-icon>delete</mat-icon>
-					</button>
-				</td>
-			</ng-container>
+				<ng-container matColumnDef="actions">
+					<th mat-header-cell *matHeaderCellDef>Actions</th>
+					<td mat-cell *matCellDef="let element">
+						<button mat-button (click)="removeProduct(element.id)">
+							<mat-icon>delete</mat-icon>
+						</button>
+					</td>
+				</ng-container>
 
-			<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-			<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
-		</table>
+				<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+				<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
+			</table>
+		}
+
 	`,
 	styles: `
 		.title {
@@ -58,6 +64,7 @@ export class ViewDetailsComponent {
 	displayedColumns: string[] = ['pos', 'name', 'desc', 'actions'];
 
 	viewService = inject(ViewService);
+	assortmentService = inject(AssortmentService);
 
 	view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
 	view = rxResource({
@@ -66,9 +73,24 @@ export class ViewDetailsComponent {
 	});
 
 	viewProducts = rxResource({
-		loader: () => this.viewService.getProducts(this.view_id()),
+		loader: () => this.viewService.getProductsMap(this.view_id()),
 	});
-	productsDataSource = computed(() => new MatTableDataSource(this.viewProducts.value() ?? []));
+
+	productsDataSource = computed(() =>
+		Object.fromEntries(
+			Object.entries(this.viewProducts.value() ?? {}).map(([key, products]) => [
+				key,
+				new MatTableDataSource(products),
+			]),
+		),
+	);
+
+	groups = rxResource({
+		loader: () => this.assortmentService.readGroups()
+	});
+
+	getGroupName = (groupId: string) => this.groups.value()?.find((group) => group.id === groupId)?.name
+
 
 	removeProduct(productId: string) {
 		this.viewService.removeProduct(this.view_id(), productId).subscribe(() => {
@@ -76,15 +98,15 @@ export class ViewDetailsComponent {
 		});
 	}
 
-	setPosition(productId: string, position: number) {
-		// this.viewService.setPosition(this.view_id(), productId, position).subscribe(() => {
-		// 	this.viewProducts.reload();
-		// });
-	}
+	// setPosition(productId: string, position: number) {
+	// this.viewService.setPosition(this.view_id(), productId, position).subscribe(() => {
+	// 	this.viewProducts.reload();
+	// });
+	// }
 
-	openColorDialog(productId: string) {
-		// this.viewService.openColorDialog(this.view_id(), productId).subscribe(() => {
-		// 	this.viewProducts.reload();
-		// });
-	}
+	// openColorDialog(productId: string) {
+	// 	// this.viewService.openColorDialog(this.view_id(), productId).subscribe(() => {
+	// 	// 	this.viewProducts.reload();
+	// 	// });
+	// }
 }

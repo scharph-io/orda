@@ -80,9 +80,12 @@ type IViewService interface {
 
 	// Products
 	GetProducts(ctx context.Context, id string) ([]*ViewProductResponse, error)
+	GetProductsMap(ctx context.Context, id string) (OrderProductsMap, error)
 	SetProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
 	AddProducts(ctx context.Context, id string, products ...*ViewProductRequest) error
 	RemoveProducts(ctx context.Context, id string, productsIds ...string) error
+	SetProductColor(ctx context.Context, id, productsId, color string) error
+	SetProductPosition(ctx context.Context, id, productsId string, position int32) error
 }
 
 type IViewHandlers interface {
@@ -97,4 +100,6 @@ type IViewHandlers interface {
 	GetProducts(c *fiber.Ctx) error
 	SetOrAddProducts(c *fiber.Ctx) error
 	RemoveProducts(c *fiber.Ctx) error
+	SetPosition(c *fiber.Ctx) error
+	SetColor(c *fiber.Ctx) error
 }

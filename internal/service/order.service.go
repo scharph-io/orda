@@ -131,7 +131,5 @@ func (s *OrderService) GetOrderViewProducts(ctx context.Context, viewid string) 
 			})
 		}
 	}
-
 	return data, nil
-
 }
