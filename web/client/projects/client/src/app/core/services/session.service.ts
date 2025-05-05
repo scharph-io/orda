@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { LoginResponse, SessionInfo } from '@orda.core/models/login-response';
 import { tap } from 'rxjs';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
+import { Router } from '@angular/router';
 
 @Injectable({
 	providedIn: 'root',
@@ -12,6 +13,7 @@ export class SessionService {
 	private readonly host = inject<string>(HOST);
 	private readonly httpClient = inject(HttpClient);
 	private readonly logger = inject(OrdaLogger);
+	private readonly router = inject(Router);
 
 	user = signal<SessionInfo>({});
 
@@ -26,9 +28,13 @@ export class SessionService {
 					localStorage.setItem('user', JSON.stringify(res));
 					this.logger.debug('SessionService restored');
 				},
-				error: (err) => {
-					this.logger.error(err);
-					this.logout();
+				error: () => {
+					this.logout().subscribe({
+						next: () => {
+							this.logger.debug('SessionService logout');
+							this.router.navigate(['/login']);
+						},
+					});
 				},
 			});
 		}

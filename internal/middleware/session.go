@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2/middleware/session"
@@ -36,6 +37,11 @@ func initSessionConfig() {
 		GCInterval: 10 * time.Second,
 	})
 
+	key := "cookie:session_id"
+	if os.Getenv("ENV") == "production" {
+		key = "cookie:__Host-orda-session"
+	}
+
 	Store = session.New(session.Config{
 		Expiration:     time.Hour * 24,
 		Storage:        storage,
@@ -43,7 +49,7 @@ func initSessionConfig() {
 		CookieSecure:   true,
 		CookieSameSite: config.Cookie_sameSite,
 		KeyGenerator:   func() string { return uuid.New().String() },
-		KeyLookup:      "cookie:__Host-orda-session",
+		KeyLookup:      key,
 	})
 
 }

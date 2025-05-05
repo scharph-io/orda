@@ -92,11 +92,10 @@ func (h *AuthHandlers) Logout(c *fiber.Ctx) error {
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
-	// Revoke users authentication
 	if err := session.Destroy(); err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
-	// c.ClearCookie(config.Session_cookie)
+	c.ClearCookie("session_id")
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
@@ -114,8 +113,6 @@ func (h *AuthHandlers) RequireAuth(c *fiber.Ctx) error {
 			"error": "Unauthorized",
 		})
 	}
-
-	// Add user to context
 	c.Locals("userid", userID)
 	return c.Next()
 }
@@ -145,13 +142,3 @@ func (h *AuthHandlers) RequireRole(role string) fiber.Handler {
 func (h *AuthHandlers) Policy(c *fiber.Ctx) error {
 	return c.JSON(h.psyncInstance.GetPolicies())
 }
-
-// func cookieConfig(value string) *fiber.Cookie {
-// 	return &fiber.Cookie{
-// 		Name:     config.Session_cookie,
-// 		Secure:   config.GetConfig().Server.SSL,
-// 		Value:    value,
-// 		SameSite: config.Cookie_sameSite,
-// 		Expires:  time.Now().Add(time.Hour * 24),
-// 	}
-// }
