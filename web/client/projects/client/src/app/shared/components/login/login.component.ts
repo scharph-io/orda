@@ -107,7 +107,7 @@ export class LoginComponent {
 	errorMsg = signal('');
 
 	protected loginForm = new FormGroup({
-		username: new FormControl('admin', [
+		username: new FormControl(isDevMode() ? 'admin' : '', [
 			Validators.required,
 			Validators.pattern('^[a-zA-Z0-9_-]+$'),
 		]),

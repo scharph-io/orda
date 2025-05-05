@@ -29,8 +29,6 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 		AllowHeaders:     "Origin, Content-Type, Accept",
 	}))
 
-	// app.Use(csrf.New())
-
 	app.Use(healthcheck.New(healthcheck.Config{
 		LivenessProbe: func(c *fiber.Ctx) bool {
 			return true
@@ -56,18 +54,13 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 		Format: "[auth] ${time} ${status} - ${latency} ${method} ${path}\n",
 	}))
 	auth.Post("/login", s.authHandlers.Login)
-	auth.Post("/logout", s.authHandlers.RequireAuth, s.authHandlers.Logout)
+	auth.Post("/logout", s.authHandlers.Logout)
 	auth.Get("/session", s.authHandlers.Session)
 	auth.Get("/policy", s.authHandlers.RequireAuth, s.authHandlers.Policy)
 
 	api := app.Group("/api/v1", logger.New(logger.Config{
 		Format: "[api] ${time} ${status} - ${latency} ${method} ${path}\n",
 	}), s.authHandlers.RequireAuth)
-
-	// v1 := api.Group("/v1", func(c *fiber.Ctx) error { // middleware for /api/v1
-	// 	c.Set("Version", "v1")
-	// 	return c.Next()
-	// })
 
 	// User
 	user := api.Group("/user", s.authHandlers.RequireRole("admin"))
@@ -157,10 +150,4 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	order.Get("/views", s.orderHandlers.GetOrderViews)
 	order.Get("/views/:id", s.orderHandlers.GetOrderViewProducts)
 	order.Post("/checkout", s.transactionHandlers.Create)
-
-	// // Statistic
-	// statistic := api.Group("/statistic")
-	// statistic.Get("/", middleware.Protected(), handler.GetStatistics)
-	// statistic.Get("/products", middleware.Protected(), handler.GetProductStatistic)
-
 }
