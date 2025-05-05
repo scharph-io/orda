@@ -86,27 +86,27 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	role.Delete("/:id", s.roleHandlers.Delete)
 
 	// Account
-	account := api.Group("/account", s.authHandlers.RequireRole("admin"))
+	account := api.Group("/account")
 	account.Get("/", s.accountHandlers.GetAll)
 	account.Get("/:id", s.accountHandlers.GetById)
-	account.Put("/:id", s.accountHandlers.Update)
-	account.Post("/", s.accountHandlers.Create)
-	account.Post("/:id/deposit", s.accountHandlers.Deposit)
-	account.Delete("/:id", s.accountHandlers.Delete)
+	account.Put("/:id", s.accountHandlers.Update, s.authHandlers.RequireRole("admin"))
+	account.Post("/", s.accountHandlers.Create, s.authHandlers.RequireRole("admin"))
+	account.Post("/:id/deposit", s.accountHandlers.Deposit, s.authHandlers.RequireRole("admin"))
+	account.Delete("/:id", s.accountHandlers.Delete, s.authHandlers.RequireRole("admin"))
 
 	// Account Group
 	accountGroup := api.Group("/account-group")
 	accountGroup.Get("/", s.accountHandlers.GetAllGroups)
-	accountGroup.Post("/", s.accountHandlers.CreateGroup)
 	accountGroup.Get("/:id", s.accountHandlers.GetGroupAccounts)
-	accountGroup.Post("/:id/deposit", s.accountHandlers.DepositGroup)
-	accountGroup.Delete("/:id", s.accountHandlers.DeleteGroup)
+	accountGroup.Post("/", s.accountHandlers.CreateGroup, s.authHandlers.RequireRole("admin"))
+	accountGroup.Post("/:id/deposit", s.accountHandlers.DepositGroup, s.authHandlers.RequireRole("admin"))
+	accountGroup.Delete("/:id", s.accountHandlers.DeleteGroup, s.authHandlers.RequireRole("admin"))
 
 	accountHistory := account.Group("/history")
 	accountHistory.Get("/", s.accountHandlers.GetHistory)
 
 	// Assortment
-	assortment := api.Group("/assortment")
+	assortment := api.Group("/assortment", s.authHandlers.RequireRole("admin"))
 
 	group := assortment.Group("/group")
 	group.Get("/", s.assortmentHandlers.ReadGroups)
@@ -118,7 +118,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	group.Put("/:id/deposit", s.assortmentHandlers.SetDeposit)
 	group.Delete("/:id/deposit", s.assortmentHandlers.RemoveDeposit)
 
-	product := assortment.Group("/product")
+	product := assortment.Group("/product", s.authHandlers.RequireRole("admin"))
 	product.Get("/", s.assortmentHandlers.ReadProducts) // uses query group_id
 	product.Get("/:id", s.assortmentHandlers.ReadProductById)
 	product.Put("/:id", s.assortmentHandlers.UpdateProduct)
@@ -128,7 +128,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	product.Delete("/:id/views", s.assortmentHandlers.RemoveViews)
 
 	//Transactions
-	transactions := api.Group("/transactions")
+	transactions := api.Group("/transactions", s.authHandlers.RequireRole("admin"))
 	transactions.Get("/", s.transactionHandlers.Read)
 	transactions.Get("/summary", s.transactionHandlers.ReadSummaryFromTo)
 	transactions.Get("/summarybydate", s.transactionHandlers.ReadSummaryAt)
