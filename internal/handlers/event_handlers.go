@@ -82,26 +82,26 @@ func (e *OrdaEvents) Publish(c *fiber.Ctx) error {
 func (e *OrdaEvents) Index(c *fiber.Ctx) error {
 	// index is the HTML template that will be served to the client on the index page (`/`)
 	const index = `<!DOCTYPE html>
-<html>
-<body>
+		<html>
+		<body>
 
-<h1>SSE Messages</h1>
-<div id="result"></div>
+		<h1>SSE Messages</h1>
+		<div id="result"></div>
 
-<script>
-if(typeof(EventSource) !== "undefined") {
-  var source = new EventSource("http://127.0.0.1:{{.Port}}/events/sse");
-  source.onmessage = function(event) {
-    document.getElementById("result").innerHTML += event.data + "<br>";
-  };
-} else {
-  document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
-}
-</script>
+		<script>
+		if(typeof(EventSource) !== "undefined") {
+		  var source = new EventSource("http://127.0.0.1:{{.Port}}/events/sse", {withCredentials: true});
+		  source.onmessage = function(event) {
+		    document.getElementById("result").innerHTML += event.data + "<br>";
+		  };
+		} else {
+		  document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
+		}
+		</script>
 
-</body>
-</html>
-`
+		</body>
+		</html>
+		`
 
 	c.Response().Header.SetContentType(fiber.MIMETextHTMLCharsetUTF8)
 
