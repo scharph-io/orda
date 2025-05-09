@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>SSE Demo</title>
+    </head>
+    <body>
+        <h1>Go SSE Demo</h1>
+        <ul id="events"></ul>
+
+        <script>
+            const evtSource = new EventSource("/events");
+
+            evtSource.onmessage = (e) => {
+                const msg = JSON.parse(e.data);
+                const li = document.createElement("li");
+                li.textContent = `[#${msg.id}] ${msg.timestamp} – ${msg.text}`;
+                document.getElementById("events").appendChild(li);
+            };
+
+            evtSource.onerror = (err) => {
+                console.error("EventSource failed:", err);
+                evtSource.close();
+            };
+        </script>
+    </body>
+</html>

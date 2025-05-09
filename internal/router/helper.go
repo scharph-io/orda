@@ -23,6 +23,8 @@ type Server struct {
 	viewHandlers        ports.IViewHandlers
 	transactionHandlers ports.ITransactionHandlers
 	orderHandlers       ports.IOrderHandlers
+
+	eventHandler *handlers.OrdaEvents
 }
 
 func NewServer() *Server {
@@ -61,6 +63,8 @@ func NewServer() *Server {
 	transactionHandlers := handlers.NewTransactionHandler(transactionService)
 	orderHandlers := handlers.NewOrderHandlers(orderService, *middleware.Store)
 
+	eventHandler := handlers.NewOrdaEvents()
+
 	return &Server{
 		userHandlers,
 		authHandlers,
@@ -70,5 +74,6 @@ func NewServer() *Server {
 		viewHandlers,
 		transactionHandlers,
 		orderHandlers,
+		eventHandler,
 	}
 }

@@ -23,10 +23,9 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	}))
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:4200",
-		AllowCredentials: true,
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
-		AllowHeaders:     "Origin, Content-Type, Accept",
+		AllowOrigins: "*",
+		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH",
+		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
 	app.Use(healthcheck.New(healthcheck.Config{
@@ -150,4 +149,9 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	order.Get("/views", s.orderHandlers.GetOrderViews)
 	order.Get("/views/:id", s.orderHandlers.GetOrderViewProducts)
 	order.Post("/checkout", s.transactionHandlers.Create)
+
+	events := app.Group("/events")
+	events.Get("/", s.eventHandler.Index)
+	events.Get("/sse", s.eventHandler.TestHandler)
+	events.Put("/publish", s.eventHandler.Publish)
 }

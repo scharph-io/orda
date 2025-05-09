@@ -1,80 +1,117 @@
 package main
 
-var (
-	version string
-	date    string
+import (
+	"fmt"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
+// --- 1) Define your Observer interface
+
+type Observer interface {
+	AfterCreate(db *gorm.DB)
+	AfterUpdate(db *gorm.DB)
+	AfterDelete(db *gorm.DB)
+}
+
+// --- 2) Keep a registry of observers
+
+var observers []Observer
+
+func RegisterObserver(o Observer) {
+	observers = append(observers, o)
+}
+
+func notifyCreate(db *gorm.DB) {
+	for _, o := range observers {
+		o.AfterCreate(db)
+	}
+}
+func notifyUpdate(db *gorm.DB) {
+	for _, o := range observers {
+		o.AfterUpdate(db)
+	}
+}
+func notifyDelete(db *gorm.DB) {
+	for _, o := range observers {
+		o.AfterDelete(db)
+	}
+}
+
+// --- 3) Create a GORM plugin that wires the callbacks
+
+type observerPlugin struct{}
+
+func (observerPlugin) Name() string {
+	return "observer.plugin"
+}
+
+func (observerPlugin) Initialize(db *gorm.DB) (err error) {
+	// after create
+	db.Callback().Create().After("gorm:create").
+		Register("observer:after_create", func(tx *gorm.DB) {
+			notifyCreate(tx)
+		})
+
+	// after update
+	db.Callback().Update().After("gorm:update").
+		Register("observer:after_update", func(tx *gorm.DB) {
+			notifyUpdate(tx)
+		})
+
+	// after delete
+	db.Callback().Delete().After("gorm:delete").
+		Register("observer:after_delete", func(tx *gorm.DB) {
+			notifyDelete(tx)
+		})
+
+	return nil
+}
+
+// --- 4) Example Domain & Observer
+
+type User struct {
+	ID   uint
+	Name string
+}
+
+type loggingObserver struct{}
+
+func (loggingObserver) AfterCreate(db *gorm.DB) {
+	if db.Statement.Schema != nil {
+		fmt.Printf("[LOG] created %s: %+v\n",
+			db.Statement.Schema.Name, db.Statement.Dest)
+	}
+}
+func (loggingObserver) AfterUpdate(db *gorm.DB) {
+	fmt.Printf("[LOG] updated %s (ID=%v)\n",
+		db.Statement.Schema.Name, db.Statement.RowsAffected)
+}
+func (loggingObserver) AfterDelete(db *gorm.DB) {
+	fmt.Printf("[LOG] deleted %s (ID=%v)\n",
+		db.Statement.Schema.Name, db.Statement.RowsAffected)
+}
+
 func main() {
+	// open connection
+	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
 
-	// if err := godotenv.Load(".env"); err != nil {
-	// 	fmt.Println("INFO: No .env file found")
-	// }
+	// migrate
+	db.AutoMigrate(&User{})
 
-	// app := fiber.New()
+	// register our plugin & observer
+	db.Use(&observerPlugin{})
+	RegisterObserver(loggingObserver{})
 
-	// // app := fiber.New()
-	// database.Connect()
-
-	// e, err := accesscontrol.Init()
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// // ***
-	// e.LoadPolicy()
-
-	// // e.AddRoleForUser("alice", "admin")
-	// // e.AddRoleForUser("bob", "user")
-
-	// // e.AddGroupingPolicy("alice", "admin")
-
-	// e.AddPolicy("user", "role", "read")
-	// e.AddPolicy("admin", "assortment", "read")
-	// e.AddPolicy("admin", "assortment", "write")
-	// e.AddPolicy("admin", "roles", "read")
-	// e.AddPolicy("admin", "roles", "write")
-	// e.AddPolicy("admin", "accounts", "read")
-	// e.AddPolicy("admin", "accounts", "write")
-
-	// // e.AddPolicy("admin", "assortment", "read")
-	// // e.AddPolicy("admin", "assortment", "write")
-	// // e.AddNamedPolicy("p", "admin", "assortment", "read")
-
-	// // e.AddPolicies(
-	// // 	[][]string{{
-	// // 		"admin", "users", "read",
-	// // 	}})
-
-	// // x, _ := e.GetAllRoles()
-	// // fmt.Println(x)
-
-	// // f, _ := e.GetAllNamedActions("p")
-	// // fmt.Println(f)
-
-	// // // d, _ := e.GetAllNamedObjects("p")
-	// // // fmt.Println(d)
-
-	// // t, _ := e.GetFilteredPolicy(1, "assortment")
-	// // fmt.Println(t)
-
-	// // g, _ := e.GetFilteredGroupingPolicy(1, "admin")
-	// // fmt.Println(g)
-
-	// // allow, _ := e.Enforce("user", "assortment:write")
-	// // fmt.Println(allow)
-
-	// // allow, _ = e.Enforce("admin", "assortment:write")
-	// // fmt.Println(allow)
-
-	// policySync := policy.NewPolicySync(e)
-	// policyHandler := &policy.PolicyHandler{PolicySync: policySync}
-
-	// app.Use(cors.New())
-
-	// app.Get("/api/policies", policyHandler.HandleGetPolicies)
-	// app.Get("/api/policies/:role", policyHandler.HandleGetRolePolicy)
-
-	// app.Listen(":3000")
+	// do some operations
+	u := User{Name: "Alice"}
+	db.Create(&u)
+	u.Name = "Alice Cooper"
+	db.Save(&u)
+	db.Delete(&u)
+	db.Delete(&u)
 }
