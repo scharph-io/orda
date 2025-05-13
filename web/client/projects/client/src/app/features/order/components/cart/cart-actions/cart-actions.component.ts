@@ -66,7 +66,7 @@ export class CartActionsComponent {
 			{
 				width: 'auto',
 				minWidth: '25rem',
-				height: '25rem',
+				height: '20rem',
 				data: {
 					view_id: this.view_id(),
 				},
