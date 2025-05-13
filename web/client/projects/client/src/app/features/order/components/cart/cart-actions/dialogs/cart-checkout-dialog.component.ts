@@ -317,4 +317,29 @@ export class CartCheckoutDialogComponent implements OnInit {
 			},
 		});
 	}
+
+	groupAndSortByLastnameInitial(persons: Account[]): Record<string, Account[]> {
+		// 1. Build the raw groups
+		const groups = persons.reduce<Record<string, Account[]>>((acc, p) => {
+			const initial = p.lastname.charAt(0).toUpperCase();
+			(acc[initial] ||= []).push(p);
+			return acc;
+		}, {});
+
+		// 2. Sort each group’s array by lastname, then firstname
+		for (const initial in groups) {
+			groups[initial].sort((a, b) => {
+				const lnCmp = a.lastname.localeCompare(b.lastname);
+				return lnCmp !== 0 ? lnCmp : a.firstname.localeCompare(b.firstname);
+			});
+		}
+
+		// 3. Emit a new object with initials in sorted order
+		const sortedResult: Record<string, Account[]> = {};
+		for (const key of Object.keys(groups).sort()) {
+			sortedResult[key] = groups[key];
+		}
+
+		return sortedResult;
+	}
 }
