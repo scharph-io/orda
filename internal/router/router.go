@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 
+	"github.com/scharph/orda/internal/build"
 	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/web/client"
 )
@@ -61,6 +62,15 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	api := app.Group("/api/v1", logger.New(logger.Config{
 		Format: "[api] ${time} ${status} - ${latency} ${method} ${path}\n",
 	}), s.authHandlers.RequireAuth)
+
+	api.Get("/version", func(c *fiber.Ctx) error {
+		return c.Status(http.StatusOK).JSON(
+			fiber.Map{
+				"version": build.GetVersion(),
+				"time":    build.GetTime(),
+				"build":   build.GetBuild(),
+			})
+	})
 
 	// User
 	user := api.Group("/user", s.authHandlers.RequireRole("admin"))

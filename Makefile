@@ -1,7 +1,6 @@
 PROJECT=orda
 IMAGE=scharphio/orda
 
-
 TAG_COMMIT := $(shell git rev-list --abbrev-commit --tags --max-count=1)
 TAG := $(shell git describe --abbrev=0 --tags ${TAG_COMMIT} 2>/dev/null || true)
 COMMIT := $(shell git rev-parse --short HEAD)
@@ -17,8 +16,9 @@ ifneq ($(shell git status --porcelain),)
 	VERSION := $(VERSION)-dirty
 endif
 
+APP=github.com/scharph/orda
 BUILD_DATE := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
-LD_FLAGS := -X main.date=$(BUILD_DATE) -X main.version=$(VERSION)
+LD_FLAGS := -X $(APP)/internal/build.time=$(BUILD_DATE) -X $(APP)/internal/build.version=$(VERSION) -X $(APP)/internal/build.build=$(COMMIT)
 BUILD_ARGS := -ldflags='$(LD_FLAGS)'
 
 BINARY_NAME=$(PROJECT)
@@ -50,10 +50,10 @@ pre-build-ui:
 build-ui:
 	npm --prefix $(CLIENT_PROJECT) install && npm --prefix $(CLIENT_PROJECT) run build
 
-build-local: build-ui
+build-local:
 	GOOS=linux GOARCH=amd64 go build $(BUILD_ARGS) -o build/${BINARY_NAME} $(GO_MAIN)
-	chmod +x build/${BINARY_NAME}
-	tar -czf build/${BINARY_NAME}_$(VERSION)_linux_amd64.tar.gz -C build ${BINARY_NAME}
+	# chmod +x build/${BINARY_NAME}
+	# tar -czf build/${BINARY_NAME}_$(VERSION)_linux_amd64.tar.gz -C build ${BINARY_NAME}
 
 ci-build: pre-build-ui build-ui build-local
 
