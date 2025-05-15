@@ -7,22 +7,18 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/accesscontrol"
+	"github.com/scharph/orda/internal/build"
 	"github.com/scharph/orda/internal/config"
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/middleware"
 	"github.com/scharph/orda/internal/router"
 )
 
-var (
-	version string
-	date    string
-)
-
 func main() {
 	serverC := config.GetConfig().Server
 
 	app := fiber.New(fiber.Config{
-		AppName: fmt.Sprintf("orda %s - %s", version, date),
+		AppName: fmt.Sprintf("orda %s - %s", build.GetVersion(), build.GetTime()),
 	})
 
 	loc, _ := time.LoadLocation(serverC.TZ)

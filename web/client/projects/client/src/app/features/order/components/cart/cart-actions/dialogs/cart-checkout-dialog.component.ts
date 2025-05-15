@@ -1,10 +1,8 @@
-import { AsyncPipe } from '@angular/common';
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import {
 	CheckoutRequest,
@@ -14,21 +12,16 @@ import {
 import { CartItem, OrderStoreService } from '@orda.features/order/services/order-store.service';
 import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/transaction';
 import { AccountService } from '@orda.features/data-access/services/account/account.service';
-import { map, Observable, startWith } from 'rxjs';
 import { Account } from '@orda.core/models/account';
 import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { KeyValuePipe } from '@angular/common';
 
 export interface CheckoutDialogData {
 	message: string;
 	disableSubmit?: boolean;
-}
-
-interface AutoCompleteOption {
-	id: string;
-	name: string;
-	credit: number;
 }
 
 @Component({
@@ -38,12 +31,12 @@ interface AutoCompleteOption {
 		ReactiveFormsModule,
 		MatFormFieldModule,
 		MatInputModule,
-		MatAutocompleteModule,
-		AsyncPipe,
 		OrdaCurrencyPipe,
 		MatButtonToggleModule,
 		MatDialogModule,
 		MatButtonModule,
+		MatSelectModule,
+		KeyValuePipe,
 	],
 	template: `
 		<!--		<h2 mat-dialog-title>Checkout</h2>-->
@@ -82,25 +75,19 @@ interface AutoCompleteOption {
 					<mat-form-field class="example-full-width">
 						<!--						<mat-label>{{ 'checkout.account' }}</mat-label>-->
 						<mat-label>{{ 'Konto' }}</mat-label>
-						<input
-							type="text"
-							placeholder="Account"
-							matInput
-							[formControl]="accountControl"
-							[matAutocomplete]="auto"
-							(click)="this.accountControl.setValue('')"
-						/>
-						<mat-autocomplete
-							#auto="matAutocomplete"
-							[displayWith]="displayFn(accounts.value() ?? [])"
-						>
-							@let items = (filteredOptions | async) ?? [];
-							@for (option of items; track option.id) {
-								<mat-option [value]="option.id">{{ option.name }}</mat-option>
+						<mat-select [formControl]="accountControl">
+							<!--							<mat-option>&#45;&#45; None &#45;&#45;</mat-option>-->
+							@for (group of accountMap() | keyvalue; track group.key) {
+								<mat-optgroup [label]="group.key">
+									@for (acc of group.value; track acc) {
+										<mat-option [value]="acc.id" [disabled]="acc.credit_balance <= 0"
+											>{{ acc.lastname }} {{ acc.firstname }}
+										</mat-option>
+									}
+								</mat-optgroup>
 							}
-						</mat-autocomplete>
+						</mat-select>
 					</mat-form-field>
-					<button mat-button (click)="accountControl.reset()">Clear</button>
 				</div>
 				@if (selectedAccount() && error === '') {
 					@let balance = selectedAccount()?.credit_balance ?? 0;
@@ -175,7 +162,7 @@ interface AutoCompleteOption {
 			grid-template:
 				'total' 1fr
 				'payment' 1fr
-				'account' auto
+				'account' 1fr
 				'error' auto/1fr;
 		}
 
@@ -221,7 +208,7 @@ interface AutoCompleteOption {
 		}
 	`,
 })
-export class CartCheckoutDialogComponent implements OnInit {
+export class CartCheckoutDialogComponent {
 	cart = inject(OrderStoreService);
 	accountService = inject(AccountService);
 	checkoutService = inject(CheckoutService);
@@ -242,6 +229,10 @@ export class CartCheckoutDialogComponent implements OnInit {
 
 	changed = toSignal(this.accountControl.valueChanges);
 
+	accountMap = computed(() => {
+		return this.groupAndSortByLastnameInitial(this.accounts.value() ?? []);
+	});
+
 	selectedAccount = computed(() => {
 		return this.accounts.value()?.find((a) => a.id === (this.changed() ?? ''));
 	});
@@ -252,44 +243,8 @@ export class CartCheckoutDialogComponent implements OnInit {
 
 	error = '';
 
-	filteredOptions: Observable<AutoCompleteOption[]> | undefined;
-
-	ngOnInit(): void {
-		this.filteredOptions = this.accountControl.valueChanges.pipe(
-			startWith(''),
-			map((value) => this._filter(value ?? '')),
-		);
-	}
-
 	PaymentOption = PaymentOption;
 	PaymentOptionKeys = PaymentOptionKeys;
-
-	private _filter(value: string): AutoCompleteOption[] {
-		const filterValue = value.toLowerCase();
-
-		return (
-			this.accounts
-				.value()
-				?.filter((option) => option.lastname.toLowerCase().includes(filterValue))
-				.map(
-					(o) =>
-						({
-							id: o.id,
-							name: `${o.lastname} ${o.firstname}`,
-							credit: o.credit_balance,
-						}) as AutoCompleteOption,
-				) ?? []
-		);
-	}
-
-	displayFn(options: Account[]): (id: string) => string {
-		return (id: string) => {
-			const correspondingOption = Array.isArray(options)
-				? options.find((option) => option.id === id)
-				: null;
-			return correspondingOption ? correspondingOption.lastname : '';
-		};
-	}
 
 	checkout(view_id: string, option = PaymentOption.CASH, account_id?: string) {
 		this.error = '';
@@ -313,5 +268,30 @@ export class CartCheckoutDialogComponent implements OnInit {
 				this.dialogRef.close(-1);
 			},
 		});
+	}
+
+	groupAndSortByLastnameInitial(persons: Account[]): Record<string, Account[]> {
+		// 1. Build the raw groups
+		const groups = persons.reduce<Record<string, Account[]>>((acc, p) => {
+			const initial = p.lastname.charAt(0).toUpperCase();
+			(acc[initial] ||= []).push(p);
+			return acc;
+		}, {});
+
+		// 2. Sort each group’s array by lastname, then firstname
+		for (const initial in groups) {
+			groups[initial].sort((a, b) => {
+				const lnCmp = a.lastname.localeCompare(b.lastname);
+				return lnCmp !== 0 ? lnCmp : a.firstname.localeCompare(b.firstname);
+			});
+		}
+
+		// 3. Emit a new object with initials in sorted order
+		const sortedResult: Record<string, Account[]> = {};
+		for (const key of Object.keys(groups).sort()) {
+			sortedResult[key] = groups[key];
+		}
+
+		return sortedResult;
 	}
 }

@@ -45,7 +45,8 @@ func AuthInit() {
 	} else if db.Where("username = ?", "admin").First(&adminUser).RowsAffected == 1 && os.Getenv("APP_ENV") != "production" {
 		log.Println("-------------------------------------------")
 		log.Println()
-		log.Println("NON PRODUCTION ENVIRONMENT - OVERWRITE ADMIN PASSWORD TO 'admin'")
+		log.Println("NON PRODUCTION ENVIRONMENT")
+		log.Println("OVERWRITE ADMIN PASSWORD TO 'admin'")
 		log.Println("This is not recommended in production environment")
 		log.Println()
 		log.Println("-------------------------------------------")
