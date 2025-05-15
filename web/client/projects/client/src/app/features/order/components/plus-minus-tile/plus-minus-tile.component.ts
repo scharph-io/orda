@@ -16,11 +16,19 @@ import { ViewProduct } from '@orda.core/models/view';
 			aria-hidden="true"
 		>
 			<!--			{{ key() }} <mat-icon>add</mat-icon>-->
-			Pfand <mat-icon>add</mat-icon>
+			<!--			Pfand <mat-icon>add</mat-icon>-->
+			<div class="tile-content">
+				<mat-icon aria-hidden="false">add</mat-icon>
+				<span class="tile-text">Pfand</span>
+			</div>
 		</div>
 		<div class="item remove" (click)="addToCart(-1)" (keyup)="addToCart(-1)" aria-hidden="true">
 			<!--      {{ key() }} <mat-icon>remove</mat-icon>-->
-			Pfand <mat-icon>remove</mat-icon>
+			<!--			Pfand <mat-icon>remove</mat-icon>-->
+			<div class="tile-content">
+				<mat-icon aria-hidden="false">remove</mat-icon>
+				<span class="tile-text">Pfand</span>
+			</div>
 		</div>
 	`,
 	styles: [
@@ -38,17 +46,35 @@ import { ViewProduct } from '@orda.core/models/view';
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: 1rem;
 			}
 
 			.add {
-				background-color: hsla(115 75% 37% / 0.65);
+				background-color: #2dc653;
 				color: white;
 			}
 
 			.remove {
-				background-color: hsla(1 68% 51% / 0.75);
+				background-color: #fe5f55;
 				color: white;
+			}
+
+			mat-icon {
+				height: 3rem;
+				width: 3rem;
+				font-size: 3rem;
+			}
+
+			.tile-content {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				height: 100%;
+			}
+
+			.tile-text {
+				margin-top: 0.25rem;
+				font-size: 1.25rem;
 			}
 		`,
 	],

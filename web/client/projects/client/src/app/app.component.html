@@ -12,37 +12,38 @@
 
 	@if (sessionService.isAuthenticated()) {
 		{{ sessionService.user().username }}
-		<button mat-icon-button (click)="logout()">
-			<mat-icon>logout</mat-icon>
-		</button>
+    <span [title]="`${info.value()?.build} ${info.value()?.time}`" class="version">{{
+			info.value()?.version ? info.value()?.version : 'DEV'
+		}}</span>
+    <!--		<button mat-icon-button (click)="logout()">-->
+      <!--			<mat-icon>logout</mat-icon>-->
+      <!--		</button>-->
 	}
 </mat-toolbar>
 
 <mat-menu #menu="matMenu">
 	<button mat-menu-item routerLink="home">
 		<mat-icon>home</mat-icon>
-		<span>Home</span>
+    <span>Startseite</span>
 	</button>
 
 	@if (sessionService.hasAdminRole()) {
 		<button mat-menu-item routerLink="manage">
 			<mat-icon>tune</mat-icon>
-			<span>Manage</span>
+      <span>Verwalten</span>
 		</button>
 	}
 
 	@if (sessionService.isAuthenticated()) {
 		<button mat-menu-item routerLink="order">
 			<mat-icon>local_mall</mat-icon>
-			<span>Order</span>
+      <span>Laden</span>
 		</button>
 		<button mat-menu-item (click)="logout()">
 			<mat-icon>logout</mat-icon>
-			<span>Logout</span>
+      <span>Ausloggen</span>
 		</button>
 	}
 </mat-menu>
 
-<div class="content">
-	<router-outlet />
-</div>
+<router-outlet />

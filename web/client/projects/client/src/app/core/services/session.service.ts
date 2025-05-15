@@ -78,4 +78,10 @@ export class SessionService {
 	public hasAdminRole() {
 		return this.user().role === 'admin';
 	}
+
+	public info() {
+		return this.httpClient.get<{ version: string; build: string; time: string }>(
+			`${this.host}/api/v1/version`,
+		);
+	}
 }

@@ -5,16 +5,14 @@
 
 html,
 body {
-  height: 100vh;
-  //overflow: hidden;
+	height: 100vh;
+	//overflow: hidden;
 }
 
 body {
 	margin: 0;
 
 	font-family: Inter, 'Helvetica Neue', sans-serif;
-	// background-image: url('../public/background.svg');
-
 
 	color-scheme: light dark;
 	@include mat.theme(
@@ -38,6 +36,11 @@ body {
 	}
 }
 
+h1 {
+  margin: 1.5rem 1rem;
+  color: #343a40;
+}
+
 // Customize the entire app. Change :root to your selector if you want to scope the styles.
 :root {
 	@include mat.progress-spinner-overrides(
@@ -50,6 +53,12 @@ body {
 			row-item-container-height: '2rem',
 		)
 	);
+
+  @include mat.toolbar-overrides(
+      (
+        container-background-color: #f5ebe0
+      )
+  );
 }
 
 .content {
@@ -89,5 +98,15 @@ body {
 }
 
 .mat-mdc-tab-body-content {
-  scrollbar-width: thin;
+	scrollbar-width: thin;
+}
+
+mat-grid-tile {
+  border: 1px solid #e3d5ca;
+	border-radius: 0.5rem;
+  background-color: #edede9;
+}
+
+.manage-list {
+  margin: 1rem;
 }

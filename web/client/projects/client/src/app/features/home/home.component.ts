@@ -1,36 +1,40 @@
 import { Component, inject, signal } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
 import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 
-interface Tile {
+export interface Tile {
 	title: string;
 	path: string;
+	icon: string;
 	canActivate?: () => boolean;
 }
 
 @Component({
 	selector: 'orda-home',
-	imports: [MatGridListModule],
+	imports: [MatGridListModule, MatIcon],
 	template: `
-		<h2 style="margin: 0.5rem">
-			Welcome,
+		<h1>
+			Wilkommen,
 			{{ sessionService.user().username }}
-		</h2>
+		</h1>
 
-		<div class="container">
-			<h3>Home</h3>
-			<mat-grid-list [cols]="gridCol.size()" [gutterSize]="'0.5rem'">
-				@for (tile of primaryTiles(); track tile) {
-					@if (tile.canActivate ? tile.canActivate() : true) {
-						<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
-							>{{ tile.title }}
-						</mat-grid-tile>
-					}
+		<mat-grid-list class="manage-list" [cols]="gridCol.size()" [gutterSize]="'0.5rem'">
+			@for (tile of primaryTiles(); track tile) {
+				@if (tile.canActivate ? tile.canActivate() : true) {
+					<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1">
+						<div class="tile-content">
+							<mat-icon aria-hidden="false">
+								{{ tile.icon }}
+							</mat-icon>
+							<span class="tile-text">{{ tile.title }}</span>
+						</div>
+					</mat-grid-tile>
 				}
-			</mat-grid-list>
-		</div>
+			}
+		</mat-grid-list>
 
 		<!-- <h2>TODOs for v0.2.1</h2>
 		<ul>
@@ -44,12 +48,27 @@ interface Tile {
 		<!-- https://taiga-ui.dev/utils/tokens -->
 	`,
 	styles: `
-		.container {
-			margin: 0.5rem;
+		h1 {
+			margin-top: 5vh;
 		}
 
-		mat-grid-tile {
-			background-color: lightgray;
+		mat-icon {
+			height: 3rem;
+			width: 3rem;
+			font-size: 3rem;
+		}
+
+		.tile-content {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+		}
+
+		.tile-text {
+			margin-top: 0.25rem;
+			font-size: 1.5rem;
 		}
 	`,
 })
@@ -61,13 +80,15 @@ export class HomeComponent {
 
 	primaryTiles = signal<Tile[]>([
 		{
-			title: 'Manage',
+			title: 'Verwalten',
 			path: '/manage',
+			icon: 'settings',
 			canActivate: () => this.sessionService.hasAdminRole(),
 		},
 		{
-			title: 'Order',
+			title: 'Laden',
 			path: '/order',
+			icon: 'storefront',
 		},
 	]);
 

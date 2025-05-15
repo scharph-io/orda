@@ -4,28 +4,49 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatRipple } from '@angular/material/core';
 import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
-
-interface Tile {
-	title: string;
-	path: string;
-}
+import { MatIcon } from '@angular/material/icon';
+import { Tile } from '@orda.features/home/home.component';
 
 @Component({
 	selector: 'orda-manage',
-	imports: [RouterModule, MatButtonModule, MatGridListModule, MatRipple],
+	imports: [RouterModule, MatButtonModule, MatGridListModule, MatRipple, MatIcon],
 	template: `
-		<h2>Manage</h2>
-		<mat-grid-list [cols]="gridColumns()" [gutterSize]="'0.5rem'">
+		<h1>Verwalten</h1>
+		<mat-grid-list class="manage-list" [cols]="gridColumns()" [gutterSize]="'0.5rem'">
 			@for (tile of primaryTiles(); track tile) {
 				<mat-grid-tile mat-ripple (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
-					>{{ tile.title }}
+					><div class="tile-content">
+						<mat-icon aria-hidden="false">
+							{{ tile.icon }}
+						</mat-icon>
+						<span class="tile-text">{{ tile.title }}</span>
+					</div>
 				</mat-grid-tile>
 			}
 		</mat-grid-list>
 	`,
 	styles: `
-		mat-grid-tile {
-			background-color: lightgray;
+		h1 {
+			margin-top: 5vh;
+		}
+
+		mat-icon {
+			height: 3rem;
+			width: 3rem;
+			font-size: 3rem;
+		}
+
+		.tile-content {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+		}
+
+		.tile-text {
+			margin-top: 0.25rem;
+			font-size: 1.25rem;
 		}
 	`,
 })
@@ -34,16 +55,17 @@ export class ManageComponent {
 	gridColumns = inject(GridColSizeService).size;
 
 	primaryTiles = signal<Tile[]>([
-		{ title: 'Bestellseiten', path: '/manage/views' },
-
+		{ title: 'Zurück', path: '/home', icon: 'arrow_back' },
+		{ title: 'Bestellseiten', path: '/manage/views', icon: 'view_list' },
 		{
 			title: 'Sortiment',
 			path: '/manage/assortment',
+			icon: 'inventory_2',
 		},
-		{ title: 'Konten', path: '/manage/accounts' },
+		{ title: 'Konten', path: '/manage/accounts', icon: 'account_balance' },
 
-		{ title: 'Benutzer', path: '/manage/users' },
-		{ title: 'Statistik', path: '/manage/history' },
+		{ title: 'Benutzer', path: '/manage/users', icon: 'people' },
+		{ title: 'Statistik', path: '/manage/history', icon: 'analytics' },
 	]);
 
 	navigateTo(path: string) {
