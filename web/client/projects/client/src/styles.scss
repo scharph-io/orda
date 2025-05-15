@@ -5,8 +5,8 @@
 
 html,
 body {
-  height: 100vh;
-  //overflow: hidden;
+	height: 100vh;
+	//overflow: hidden;
 }
 
 body {
@@ -14,7 +14,6 @@ body {
 
 	font-family: Inter, 'Helvetica Neue', sans-serif;
 	// background-image: url('../public/background.svg');
-
 
 	color-scheme: light dark;
 	@include mat.theme(
@@ -36,6 +35,10 @@ body {
 		border-radius: 20px;
 		border: transparent;
 	}
+}
+
+h1 {
+	margin: 1rem 0.5rem;
 }
 
 // Customize the entire app. Change :root to your selector if you want to scope the styles.
@@ -89,5 +92,5 @@ body {
 }
 
 .mat-mdc-tab-body-content {
-  scrollbar-width: thin;
+	scrollbar-width: thin;
 }

@@ -6,6 +6,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
 import { ToolbarTitleService } from '@orda.shared/services/toolbar-title.service';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
 	selector: 'orda-root',
@@ -24,6 +25,10 @@ export class AppComponent {
 	sessionService = inject(SessionService);
 	router = inject(Router);
 	toolbarTitleService = inject(ToolbarTitleService);
+
+	info = rxResource({
+		loader: () => this.sessionService.info(),
+	});
 
 	logout() {
 		this.sessionService.logout().subscribe({

@@ -12,6 +12,9 @@
 
 	@if (sessionService.isAuthenticated()) {
 		{{ sessionService.user().username }}
+		<span style="margin: 0 0.5rem" [title]="`${info.value()?.build} ${info.value()?.time}`">{{
+			info.value()?.version ? info.value()?.version : 'DEV'
+		}}</span>
 		<button mat-icon-button (click)="logout()">
 			<mat-icon>logout</mat-icon>
 		</button>
