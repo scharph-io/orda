@@ -94,3 +94,9 @@ h1 {
 .mat-mdc-tab-body-content {
 	scrollbar-width: thin;
 }
+
+mat-grid-tile {
+	border: 1px solid lightgray;
+	border-radius: 0.5rem;
+	background-color: #f2f4f7;
+}

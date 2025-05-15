@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
 import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 
-interface Tile {
+export interface Tile {
 	title: string;
 	path: string;
 	icon: string;
@@ -50,12 +50,6 @@ interface Tile {
 		<!-- https://taiga-ui.dev/utils/tokens -->
 	`,
 	styles: `
-		mat-grid-tile {
-			border: 1px solid lightgray;
-			border-radius: 0.5rem;
-			background-color: #f2f4f7;
-		}
-
 		mat-icon {
 			height: 3rem;
 			width: 3rem;
@@ -71,7 +65,7 @@ interface Tile {
 		}
 
 		.tile-text {
-			margin-top: 0.5rem;
+			margin-top: 0.25rem;
 			font-size: 1.5rem;
 		}
 	`,

@@ -36,12 +36,6 @@ import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 			align-content: center;
 		}
 
-		mat-grid-tile {
-			border: 1px solid rgba(75, 67, 118, 0.5);
-			border-radius: 0.5rem;
-			background-color: #f2f4f7;
-		}
-
 		.title {
 			font-size: 1.5em;
 			font-weight: 500;
