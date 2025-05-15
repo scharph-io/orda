@@ -304,11 +304,8 @@ export class CartCheckoutDialogComponent implements OnInit {
 				) ?? [],
 		} as CheckoutRequest;
 
-		// console.log(JSON.stringify(checkoutData));
-
 		this.checkoutService.checkout(checkoutData).subscribe({
 			next: () => {
-				// console.log(JSON.stringify(res));
 				this.dialogRef.close(1);
 			},
 			error: (err) => {
