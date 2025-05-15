@@ -21,22 +21,20 @@ export interface Tile {
 			{{ sessionService.user().username }}
 		</h1>
 
-		<div class="container">
-			<mat-grid-list [cols]="gridCol.size()" [gutterSize]="'0.5rem'">
-				@for (tile of primaryTiles(); track tile) {
-					@if (tile.canActivate ? tile.canActivate() : true) {
-						<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
-							><div class="tile-content">
-								<mat-icon aria-hidden="false">
-									{{ tile.icon }}
-								</mat-icon>
-								<span class="tile-text">{{ tile.title }}</span>
-							</div>
-						</mat-grid-tile>
-					}
+		<mat-grid-list class="manage-list" [cols]="gridCol.size()" [gutterSize]="'0.5rem'">
+			@for (tile of primaryTiles(); track tile) {
+				@if (tile.canActivate ? tile.canActivate() : true) {
+					<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1">
+						<div class="tile-content">
+							<mat-icon aria-hidden="false">
+								{{ tile.icon }}
+							</mat-icon>
+							<span class="tile-text">{{ tile.title }}</span>
+						</div>
+					</mat-grid-tile>
 				}
-			</mat-grid-list>
-		</div>
+			}
+		</mat-grid-list>
 
 		<!-- <h2>TODOs for v0.2.1</h2>
 		<ul>
@@ -50,6 +48,10 @@ export interface Tile {
 		<!-- https://taiga-ui.dev/utils/tokens -->
 	`,
 	styles: `
+		h1 {
+			margin-top: 5vh;
+		}
+
 		mat-icon {
 			height: 3rem;
 			width: 3rem;

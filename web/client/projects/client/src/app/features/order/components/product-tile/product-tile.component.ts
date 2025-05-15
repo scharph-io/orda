@@ -9,7 +9,9 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 	imports: [OrdaCurrencyPipe, MatDividerModule, OrdaCurrencyPipe],
 	template: `
 		<div class="item-0">{{ product().name }}</div>
-		<div class="item-1">{{ product().desc }}</div>
+		@if (product().desc) {
+			<div class="item-1">{{ product().desc }}</div>
+		}
 		<div class="item-2"><mat-divider></mat-divider></div>
 		<div class="item-3">{{ product().price | currency }}</div>
 	`,

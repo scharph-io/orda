@@ -17,7 +17,6 @@ import { StatisticsComponent } from '@orda.features/manage/history/statistics/st
 		MatInputModule,
 		MatDatepickerModule,
 		ReactiveFormsModule,
-
 		MatTabGroup,
 		MatTab,
 		TransactionsComponent,

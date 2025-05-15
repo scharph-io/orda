@@ -67,7 +67,7 @@ import { CartMobileComponent } from '@orda.features/order/components/cart-mobile
 		}
 
 		.cart {
-			background-color: rgba(21, 94, 149, 0.2);
+			background-color: #f5ebe070;
 		}
 	`,
 })

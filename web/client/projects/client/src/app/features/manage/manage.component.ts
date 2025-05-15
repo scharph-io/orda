@@ -11,8 +11,8 @@ import { Tile } from '@orda.features/home/home.component';
 	selector: 'orda-manage',
 	imports: [RouterModule, MatButtonModule, MatGridListModule, MatRipple, MatIcon],
 	template: `
-		<h1>Verwaltung</h1>
-		<mat-grid-list [cols]="gridColumns()" [gutterSize]="'0.5rem'">
+		<h1>Verwalten</h1>
+		<mat-grid-list class="manage-list" [cols]="gridColumns()" [gutterSize]="'0.5rem'">
 			@for (tile of primaryTiles(); track tile) {
 				<mat-grid-tile mat-ripple (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
 					><div class="tile-content">
@@ -26,6 +26,10 @@ import { Tile } from '@orda.features/home/home.component';
 		</mat-grid-list>
 	`,
 	styles: `
+		h1 {
+			margin-top: 5vh;
+		}
+
 		mat-icon {
 			height: 3rem;
 			width: 3rem;
@@ -51,8 +55,8 @@ export class ManageComponent {
 	gridColumns = inject(GridColSizeService).size;
 
 	primaryTiles = signal<Tile[]>([
+		{ title: 'Zurück', path: '/home', icon: 'arrow_back' },
 		{ title: 'Bestellseiten', path: '/manage/views', icon: 'view_list' },
-
 		{
 			title: 'Sortiment',
 			path: '/manage/assortment',

@@ -20,7 +20,7 @@ import { OrdaColorService } from '@orda.shared/utils/color';
 		PlusMinusTileComponent,
 	],
 	template: `
-		<mat-grid-list [cols]="gridCols()" gutterSize="0.5rem">
+		<mat-grid-list class="order-grid" [cols]="gridCols()" gutterSize="0.5rem">
 			@if (deposit(); as deposit) {
 				<mat-grid-tile
 					matRipple
@@ -55,8 +55,13 @@ import { OrdaColorService } from '@orda.shared/utils/color';
 	styles: `
 		mat-grid-tile {
 			cursor: pointer;
-			border-radius: 0.25em;
-			background-color: lightgrey;
+			border-radius: 0.5em;
+			background-color: #edede9;
+			border: 1px solid #e3d5ca;
+		}
+
+		.order-grid {
+			margin: 0 0.5rem;
 		}
 	`,
 })
