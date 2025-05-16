@@ -38,6 +38,8 @@ import { AccountGroupService } from '@orda.features/data-access/services/account
 import { TitleCasePipe } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { AccountGroupComponent } from '@orda.features/manage/account/group/group.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/dialogs/account-correction-dialog/account-correction-dialog.component';
 
 @Component({
 	selector: 'orda-account',
@@ -53,17 +55,23 @@ import { AccountGroupComponent } from '@orda.features/manage/account/group/group
 		RouterModule,
 		MatTabsModule,
 		AccountGroupComponent,
+		MatMenuModule,
 	],
 	template: `
-		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
+		<h1>Accounts</h1>
+		<mat-tab-group
+			mat-stretch-tabs="false"
+			mat-align-tabs="start"
+			animationDuration="0ms"
+			style="margin: 0 0.5rem"
+		>
 			<mat-tab label="Accounts">
-				<button mat-button (click)="create()">New</button>
-				<button mat-button (click)="groupDeposit()">Group Deposit</button>
-				<br />
 				<mat-form-field>
 					<mat-label>Filter</mat-label>
 					<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
 				</mat-form-field>
+				<button mat-button (click)="create()">New</button>
+				<button mat-button (click)="groupDeposit()">Group Deposit</button>
 
 				<div class="mat-elevation-z8">
 					<table mat-table [dataSource]="dataSource()" matSort>
@@ -88,30 +96,58 @@ import { AccountGroupComponent } from '@orda.features/manage/account/group/group
 						</ng-container>
 
 						<ng-container matColumnDef="actions">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
-							<td mat-cell *matCellDef="let row">
+							<th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 2rem"></th>
+							<td mat-cell *matCellDef="let row" [id]="row.id" style="width: 2rem">
 								<button
-									class="delete-btn"
+									style="float: right"
 									mat-icon-button
-									(click)="delete(row)"
-									[disabled]="hasMainBalance(row)"
+									[matMenuTriggerFor]="menu"
+									aria-label="Account menu actions"
 								>
-									<mat-icon>delete</mat-icon>
+									<mat-icon>more_vert</mat-icon>
 								</button>
-								<button mat-icon-button (click)="edit(row)">
-									<mat-icon>edit</mat-icon>
-								</button>
-								<button mat-icon-button (click)="deposit(row)">
-									<mat-icon>add_business</mat-icon>
-								</button>
-								<button mat-icon-button (click)="info(row)">
-									<mat-icon>info</mat-icon>
-								</button>
+								<mat-menu #menu="matMenu">
+									<button mat-menu-item [matMenuTriggerFor]="creditMenu">
+										<mat-icon>price_change</mat-icon>
+										<span>Guthaben</span>
+									</button>
+									<button mat-menu-item (click)="info(row)">
+										<mat-icon>info</mat-icon>
+										<span>Info</span>
+									</button>
+									<button mat-menu-item (click)="edit(row)">
+										<mat-icon>edit</mat-icon>
+										<span>Bearbeiten</span>
+									</button>
+									<button
+										class="delete-btn"
+										mat-menu-item
+										(click)="delete(row)"
+										[disabled]="hasMainBalance(row)"
+									>
+										<mat-icon>delete</mat-icon>
+										<span>Löschen</span>
+									</button>
+								</mat-menu>
+								<mat-menu #creditMenu="matMenu">
+									<button mat-menu-item (click)="deposit(row)">
+										<mat-icon>add_circle</mat-icon>
+										<span>Aufbuchen</span>
+									</button>
+									<button mat-menu-item (click)="correction(row)">
+										<mat-icon>edit_note</mat-icon>
+										<span>Korrektur</span>
+									</button>
+									<button mat-menu-item disabled="true">
+										<mat-icon>history</mat-icon>
+										<span>Verlauf</span>
+									</button>
+								</mat-menu>
 							</td>
 						</ng-container>
 
 						<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-						<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+						<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
 
 						<!-- Row shown when there is no matching data. -->
 						<tr class="mat-row" *matNoDataRow>
@@ -147,7 +183,8 @@ export class AccountComponent extends EntityManager<Account> {
 		super();
 	}
 
-	displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
+	// displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
+	displayedColumns: string[] = ['name', 'group', 'credit-balance', 'actions'];
 
 	sort = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -221,6 +258,13 @@ export class AccountComponent extends EntityManager<Account> {
 		this.dialogClosed<GroupDepositDialogComponent, undefined, undefined>(
 			GroupDepositDialogComponent,
 			undefined,
+		).subscribe(() => this.data.reload());
+	}
+
+	correction(acc: Account) {
+		this.dialogClosed<AccountCorrectionDialogComponent, Account, Account>(
+			AccountCorrectionDialogComponent,
+			acc,
 		).subscribe(() => this.data.reload());
 	}
 }
@@ -340,16 +384,16 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 					@for (val of DEPOSIT_VALUES; track val) {
 						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
 					}
-					<mat-button-toggle [value]="-1">Custom</mat-button-toggle>
+					<mat-button-toggle [value]="-1">Eigen</mat-button-toggle>
 				</mat-button-toggle-group>
 				@if (formGroup.value.amount === -1) {
 					<mat-form-field>
-						<mat-label>Amount</mat-label>
+						<mat-label>Betrag</mat-label>
 						<input matInput type="number" formControlName="customAmount" />
 					</mat-form-field>
 				}
 				<mat-form-field>
-					<mat-label>Reason</mat-label>
+					<mat-label>Grund</mat-label>
 					<input matInput type="string" formControlName="reason" placeholder="Optional" />
 				</mat-form-field>
 			</form>

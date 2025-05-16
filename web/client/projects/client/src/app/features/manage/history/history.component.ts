@@ -23,13 +23,13 @@ import { StatisticsComponent } from '@orda.features/manage/history/statistics/st
 		StatisticsComponent,
 	],
 	template: `
-		<mat-form-field>
+		<mat-form-field style="margin: 0.5rem">
 			<mat-label>Datum auswählen</mat-label>
 			<input matInput [matDatepicker]="picker" [formControl]="date" />
 			<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 			<mat-datepicker #picker></mat-datepicker>
 		</mat-form-field>
-		<mat-tab-group animationDuration="0ms">
+		<mat-tab-group animationDuration="0ms" style="margin: 0 0.5rem">
 			<mat-tab label="Transaktionen">
 				<orda-transactions [date]="dateChanged() ?? ''" />
 			</mat-tab>

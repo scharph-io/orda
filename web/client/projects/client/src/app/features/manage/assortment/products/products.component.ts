@@ -34,23 +34,8 @@ import { NgClass } from '@angular/common';
 @Component({
 	selector: 'orda-assortment-view-details',
 	template: `
-		<h2>{{ group.value()?.name }}</h2>
+		<h1>{{ group.value()?.name }}</h1>
 		@if (group.value(); as g) {
-			<div class="title-toolbar">
-				<button mat-button (click)="create()">New</button>
-
-				<button
-					mat-flat-button
-					(click)="openDepositDialog()"
-					[title]="g.deposit?.active ? 'active' : 'inactive'"
-					[ngClass]="g.deposit ? (g.deposit.active ? 'active-btn' : 'inactive-btn') : ''"
-				>
-					Deposit
-					@if (g.deposit) {
-						{{ g.deposit.price | currency }}
-					}
-				</button>
-			</div>
 			<mat-form-field>
 				<mat-label>Filter</mat-label>
 				<input matInput (keyup)="applyFilter($event)" #input />
@@ -60,6 +45,19 @@ import { NgClass } from '@angular/common';
 					</button>
 				}
 			</mat-form-field>
+			<button mat-button (click)="create()">New</button>
+
+			<button
+				mat-flat-button
+				(click)="openDepositDialog()"
+				[title]="g.deposit?.active ? 'active' : 'inactive'"
+				[ngClass]="g.deposit ? (g.deposit.active ? 'active-btn' : 'inactive-btn') : ''"
+			>
+				Deposit
+				@if (g.deposit) {
+					{{ g.deposit.price | currency }}
+				}
+			</button>
 
 			<div class="mat-elevation-z8">
 				<table mat-table [dataSource]="dataSource()" matSort>
