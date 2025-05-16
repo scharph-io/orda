@@ -95,6 +95,7 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	account.Put("/:id", s.accountHandlers.Update, s.authHandlers.RequireRole("admin"))
 	account.Post("/", s.accountHandlers.Create, s.authHandlers.RequireRole("admin"))
 	account.Post("/:id/deposit", s.accountHandlers.Deposit, s.authHandlers.RequireRole("admin"))
+	account.Post("/:id/correct", s.accountHandlers.Correct, s.authHandlers.RequireRole("admin"))
 	account.Delete("/:id", s.accountHandlers.Delete, s.authHandlers.RequireRole("admin"))
 
 	// Account Group

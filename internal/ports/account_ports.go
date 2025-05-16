@@ -10,8 +10,14 @@ import (
 type AccDepositRequest struct {
 	Amount        int32                `json:"amount" validate:"required gt=0"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
-	HistoryAction domain.HistoryAction `json:"history_type" validate:"required"`
+	HistoryAction domain.HistoryAction `json:"history_action" validate:"required"`
 	TransactionId string               `json:"transactionid,omitzero"`
+	Reason        string               `json:"reason"`
+}
+
+type AccCorrectionRequest struct {
+	NewBalance int32  `json:"new_balance" validate:"required gt=0"`
+	Reason     string `json:"reason"`
 }
 
 type AccDebitRequest struct {
@@ -27,6 +33,7 @@ type AccDebitResponse struct {
 type AccDepositGroupRequest struct {
 	Amount int32  `json:"amount"`
 	UserId string `json:"userid,omitempty"`
+	Reason string `json:"reason"`
 }
 
 type AccountRequest struct {
@@ -96,6 +103,7 @@ type IAccountService interface {
 	GetGroupAccounts(ctx context.Context, id string) ([]AccountResponse, error)
 	DepositAmount(ctx context.Context, userid, accountId string, req AccDepositRequest) (*AccountResponse, error)
 	DebitAmount(ctx context.Context, userid, accountId string, req AccDebitRequest) (*AccDebitResponse, error)
+	CorrectionAmount(ctx context.Context, userid, accountId string, req AccCorrectionRequest) (*AccountResponse, error)
 	GetAccountHistory(ctx context.Context, accountid string) ([]*AccountHistoryResponse, error)
 	Delete(ctx context.Context, id string) (bool, error)
 }
@@ -115,6 +123,7 @@ type IAccountHandlers interface {
 	GetById(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
 	Deposit(c *fiber.Ctx) error
+	Correct(c *fiber.Ctx) error
 	GetHistory(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error
 }

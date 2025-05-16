@@ -5,9 +5,7 @@ import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { Account } from '@orda.core/models/account';
 import { EntityManager } from '@orda.shared/utils/entity-manager';
-
 import { AccountService } from '@orda.features/data-access/services/account/account.service';
-
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -41,6 +39,18 @@ import { AccountGroupComponent } from '@orda.features/manage/account/group/group
 import { MatMenuModule } from '@angular/material/menu';
 import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/dialogs/account-correction-dialog/account-correction-dialog.component';
 
+export enum HistoryAction {
+	Debit = 0,
+	Deposit = 1,
+	Correction = 2,
+	Reset = 3,
+}
+
+export enum DepositType {
+	Free = 0,
+	Cash = 1,
+}
+
 @Component({
 	selector: 'orda-account',
 	imports: [
@@ -58,40 +68,40 @@ import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/
 		MatMenuModule,
 	],
 	template: `
-		<h1>Accounts</h1>
 		<mat-tab-group
 			mat-stretch-tabs="false"
 			mat-align-tabs="start"
 			animationDuration="0ms"
 			style="margin: 0 0.5rem"
 		>
-			<mat-tab label="Accounts">
+			<mat-tab label="Konten">
 				<mat-form-field>
 					<mat-label>Filter</mat-label>
-					<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
+					<input matInput (keyup)="applyFilter($event)" #input />
 				</mat-form-field>
-				<button mat-button (click)="create()">New</button>
-				<button mat-button (click)="groupDeposit()">Group Deposit</button>
-
+				<button mat-button (click)="create()">Neu</button>
+				<button mat-icon-button (click)="groupDeposit()">
+					<mat-icon>group_add</mat-icon>
+				</button>
 				<div class="mat-elevation-z8">
 					<table mat-table [dataSource]="dataSource()" matSort>
 						<ng-container matColumnDef="name">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Firstname</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
 							<td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
 						</ng-container>
 
 						<ng-container matColumnDef="group">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Group</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Gruppe</th>
 							<td mat-cell *matCellDef="let row">{{ row.group }}</td>
 						</ng-container>
 
 						<ng-container matColumnDef="main-balance">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Geldbetrag</th>
 							<td mat-cell *matCellDef="let row">{{ row.main_balance | currency }}</td>
 						</ng-container>
 
 						<ng-container matColumnDef="credit-balance">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Credit</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Betrag</th>
 							<td mat-cell *matCellDef="let row">{{ row.credit_balance | currency }}</td>
 						</ng-container>
 
@@ -156,7 +166,7 @@ import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/
 					</table>
 				</div>
 			</mat-tab>
-			<mat-tab label="Groups">
+			<mat-tab label="Gruppen">
 				<ng-template matTabContent>
 					<orda-account-groups />
 				</ng-template>
@@ -377,6 +387,7 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 			[customTemplate]="template"
 			[form]="formGroup"
 			(submitClick)="submit()"
+			[title]="'Buchung'"
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
@@ -424,16 +435,18 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 				this.accountService
 					.deposit(this.inputData?.id ?? '', {
 						amount: this.formGroup.value.customAmount ?? 0,
-						history_type: 0,
-						deposit_type: 0,
+						history_action: HistoryAction.Deposit,
+						deposit_type: DepositType.Free,
+						reason: this.formGroup.value.reason ?? '',
 					})
 					.subscribe(this.closeObserver);
 			} else {
 				this.accountService
 					.deposit(this.inputData?.id ?? '', {
 						amount: this.formGroup.value.amount ?? 0,
-						history_type: 0,
-						deposit_type: 0,
+						history_action: HistoryAction.Deposit,
+						deposit_type: DepositType.Free,
+						reason: this.formGroup.value.reason ?? '',
 					})
 					.subscribe(this.closeObserver);
 			}
