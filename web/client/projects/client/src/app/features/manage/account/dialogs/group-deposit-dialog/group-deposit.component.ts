@@ -42,33 +42,33 @@ import { MatInput } from '@angular/material/input';
 		MatSelect,
 		MatInput,
 	],
-	template: ` <h2 mat-dialog-title>Group Deposit</h2>
+	template: ` <h2 mat-dialog-title>Gruppeneinzahlung</h2>
 		<mat-dialog-content>
 			<form [formGroup]="formGroup">
 				<div class="dialog-flex">
 					<mat-form-field>
-						<mat-label>Group</mat-label>
+						<mat-label>Gruppe</mat-label>
 						<mat-select formControlName="group">
 							@for (group of accountGroupService.entityResource.value(); track group.id) {
 								<mat-option [value]="group.id">{{ group.name }}</mat-option>
 							}
 						</mat-select>
 					</mat-form-field>
-					<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
+					<mat-button-toggle-group formControlName="amount">
 						@for (val of DEPOSIT_VALUES; track val) {
 							<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
 						}
 					</mat-button-toggle-group>
 					<mat-form-field>
-						<mat-label>Reason</mat-label>
+						<mat-label>Grund</mat-label>
 						<input matInput type="string" formControlName="reason" placeholder="Optional" />
 					</mat-form-field>
 				</div>
 			</form>
 		</mat-dialog-content>
 		<mat-dialog-actions>
-			<button mat-button mat-dialog-close>Cancel</button>
-			<button mat-button [disabled]="formGroup.invalid" (click)="submit()">Deposit</button>
+			<button mat-button mat-dialog-close>Abbrechen</button>
+			<button mat-button [disabled]="formGroup.invalid" (click)="submit()">Einzahlen</button>
 		</mat-dialog-actions>
 		‚`,
 	styles: ``,
@@ -86,6 +86,7 @@ export class GroupDepositDialogComponent extends DialogTemplateComponent<Account
 		this.accountGroupService
 			.deposit(this.formGroup.value.group ?? '', {
 				amount: this.formGroup.value.amount ?? 0,
+				reason: this.formGroup.value.reason ?? '',
 			})
 			.subscribe(this.closeObserver);
 	};

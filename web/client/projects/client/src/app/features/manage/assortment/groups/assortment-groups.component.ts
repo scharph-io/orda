@@ -28,8 +28,8 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 	selector: 'orda-assortment-groups',
 	imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule],
 	template: `
+		<h1>Sortiment</h1>
 		<div class="title-toolbar">
-			<h2>Assortment Groups</h2>
 			<button mat-button (click)="create()">New</button>
 		</div>
 

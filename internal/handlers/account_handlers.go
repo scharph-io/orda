@@ -140,6 +140,22 @@ func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 
+func (h *AccountHandlers) Correct(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	var req ports.AccCorrectionRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request",
+		})
+	}
+	res, err := h.service.CorrectionAmount(c.Context(), c.Locals("userid").(string), id, req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to correct new balance to account"})
+	}
+	return c.Status(fiber.StatusOK).JSON(res)
+}
+
 func (h *AccountHandlers) DepositGroup(c *fiber.Ctx) error {
 	id := c.Params("id")
 	req := ports.AccDepositGroupRequest{}

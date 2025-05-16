@@ -7,7 +7,6 @@ import {
 	InjectionToken,
 	input,
 	output,
-	signal,
 	TemplateRef,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -38,16 +37,19 @@ export const FORM = new InjectionToken<FormGroup>('form');
 		MatDialogTitle,
 	],
 	template: `
-		<h2 mat-dialog-title>{{ inputData ? 'Update' : 'Create' }}</h2>
+		@if (title()) {
+			<h2 mat-dialog-title>{{ title() }}</h2>
+		} @else {
+			<h2 mat-dialog-title>{{ inputData ? 'Bearbeiten' : 'Neu' }}</h2>
+		}
 		<mat-dialog-content>
 			<ng-container *ngTemplateOutlet="customTemplate()" />
 		</mat-dialog-content>
 		<mat-dialog-actions>
-			<button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
+			<button mat-button mat-dialog-close cdkFocusInitial>Abbrechen</button>
 			<button mat-button [disabled]="!canSubmit()" (click)="submitClick.emit()">
-				{{ inputData ? 'Update' : 'Save' }}
+				{{ inputData ? 'Speichern' : 'Erzeugen' }}
 			</button>
-			<!-- {{ canSubmit() }} -->
 		</mat-dialog-actions>
 	`,
 	styleUrl: './dialog-template.component.css',
@@ -58,7 +60,8 @@ export class DialogTemplateComponent<D, R = D> {
 	customTemplate = input.required<TemplateRef<ElementRef>>();
 	form = input.required<FormGroup>();
 	submitClick = output();
-	canSubmit = signal<boolean>(true);
+	canSubmit = input<boolean>(true);
+	title = input<string | undefined>(undefined);
 
 	protected readonly inputData = inject<D>(MAT_DIALOG_DATA);
 	protected readonly dialogRef: MatDialogRef<DialogTemplateComponent<D, R>, R> =

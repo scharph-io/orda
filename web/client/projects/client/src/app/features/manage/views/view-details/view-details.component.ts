@@ -18,11 +18,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 	imports: [MatTableModule, MatCheckboxModule, MatButton, MatFormField, MatInput, MatLabel],
 	template: `
 		<div class="title">
-			<h2>{{ view.value()?.name }}</h2>
+			<h1>{{ view.value()?.name }}</h1>
 			<p>{{ view.value()?.desc }}</p>
 		</div>
 
-		<mat-form-field>
+		<mat-form-field style="margin: 0 0.5rem">
 			<mat-label>Filter</mat-label>
 			<input matInput (keyup)="applyFilter($event)" #input />
 		</mat-form-field>
@@ -105,11 +105,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 			height: 75vh; /* Set your desired fixed height here */
 			overflow: auto;
 			width: 100%;
+			margin: 0 0.5rem;
 		}
 	`,
 })
 export class ViewDetailsComponent {
-	displayedColumns: string[] = ['select', 'name', 'desc', 'group', 'color'];
+	displayedColumns: string[] = ['select', 'name', 'desc', 'group'];
 
 	private logger = inject(OrdaLogger);
 	private viewService = inject(ViewService);
@@ -148,7 +149,7 @@ export class ViewDetailsComponent {
 		this.availableProductsDataSource().filter = filterValue.trim().toLowerCase();
 		this.availableProductsDataSource().filterPredicate = (data, filter) =>
 			data.name.toLowerCase().includes(filter) ||
-			data.desc.toLowerCase().includes(filter) ||
+			data.desc?.toLowerCase().includes(filter) ||
 			this.getGroupName(data.group_id ?? '')
 				.toLowerCase()
 				.includes(filter);
@@ -167,7 +168,6 @@ export class ViewDetailsComponent {
 			this.selection().clear();
 			return;
 		}
-
 		this.selection().select(...this.availableProductsDataSource().data.map((s) => s.id));
 	}
 

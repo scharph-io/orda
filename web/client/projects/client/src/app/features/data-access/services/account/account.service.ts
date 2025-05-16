@@ -8,8 +8,14 @@ import { HOST } from '@orda.core/config/config';
 export interface AccDepositRequest {
 	amount: number;
 	transaction_id?: string;
-	history_type: number;
+	history_action: number;
 	deposit_type: number;
+	reason: string;
+}
+
+export interface AccCorrectionRequest {
+	new_balance: number;
+	reason: string;
 }
 
 @Injectable({
@@ -47,6 +53,13 @@ export class AccountService {
 		return this.httpClient.post<Account>(
 			`${this.HOST}${API_ENDPOINTS.ACCOUNT}/${id}/deposit`,
 			deposit,
+		);
+	}
+
+	correct(id: string, correction: AccCorrectionRequest): Observable<Account> {
+		return this.httpClient.post<Account>(
+			`${this.HOST}${API_ENDPOINTS.ACCOUNT}/${id}/correct`,
+			correction,
 		);
 	}
 }

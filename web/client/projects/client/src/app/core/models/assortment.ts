@@ -11,7 +11,7 @@ export type GroupDeposit = Pick<AssortmentProduct, 'price' | 'active' | 'group_i
 export interface AssortmentProduct {
 	id: string;
 	name: string;
-	desc: string;
+	desc?: string;
 	price: number;
 	active?: boolean;
 	group_id?: string;

@@ -60,10 +60,6 @@ import { AccountService } from '@orda.features/data-access/services/account/acco
 			align-items: center;
 		}
 
-		/*mat-list {*/
-		/*	width: 50%;*/
-		/*}*/
-
 		.title-toolbar {
 			display: flex;
 			align-items: center;
@@ -121,10 +117,6 @@ export class AccountGroupComponent extends EntityManager<AccountGroup> {
 				error: (err) => this.logger.error(err),
 			});
 	}
-
-	// updatePolicy(group: Group) {
-	// 	console.log('update policy for ' + group.name);
-	// }
 }
 
 @Component({
@@ -152,7 +144,6 @@ export class AccountGroupComponent extends EntityManager<AccountGroup> {
 					</mat-form-field>
 				</div>
 			</form>
-			<!-- can save {{ canSubmit() }} -->
 		</ng-template>
 	`,
 	styles: ``,
