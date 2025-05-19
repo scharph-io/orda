@@ -29,6 +29,7 @@ type LogRequest struct {
 	AccountId      *string              `json:"account_id,omitempty"`
 	AccountGroupId *string              `json:"account_group_id,omitempty"`
 	Amount         int32                `json:"amount"`
+	Reason         string               `json:"reason"`
 }
 
 type IAccountHistoryRepository interface {

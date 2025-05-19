@@ -11,6 +11,7 @@ type DepositType uint8
 const (
 	HistoryDebitAction HistoryAction = iota
 	HistoryDepositAction
+	HistoryCorrectionAction
 	HistoryBalanceResetAction
 )
 

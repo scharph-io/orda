@@ -5,9 +5,7 @@ import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { Account } from '@orda.core/models/account';
 import { EntityManager } from '@orda.shared/utils/entity-manager';
-
 import { AccountService } from '@orda.features/data-access/services/account/account.service';
-
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -38,6 +36,20 @@ import { AccountGroupService } from '@orda.features/data-access/services/account
 import { TitleCasePipe } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { AccountGroupComponent } from '@orda.features/manage/account/group/group.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/dialogs/account-correction-dialog/account-correction-dialog.component';
+
+export enum HistoryAction {
+	Debit = 0,
+	Deposit = 1,
+	Correction = 2,
+	Reset = 3,
+}
+
+export enum DepositType {
+	Free = 0,
+	Cash = 1,
+}
 
 @Component({
 	selector: 'orda-account',
@@ -53,65 +65,99 @@ import { AccountGroupComponent } from '@orda.features/manage/account/group/group
 		RouterModule,
 		MatTabsModule,
 		AccountGroupComponent,
+		MatMenuModule,
 	],
 	template: `
-		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
-			<mat-tab label="Accounts">
-				<button mat-button (click)="create()">New</button>
-				<button mat-button (click)="groupDeposit()">Group Deposit</button>
-				<br />
+		<mat-tab-group
+			mat-stretch-tabs="false"
+			mat-align-tabs="start"
+			animationDuration="0ms"
+			style="margin: 0 0.5rem"
+		>
+			<mat-tab label="Konten">
 				<mat-form-field>
 					<mat-label>Filter</mat-label>
-					<input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input />
+					<input matInput (keyup)="applyFilter($event)" #input />
 				</mat-form-field>
-
+				<button mat-button (click)="create()">Neu</button>
+				<button mat-icon-button (click)="groupDeposit()">
+					<mat-icon>group_add</mat-icon>
+				</button>
 				<div class="mat-elevation-z8">
 					<table mat-table [dataSource]="dataSource()" matSort>
 						<ng-container matColumnDef="name">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Firstname</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
 							<td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
 						</ng-container>
 
 						<ng-container matColumnDef="group">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Group</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Gruppe</th>
 							<td mat-cell *matCellDef="let row">{{ row.group }}</td>
 						</ng-container>
 
 						<ng-container matColumnDef="main-balance">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Geldbetrag</th>
 							<td mat-cell *matCellDef="let row">{{ row.main_balance | currency }}</td>
 						</ng-container>
 
 						<ng-container matColumnDef="credit-balance">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Credit</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Betrag</th>
 							<td mat-cell *matCellDef="let row">{{ row.credit_balance | currency }}</td>
 						</ng-container>
 
 						<ng-container matColumnDef="actions">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
-							<td mat-cell *matCellDef="let row">
+							<th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 2rem"></th>
+							<td mat-cell *matCellDef="let row" [id]="row.id" style="width: 2rem">
 								<button
-									class="delete-btn"
+									style="float: right"
 									mat-icon-button
-									(click)="delete(row)"
-									[disabled]="hasMainBalance(row)"
+									[matMenuTriggerFor]="menu"
+									aria-label="Account menu actions"
 								>
-									<mat-icon>delete</mat-icon>
+									<mat-icon>more_vert</mat-icon>
 								</button>
-								<button mat-icon-button (click)="edit(row)">
-									<mat-icon>edit</mat-icon>
-								</button>
-								<button mat-icon-button (click)="deposit(row)">
-									<mat-icon>add_business</mat-icon>
-								</button>
-								<button mat-icon-button (click)="info(row)">
-									<mat-icon>info</mat-icon>
-								</button>
+								<mat-menu #menu="matMenu">
+									<button mat-menu-item [matMenuTriggerFor]="creditMenu">
+										<mat-icon>price_change</mat-icon>
+										<span>Guthaben</span>
+									</button>
+									<button mat-menu-item (click)="info(row)">
+										<mat-icon>info</mat-icon>
+										<span>Info</span>
+									</button>
+									<button mat-menu-item (click)="edit(row)">
+										<mat-icon>edit</mat-icon>
+										<span>Bearbeiten</span>
+									</button>
+									<button
+										class="delete-btn"
+										mat-menu-item
+										(click)="delete(row)"
+										[disabled]="hasMainBalance(row)"
+									>
+										<mat-icon>delete</mat-icon>
+										<span>Löschen</span>
+									</button>
+								</mat-menu>
+								<mat-menu #creditMenu="matMenu">
+									<button mat-menu-item (click)="deposit(row)">
+										<mat-icon>add_circle</mat-icon>
+										<span>Aufbuchen</span>
+									</button>
+									<button mat-menu-item (click)="correction(row)">
+										<mat-icon>edit_note</mat-icon>
+										<span>Korrektur</span>
+									</button>
+									<button mat-menu-item disabled="true">
+										<mat-icon>history</mat-icon>
+										<span>Verlauf</span>
+									</button>
+								</mat-menu>
 							</td>
 						</ng-container>
 
 						<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-						<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+						<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
 
 						<!-- Row shown when there is no matching data. -->
 						<tr class="mat-row" *matNoDataRow>
@@ -120,7 +166,7 @@ import { AccountGroupComponent } from '@orda.features/manage/account/group/group
 					</table>
 				</div>
 			</mat-tab>
-			<mat-tab label="Groups">
+			<mat-tab label="Gruppen">
 				<ng-template matTabContent>
 					<orda-account-groups />
 				</ng-template>
@@ -147,7 +193,8 @@ export class AccountComponent extends EntityManager<Account> {
 		super();
 	}
 
-	displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
+	// displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
+	displayedColumns: string[] = ['name', 'group', 'credit-balance', 'actions'];
 
 	sort = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -221,6 +268,13 @@ export class AccountComponent extends EntityManager<Account> {
 		this.dialogClosed<GroupDepositDialogComponent, undefined, undefined>(
 			GroupDepositDialogComponent,
 			undefined,
+		).subscribe(() => this.data.reload());
+	}
+
+	correction(acc: Account) {
+		this.dialogClosed<AccountCorrectionDialogComponent, Account, Account>(
+			AccountCorrectionDialogComponent,
+			acc,
 		).subscribe(() => this.data.reload());
 	}
 }
@@ -333,6 +387,7 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 			[customTemplate]="template"
 			[form]="formGroup"
 			(submitClick)="submit()"
+			[title]="'Buchung'"
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
@@ -340,16 +395,16 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 					@for (val of DEPOSIT_VALUES; track val) {
 						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
 					}
-					<mat-button-toggle [value]="-1">Custom</mat-button-toggle>
+					<mat-button-toggle [value]="-1">Eigen</mat-button-toggle>
 				</mat-button-toggle-group>
 				@if (formGroup.value.amount === -1) {
 					<mat-form-field>
-						<mat-label>Amount</mat-label>
+						<mat-label>Betrag</mat-label>
 						<input matInput type="number" formControlName="customAmount" />
 					</mat-form-field>
 				}
 				<mat-form-field>
-					<mat-label>Reason</mat-label>
+					<mat-label>Grund</mat-label>
 					<input matInput type="string" formControlName="reason" placeholder="Optional" />
 				</mat-form-field>
 			</form>
@@ -380,16 +435,18 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 				this.accountService
 					.deposit(this.inputData?.id ?? '', {
 						amount: this.formGroup.value.customAmount ?? 0,
-						history_type: 0,
-						deposit_type: 0,
+						history_action: HistoryAction.Deposit,
+						deposit_type: DepositType.Free,
+						reason: this.formGroup.value.reason ?? '',
 					})
 					.subscribe(this.closeObserver);
 			} else {
 				this.accountService
 					.deposit(this.inputData?.id ?? '', {
 						amount: this.formGroup.value.amount ?? 0,
-						history_type: 0,
-						deposit_type: 0,
+						history_action: HistoryAction.Deposit,
+						deposit_type: DepositType.Free,
+						reason: this.formGroup.value.reason ?? '',
 					})
 					.subscribe(this.closeObserver);
 			}

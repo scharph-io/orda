@@ -51,6 +51,7 @@ func (s *AccountHistoryService) Log(ctx context.Context, user_id string, deposit
 			DepositType:    req.DepositType,
 			UserID:         user_id,
 			TransactionID:  transactionId,
+			Reason:         req.Reason,
 		})
 	}
 	if _, err := s.repo.Create(ctx, logs...); err != nil {

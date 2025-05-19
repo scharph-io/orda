@@ -40,8 +40,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 		MatTableModule,
 	],
 	template: `
+		<h1>Bestellseiten</h1>
 		<div class="title-toolbar">
-			<h2>Bestellseiten verwalten</h2>
 			<button mat-button (click)="create()">Neu</button>
 		</div>
 
