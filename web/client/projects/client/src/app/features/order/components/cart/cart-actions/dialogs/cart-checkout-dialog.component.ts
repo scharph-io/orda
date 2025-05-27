@@ -92,67 +92,88 @@ export interface CheckoutDialogData {
 				@if (selectedAccount() && error === '') {
 					@let balance = selectedAccount()?.credit_balance ?? 0;
 					@if (diff() > 0) {
-						<div class="error" [style.color]="'green'">
+						<div class="info" [style.color]="'green'">
 							{{ balance | currency }} - {{ total() | currency }} =
 							{{ diff() | currency }}
 						</div>
 					} @else {
 						@if (balance > 0) {
-							<div class="error" [style.color]="'red'">
+							<div class="info" [style.color]="'#ef233c'">
 								{{ balance | currency }} - {{ total() | currency }} =
 								{{ diff() | currency }}
-								<div>{{ 'Restbetrag' }} {{ diff() * -1 | currency }}</div>
+								<div class="remain">{{ 'Restbetrag bar' }} {{ diff() * -1 | currency }}</div>
 								<!--								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>-->
 							</div>
 						} @else {
 							<!--							<div class="error" [style.color]="'red'">{{ 'checkout.account-empty' }}</div>-->
-							<div class="error" [style.color]="'red'">{{ 'Konto leer' }}</div>
+							<div class="info" [style.color]="'red'">{{ 'Konto leer' }}</div>
 						}
 					}
 				}
 			}
 			<div class="error" [style.color]="'red'">{{ error }}</div>
 		</mat-dialog-content>
-		<mat-dialog-actions align="end">
+		<mat-dialog-actions align="end" class="btn-flex-container">
 			<!--			<button mat-button [mat-dialog-close]="-1" cdkFocusInitial>{{ 'checkout.cancel' }}</button>-->
-			<button mat-button [mat-dialog-close]="0" cdkFocusInitial>{{ 'Abbrechen' }}</button>
-			@switch (paymentOptionControl.value) {
-				@case (PaymentOption.CASH) {
-					<button mat-button cdkFocusInitial (click)="checkout(data.view_id)">
-						<!--						{{ 'checkout.cash.title' }}-->
-						{{ 'Barzahlung' }}
-					</button>
-				}
-				@case (PaymentOption.ACCOUNT) {
-					@let balance = selectedAccount()?.credit_balance ?? 0;
-					<button
-						mat-button
-						[disabled]="!accountControl.value || balance === 0"
-						(click)="checkout(data.view_id, PaymentOption.ACCOUNT, selectedAccount()?.id)"
-					>
-						<!--						{{ 'checkout.account.title' }}-->
-						{{ 'Kontozahlung' }}
-					</button>
-				}
-				@case (PaymentOption.FREE) {
-					<button mat-button cdkFocusInitial (click)="checkout(data.view_id, PaymentOption.FREE)">
-						<!--						{{ 'checkout.cash.title' }}-->
-						{{ 'Freizahlung' }}
-					</button>
-				}
+			<div class="btn-container">
+				<button class="cancel" mat-fab extended [mat-dialog-close]="0" cdkFocusInitial>
+					{{ 'Abbrechen' }}
+				</button>
+			</div>
+			<div class="btn-container">
+				@switch (paymentOptionControl.value) {
+					@case (PaymentOption.CASH) {
+						<button
+							class="checkout"
+							mat-fab
+							extended
+							cdkFocusInitial
+							(click)="checkout(data.view_id)"
+						>
+							<!--						{{ 'checkout.cash.title' }}-->
+							{{ 'Bar' }}
+						</button>
+					}
+					@case (PaymentOption.ACCOUNT) {
+						@let balance = selectedAccount()?.credit_balance ?? 0;
+						<button
+							class="checkout"
+							mat-fab
+							extended
+							[disabled]="!accountControl.value || balance === 0"
+							(click)="checkout(data.view_id, PaymentOption.ACCOUNT, selectedAccount()?.id)"
+						>
+							<!--						{{ 'checkout.account.title' }}-->
+							{{ 'Konto' }}
+						</button>
+					}
+					@case (PaymentOption.FREE) {
+						<button
+							class="checkout"
+							mat-fab
+							extended
+							cdkFocusInitial
+							(click)="checkout(data.view_id, PaymentOption.FREE)"
+						>
+							<!--						{{ 'checkout.cash.title' }}-->
+							{{ 'Frei' }}
+						</button>
+					}
 
-				@case (PaymentOption.SPONSOR) {
-					<button
-						mat-button
-						cdkFocusInitial
-						(click)="checkout(data.view_id, PaymentOption.SPONSOR)"
-					>
-						<!--						{{ 'checkout.cash.title' }}-->
-						{{ 'Sponsorzahlung' }}
-					</button>
+					@case (PaymentOption.SPONSOR) {
+						<button
+							class="checkout"
+							mat-fab
+							extended
+							cdkFocusInitial
+							(click)="checkout(data.view_id, PaymentOption.SPONSOR)"
+						>
+							<!--						{{ 'checkout.cash.title' }}-->
+							{{ 'Sponsor' }}
+						</button>
+					}
 				}
-			}
-			´
+			</div>
 		</mat-dialog-actions>
 	`,
 	styles: `
@@ -160,31 +181,36 @@ export interface CheckoutDialogData {
 			display: grid;
 			gap: 0.5rem;
 			grid-template:
-				'total' 1fr
-				'payment' 1fr
-				'account' 1fr
-				'error' auto/1fr;
+				'total' 10rem
+				'payment' auto
+				'account' auto
+				'info' 3rem/1fr;
 		}
 
 		.total {
+			font-size: 1.5rem;
 			justify-self: center;
 			align-self: center;
 			grid-area: total;
 		}
 
 		.account {
+			font-size: 1.2rem;
 			justify-self: center;
 			grid-area: account;
 		}
 
 		.payment {
+			font-size: 1.2rem;
 			justify-self: center;
 			grid-area: payment;
 		}
 
-		.error {
+		.info {
 			justify-self: center;
-			grid-area: error;
+			grid-area: info;
+			font-size: 1.2rem;
+			text-align: center;
 		}
 
 		.total-container {
@@ -194,7 +220,7 @@ export interface CheckoutDialogData {
 		}
 
 		.item-1 {
-			font-size: 1.5em;
+			font-size: 1.15em;
 			flex-grow: 1;
 			align-self: center;
 		}
@@ -205,6 +231,39 @@ export interface CheckoutDialogData {
 			flex-grow: 2;
 			flex-basis: 1rem;
 			align-self: center;
+		}
+
+		.btn-flex-container {
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+		}
+
+		.btn-container {
+			display: flex;
+			justify-content: center;
+			width: 9rem;
+		}
+
+		.cancel {
+			font-size: 1.1rem;
+			background-color: #e63946;
+			color: white;
+		}
+
+		.checkout {
+			font-size: 1.1rem;
+			background-color: #2a9134;
+			color: white;
+			min-width: 9rem;
+		}
+
+		.remain {
+			font-size: 1.2rem;
+			font-weight: bold;
+			color: red;
+			line-height: 2rem;
+			letter-spacing: 0.15rem;
 		}
 	`,
 })

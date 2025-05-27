@@ -19,6 +19,7 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 @Component({
 	selector: 'orda-cart-mobile',
 	imports: [MatIconButton, MatIcon, MatButton, MatBadge, OrdaCurrencyPipe],
+	providers: [OrdaCurrencyPipe],
 	template: `
 		<button class="item-0" mat-icon-button color="warn" (click)="cart.clear()">
 			<mat-icon>delete_forever</mat-icon>
@@ -54,10 +55,12 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
 			padding: 0 1rem;
 		}
 
-		.item-1 {
-			height: 3rem;
-			width: 12rem;
-			font-size: 1.25rem;
+		button {
+			&.item-1 {
+				height: 3rem;
+				width: 12rem;
+				font-size: 1.25rem;
+			}
 		}
 
 		.spacer {
@@ -77,31 +80,34 @@ export class CartMobileComponent {
 	private readonly dialog = inject(MatDialog);
 	private readonly snackBar = inject(MatSnackBar);
 
+	currencyP = inject(OrdaCurrencyPipe);
+
 	openCheckoutDialog() {
 		const dialogRef = this.dialog.open<CartCheckoutDialogComponent, { view_id: string }, number>(
 			CartCheckoutDialogComponent,
 			{
-				width: 'auto',
+				width: '95%',
 				minWidth: '25rem',
 				height: '25rem',
 				data: {
 					view_id: this.view_id(),
 				},
+				disableClose: true,
 			},
 		);
 
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result && result > 0) {
-				this.snackBar.open(`Erfolgreich`, undefined, {
+				this.snackBar.open(`${this.currencyP.transform(this.subtotal())} gebucht`, undefined, {
 					duration: 2500,
 				});
 				this.cart.clear();
 			} else if (result === 0) {
-				this.snackBar.open('Vorgang abgebrochen', undefined, {
+				this.snackBar.open('Bezahlung abgebrochen', undefined, {
 					duration: 1500,
 				});
 			} else {
-				this.snackBar.open('Fehler', undefined, {
+				this.snackBar.open('Bezahlung abgebrochen', undefined, {
 					duration: 3000,
 				});
 			}
@@ -115,7 +121,7 @@ export class CartMobileComponent {
 			undefined
 		>(CartMobileOverviewComponent, {
 			width: 'auto',
-			minWidth: '25rem',
+			minWidth: '20rem',
 			height: '25rem',
 			data: this.items,
 		});

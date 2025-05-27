@@ -7,10 +7,12 @@ import { OrderStoreService } from '@orda.features/order/services/order-store.ser
 import { CartCheckoutDialogComponent } from '@orda.features/order/components/cart/cart-actions/dialogs/cart-checkout-dialog.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 
 @Component({
 	selector: 'orda-cart-actions',
 	imports: [MatButtonModule, MatIconModule],
+	providers: [OrdaCurrencyPipe],
 	template: `
 		@let items = cartItems() ?? [];
 		@if (items.length > 0) {
@@ -21,7 +23,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 		<button
 			class="item-1"
 			mat-flat-button
-			color="primary"
 			[disabled]="items.length === 0"
 			(click)="openCheckoutDialog()"
 		>
@@ -54,6 +55,10 @@ export class CartActionsComponent {
 	dialog = inject(MatDialog);
 	private readonly snackBar = inject(MatSnackBar);
 
+	subtotal = toSignal(this.cart.subtotal$);
+
+	private readonly currencyP = inject(OrdaCurrencyPipe);
+
 	cartItems = toSignal(this.cart.items$);
 
 	clearCart(): void {
@@ -64,28 +69,31 @@ export class CartActionsComponent {
 		const dialogRef = this.dialog.open<CartCheckoutDialogComponent, { view_id: string }, number>(
 			CartCheckoutDialogComponent,
 			{
-				width: 'auto',
-				minWidth: '25rem',
-				height: '20rem',
+				width: '75%',
+
+				height: '30rem',
 				data: {
 					view_id: this.view_id(),
 				},
+				disableClose: true,
 			},
 		);
 
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result && result > 0) {
-				this.snackBar.open(`Erfolgreich`, undefined, {
+				this.snackBar.open(`${this.currencyP.transform(this.subtotal())} gebucht`, undefined, {
 					duration: 1500,
 				});
 				this.clearCart();
 			} else if (result === 0) {
-				this.snackBar.open('Vorgang abgebrochen', undefined, {
+				this.snackBar.open('Bezahlung abgebrochen', undefined, {
 					duration: 2000,
+					politeness: 'assertive',
 				});
 			} else {
-				this.snackBar.open('Fehler', undefined, {
+				this.snackBar.open('Bezahlung abgebrochen', undefined, {
 					duration: 3000,
+					politeness: 'assertive',
 				});
 			}
 		});
