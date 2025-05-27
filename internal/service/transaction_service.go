@@ -54,17 +54,10 @@ func (s *TransactionService) Create(ctx context.Context, userid string, t ports.
 		})
 	}
 
-	var acc sql.NullString
-	if t.AccountID != "" {
-		acc = sql.NullString{String: t.AccountID, Valid: true}
-	} else {
-		acc = sql.NullString{Valid: false}
-	}
-
 	transaction := &domain.Transaction{
 		PaymentOption: t.PaymentOption,
 		UserID:        userid,
-		AccountID:     acc,
+		AccountID:     sql.NullString{Valid: false},
 		Total:         total,
 		Items:         items,
 		TotalCredit:   0,
@@ -142,6 +135,7 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		TransactionId: transaction.ID,
 	})
 	if err != nil {
+
 		return nil, err
 	}
 
@@ -159,6 +153,7 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 			AccountID:     sql.NullString{String: req.AccountID, Valid: true},
 			Total:         debitAmount.RemainingCash,
 			TotalCredit:   0,
+			ViewID:        req.ViewId,
 		})
 		if err != nil {
 			return nil, err
@@ -169,6 +164,8 @@ func (s *TransactionService) CreateWithAccount(ctx context.Context, userid strin
 		TransactionID: updatedTransaction.ID,
 		Total:         updatedTransaction.Total,
 		ItemsLength:   len(updatedTransaction.Items),
+		CreatedAt:     updatedTransaction.CreatedAt.Local().String(),
+		PaymentOption: updatedTransaction.PaymentOption,
 	}, nil
 }
 
@@ -184,10 +181,6 @@ func (s *TransactionService) Read(ctx context.Context) ([]*ports.TransactionResp
 			Total:         v.Total,
 			ItemsLength:   len(v.Items),
 			ViewId:        v.ViewID,
-			// Account:       fmt.Sprintf("%s %s", v.Account.Firstname, v.Account.Lastname),
-			// Account: *ports.AccountResponse{
-			// 	Firstname: v.Account.Firstname,
-			// },
 		})
 	}
 	return res, nil
