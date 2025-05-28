@@ -86,7 +86,7 @@ export class HomeComponent {
 			canActivate: () => this.sessionService.hasAdminRole(),
 		},
 		{
-			title: 'Laden',
+			title: 'Geschäft',
 			path: '/order',
 			icon: 'storefront',
 		},

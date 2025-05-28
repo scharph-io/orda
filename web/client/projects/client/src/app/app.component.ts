@@ -18,10 +18,10 @@ import { rxResource } from '@angular/core/rxjs-interop';
 				flex: 1 1 auto;
 			}
 
-			.version {
-				margin: 0 1rem;
-				font-size: 0.6em;
-			}
+			/*.version {*/
+			/*	margin: 0 1rem;*/
+			/*	font-size: 0.6em;*/
+			/*}*/
 		`,
 	],
 })
