@@ -6,7 +6,7 @@ require (
 	github.com/casbin/casbin/v2 v2.105.0
 	github.com/casbin/gorm-adapter/v3 v3.32.0
 	github.com/go-sql-driver/mysql v1.9.2
-	github.com/gofiber/fiber/v2 v2.52.6
+	github.com/gofiber/fiber/v2 v2.52.7
 	github.com/gofiber/storage/mysql/v2 v2.1.0
 	github.com/google/uuid v1.6.0
 	github.com/spf13/viper v1.20.1
