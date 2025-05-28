@@ -36,6 +36,9 @@ import { MatIcon } from '@angular/material/icon';
 		}
 	`,
 	styles: `
+		mat-grid-list {
+			margin: 1rem;
+		}
 		h1 {
 			margin-top: 5vh;
 		}

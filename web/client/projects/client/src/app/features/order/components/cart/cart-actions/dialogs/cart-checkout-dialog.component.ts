@@ -243,6 +243,7 @@ export interface CheckoutDialogData {
 			display: flex;
 			justify-content: center;
 			width: 9rem;
+			flex-grow: 1;
 		}
 
 		.cancel {
@@ -264,6 +265,10 @@ export interface CheckoutDialogData {
 			color: red;
 			line-height: 2rem;
 			letter-spacing: 0.15rem;
+		}
+
+		button.checkout {
+			flex-grow: 1;
 		}
 	`,
 })
