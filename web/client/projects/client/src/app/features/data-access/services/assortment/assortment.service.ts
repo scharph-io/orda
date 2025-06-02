@@ -16,7 +16,7 @@ export class AssortmentService {
 	logger = inject(OrdaLogger);
 
 	public groups = rxResource({
-		loader: () => this.readGroups(),
+		stream: () => this.readGroups(),
 	});
 
 	constructor() {

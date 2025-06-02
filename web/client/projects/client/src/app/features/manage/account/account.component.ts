@@ -181,7 +181,7 @@ export class AccountComponent extends EntityManager<Account> {
 	accountService = inject(AccountService);
 
 	data = rxResource<Account[], undefined>({
-		loader: () =>
+		stream: () =>
 			this.accountService
 				.read()
 				.pipe(map((res) => res.sort((a, b) => a.lastname.localeCompare(b.lastname)))),

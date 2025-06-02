@@ -96,8 +96,8 @@ export class TransactionsComponent {
 	readonly date = input.required<string>();
 
 	data = rxResource({
-		request: () => this.date(),
-		loader: ({ request }) => this.transactionService.getTransactionsByDate(request ?? undefined),
+		params: () => this.date(),
+		stream: ({ params }) => this.transactionService.getTransactionsByDate(params ?? undefined),
 	});
 
 	displayedColumns: string[] = ['created', 'payment_option', 'account', 'total', 'actions'];

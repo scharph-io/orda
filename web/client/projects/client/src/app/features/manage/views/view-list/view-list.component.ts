@@ -207,7 +207,7 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
 	roleService = inject(RoleService);
 
 	viewDetails = rxResource({
-		loader: () =>
+		stream: () =>
 			this.viewService.readById(this.inputData.id).pipe(map((view) => view.roles.map((r) => r.id))),
 	});
 
