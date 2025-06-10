@@ -147,12 +147,12 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 
 	group_id = signal<string>(this.route.snapshot.paramMap.get('id') ?? '');
 	group = rxResource({
-		request: () => this.group_id(),
-		loader: ({ request }) => this.assortmentService.readGroupById(request),
+		params: () => this.group_id(),
+		stream: ({ params }) => this.assortmentService.readGroupById(params),
 	});
 
 	products = rxResource({
-		loader: () => this.assortmentService.readProducts(this.group_id()),
+		stream: () => this.assortmentService.readProducts(this.group_id()),
 	});
 
 	dataSource = computed(() => new MatTableDataSource(this.products.value() ?? []));

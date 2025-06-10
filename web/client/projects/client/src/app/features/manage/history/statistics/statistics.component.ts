@@ -48,8 +48,8 @@ export class StatisticsComponent {
 	readonly date = input.required<string>();
 
 	summary = rxResource({
-		request: () => this.date(),
-		loader: ({ request }) => this.transactionService.getSummaryByDate(request ?? undefined),
+		params: () => this.date(),
+		stream: ({ params }) => this.transactionService.getSummaryByDate(params ?? undefined),
 	});
 	protected readonly PaymentOptionKeys = PaymentOptionKeys;
 

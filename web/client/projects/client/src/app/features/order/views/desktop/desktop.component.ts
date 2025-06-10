@@ -78,8 +78,8 @@ export class OrderDesktopComponent {
 	assortmentService = inject(AssortmentService);
 
 	data = rxResource({
-		request: () => this.view(),
-		loader: ({ request }) => this.orderService.getViewProducts(request),
+		params: () => this.view(),
+		stream: ({ params }) => this.orderService.getViewProducts(params),
 	});
 
 	gridCols = inject(GridColSizeService).size;

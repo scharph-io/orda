@@ -19,8 +19,8 @@ export class ViewsComponent implements OnInit {
 
 	view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
 	view = rxResource<View, string>({
-		request: () => this.view_id(),
-		loader: ({ request }) => this.viewService.readById(request),
+		params: () => this.view_id(),
+		stream: ({ params }) => this.viewService.readById(params),
 	});
 
 	ngOnInit() {

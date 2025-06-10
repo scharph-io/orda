@@ -32,7 +32,7 @@ export class AppComponent {
 	toolbarTitleService = inject(ToolbarTitleService);
 
 	info = rxResource({
-		loader: () => this.sessionService.info(),
+		stream: () => this.sessionService.info(),
 	});
 
 	logout() {
