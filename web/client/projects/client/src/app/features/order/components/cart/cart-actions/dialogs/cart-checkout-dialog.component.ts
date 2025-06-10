@@ -278,7 +278,7 @@ export class CartCheckoutDialogComponent {
 	checkoutService = inject(CheckoutService);
 
 	public accounts = rxResource({
-		loader: () => this.accountService.read(),
+		stream: () => this.accountService.read(),
 	});
 
 	items = toSignal(this.cart.items$);

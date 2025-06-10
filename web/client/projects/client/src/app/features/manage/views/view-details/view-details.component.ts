@@ -121,19 +121,19 @@ export class ViewDetailsComponent {
 	view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
 
 	view = rxResource({
-		request: () => this.view_id(),
-		loader: ({ request }) => this.viewService.readById(request),
+		params: () => this.view_id(),
+		stream: ({ params }) => this.viewService.readById(params),
 	});
 
 	availableProducts = rxResource({
-		loader: () => this.assortmentService.readProducts(),
+		stream: () => this.assortmentService.readProducts(),
 	});
 	availableProductsDataSource = computed(
 		() => new MatTableDataSource(this.availableProducts.value() ?? []),
 	);
 
 	viewProducts = rxResource({
-		loader: () => this.viewService.getProducts(this.view_id()),
+		stream: () => this.viewService.getProducts(this.view_id()),
 	});
 
 	selection = computed(

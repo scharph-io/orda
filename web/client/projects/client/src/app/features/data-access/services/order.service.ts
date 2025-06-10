@@ -20,7 +20,7 @@ export class OrderService {
 	logger = inject(OrdaLogger);
 
 	public views = rxResource({
-		loader: () => this.getViews(),
+		stream: () => this.getViews(),
 	});
 
 	public getViews() {

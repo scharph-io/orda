@@ -82,7 +82,7 @@ import { MatIcon } from '@angular/material/icon';
 	`,
 })
 export class OrderComponent {
-	viewService = inject(OrderService);
+	viewService = inject(OrderService); // refactor naming
 	breakpointService = inject(ViewBreakpointService);
 
 	gridCols = inject(GridColSizeService).size;

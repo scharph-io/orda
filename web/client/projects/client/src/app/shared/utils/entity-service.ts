@@ -11,7 +11,7 @@ export abstract class EntityService<T> {
 	logger = inject(OrdaLogger);
 
 	public entityResource = rxResource({
-		loader: () => this.read(),
+		stream: () => this.read(),
 	});
 
 	public abstract create(t: Partial<T>): Observable<T>;
