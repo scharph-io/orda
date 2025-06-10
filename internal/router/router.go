@@ -110,26 +110,26 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	accountHistory.Get("/", s.accountHandlers.GetHistory)
 
 	// Assortment
-	assortment := api.Group("/assortment", s.authHandlers.RequireRole("admin"))
+	assortment := api.Group("/assortment")
 
 	group := assortment.Group("/group")
 	group.Get("/", s.assortmentHandlers.ReadGroups)
 	group.Get("/:id", s.assortmentHandlers.ReadGroup)
-	group.Post("/", s.assortmentHandlers.CreateGroup)
-	group.Put("/:id", s.assortmentHandlers.UpdateGroup)
-	group.Delete("/:id", s.assortmentHandlers.DeleteGroup)
-	group.Post("/:id/products", s.assortmentHandlers.AddProducts)
-	group.Put("/:id/deposit", s.assortmentHandlers.SetDeposit)
-	group.Delete("/:id/deposit", s.assortmentHandlers.RemoveDeposit)
+	group.Post("/", s.assortmentHandlers.CreateGroup, s.authHandlers.RequireRole("admin"))
+	group.Put("/:id", s.assortmentHandlers.UpdateGroup, s.authHandlers.RequireRole("admin"))
+	group.Delete("/:id", s.assortmentHandlers.DeleteGroup, s.authHandlers.RequireRole("admin"))
+	group.Post("/:id/products", s.assortmentHandlers.AddProducts, s.authHandlers.RequireRole("admin"))
+	group.Put("/:id/deposit", s.assortmentHandlers.SetDeposit, s.authHandlers.RequireRole("admin"))
+	group.Delete("/:id/deposit", s.assortmentHandlers.RemoveDeposit, s.authHandlers.RequireRole("admin"))
 
-	product := assortment.Group("/product", s.authHandlers.RequireRole("admin"))
+	product := assortment.Group("/product")
 	product.Get("/", s.assortmentHandlers.ReadProducts) // uses query group_id
 	product.Get("/:id", s.assortmentHandlers.ReadProductById)
-	product.Put("/:id", s.assortmentHandlers.UpdateProduct)
-	product.Patch("/:id/toggle", s.assortmentHandlers.ToggleProduct)
-	product.Delete("/:id", s.assortmentHandlers.RemoveProduct)
-	product.Patch("/:id/views", s.assortmentHandlers.SetOrAddViews)
-	product.Delete("/:id/views", s.assortmentHandlers.RemoveViews)
+	product.Put("/:id", s.assortmentHandlers.UpdateProduct, s.authHandlers.RequireRole("admin"))
+	product.Patch("/:id/toggle", s.assortmentHandlers.ToggleProduct, s.authHandlers.RequireRole("admin"))
+	product.Delete("/:id", s.assortmentHandlers.RemoveProduct, s.authHandlers.RequireRole("admin"))
+	product.Patch("/:id/views", s.assortmentHandlers.SetOrAddViews, s.authHandlers.RequireRole("admin"))
+	product.Delete("/:id/views", s.assortmentHandlers.RemoveViews, s.authHandlers.RequireRole("admin"))
 
 	//Transactions
 	transactions := api.Group("/transactions", s.authHandlers.RequireRole("admin"))
