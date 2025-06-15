@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"github.com/scharph/orda/internal/domain"
 )
@@ -20,6 +21,8 @@ type AccountHistoryResponse struct {
 	AccountGroup  string               `json:"account_group,omitempty"`
 	DepositType   domain.DepositType   `json:"deposit_type"`
 	HistoryAction domain.HistoryAction `json:"history_type"`
+	Comment       string               `json:"comment,omitempty"`
+	CreatedAt     time.Time            `json:"created_at"`
 }
 
 type LogRequest struct {

@@ -75,6 +75,8 @@ func (s *AccountHistoryService) GetByAccountId(ctx context.Context, t ports.Hist
 				Account:       fmt.Sprintf("%s %s", h.Account.Firstname, h.Account.Lastname),
 				DepositType:   h.DepositType,
 				HistoryAction: h.HistoryAction,
+				Comment:       h.Reason,
+				CreatedAt:     h.CreatedAt,
 			})
 		}
 	} else if t == ports.HistoryTypeGroup {

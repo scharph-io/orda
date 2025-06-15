@@ -38,6 +38,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { AccountGroupComponent } from '@orda.features/manage/account/group/group.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/dialogs/account-correction-dialog/account-correction-dialog.component';
+import { DepositHistoryDialogComponent } from '@orda.features/manage/account/dialogs/deposit-history-dialog/deposit-history-dialog.component';
 
 export enum HistoryAction {
 	Debit = 0,
@@ -148,7 +149,7 @@ export enum DepositType {
 										<mat-icon>edit_note</mat-icon>
 										<span>Korrektur</span>
 									</button>
-									<button mat-menu-item disabled="true">
+									<button mat-menu-item (click)="openDepositHistory(row)">
 										<mat-icon>history</mat-icon>
 										<span>Verlauf</span>
 									</button>
@@ -277,6 +278,21 @@ export class AccountComponent extends EntityManager<Account> {
 			acc,
 		).subscribe(() => this.data.reload());
 	}
+
+	openDepositHistory(acc: Account) {
+		const dialogRef = this.dialog.open<DepositHistoryDialogComponent, Account, undefined>(
+			DepositHistoryDialogComponent,
+			{
+				width: '30rem',
+				data: acc,
+			},
+		);
+
+		dialogRef.afterClosed().subscribe(() => {
+			this.logger.debug('Deposit history dialog closed');
+			this.data.reload();
+		});
+	}
 }
 
 @Component({
@@ -404,7 +420,7 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 					</mat-form-field>
 				}
 				<mat-form-field>
-					<mat-label>Grund</mat-label>
+					<mat-label>Kommentar</mat-label>
 					<input matInput type="string" formControlName="reason" placeholder="Optional" />
 				</mat-form-field>
 			</form>
