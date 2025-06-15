@@ -174,6 +174,7 @@ func (h *AccountHandlers) DepositGroup(c *fiber.Ctx) error {
 func (h *AccountHandlers) GetHistory(c *fiber.Ctx) error {
 	var history []*ports.AccountHistoryResponse
 	var err error
+
 	if account := c.Query("account"); account != "" {
 		history, err = h.service.GetAccountHistory(c.Context(), account)
 		if err != nil {

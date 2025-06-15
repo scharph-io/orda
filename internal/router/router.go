@@ -98,6 +98,9 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	account.Post("/:id/correct", s.accountHandlers.Correct, s.authHandlers.RequireRole("admin"))
 	account.Delete("/:id", s.accountHandlers.Delete, s.authHandlers.RequireRole("admin"))
 
+	accountHistory := api.Group("/account-history")
+	accountHistory.Get("/", s.accountHandlers.GetHistory)
+
 	// Account Group
 	accountGroup := api.Group("/account-group")
 	accountGroup.Get("/", s.accountHandlers.GetAllGroups)
@@ -105,9 +108,6 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	accountGroup.Post("/", s.accountHandlers.CreateGroup, s.authHandlers.RequireRole("admin"))
 	accountGroup.Post("/:id/deposit", s.accountHandlers.DepositGroup, s.authHandlers.RequireRole("admin"))
 	accountGroup.Delete("/:id", s.accountHandlers.DeleteGroup, s.authHandlers.RequireRole("admin"))
-
-	accountHistory := account.Group("/history")
-	accountHistory.Get("/", s.accountHandlers.GetHistory)
 
 	// Assortment
 	assortment := api.Group("/assortment")

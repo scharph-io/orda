@@ -70,7 +70,6 @@ export class CartActionsComponent {
 			CartCheckoutDialogComponent,
 			{
 				width: '75%',
-
 				height: '30rem',
 				data: {
 					view_id: this.view_id(),

@@ -60,7 +60,7 @@ import { MatInput } from '@angular/material/input';
 						}
 					</mat-button-toggle-group>
 					<mat-form-field>
-						<mat-label>Grund</mat-label>
+						<mat-label>Kommentar</mat-label>
 						<input matInput type="string" formControlName="reason" placeholder="Optional" />
 					</mat-form-field>
 				</div>
