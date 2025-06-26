@@ -114,12 +114,12 @@ THRESHOLD=80
 
 if command -v bc &> /dev/null; then
     if (( $(echo "$COVERAGE >= $THRESHOLD" | bc -l) )); then
-        print_success "Coverage ($COVERAGE%) meets threshold ($THRESHOLD%)"
+        echo "Coverage ($COVERAGE%) meets threshold ($THRESHOLD%)"
     else
-        print_warning "Coverage ($COVERAGE%) below threshold ($THRESHOLD%)"
+        echo "Coverage ($COVERAGE%) below threshold ($THRESHOLD%)"
     fi
 else
-    print_success "Coverage: $COVERAGE% (bc not available for threshold check)"
+    echo "Coverage: $COVERAGE% (bc not available for threshold check)"
 fi
 
 # Run integration tests
