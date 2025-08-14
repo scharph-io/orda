@@ -14,7 +14,6 @@ import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-t
 import { Account } from '@orda.core/models/account';
 
 @Component({
-	selector: 'orda-account-correction-dialog',
 	imports: [
 		MatDialogModule,
 		MatInput,

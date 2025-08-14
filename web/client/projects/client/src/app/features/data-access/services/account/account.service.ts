@@ -13,6 +13,10 @@ export interface AccDepositRequest {
 	reason: string;
 }
 
+export interface AccDepositManyRequest extends AccDepositRequest {
+	account_ids: string[];
+}
+
 export interface AccCorrectionRequest {
 	new_balance: number;
 	reason: string;
@@ -52,6 +56,13 @@ export class AccountService {
 	deposit(id: string, deposit: AccDepositRequest): Observable<Account> {
 		return this.httpClient.post<Account>(
 			`${this.HOST}${API_ENDPOINTS.ACCOUNT}/${id}/deposit`,
+			deposit,
+		);
+	}
+
+	depositMany(deposit: AccDepositManyRequest) {
+		return this.httpClient.post<{ message: string }>(
+			`${this.HOST}${API_ENDPOINTS.ACCOUNT}/deposit`,
 			deposit,
 		);
 	}

@@ -15,7 +15,6 @@ import { Account } from '@orda.core/models/account';
 import { JsonPipe } from '@angular/common';
 
 @Component({
-	selector: 'orda-account-view-details-dialog',
 	imports: [
 		FormsModule,
 		ReactiveFormsModule,

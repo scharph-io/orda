@@ -46,13 +46,13 @@ export const FORM = new InjectionToken<FormGroup>('form');
 			<ng-container *ngTemplateOutlet="customTemplate()" />
 		</mat-dialog-content>
 		<mat-dialog-actions>
-			<button mat-button mat-dialog-close cdkFocusInitial>Abbrechen</button>
+			<button mat-button [mat-dialog-close]="false" cdkFocusInitial>Abbrechen</button>
 			<button mat-button [disabled]="!canSubmit()" (click)="submitClick.emit()">
 				{{ inputData ? 'Speichern' : 'Erzeugen' }}
 			</button>
 		</mat-dialog-actions>
 	`,
-	styleUrl: './dialog-template.component.css',
+	styleUrl: './dialog-template.component.scss',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogTemplateComponent<D, R = D> {

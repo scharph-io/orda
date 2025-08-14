@@ -25,7 +25,6 @@ import { AccountGroup } from '@orda.core/models/account';
 import { MatInput } from '@angular/material/input';
 
 @Component({
-	selector: 'orda-group-deposit-dialog',
 	imports: [
 		FormsModule,
 		ReactiveFormsModule,
