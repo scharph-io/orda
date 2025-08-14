@@ -174,13 +174,17 @@ func (s *AccountService) GetAll(ctx context.Context) ([]ports.AccountResponse, e
 	var res []ports.AccountResponse
 	for _, a := range accounts {
 		res = append(res, ports.AccountResponse{
-			Id:            a.ID,
-			Firstname:     a.Firstname,
-			Lastname:      a.Lastname,
-			MainBalance:   a.MainBalance,
-			CreditBalance: a.CreditBalance,
-			Group:         getGroupName(groups, a.AccountGroupID),
-			GroupId:       a.AccountGroupID,
+			Id:              a.ID,
+			Firstname:       a.Firstname,
+			Lastname:        a.Lastname,
+			MainBalance:     a.MainBalance,
+			CreditBalance:   a.CreditBalance,
+			Group:           getGroupName(groups, a.AccountGroupID),
+			GroupId:         a.AccountGroupID,
+			LastDeposit:     a.LastDeposit,
+			LastDepostType:  a.LastDepositType,
+			LastDepositTime: a.LastDepositTime.Time,
+			LastBalance:     a.LastBalance,
 		})
 	}
 	return res, nil
@@ -222,7 +226,7 @@ func (s *AccountService) Update(ctx context.Context, req ports.AccountRequest) (
 	return util.ToAccountResponse(updatedAcc), err
 }
 
-func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId string, req ports.AccDepositRequest) (*ports.AccountResponse, error) {
+func (s *AccountService) DepositAmount(ctx context.Context, userid string, req ports.AccDepositRequest, accountId string) (*ports.AccountResponse, error) {
 	account, err := s.repo.ReadById(ctx, accountId)
 	if err != nil {
 		return nil, err
@@ -257,6 +261,21 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid, accountId st
 		return nil, err
 	}
 	return util.ToAccountResponse(updatedAcc), err
+}
+
+func (s *AccountService) DepositMany(ctx context.Context, userid string, req ports.AccDepositManyRequest) error {
+	for _, accountId := range req.AccountIds {
+		res, err := s.DepositAmount(ctx, userid, ports.AccDepositRequest{
+			Amount:        req.Amount,
+			DepositType:   req.DepositType,
+			HistoryAction: req.HistoryAction,
+			Reason:        req.Reason,
+		}, accountId)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s *AccountService) DebitAmount(ctx context.Context, userid, accountId string, req ports.AccDebitRequest) (*ports.AccDebitResponse, error) {

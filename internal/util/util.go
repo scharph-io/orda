@@ -61,7 +61,7 @@ func ToAccountResponse(account *domain.Account) *ports.AccountResponse {
 		CreditBalance:   account.CreditBalance,
 		LastDeposit:     account.LastDeposit,
 		LastDepostType:  domain.DepositType(account.LastDepositType),
-		LastDepositTime: account.LastDepositTime.Time.Format(time.RFC3339),
+		LastDepositTime: account.LastDepositTime.Time,
 		LastBalance:     account.LastBalance,
 		GroupId:         account.AccountGroupID,
 	}

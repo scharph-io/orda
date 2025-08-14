@@ -133,11 +133,33 @@ func (h *AccountHandlers) Deposit(c *fiber.Ctx) error {
 
 	userID := c.Locals("userid").(string)
 
-	res, err := h.service.DepositAmount(c.Context(), userID, id, req)
+	res, err := h.service.DepositAmount(c.Context(), userID, req, id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to deposit to account"})
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
+}
+
+func (h *AccountHandlers) DepositMany(c *fiber.Ctx) error {
+
+	var req ports.AccDepositManyRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request",
+		})
+	}
+
+	if req.Amount <= 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid deposit amount"})
+	}
+
+	userID := c.Locals("userid").(string)
+
+	err := h.service.DepositMany(c.Context(), userID, req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to deposit to accounts", "details": err.Error()})
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Deposits successful"})
 }
 
 func (h *AccountHandlers) Correct(c *fiber.Ctx) error {

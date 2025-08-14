@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/domain"
@@ -13,6 +14,11 @@ type AccDepositRequest struct {
 	HistoryAction domain.HistoryAction `json:"history_action" validate:"required"`
 	TransactionId string               `json:"transactionid,omitzero"`
 	Reason        string               `json:"reason"`
+}
+
+type AccDepositManyRequest struct {
+	AccountIds []string `json:"account_ids" validate:"required"`
+	AccDepositRequest
 }
 
 type AccCorrectionRequest struct {
@@ -53,7 +59,7 @@ type AccountResponse struct {
 	GroupId         string             `json:"groupid,omitempty"`
 	LastDeposit     int32              `json:"last_deposit"`
 	LastDepostType  domain.DepositType `json:"last_deposit_type"`
-	LastDepositTime string             `json:"last_deposit_time"`
+	LastDepositTime time.Time          `json:"last_deposit_time"`
 	LastBalance     int32              `json:"last_balance"`
 }
 
@@ -101,7 +107,9 @@ type IAccountService interface {
 	GetById(ctx context.Context, id string) (*AccountResponse, error)
 	Update(ctx context.Context, req AccountRequest) (*AccountResponse, error)
 	GetGroupAccounts(ctx context.Context, id string) ([]AccountResponse, error)
-	DepositAmount(ctx context.Context, userid, accountId string, req AccDepositRequest) (*AccountResponse, error)
+	DepositAmount(ctx context.Context, userid string, req AccDepositRequest, accountId string) (*AccountResponse, error)
+	DepositMany(ctx context.Context, userid string, req AccDepositManyRequest) error
+
 	DebitAmount(ctx context.Context, userid, accountId string, req AccDebitRequest) (*AccDebitResponse, error)
 	CorrectionAmount(ctx context.Context, userid, accountId string, req AccCorrectionRequest) (*AccountResponse, error)
 	GetAccountHistory(ctx context.Context, accountid string) ([]*AccountHistoryResponse, error)
@@ -123,6 +131,7 @@ type IAccountHandlers interface {
 	GetById(c *fiber.Ctx) error
 	Update(c *fiber.Ctx) error
 	Deposit(c *fiber.Ctx) error
+	DepositMany(c *fiber.Ctx) error
 	Correct(c *fiber.Ctx) error
 	GetHistory(c *fiber.Ctx) error
 	Delete(c *fiber.Ctx) error

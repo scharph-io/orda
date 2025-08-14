@@ -29,6 +29,10 @@ type IUserRepository interface {
 	ReadByUsername(ctx context.Context, username string) (domain.User, error)
 	Update(ctx context.Context, id string, user *domain.User) (*domain.User, error)
 	Delete(ctx context.Context, id string) (bool, error)
+	// ForceDelete(ctx context.Context, id string) (bool, error)
+	// Exists(ctx context.Context, id string) (bool, error)
+	// ExistsByUsername(ctx context.Context, username string) (bool, error)
+	// ReadByRole(ctx context.Context, roleId string) ([]domain.User, error)
 }
 
 type IUserService interface {

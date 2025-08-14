@@ -8,7 +8,6 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 import { filter, map } from 'rxjs';
 
 @Component({
-	selector: 'orda-deposit-history-dialog',
 	imports: [DatePipe, OrdaCurrencyPipe],
 	template: `
 		<ul>

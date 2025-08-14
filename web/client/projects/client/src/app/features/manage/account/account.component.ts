@@ -39,6 +39,8 @@ import { AccountGroupComponent } from '@orda.features/manage/account/group/group
 import { MatMenuModule } from '@angular/material/menu';
 import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/dialogs/account-correction-dialog/account-correction-dialog.component';
 import { DepositHistoryDialogComponent } from '@orda.features/manage/account/dialogs/deposit-history-dialog/deposit-history-dialog.component';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 export enum HistoryAction {
 	Debit = 0,
@@ -67,6 +69,7 @@ export enum DepositType {
 		MatTabsModule,
 		AccountGroupComponent,
 		MatMenuModule,
+		MatCheckboxModule,
 	],
 	template: `
 		<mat-tab-group
@@ -80,12 +83,37 @@ export enum DepositType {
 					<mat-label>Filter</mat-label>
 					<input matInput (keyup)="applyFilter($event)" #input />
 				</mat-form-field>
-				<button mat-button (click)="create()">Neu</button>
-				<button mat-icon-button (click)="groupDeposit()">
-					<mat-icon>group_add</mat-icon>
+				<button mat-icon-button (click)="create()"><mat-icon>add</mat-icon></button>
+
+				<button
+					mat-icon-button
+					(click)="selection.selected.length > 0 ? selectionDeposit() : groupDeposit()"
+				>
+					<mat-icon>groups_3</mat-icon>
 				</button>
+
 				<div class="mat-elevation-z8">
 					<table mat-table [dataSource]="dataSource()" matSort>
+						<ng-container matColumnDef="select">
+							<th mat-header-cell *matHeaderCellDef>
+								<mat-checkbox
+									(change)="$event ? toggleAllRows() : null"
+									[checked]="selection.hasValue() && isAllSelected()"
+									[indeterminate]="selection.hasValue() && !isAllSelected()"
+									[aria-label]="checkboxLabel()"
+								>
+								</mat-checkbox>
+							</th>
+							<td mat-cell *matCellDef="let row">
+								<mat-checkbox
+									(click)="$event.stopPropagation()"
+									(change)="$event ? selection.toggle(row) : null"
+									[checked]="selection.isSelected(row)"
+									[aria-label]="checkboxLabel(row)"
+								>
+								</mat-checkbox>
+							</td>
+						</ng-container>
 						<ng-container matColumnDef="name">
 							<th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
 							<td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
@@ -114,6 +142,7 @@ export enum DepositType {
 									mat-icon-button
 									[matMenuTriggerFor]="menu"
 									aria-label="Account menu actions"
+									[disabled]="selection.selected.length !== 0"
 								>
 									<mat-icon>more_vert</mat-icon>
 								</button>
@@ -158,7 +187,9 @@ export enum DepositType {
 						</ng-container>
 
 						<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-						<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
+						<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id">
+							>
+						</tr>
 
 						<!-- Row shown when there is no matching data. -->
 						<tr class="mat-row" *matNoDataRow>
@@ -186,16 +217,43 @@ export class AccountComponent extends EntityManager<Account> {
 			this.accountService
 				.read()
 				.pipe(map((res) => res.sort((a, b) => a.lastname.localeCompare(b.lastname)))),
+		defaultValue: [],
 	});
 
-	dataSource = computed(() => new MatTableDataSource(this.data.value() ?? []));
+	dataSource = computed(() => new MatTableDataSource(this.data.value()));
+	selection = new SelectionModel<Account>(true, []);
 
 	constructor() {
 		super();
 	}
 
 	// displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
-	displayedColumns: string[] = ['name', 'group', 'credit-balance', 'actions'];
+	displayedColumns: string[] = ['select', 'name', 'group', 'credit-balance', 'actions'];
+
+	/** Whether the number of selected elements matches the total number of rows. */
+	isAllSelected() {
+		const numSelected = this.selection.selected.length;
+		const numRows = this.dataSource().data.length;
+		return numSelected === numRows;
+	}
+
+	/** Selects all rows if they are not all selected; otherwise clear selection. */
+	toggleAllRows() {
+		if (this.isAllSelected()) {
+			this.selection.clear();
+			return;
+		}
+
+		this.selection.select(...this.dataSource().data);
+	}
+
+	/** The label for the checkbox on the passed row */
+	checkboxLabel(row?: Account): string {
+		if (!row) {
+			return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+		}
+		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+	}
 
 	sort = viewChild(MatSort);
 	paginator = viewChild(MatPaginator);
@@ -270,6 +328,18 @@ export class AccountComponent extends EntityManager<Account> {
 			GroupDepositDialogComponent,
 			undefined,
 		).subscribe(() => this.data.reload());
+	}
+
+	selectionDeposit() {
+		this.dialogClosed<MultiAccountDepositDialogComponent, Account[], boolean>(
+			MultiAccountDepositDialogComponent,
+			this.selection.selected,
+		).subscribe((v) => {
+			if (v) {
+				this.data.reload();
+				this.selection.clear();
+			}
+		});
 	}
 
 	correction(acc: Account) {
@@ -389,7 +459,6 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 }
 
 @Component({
-	selector: 'orda-account-deposit-dialog',
 	imports: [
 		ReactiveFormsModule,
 		DialogTemplateComponent,
@@ -466,6 +535,93 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 					})
 					.subscribe(this.closeObserver);
 			}
+		}
+	};
+	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
+}
+
+@Component({
+	selector: 'orda-multi-account-deposit-dialog',
+	imports: [
+		ReactiveFormsModule,
+		DialogTemplateComponent,
+		MatFormFieldModule,
+		MatButtonToggleModule,
+		MatInputModule,
+		OrdaCurrencyPipe,
+	],
+	template: `
+		<orda-dialog-template
+			[customTemplate]="template"
+			[form]="formGroup"
+			(submitClick)="submit()"
+			[title]="'Mehrfachbuchung ' + inputData.length + ' Accounts'"
+		></orda-dialog-template>
+		<ng-template #template>
+			<form [formGroup]="formGroup">
+				<p>
+					<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
+						@for (val of DEPOSIT_VALUES; track val) {
+							<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
+						}
+						<mat-button-toggle [value]="-1">Eigen</mat-button-toggle>
+					</mat-button-toggle-group>
+				</p>
+				@if (formGroup.value.amount === -1) {
+					<p>
+						<mat-form-field>
+							<mat-label>Betrag</mat-label>
+							<input matInput type="number" formControlName="customAmount" />
+						</mat-form-field>
+					</p>
+				}
+				<p>
+					<mat-form-field>
+						<mat-label>Kommentar</mat-label>
+						<input matInput type="string" formControlName="reason" placeholder="Optional" />
+					</mat-form-field>
+				</p>
+			</form>
+		</ng-template>
+	`,
+	styles: ``,
+})
+class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
+	Account[],
+	{ message: string }
+> {
+	accountService = inject(AccountService);
+
+	formGroup = new FormGroup({
+		amount: new FormControl(0, [Validators.required]),
+		customAmount: new FormControl(0, [Validators.required]),
+		reason: new FormControl(''),
+	});
+
+	constructor() {
+		super();
+	}
+
+	public submit = () => {
+		let amount = 0;
+		if (this.formGroup.value?.amount) {
+			if (this.formGroup.value.amount == -1) {
+				this.formGroup.patchValue({
+					amount: this.formGroup.value.customAmount,
+				});
+				amount = this.formGroup.value.customAmount ?? 0;
+			} else {
+				amount = this.formGroup.value.amount ?? 0;
+			}
+			this.accountService
+				.depositMany({
+					account_ids: this.inputData?.map((account) => account.id) ?? [],
+					amount,
+					history_action: HistoryAction.Deposit,
+					deposit_type: DepositType.Free,
+					reason: this.formGroup.value.reason ?? '',
+				})
+				.subscribe(this.closeObserver);
 		}
 	};
 	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;

@@ -39,7 +39,7 @@ install-ui:
 	npm --prefix $(CLIENT_PROJECT) install
 
 update-ui:
-	npm --prefix $(CLIENT_PROJECT) run ng update @angular/cli @angular/core
+	npm --prefix $(CLIENT_PROJECT) run ng update @angular/cli @angular/core @angular/material
 
 run: ## Run the app locally
 	go run $(GO_MAIN)

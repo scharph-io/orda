@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/scharph/orda/internal/domain"
 	"github.com/scharph/orda/internal/ports"
+	"github.com/scharph/orda/internal/repository"
 	"github.com/scharph/orda/internal/util"
 )
 
@@ -69,7 +71,7 @@ func (s *UserService) Create(ctx context.Context, req ports.UserRequest) (*ports
 func (s *UserService) GetUserById(ctx context.Context, id string) (*ports.UserResponse, error) {
 	user, err := s.repo.ReadById(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(repository.ErrUserNotFound, err)
 	}
 	return &ports.UserResponse{
 		Username: user.Username,
