@@ -265,7 +265,7 @@ func (s *AccountService) DepositAmount(ctx context.Context, userid string, req p
 
 func (s *AccountService) DepositMany(ctx context.Context, userid string, req ports.AccDepositManyRequest) error {
 	for _, accountId := range req.AccountIds {
-		res, err := s.DepositAmount(ctx, userid, ports.AccDepositRequest{
+		_, err := s.DepositAmount(ctx, userid, ports.AccDepositRequest{
 			Amount:        req.Amount,
 			DepositType:   req.DepositType,
 			HistoryAction: req.HistoryAction,
