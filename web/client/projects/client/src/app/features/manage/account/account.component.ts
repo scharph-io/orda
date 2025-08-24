@@ -41,6 +41,7 @@ import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/
 import { DepositHistoryDialogComponent } from '@orda.features/manage/account/dialogs/deposit-history-dialog/deposit-history-dialog.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { CurrencyInputComponent } from '@orda.shared/components/currency-input/currency-input';
 
 export enum HistoryAction {
 	Debit = 0,
@@ -466,6 +467,7 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 		MatButtonToggleModule,
 		MatInputModule,
 		OrdaCurrencyPipe,
+		CurrencyInputComponent,
 	],
 	template: `
 		<orda-dialog-template
@@ -484,8 +486,15 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 				</mat-button-toggle-group>
 				@if (formGroup.value.amount === -1) {
 					<mat-form-field>
+						<!--						<mat-label>Betrag</mat-label>-->
+						<!--						<input matInput type="number" formControlName="customAmount" />-->
 						<mat-label>Betrag</mat-label>
-						<input matInput type="number" formControlName="customAmount" />
+
+						<orda-currency-input formControlName="customAmount" />
+
+						<mat-hint align="start">z.B. 20,50 €</mat-hint>
+						<!--						<mat-error *ngIf="amountCents.hasError('required')">Pflichtfeld</mat-error>-->
+						<!--						<mat-error *ngIf="amountCents.hasError('min')">Mindestens 0 €</mat-error>-->
 					</mat-form-field>
 				}
 				<mat-form-field>
