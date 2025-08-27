@@ -473,6 +473,7 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 			[form]="formGroup"
 			(submitClick)="submit()"
 			[title]="'Buchung'"
+			[canSubmit]="valid()"
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup">
@@ -484,7 +485,7 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 				</mat-button-toggle-group>
 				@if (formGroup.value.amount === -1) {
 					<mat-form-field>
-						<mat-label>Betrag</mat-label>
+						<mat-label>Betrag in €</mat-label>
 						<input matInput type="number" formControlName="customAmount" />
 					</mat-form-field>
 				}
@@ -510,6 +511,13 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 		super();
 	}
 
+	protected valid() {
+		return (
+			(this.formGroup.value.amount ?? 0) > 0 ||
+			((this.formGroup.value.customAmount ?? 0) > 0 && (this.formGroup.value.amount ?? 0) === -1)
+		);
+	}
+
 	public submit = () => {
 		if (this.formGroup.value?.amount) {
 			if (this.formGroup.value.amount == -1) {
@@ -519,7 +527,7 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 
 				this.accountService
 					.deposit(this.inputData?.id ?? '', {
-						amount: this.formGroup.value.customAmount ?? 0,
+						amount: (this.formGroup.value.customAmount ?? 0) * 100,
 						history_action: HistoryAction.Deposit,
 						deposit_type: DepositType.Free,
 						reason: this.formGroup.value.reason ?? '',
@@ -555,8 +563,10 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 			[customTemplate]="template"
 			[form]="formGroup"
 			(submitClick)="submit()"
+			[canSubmit]="valid()"
 			[title]="'Mehrfachbuchung ' + inputData.length + ' Accounts'"
 		></orda-dialog-template>
+
 		<ng-template #template>
 			<form [formGroup]="formGroup">
 				<p>
@@ -570,7 +580,7 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 				@if (formGroup.value.amount === -1) {
 					<p>
 						<mat-form-field>
-							<mat-label>Betrag</mat-label>
+							<mat-label>Betrag in €</mat-label>
 							<input matInput type="number" formControlName="customAmount" />
 						</mat-form-field>
 					</p>
@@ -594,12 +604,19 @@ class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
 
 	formGroup = new FormGroup({
 		amount: new FormControl(0, [Validators.required]),
-		customAmount: new FormControl(0, [Validators.required]),
+		customAmount: new FormControl<number>(0, [Validators.required]),
 		reason: new FormControl(''),
 	});
 
 	constructor() {
 		super();
+	}
+
+	protected valid() {
+		return (
+			(this.formGroup.value.amount ?? 0) > 0 ||
+			((this.formGroup.value.customAmount ?? 0) > 0 && (this.formGroup.value.amount ?? 0) === -1)
+		);
 	}
 
 	public submit = () => {
@@ -609,14 +626,14 @@ class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
 				this.formGroup.patchValue({
 					amount: this.formGroup.value.customAmount,
 				});
-				amount = this.formGroup.value.customAmount ?? 0;
+				amount = (this.formGroup.value.customAmount ?? 0) * 100;
 			} else {
 				amount = this.formGroup.value.amount ?? 0;
 			}
 			this.accountService
 				.depositMany({
 					account_ids: this.inputData?.map((account) => account.id) ?? [],
-					amount,
+					amount: amount,
 					history_action: HistoryAction.Deposit,
 					deposit_type: DepositType.Free,
 					reason: this.formGroup.value.reason ?? '',
