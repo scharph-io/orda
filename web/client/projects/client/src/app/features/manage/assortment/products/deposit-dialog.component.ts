@@ -36,13 +36,13 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 		ReactiveFormsModule,
 		MatSlideToggle,
 	],
-	template: ` <h2 mat-dialog-title>Deposit</h2>
+	template: ` <h2 mat-dialog-title>Pfand</h2>
 		<mat-dialog-content>
 			<form [formGroup]="formGroup">
 				<mat-slide-toggle formControlName="active" />
 				@if (formGroup.value.active) {
 					<mat-form-field>
-						<mat-label>Price</mat-label>
+						<mat-label>Betrag in €</mat-label>
 						<input matInput type="number" formControlName="price" />
 					</mat-form-field>
 				}
@@ -61,14 +61,14 @@ export class DepositDialogComponent {
 	protected readonly dialogRef: MatDialogRef<DepositDialogComponent, number> = inject(MatDialogRef);
 
 	formGroup = new FormGroup({
-		price: new FormControl(0, [Validators.required, Validators.min(50)]),
+		price: new FormControl(0, [Validators.required, Validators.min(0.5)]),
 		active: new FormControl(true, Validators.required),
 	});
 
 	constructor() {
 		if (this.data.deposit) {
 			this.formGroup.patchValue({
-				price: this.data.deposit.price,
+				price: this.data.deposit.price / 100,
 				active: this.data.deposit.active,
 			});
 		} else {
@@ -77,12 +77,11 @@ export class DepositDialogComponent {
 			});
 		}
 	}
-
 	submit() {
 		this.assortmentService
 			.setDeposit(
 				this.data.groupId,
-				this.formGroup.value.price ?? 0,
+				Number(((this.formGroup.value.price ?? 0) * 100).toFixed(0)),
 				this.formGroup.value.active ?? false,
 			)
 			.subscribe({

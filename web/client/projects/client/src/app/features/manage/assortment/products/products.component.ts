@@ -45,7 +45,7 @@ import { NgClass } from '@angular/common';
 					</button>
 				}
 			</mat-form-field>
-			<button mat-button (click)="create()">New</button>
+			<button mat-button (click)="create()">Neu</button>
 
 			<button
 				mat-flat-button
@@ -53,7 +53,7 @@ import { NgClass } from '@angular/common';
 				[title]="g.deposit?.active ? 'active' : 'inactive'"
 				[ngClass]="g.deposit ? (g.deposit.active ? 'active-btn' : 'inactive-btn') : ''"
 			>
-				Deposit
+				Pfand
 				@if (g.deposit) {
 					{{ g.deposit.price | currency }}
 				}
@@ -67,16 +67,16 @@ import { NgClass } from '@angular/common';
 					</ng-container>
 
 					<ng-container matColumnDef="desc">
-						<th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+						<th mat-header-cell *matHeaderCellDef mat-sort-header>Beschreibung</th>
 						<td mat-cell *matCellDef="let row">{{ row.desc }}</td>
 					</ng-container>
 
 					<ng-container matColumnDef="price">
-						<th mat-header-cell *matHeaderCellDef mat-sort-header>Balance</th>
+						<th mat-header-cell *matHeaderCellDef mat-sort-header>Preis</th>
 						<td mat-cell *matCellDef="let row">{{ row.price | currency }}</td>
 					</ng-container>
 					<ng-container matColumnDef="active">
-						<th mat-header-cell *matHeaderCellDef mat-sort-header>Active</th>
+						<th mat-header-cell *matHeaderCellDef mat-sort-header>Aktiv</th>
 						<td mat-cell *matCellDef="let row">
 							<mat-slide-toggle [(ngModel)]="row.active" (change)="toggleProduct(row.id)" />
 						</td>
@@ -268,7 +268,7 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 						<input matInput formControlName="desc" />
 					</mat-form-field>
 					<mat-form-field>
-						<mat-label>Price</mat-label>
+						<mat-label>Preis in €</mat-label>
 						<input type="number" matInput formControlName="price" />
 					</mat-form-field>
 					<mat-slide-toggle formControlName="active">Active</mat-slide-toggle>
@@ -309,7 +309,7 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<
 		this.formGroup.patchValue({
 			name: this.inputData.data?.name,
 			desc: this.inputData.data?.desc,
-			price: this.inputData.data?.price,
+			price: (this.inputData.data?.price ?? 0) / 100,
 			active: this.inputData.data?.active,
 		});
 	}
@@ -321,7 +321,7 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<
 					{
 						name: this.trim(this.formGroup.value.name ?? ''),
 						desc: this.trim(this.formGroup.value.desc ?? ''),
-						price: this.formGroup.value.price ?? 0,
+						price: Number(((this.formGroup.value.price ?? 0) * 100).toFixed(0)),
 						active: this.formGroup.value.active ?? false,
 					},
 				])
@@ -334,7 +334,7 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<
 				.updateProduct(this.inputData.data?.id ?? '', {
 					name: this.trim(this.formGroup.value.name ?? ''),
 					desc: this.trim(this.formGroup.value.desc ?? ''),
-					price: this.formGroup.value.price ?? 0,
+					price: Number(((this.formGroup.value.price ?? 0) * 100).toFixed(0)),
 					active: this.formGroup.value.active ?? false,
 				})
 				.subscribe(this.closeObserver);
@@ -344,7 +344,7 @@ class AssortmentProductDialogComponent extends DialogTemplateComponent<
 					{
 						name: this.formGroup.value.name ?? '',
 						desc: this.formGroup.value.desc ?? '',
-						price: this.formGroup.value.price ?? 0,
+						price: (this.formGroup.value.price ?? 0) * 100,
 						active: this.formGroup.value.active ?? false,
 					},
 				])
