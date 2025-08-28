@@ -59,6 +59,13 @@ h1 {
 			container-background-color: #f5ebe0,
 		)
 	);
+
+	// @include mat.button-overrides(
+	// 	(
+	// 		tonal-container-color: green,
+	// 		tonal-label-text-color: white,
+	// 	)
+	// );
 }
 
 .content {
@@ -109,4 +116,11 @@ mat-grid-tile {
 
 .manage-list {
 	margin: 1rem;
+}
+
+.form-container {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.75rem;
 }

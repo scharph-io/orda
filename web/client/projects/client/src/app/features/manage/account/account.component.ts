@@ -41,6 +41,7 @@ import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/
 import { DepositHistoryDialogComponent } from '@orda.features/manage/account/dialogs/deposit-history-dialog/deposit-history-dialog.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 
 export enum HistoryAction {
 	Debit = 0,
@@ -476,14 +477,14 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 			[canSubmit]="valid()"
 		></orda-dialog-template>
 		<ng-template #template>
-			<form [formGroup]="formGroup">
+			<form [formGroup]="formGroup" class="form-container">
 				<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
 					@for (val of DEPOSIT_VALUES; track val) {
 						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
 					}
-					<mat-button-toggle [value]="-1">Eigen</mat-button-toggle>
+					<mat-button-toggle [value]="undefined">Eigen</mat-button-toggle>
 				</mat-button-toggle-group>
-				@if (formGroup.value.amount === -1) {
+				@if (formGroup.value.amount === undefined) {
 					<mat-form-field>
 						<mat-label>Betrag in €</mat-label>
 						<input matInput type="number" formControlName="customAmount" />
@@ -491,7 +492,7 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 				}
 				<mat-form-field>
 					<mat-label>Kommentar</mat-label>
-					<input matInput type="string" formControlName="reason" placeholder="Optional" />
+					<input matInput type="string" formControlName="reason" />
 				</mat-form-field>
 			</form>
 		</ng-template>
@@ -502,9 +503,15 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 	accountService = inject(AccountService);
 
 	formGroup = new FormGroup({
-		amount: new FormControl(0, [Validators.required]),
-		customAmount: new FormControl(0, [Validators.required]),
-		reason: new FormControl(''),
+		amount: new FormControl<number | undefined>(undefined, [
+			Validators.required,
+			Validators.min(0),
+		]),
+		customAmount: new FormControl<number | undefined>(undefined, [
+			Validators.required,
+			Validators.min(0),
+		]),
+		reason: new FormControl<string>('', [Validators.required]),
 	});
 
 	constructor() {
@@ -513,8 +520,9 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 
 	protected valid() {
 		return (
-			(this.formGroup.value.amount ?? 0) > 0 ||
-			((this.formGroup.value.customAmount ?? 0) > 0 && (this.formGroup.value.amount ?? 0) === -1)
+			this.formGroup.valid &&
+			((this.formGroup.value.amount ?? 0) > 0 ||
+				((this.formGroup.value.customAmount ?? 0) > 0 && this.formGroup.value.amount === undefined))
 		);
 	}
 
@@ -557,6 +565,8 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 		MatButtonToggleModule,
 		MatInputModule,
 		OrdaCurrencyPipe,
+		MatRadioModule,
+		FormsModule,
 	],
 	template: `
 		<orda-dialog-template
@@ -566,32 +576,36 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 			[canSubmit]="valid()"
 			[title]="'Mehrfachbuchung ' + inputData.length + ' Accounts'"
 		></orda-dialog-template>
-
 		<ng-template #template>
-			<form [formGroup]="formGroup">
-				<p>
-					<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
-						@for (val of DEPOSIT_VALUES; track val) {
-							<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
-						}
-						<mat-button-toggle [value]="-1">Eigen</mat-button-toggle>
-					</mat-button-toggle-group>
-				</p>
-				@if (formGroup.value.amount === -1) {
-					<p>
-						<mat-form-field>
-							<mat-label>Betrag in €</mat-label>
-							<input matInput type="number" formControlName="customAmount" />
-						</mat-form-field>
-					</p>
-				}
-				<p>
+			<form [formGroup]="formGroup" class="form-container">
+				<mat-radio-group [(ngModel)]="values">
+					<mat-label>Beträge</mat-label>
+					<mat-radio-button value="prep">XX</mat-radio-button>
+					<mat-radio-button value="custom">Eigener</mat-radio-button>
+				</mat-radio-group>
+				{{ values }}
+
+				<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
+					@for (val of DEPOSIT_VALUES; track val) {
+						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
+					}
+					<mat-button-toggle [value]="undefined">Eigen</mat-button-toggle>
+				</mat-button-toggle-group>
+
+				@if (formGroup.value.amount === undefined) {
 					<mat-form-field>
-						<mat-label>Kommentar</mat-label>
-						<input matInput type="string" formControlName="reason" placeholder="Optional" />
+						<mat-label>Betrag in €</mat-label>
+						<input matInput type="number" formControlName="amount" />
 					</mat-form-field>
-				</p>
+				}
+
+				<mat-form-field>
+					<mat-label>Kommentar</mat-label>
+					<input matInput type="string" formControlName="reason" />
+				</mat-form-field>
 			</form>
+
+			{{ this.formGroup.valid }}
 		</ng-template>
 	`,
 	styles: ``,
@@ -602,10 +616,14 @@ class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
 > {
 	accountService = inject(AccountService);
 
+	values = '';
+
 	formGroup = new FormGroup({
-		amount: new FormControl(0, [Validators.required]),
-		customAmount: new FormControl<number>(0, [Validators.required]),
-		reason: new FormControl(''),
+		amount: new FormControl<number | undefined>(undefined, [
+			Validators.required,
+			Validators.min(0),
+		]),
+		reason: new FormControl('', [Validators.required]),
 	});
 
 	constructor() {
@@ -613,23 +631,20 @@ class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
 	}
 
 	protected valid() {
-		return (
-			(this.formGroup.value.amount ?? 0) > 0 ||
-			((this.formGroup.value.customAmount ?? 0) > 0 && (this.formGroup.value.amount ?? 0) === -1)
-		);
+		return this.formGroup.valid;
 	}
 
 	public submit = () => {
 		let amount = 0;
 		if (this.formGroup.value?.amount) {
-			if (this.formGroup.value.amount == -1) {
-				this.formGroup.patchValue({
-					amount: this.formGroup.value.customAmount,
-				});
-				amount = (this.formGroup.value.customAmount ?? 0) * 100;
-			} else {
-				amount = this.formGroup.value.amount ?? 0;
-			}
+			// if (this.formGroup.value.amount == -1) {
+			// 	this.formGroup.patchValue({
+			// 		amount: this.formGroup.value.customAmount,
+			// 	});
+			// 	amount = (this.formGroup.value.customAmount ?? 0) * 100;
+			// } else {
+			amount = this.formGroup.value.amount ?? 0;
+			// }
 			this.accountService
 				.depositMany({
 					account_ids: this.inputData?.map((account) => account.id) ?? [],

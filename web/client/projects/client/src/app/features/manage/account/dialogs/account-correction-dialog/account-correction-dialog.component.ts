@@ -30,20 +30,23 @@ import { Account } from '@orda.core/models/account';
 			[title]="'Korrektur Kontostand'"
 			(submitClick)="submit()"
 			[canSubmit]="
-				this.inputData.credit_balance !== this.formGroup.controls.new_balance.value &&
-				(this.formGroup.controls.new_balance.value ?? 0) < this.inputData.credit_balance
+				formGroup.valid &&
+				formGroup.value.new_balance !== undefined &&
+				formGroup.value.new_balance !== null &&
+				formGroup.value.new_balance > 0 &&
+				formGroup.value.new_balance <= 100
 			"
 		></orda-dialog-template>
 		<ng-template #template>
 			<mat-dialog-content>
-				<form [formGroup]="formGroup">
+				<form [formGroup]="formGroup" class="form-container">
 					<mat-form-field>
-						<mat-label>Neu</mat-label>
+						<mat-label>Betrag in €</mat-label>
 						<input matInput type="number" formControlName="new_balance" />
 					</mat-form-field>
 					<mat-form-field>
 						<mat-label>Grund</mat-label>
-						<input matInput type="string" formControlName="reason" placeholder="Optional" />
+						<input matInput type="string" formControlName="reason" />
 					</mat-form-field>
 				</form>
 			</mat-dialog-content>
@@ -54,8 +57,8 @@ import { Account } from '@orda.core/models/account';
 export class AccountCorrectionDialogComponent extends DialogTemplateComponent<Account> {
 	accountService = inject(AccountService);
 	formGroup = new FormGroup({
-		new_balance: new FormControl(this.inputData.credit_balance, [Validators.required]),
-		reason: new FormControl(''),
+		new_balance: new FormControl(undefined, [Validators.required, Validators.min(0)]),
+		reason: new FormControl('', [Validators.required]),
 	});
 
 	constructor() {
@@ -65,7 +68,7 @@ export class AccountCorrectionDialogComponent extends DialogTemplateComponent<Ac
 	public submit = () => {
 		this.accountService
 			.correct(this.inputData.id ?? '', {
-				new_balance: this.formGroup.value.new_balance ?? 0,
+				new_balance: Number(((this.formGroup.value.new_balance ?? 0) * 100).toFixed(0)),
 				reason: this.formGroup.value.reason ?? '',
 			})
 			.subscribe(this.closeObserver);

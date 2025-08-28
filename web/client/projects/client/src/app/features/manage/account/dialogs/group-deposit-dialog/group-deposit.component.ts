@@ -41,7 +41,8 @@ import { MatInput } from '@angular/material/input';
 		MatSelect,
 		MatInput,
 	],
-	template: ` <h2 mat-dialog-title>Gruppeneinzahlung</h2>
+	template: `
+		<h2 mat-dialog-title>Gruppeneinzahlung</h2>
 		<mat-dialog-content>
 			<form [formGroup]="formGroup">
 				<div class="dialog-flex">
@@ -60,17 +61,17 @@ import { MatInput } from '@angular/material/input';
 					</mat-button-toggle-group>
 					<mat-form-field>
 						<mat-label>Kommentar</mat-label>
-						<input matInput type="string" formControlName="reason" placeholder="Optional" />
+						<input matInput type="string" formControlName="reason" />
 					</mat-form-field>
 				</div>
 			</form>
 		</mat-dialog-content>
 		<mat-dialog-actions>
 			<button mat-button mat-dialog-close>Abbrechen</button>
-			<button mat-button [disabled]="formGroup.invalid" (click)="submit()">Einzahlen</button>
+			<button matButton="tonal" [disabled]="formGroup.invalid" (click)="submit()">Einzahlen</button>
 		</mat-dialog-actions>
-		‚`,
-	styles: ``,
+	`,
+	styleUrls: ['./group-deposit.component.scss'],
 })
 export class GroupDepositDialogComponent extends DialogTemplateComponent<AccountGroup> {
 	accountGroupService = inject(AccountGroupService);
@@ -78,7 +79,7 @@ export class GroupDepositDialogComponent extends DialogTemplateComponent<Account
 	formGroup = new FormGroup({
 		amount: new FormControl(0, [Validators.required]),
 		group: new FormControl('', [Validators.required]),
-		reason: new FormControl(''),
+		reason: new FormControl('', [Validators.required]),
 	});
 
 	public submit = () => {
