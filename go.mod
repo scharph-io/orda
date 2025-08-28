@@ -6,7 +6,7 @@ require (
 	github.com/casbin/casbin/v2 v2.107.0
 	github.com/casbin/gorm-adapter/v3 v3.32.0
 	github.com/go-sql-driver/mysql v1.9.2
-	github.com/gofiber/fiber/v2 v2.52.8
+	github.com/gofiber/fiber/v2 v2.52.9
 	github.com/gofiber/storage/mysql/v2 v2.1.0
 	github.com/google/uuid v1.6.0
 	github.com/spf13/viper v1.20.1
@@ -52,8 +52,6 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.62.0 // indirect
-	github.com/valyala/tcplisten v1.0.0 // indirect
-	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
 	golang.org/x/sync v0.15.0 // indirect
