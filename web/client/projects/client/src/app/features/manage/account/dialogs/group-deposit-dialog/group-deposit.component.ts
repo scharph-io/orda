@@ -56,7 +56,7 @@ import { MatInput } from '@angular/material/input';
 					</mat-form-field>
 					<mat-button-toggle-group formControlName="amount">
 						@for (val of DEPOSIT_VALUES; track val) {
-							<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
+							<mat-button-toggle [value]="val">{{ val * 100 | currency }}</mat-button-toggle>
 						}
 					</mat-button-toggle-group>
 					<mat-form-field>
