@@ -551,7 +551,7 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 			[form]="formGroup"
 			(submitClick)="submit()"
 			[canSubmit]="formGroup.valid"
-			[title]="'Mehrfachbuchung ' + inputData.length + ' Accounts'"
+			[title]="'Mehrfach (' + inputData.length + ')'"
 		></orda-dialog-template>
 		<ng-template #template>
 			<form [formGroup]="formGroup" class="form-container">
