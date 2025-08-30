@@ -1,20 +1,9 @@
 import { Component, inject } from '@angular/core';
-import {
-	FormControl,
-	FormGroup,
-	FormsModule,
-	ReactiveFormsModule,
-	Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { AccountGroupService } from '@orda.features/data-access/services/account/account-group.service';
 import { MatButton } from '@angular/material/button';
-import {
-	MatDialogActions,
-	MatDialogClose,
-	MatDialogContent,
-	MatDialogTitle,
-} from '@angular/material/dialog';
+import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, } from '@angular/material/dialog';
 import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
 import { DEPOSIT_VALUES } from '@orda.core/constants';
 import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
@@ -44,26 +33,24 @@ import { MatInput } from '@angular/material/input';
 	template: `
 		<h2 mat-dialog-title>Gruppeneinzahlung</h2>
 		<mat-dialog-content>
-			<form [formGroup]="formGroup">
-				<div class="dialog-flex">
-					<mat-form-field>
-						<mat-label>Gruppe</mat-label>
-						<mat-select formControlName="group">
-							@for (group of accountGroupService.entityResource.value(); track group.id) {
-								<mat-option [value]="group.id">{{ group.name }}</mat-option>
-							}
-						</mat-select>
-					</mat-form-field>
-					<mat-button-toggle-group formControlName="amount">
-						@for (val of DEPOSIT_VALUES; track val) {
-							<mat-button-toggle [value]="val">{{ val * 100 | currency }}</mat-button-toggle>
+			<form [formGroup]="formGroup" class="form-container">
+				<mat-form-field>
+					<mat-label>Gruppe</mat-label>
+					<mat-select formControlName="group">
+						@for (group of accountGroupService.entityResource.value(); track group.id) {
+							<mat-option [value]="group.id">{{ group.name }}</mat-option>
 						}
-					</mat-button-toggle-group>
-					<mat-form-field>
-						<mat-label>Kommentar</mat-label>
-						<input matInput type="string" formControlName="reason" />
-					</mat-form-field>
-				</div>
+					</mat-select>
+				</mat-form-field>
+				<mat-button-toggle-group formControlName="amount">
+					@for (val of DEPOSIT_VALUES; track val) {
+						<mat-button-toggle [value]="val">{{ val * 100 | currency }}</mat-button-toggle>
+					}
+				</mat-button-toggle-group>
+				<mat-form-field>
+					<mat-label>Kommentar</mat-label>
+					<input matInput type="string" formControlName="reason" />
+				</mat-form-field>
 			</form>
 		</mat-dialog-content>
 		<mat-dialog-actions>

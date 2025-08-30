@@ -116,7 +116,7 @@ export enum DepositType {
 							</td>
 						</ng-container>
 						<ng-container matColumnDef="name">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
 							<td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
 						</ng-container>
 
@@ -131,7 +131,7 @@ export enum DepositType {
 						</ng-container>
 
 						<ng-container matColumnDef="credit-balance">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Betrag</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Kontostand</th>
 							<td mat-cell *matCellDef="let row">{{ row.credit_balance | currency }}</td>
 						</ng-container>
 
