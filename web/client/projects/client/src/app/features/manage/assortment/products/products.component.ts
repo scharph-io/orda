@@ -10,7 +10,13 @@ import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInput, MatInputModule } from '@angular/material/input';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, } from '@angular/forms';
+import {
+	FormControl,
+	FormGroup,
+	FormsModule,
+	ReactiveFormsModule,
+	Validators,
+} from '@angular/forms';
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { MatSelectModule } from '@angular/material/select';
 import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
