@@ -10,13 +10,7 @@ import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInput, MatInputModule } from '@angular/material/input';
-import {
-	FormControl,
-	FormGroup,
-	FormsModule,
-	ReactiveFormsModule,
-	Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators, } from '@angular/forms';
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { MatSelectModule } from '@angular/material/select';
 import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
@@ -29,37 +23,42 @@ import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { MatIcon } from '@angular/material/icon';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { DepositDialogComponent } from './deposit-dialog.component';
-import { NgClass } from '@angular/common';
 
 @Component({
 	selector: 'orda-assortment-view-details',
 	template: `
 		<h1>{{ group.value()?.name }}</h1>
 		@if (group.value(); as g) {
-			<mat-form-field>
-				<mat-label>Filter</mat-label>
-				<input matInput (keyup)="applyFilter($event)" #input />
-				@if (input.value) {
-					<button matSuffix mat-icon-button aria-label="Clear" (click)="input.value = ''">
-						<mat-icon>close</mat-icon>
+			<div class="toolbar orda-toolbar">
+				<span>
+					<button
+						mat-flat-button
+						(click)="openDepositDialog()"
+						[title]="g.deposit?.active ? 'active' : 'inactive'"
+						[class]="g.deposit ? (g.deposit.active ? 'active-btn' : 'inactive-btn') : ''"
+					>
+						Pfand
+						@if (g.deposit) {
+							{{ g.deposit.price | currency }}
+						}
 					</button>
-				}
-			</mat-form-field>
-			<button mat-button (click)="create()">Neu</button>
+				</span>
+				<span class="spacer"></span>
+				<button mat-icon-button (click)="create()"><mat-icon>add</mat-icon></button>
+				<span>
+					<mat-form-field class="toolbar-input" appearance="outline">
+						<mat-label>Filter</mat-label>
+						<input matInput (keyup)="applyFilter($event)" #input />
+						@if (input.value) {
+							<button matSuffix mat-icon-button aria-label="Clear" (click)="input.value = ''">
+								<mat-icon>close</mat-icon>
+							</button>
+						}
+					</mat-form-field>
+				</span>
+			</div>
 
-			<button
-				mat-flat-button
-				(click)="openDepositDialog()"
-				[title]="g.deposit?.active ? 'active' : 'inactive'"
-				[ngClass]="g.deposit ? (g.deposit.active ? 'active-btn' : 'inactive-btn') : ''"
-			>
-				Pfand
-				@if (g.deposit) {
-					{{ g.deposit.price | currency }}
-				}
-			</button>
-
-			<div class="mat-elevation-z8">
+			<div class="container">
 				<table mat-table [dataSource]="dataSource()" matSort>
 					<ng-container matColumnDef="name">
 						<th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -117,7 +116,6 @@ import { NgClass } from '@angular/common';
 		}
 	`,
 	imports: [
-		NgClass,
 		MatButtonModule,
 		MatTableModule,
 		MatSortModule,
@@ -131,31 +129,32 @@ import { NgClass } from '@angular/common';
 		FormsModule,
 	],
 	styles: `
-		.title-toolbar {
+		.container {
+			margin: 0.5rem;
+		}
+
+		.toolbar {
 			display: flex;
-			justify-content: start;
+			flex-direction: row;
 			align-items: center;
+			margin: 0 0.5rem;
 		}
 	`,
 })
 export class AssortmentProductsComponent extends EntityManager<AssortmentProduct> {
 	displayedColumns: string[] = ['name', 'desc', 'price', 'active', 'actions'];
-	private logger = inject(OrdaLogger);
-
-	private readonly route = inject(ActivatedRoute);
 	assortmentService = inject(AssortmentService);
-
-	group_id = signal<string>(this.route.snapshot.paramMap.get('id') ?? '');
 	group = rxResource({
 		params: () => this.group_id(),
 		stream: ({ params }) => this.assortmentService.readGroupById(params),
 	});
-
 	products = rxResource({
 		stream: () => this.assortmentService.readProducts(this.group_id()),
 	});
-
 	dataSource = computed(() => new MatTableDataSource(this.products.value() ?? []));
+	private logger = inject(OrdaLogger);
+	private readonly route = inject(ActivatedRoute);
+	group_id = signal<string>(this.route.snapshot.paramMap.get('id') ?? '');
 
 	public override create(): void {
 		this.dialogClosed<
@@ -214,10 +213,6 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 		}).subscribe(() => this.products.reload());
 	}
 
-	protected toggleProduct(id: string) {
-		this.assortmentService.toggleProduct(id).subscribe(() => this.products.reload());
-	}
-
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.dataSource().filter = filterValue.trim().toLowerCase();
@@ -235,6 +230,10 @@ export class AssortmentProductsComponent extends EntityManager<AssortmentProduct
 			groupId: this.group_id(),
 			deposit: this.group.value()?.deposit,
 		}).subscribe(() => this.group.reload());
+	}
+
+	protected toggleProduct(id: string) {
+		this.assortmentService.toggleProduct(id).subscribe(() => this.products.reload());
 	}
 }
 

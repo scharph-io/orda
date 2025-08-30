@@ -42,6 +42,7 @@ import { DepositHistoryDialogComponent } from '@orda.features/manage/account/dia
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 export enum HistoryAction {
 	Debit = 0,
@@ -71,6 +72,7 @@ export enum DepositType {
 		AccountGroupComponent,
 		MatMenuModule,
 		MatCheckboxModule,
+		MatToolbarModule,
 	],
 	template: `
 		<mat-tab-group
@@ -80,18 +82,32 @@ export enum DepositType {
 			style="margin: 0 0.5rem"
 		>
 			<mat-tab label="Konten">
-				<mat-form-field>
-					<mat-label>Filter</mat-label>
-					<input matInput (keyup)="applyFilter($event)" #input />
-				</mat-form-field>
-				<button mat-icon-button (click)="create()"><mat-icon>add</mat-icon></button>
+				<mat-toolbar class="orda-toolbar">
+					<span
+						><button
+							mat-icon-button
+							(click)="selection.selected.length > 0 ? selectionDeposit() : groupDeposit()"
+						>
+							@if (selection.selected.length > 0) {
+								<mat-icon>add_card</mat-icon>
+							} @else {
+								<mat-icon>group_3</mat-icon>
+							}
+						</button>
+					</span>
+					<span class="spacer"></span>
+					<span>
+						<button mat-icon-button (click)="create()"><mat-icon>add</mat-icon></button>
+					</span>
 
-				<button
-					mat-icon-button
-					(click)="selection.selected.length > 0 ? selectionDeposit() : groupDeposit()"
-				>
-					<mat-icon>groups_3</mat-icon>
-				</button>
+					<span>
+						<mat-form-field class="toolbar-input" appearance="outline" [floatLabel]="'auto'">
+							<!--							<mat-label>Filter</mat-label>-->
+							<input matInput (keyup)="applyFilter($event)" #input />
+							<mat-icon matSuffix>search</mat-icon>
+						</mat-form-field>
+					</span>
+				</mat-toolbar>
 
 				<div class="mat-elevation-z8">
 					<table mat-table [dataSource]="dataSource()" matSort>
@@ -223,13 +239,14 @@ export class AccountComponent extends EntityManager<Account> {
 
 	dataSource = computed(() => new MatTableDataSource(this.data.value()));
 	selection = new SelectionModel<Account>(true, []);
+	// displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
+	displayedColumns: string[] = ['select', 'name', 'group', 'credit-balance', 'actions'];
+	sort = viewChild(MatSort);
+	paginator = viewChild(MatPaginator);
 
 	constructor() {
 		super();
 	}
-
-	// displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
-	displayedColumns: string[] = ['select', 'name', 'group', 'credit-balance', 'actions'];
 
 	/** Whether the number of selected elements matches the total number of rows. */
 	isAllSelected() {
@@ -255,9 +272,6 @@ export class AccountComponent extends EntityManager<Account> {
 		}
 		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
 	}
-
-	sort = viewChild(MatSort);
-	paginator = viewChild(MatPaginator);
 
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
@@ -514,6 +528,7 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 		]),
 		reason: new FormControl<string>('', [Validators.required]),
 	});
+	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 
 	constructor() {
 		super();
@@ -531,7 +546,6 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 				.subscribe(this.closeObserver);
 		}
 	};
-	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 }
 
 @Component({
@@ -596,6 +610,7 @@ class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
 	});
 
 	custom?: number;
+	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 
 	constructor() {
 		super();
@@ -614,5 +629,4 @@ class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
 				.subscribe(this.closeObserver);
 		}
 	};
-	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 }
