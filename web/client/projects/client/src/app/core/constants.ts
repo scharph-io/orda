@@ -11,4 +11,4 @@ export const API_ENDPOINTS = {
 	VIEW: `${API}/views`,
 };
 export const StrongPasswordRegx = /^(?=[^A-Z]*[A-Z])(?=[^a-z]*[a-z])(?=\D*\d).{8,}$/;
-export const DEPOSIT_VALUES = [1000, 2500, 5000];
+export const DEPOSIT_VALUES = [5, 10];

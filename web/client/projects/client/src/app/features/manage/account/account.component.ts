@@ -41,6 +41,8 @@ import { AccountCorrectionDialogComponent } from '@orda.features/manage/account/
 import { DepositHistoryDialogComponent } from '@orda.features/manage/account/dialogs/deposit-history-dialog/deposit-history-dialog.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 export enum HistoryAction {
 	Debit = 0,
@@ -70,6 +72,7 @@ export enum DepositType {
 		AccountGroupComponent,
 		MatMenuModule,
 		MatCheckboxModule,
+		MatToolbarModule,
 	],
 	template: `
 		<mat-tab-group
@@ -79,18 +82,32 @@ export enum DepositType {
 			style="margin: 0 0.5rem"
 		>
 			<mat-tab label="Konten">
-				<mat-form-field>
-					<mat-label>Filter</mat-label>
-					<input matInput (keyup)="applyFilter($event)" #input />
-				</mat-form-field>
-				<button mat-icon-button (click)="create()"><mat-icon>add</mat-icon></button>
+				<mat-toolbar class="orda-toolbar">
+					<span
+						><button
+							mat-icon-button
+							(click)="selection.selected.length > 0 ? selectionDeposit() : groupDeposit()"
+						>
+							@if (selection.selected.length > 0) {
+								<mat-icon>add_card</mat-icon>
+							} @else {
+								<mat-icon>group_3</mat-icon>
+							}
+						</button>
+					</span>
+					<span class="spacer"></span>
+					<span>
+						<button mat-icon-button (click)="create()"><mat-icon>add</mat-icon></button>
+					</span>
 
-				<button
-					mat-icon-button
-					(click)="selection.selected.length > 0 ? selectionDeposit() : groupDeposit()"
-				>
-					<mat-icon>groups_3</mat-icon>
-				</button>
+					<span>
+						<mat-form-field class="toolbar-input" appearance="outline" [floatLabel]="'auto'">
+							<!--							<mat-label>Filter</mat-label>-->
+							<input matInput (keyup)="applyFilter($event)" #input />
+							<mat-icon matSuffix>search</mat-icon>
+						</mat-form-field>
+					</span>
+				</mat-toolbar>
 
 				<div class="mat-elevation-z8">
 					<table mat-table [dataSource]="dataSource()" matSort>
@@ -115,7 +132,7 @@ export enum DepositType {
 							</td>
 						</ng-container>
 						<ng-container matColumnDef="name">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Vorname</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
 							<td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
 						</ng-container>
 
@@ -130,7 +147,7 @@ export enum DepositType {
 						</ng-container>
 
 						<ng-container matColumnDef="credit-balance">
-							<th mat-header-cell *matHeaderCellDef mat-sort-header>Betrag</th>
+							<th mat-header-cell *matHeaderCellDef mat-sort-header>Kontostand</th>
 							<td mat-cell *matCellDef="let row">{{ row.credit_balance | currency }}</td>
 						</ng-container>
 
@@ -222,13 +239,14 @@ export class AccountComponent extends EntityManager<Account> {
 
 	dataSource = computed(() => new MatTableDataSource(this.data.value()));
 	selection = new SelectionModel<Account>(true, []);
+	// displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
+	displayedColumns: string[] = ['select', 'name', 'group', 'credit-balance', 'actions'];
+	sort = viewChild(MatSort);
+	paginator = viewChild(MatPaginator);
 
 	constructor() {
 		super();
 	}
-
-	// displayedColumns: string[] = ['name', 'group', 'main-balance', 'credit-balance', 'actions'];
-	displayedColumns: string[] = ['select', 'name', 'group', 'credit-balance', 'actions'];
 
 	/** Whether the number of selected elements matches the total number of rows. */
 	isAllSelected() {
@@ -254,9 +272,6 @@ export class AccountComponent extends EntityManager<Account> {
 		}
 		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
 	}
-
-	sort = viewChild(MatSort);
-	paginator = viewChild(MatPaginator);
 
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
@@ -473,25 +488,28 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 			[form]="formGroup"
 			(submitClick)="submit()"
 			[title]="'Buchung'"
-			[canSubmit]="valid()"
+			[canSubmit]="formGroup.valid"
 		></orda-dialog-template>
 		<ng-template #template>
-			<form [formGroup]="formGroup">
+			<form [formGroup]="formGroup" class="form-container">
 				<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
 					@for (val of DEPOSIT_VALUES; track val) {
-						<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
+						<mat-button-toggle (click)="custom = 0" [value]="val">{{
+							val * 100 | currency
+						}}</mat-button-toggle>
 					}
-					<mat-button-toggle [value]="-1">Eigen</mat-button-toggle>
+					<mat-button-toggle (click)="custom = 1" [value]="undefined">Eigen</mat-button-toggle>
 				</mat-button-toggle-group>
-				@if (formGroup.value.amount === -1) {
+
+				@if (custom === 1) {
 					<mat-form-field>
 						<mat-label>Betrag in €</mat-label>
-						<input matInput type="number" formControlName="customAmount" />
+						<input matInput type="number" formControlName="amount" />
 					</mat-form-field>
 				}
 				<mat-form-field>
 					<mat-label>Kommentar</mat-label>
-					<input matInput type="string" formControlName="reason" placeholder="Optional" />
+					<input matInput type="string" formControlName="reason" />
 				</mat-form-field>
 			</form>
 		</ng-template>
@@ -501,51 +519,33 @@ class AccountDialogComponent extends DialogTemplateComponent<Account> {
 class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 	accountService = inject(AccountService);
 
+	custom?: number;
+
 	formGroup = new FormGroup({
-		amount: new FormControl(0, [Validators.required]),
-		customAmount: new FormControl(0, [Validators.required]),
-		reason: new FormControl(''),
+		amount: new FormControl<number | undefined>(undefined, [
+			Validators.required,
+			Validators.min(0),
+		]),
+		reason: new FormControl<string>('', [Validators.required]),
 	});
+	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 
 	constructor() {
 		super();
 	}
 
-	protected valid() {
-		return (
-			(this.formGroup.value.amount ?? 0) > 0 ||
-			((this.formGroup.value.customAmount ?? 0) > 0 && (this.formGroup.value.amount ?? 0) === -1)
-		);
-	}
-
 	public submit = () => {
-		if (this.formGroup.value?.amount) {
-			if (this.formGroup.value.amount == -1) {
-				this.formGroup.patchValue({
-					amount: this.formGroup.value.customAmount,
-				});
-
-				this.accountService
-					.deposit(this.inputData?.id ?? '', {
-						amount: (this.formGroup.value.customAmount ?? 0) * 100,
-						history_action: HistoryAction.Deposit,
-						deposit_type: DepositType.Free,
-						reason: this.formGroup.value.reason ?? '',
-					})
-					.subscribe(this.closeObserver);
-			} else {
-				this.accountService
-					.deposit(this.inputData?.id ?? '', {
-						amount: this.formGroup.value.amount ?? 0,
-						history_action: HistoryAction.Deposit,
-						deposit_type: DepositType.Free,
-						reason: this.formGroup.value.reason ?? '',
-					})
-					.subscribe(this.closeObserver);
-			}
+		if (this.formGroup.valid && this.formGroup.value.amount) {
+			this.accountService
+				.deposit(this.inputData?.id ?? '', {
+					amount: this.formGroup.value.amount * 100,
+					history_action: HistoryAction.Deposit,
+					deposit_type: DepositType.Free,
+					reason: this.formGroup.value.reason ?? '',
+				})
+				.subscribe(this.closeObserver);
 		}
 	};
-	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 }
 
 @Component({
@@ -557,40 +557,38 @@ class AccountDepositDialogComponent extends DialogTemplateComponent<Account> {
 		MatButtonToggleModule,
 		MatInputModule,
 		OrdaCurrencyPipe,
+		MatRadioModule,
 	],
 	template: `
 		<orda-dialog-template
 			[customTemplate]="template"
 			[form]="formGroup"
 			(submitClick)="submit()"
-			[canSubmit]="valid()"
-			[title]="'Mehrfachbuchung ' + inputData.length + ' Accounts'"
+			[canSubmit]="formGroup.valid"
+			[title]="'Mehrfach (' + inputData.length + ')'"
 		></orda-dialog-template>
-
 		<ng-template #template>
-			<form [formGroup]="formGroup">
-				<p>
-					<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
-						@for (val of DEPOSIT_VALUES; track val) {
-							<mat-button-toggle [value]="val">{{ val | currency }}</mat-button-toggle>
-						}
-						<mat-button-toggle [value]="-1">Eigen</mat-button-toggle>
-					</mat-button-toggle-group>
-				</p>
-				@if (formGroup.value.amount === -1) {
-					<p>
-						<mat-form-field>
-							<mat-label>Betrag in €</mat-label>
-							<input matInput type="number" formControlName="customAmount" />
-						</mat-form-field>
-					</p>
-				}
-				<p>
+			<form [formGroup]="formGroup" class="form-container">
+				<mat-button-toggle-group formControlName="amount" aria-label="Font Style">
+					@for (val of DEPOSIT_VALUES; track val) {
+						<mat-button-toggle (click)="custom = 0" [value]="val">{{
+							val * 100 | currency
+						}}</mat-button-toggle>
+					}
+					<mat-button-toggle (click)="custom = 1" [value]="undefined">Eigen</mat-button-toggle>
+				</mat-button-toggle-group>
+
+				@if (custom === 1) {
 					<mat-form-field>
-						<mat-label>Kommentar</mat-label>
-						<input matInput type="string" formControlName="reason" placeholder="Optional" />
+						<mat-label>Betrag in €</mat-label>
+						<input matInput type="number" formControlName="amount" />
 					</mat-form-field>
-				</p>
+				}
+
+				<mat-form-field>
+					<mat-label>Kommentar</mat-label>
+					<input matInput type="string" formControlName="reason" />
+				</mat-form-field>
 			</form>
 		</ng-template>
 	`,
@@ -603,37 +601,27 @@ class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
 	accountService = inject(AccountService);
 
 	formGroup = new FormGroup({
-		amount: new FormControl(0, [Validators.required]),
-		customAmount: new FormControl<number>(0, [Validators.required]),
-		reason: new FormControl(''),
+		amount: new FormControl<number | undefined>(undefined, [
+			Validators.required,
+			Validators.min(0),
+		]),
+		// customAmount: new FormControl<number>(0, [Validators.required]),
+		reason: new FormControl('', [Validators.required]),
 	});
+
+	custom?: number;
+	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 
 	constructor() {
 		super();
 	}
 
-	protected valid() {
-		return (
-			(this.formGroup.value.amount ?? 0) > 0 ||
-			((this.formGroup.value.customAmount ?? 0) > 0 && (this.formGroup.value.amount ?? 0) === -1)
-		);
-	}
-
 	public submit = () => {
-		let amount = 0;
-		if (this.formGroup.value?.amount) {
-			if (this.formGroup.value.amount == -1) {
-				this.formGroup.patchValue({
-					amount: this.formGroup.value.customAmount,
-				});
-				amount = (this.formGroup.value.customAmount ?? 0) * 100;
-			} else {
-				amount = this.formGroup.value.amount ?? 0;
-			}
+		if (this.formGroup.valid && this.formGroup.value.amount) {
 			this.accountService
 				.depositMany({
 					account_ids: this.inputData?.map((account) => account.id) ?? [],
-					amount: amount,
+					amount: this.formGroup.value.amount * 100,
 					history_action: HistoryAction.Deposit,
 					deposit_type: DepositType.Free,
 					reason: this.formGroup.value.reason ?? '',
@@ -641,5 +629,4 @@ class MultiAccountDepositDialogComponent extends DialogTemplateComponent<
 				.subscribe(this.closeObserver);
 		}
 	};
-	protected readonly DEPOSIT_VALUES = DEPOSIT_VALUES;
 }

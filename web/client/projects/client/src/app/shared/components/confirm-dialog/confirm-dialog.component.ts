@@ -26,11 +26,8 @@ export interface ConfirmDialogData {
 	],
 	template: ` @let blocked = inputData.disableSubmit ?? false;
 		<h2 mat-dialog-title>{{ !blocked ? 'Confirm' : 'Blocked' }}</h2>
-		@if (!blocked) {
-			<mat-dialog-content> Are you sure to delete {{ inputData.message }}?</mat-dialog-content>
-		} @else {
-			<mat-dialog-content> {{ inputData.message }}</mat-dialog-content>
-		}
+		<mat-dialog-content> {{ inputData.message }}</mat-dialog-content>
+
 		<mat-dialog-actions>
 			<button mat-button [mat-dialog-close]="false">Cancel</button>
 			@if (!blocked) {

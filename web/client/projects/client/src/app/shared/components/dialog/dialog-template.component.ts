@@ -47,7 +47,7 @@ export const FORM = new InjectionToken<FormGroup>('form');
 		</mat-dialog-content>
 		<mat-dialog-actions>
 			<button mat-button [mat-dialog-close]="false" cdkFocusInitial>Abbrechen</button>
-			<button mat-button [disabled]="!canSubmit()" (click)="submitClick.emit()">
+			<button matButton="tonal" [disabled]="!canSubmit()" (click)="submitClick.emit()">
 				{{ inputData ? 'Speichern' : 'Erzeugen' }}
 			</button>
 		</mat-dialog-actions>

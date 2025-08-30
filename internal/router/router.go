@@ -26,8 +26,8 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:4200",
 		AllowCredentials: true,
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
-		AllowHeaders:     "Origin, Content-Type, Accept",
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
+		AllowHeaders:     "Content-Type, Authorization, X-Requested-With",
 	}))
 
 	app.Use(healthcheck.New(healthcheck.Config{
