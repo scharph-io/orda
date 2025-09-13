@@ -44,9 +44,16 @@ export interface CheckoutDialogData {
 			@let totalSum = total() ?? 0;
 			<div class="total">
 				<div class="total-container">
+					<!--					@if (paymentOptionControl.value === PaymentOption.ACCOUNT) {-->
+					<!--						<div class="item-0">-->
+					<!--						{{ diff() * -1 | currency }}-->
+					<!--						</div>-->
+					<!--					} @else {-->
 					<div class="item-0">
 						{{ totalSum | currency: 'EUR' }}
 					</div>
+					<!--					}-->
+
 					<div class="item-1">{{ 'Summe' }}:</div>
 					<!--					<div class="item-1">{{ 'cart.total' }}:</div>-->
 				</div>
@@ -73,10 +80,8 @@ export interface CheckoutDialogData {
 			@if (paymentOptionControl.value === PaymentOption.ACCOUNT) {
 				<div class="account">
 					<mat-form-field class="example-full-width">
-						<!--						<mat-label>{{ 'checkout.account' }}</mat-label>-->
 						<mat-label>{{ 'Konto' }}</mat-label>
 						<mat-select [formControl]="accountControl">
-							<!--							<mat-option>&#45;&#45; None &#45;&#45;</mat-option>-->
 							@for (group of accountMap() | keyvalue; track group.key) {
 								<mat-optgroup [label]="group.key">
 									@for (acc of group.value; track acc) {
@@ -91,17 +96,17 @@ export interface CheckoutDialogData {
 				</div>
 				@if (selectedAccount() && error === '') {
 					@let balance = selectedAccount()?.credit_balance ?? 0;
-					@if (diff() > 0) {
+					@if (diff() >= 0) {
 						<div class="info" [style.color]="'green'">
 							{{ balance | currency }} - {{ total() | currency }} =
 							{{ diff() | currency }}
 						</div>
 					} @else {
 						@if (balance > 0) {
-							<div class="info" [style.color]="'#ef233c'">
+							<div class="info" [style.color]="'#efba40'">
 								{{ balance | currency }} - {{ total() | currency }} =
 								{{ diff() | currency }}
-								<div class="remain">{{ 'Restbetrag bar' }} {{ diff() * -1 | currency }}</div>
+								<!--								<div class="remain">{{ 'Restbetrag bar' }} {{ diff() * -1 | currency }}</div>-->
 								<!--								<div>{{ 'checkout.cash-remain' }} {{ diff() * -1 | currency }}</div>-->
 							</div>
 						} @else {
@@ -138,13 +143,19 @@ export interface CheckoutDialogData {
 						@let balance = selectedAccount()?.credit_balance ?? 0;
 						<button
 							class="checkout"
+							[class]="{ 'checkout-with-remain': diff() < 0 && balance > 0 }"
 							mat-fab
 							extended
 							[disabled]="!accountControl.value || balance === 0"
 							(click)="checkout(data.view_id, PaymentOption.ACCOUNT, selectedAccount()?.id)"
 						>
 							<!--						{{ 'checkout.account.title' }}-->
-							{{ 'Konto' }}
+
+							@if (diff() < 0 && balance > 0) {
+								<span>{{ 'Rest' }} {{ diff() * -1 | currency }} bar</span>
+							} @else {
+								<span>{{ 'Konto' }}</span>
+							}
 						</button>
 					}
 					@case (PaymentOption.FREE) {
@@ -181,10 +192,10 @@ export interface CheckoutDialogData {
 			display: grid;
 			gap: 0.5rem;
 			grid-template:
-				'total' 10rem
+				'total' 8rem
 				'payment' auto
 				'account' auto
-				'info' 3rem/1fr;
+				'info' 1rem/1fr;
 		}
 
 		.total {
@@ -257,6 +268,10 @@ export interface CheckoutDialogData {
 			background-color: #2a9134;
 			color: white;
 			min-width: 9rem;
+		}
+
+		.checkout-with-remain {
+			background-color: #efba40;
 		}
 
 		.remain {
