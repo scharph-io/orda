@@ -1,6 +1,68 @@
 package database
 
 const (
+	Q_get_by_payment_options = `
+		SELECT
+  			t.payment_option,
+     		COUNT(*) AS transactions_count,
+       		SUM(t.total) / 100 AS total_amount,
+       		SUM(t.total_credit) / 100 AS total_credit_amount
+        FROM transactions AS t
+        WHERE t.deleted_at IS NULL
+		  AND t.created_at >= ?   -- from …
+		  AND t.created_at <  ?   -- to … (exclusive upper bound)
+		GROUP BY t.payment_option
+		ORDER BY t.payment_option;
+	`
+
+	Q_get_qty_products_by_days = `
+		SELECT
+  			DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS reporting_day,
+    		SUM(ti.qty) AS total_qty
+		FROM transactions AS t
+		JOIN transaction_items AS ti ON ti.transaction_id = t.id
+		WHERE t.deleted_at IS NULL
+  			AND ti.product_id = ?
+     	GROUP BY reporting_day
+      	ORDER BY reporting_day;
+	`
+
+	/*
+	* reporting_day|transactions_in_window|
+	*	-------------+----------------------+
+	*	2025-04-05|                   400|
+	 */
+	Q_get_days_with_transactions = `
+		SELECT
+  			DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS reporting_day,
+    		COUNT(*) AS transactions_in_window
+		FROM transactions AS t
+		WHERE t.deleted_at IS NULL
+		GROUP BY reporting_day
+		ORDER BY reporting_day;
+	`
+
+	/*
+	 * product_name      |total_units_sold|total_gross_sales|
+	 * ------------------+----------------+-----------------+
+	 * product     		|              45|         105.0000|
+	 */
+	Q_products_over_date = `
+		SELECT
+  			p.name AS product_name,
+  			SUM(ti.qty) AS total_units_sold,
+  			SUM(ti.qty * ti.price)/100 AS total_gross_sales
+		FROM transactions AS t
+		JOIN transaction_items AS ti ON ti.transaction_id = t.id
+		JOIN products AS p ON p.id = ti.product_id
+		WHERE t.deleted_at IS NULL
+		  AND p.deleted_at IS NULL
+		  AND t.created_at >= ?       -- start date
+		  AND t.created_at <  ?       -- end date (exclusive keeps year boundaries clean)
+		GROUP BY product_name
+		ORDER BY product_name;
+	`
+
 	Q_transaction_history_date = `
 		SELECT
 		  transactions.payment_option AS payment_option,
