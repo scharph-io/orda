@@ -1,7 +1,7 @@
 package database
 
 const (
-	Q_get_by_payment_options = `
+	Q_get_payment_options_for_date_range = `
 		SELECT
   			t.payment_option,
      		COUNT(*) AS transactions_count,
@@ -15,16 +15,17 @@ const (
 		ORDER BY t.payment_option;
 	`
 
-	Q_get_qty_products_by_days = `
+	Q_get_product_quantity_for_date_range = `
 		SELECT
-  			DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS reporting_day,
-    		SUM(ti.qty) AS total_qty
-		FROM transactions AS t
-		JOIN transaction_items AS ti ON ti.transaction_id = t.id
-		WHERE t.deleted_at IS NULL
-  			AND ti.product_id = ?
-     	GROUP BY reporting_day
-      	ORDER BY reporting_day;
+    		DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS reporting_day,
+      		SUM(ti.qty) AS total_qty
+        FROM transactions AS t
+        JOIN transaction_items AS ti ON ti.transaction_id = t.id
+        WHERE t.deleted_at IS NULL
+        	AND ti.product_id = ?
+         	AND DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) BETWEEN ? AND ?
+        GROUP BY reporting_day
+        ORDER BY reporting_day;
 	`
 
 	/*
@@ -32,12 +33,13 @@ const (
 	*	-------------+----------------------+
 	*	2025-04-05|                   400|
 	 */
-	Q_get_days_with_transactions = `
+	Q_get_transactions_days = `
 		SELECT
   			DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS reporting_day,
     		COUNT(*) AS transactions_in_window
 		FROM transactions AS t
 		WHERE t.deleted_at IS NULL
+			AND YEAR(t.created_at) = ?
 		GROUP BY reporting_day
 		ORDER BY reporting_day;
 	`
@@ -47,7 +49,7 @@ const (
 	 * ------------------+----------------+-----------------+
 	 * product     		|              45|         105.0000|
 	 */
-	Q_products_over_date = `
+	Q_products_for_date_range = `
 		SELECT
   			p.name AS product_name,
   			SUM(ti.qty) AS total_units_sold,
