@@ -1,4 +1,5 @@
 build/*
 .env
 *.db
-mysql/init/*
+/mysql/init/*
+!/mysql/init/*init*

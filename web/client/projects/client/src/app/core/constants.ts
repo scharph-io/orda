@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
 	ORDER: `${API}/order`,
 	ROLE: `${API}/role`,
 	TRANSACTION: `${API}/transactions`,
+	STATISTICS: `${API}/stats`,
 	USER: `${API}/user`,
 	VIEW: `${API}/views`,
 };
