@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/scharph/orda/internal/database"
 	"github.com/scharph/orda/internal/ports"
@@ -65,4 +66,25 @@ func (r *StatisticsRepo) GetTransactionDays(ctx context.Context, year int) (port
 	}
 
 	return results, nil
+}
+
+func (r *StatisticsRepo) GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ports.ProductsForDateRange, error) {
+	rows, err := r.stmts["getProductsForDateRange"].QueryContext(ctx, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query transaction days: %w", err)
+	}
+	defer rows.Close()
+
+	var results ports.ProductsForDateRange
+
+	for rows.Next() {
+		var row ports.ProductForDateRange
+		if err := rows.Scan(&row.Product, &row.TotalQty, &row.TotalAmount); err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, &row)
+	}
+
+	return results, nil
+
 }

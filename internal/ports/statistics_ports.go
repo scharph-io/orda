@@ -43,21 +43,21 @@ type PaymentOptionsForDateRange []*PaymentOptionForDateRange
 
 type IStatisticsRepository interface {
 	GetTransactionDays(ctx context.Context, year int) (TransactionDays, error)
-	// GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
+	GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
 	// GetProductQtyForDateRange(ctx context.Context, productId string, startDate, endDate time.Time) (ProductQtyForDateRange, error)
 	// GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (PaymentOptionsForDateRange, error)
 }
 
 type IStatisticsService interface {
 	GetTransactionDays(ctx context.Context, year int) (TransactionDays, error)
-	// GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
+	GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
 	// GetProductQtyForDateRange(ctx context.Context, productId string, startDate, endDate time.Time) (ProductQtyForDateRange, error)
 	// GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (PaymentOptionsForDateRange, error)
 }
 
 type IStatisticsHandlers interface {
 	GetTransactionDays(c *fiber.Ctx) error
-	// GetProductsForDateRange(c *fiber.Ctx) error
+	GetProductsForDateRange(c *fiber.Ctx) error
 	// GetProductQtyForDateRange(c *fiber.Ctx) error
 	// GetPaymentOptionsForDateRange(c *fiber.Ctx) error
 }

@@ -18,8 +18,9 @@ func NewStatisticsService(repo ports.IStatisticsRepository) *StatisticsService {
 }
 
 func (s *StatisticsService) GetTransactionDays(ctx context.Context, year int) (ports.TransactionDays, error) {
-	if year > time.Now().Year() {
-		return nil, ports.ErrInvalidYear
-	}
 	return s.repo.GetTransactionDays(ctx, year)
+}
+
+func (s *StatisticsService) GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ports.ProductsForDateRange, error) {
+	return s.repo.GetProductsForDateRange(ctx, startDate, endDate)
 }
