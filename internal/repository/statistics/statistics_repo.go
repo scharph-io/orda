@@ -88,3 +88,43 @@ func (r *StatisticsRepo) GetProductsForDateRange(ctx context.Context, startDate,
 	return results, nil
 
 }
+
+func (r *StatisticsRepo) GetProductQtyForDateRange(ctx context.Context, productId string, startDate, endDate time.Time) (ports.ProductQuantitiesForDateRange, error) {
+	rows, err := r.stmts["getProductQuantityForDateRange"].QueryContext(ctx, productId, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query product quantity for date range: %w", err)
+	}
+	defer rows.Close()
+
+	var result ports.ProductQuantitiesForDateRange
+
+	for rows.Next() {
+		var row ports.ProductQtyForDateRange
+		if err := rows.Scan(&row.ReportingDay, &row.TotalQty); err != nil {
+			log.Fatal(err)
+		}
+		result = append(result, &row)
+	}
+
+	return result, nil
+}
+
+func (r *StatisticsRepo) GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (ports.PaymentOptionsForDateRange, error) {
+	rows, err := r.stmts["getPaymentOptionsForDateRange"].QueryContext(ctx, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query payment options for date range: %w", err)
+	}
+	defer rows.Close()
+
+	var results ports.PaymentOptionsForDateRange
+
+	for rows.Next() {
+		var row ports.PaymentOptionForDateRange
+		if err := rows.Scan(&row.PaymentOption, &row.Transactions, &row.TotalAmount, &row.TotalCreditAmount); err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, &row)
+	}
+
+	return results, nil
+}

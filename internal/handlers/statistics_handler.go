@@ -83,3 +83,87 @@ func (h *StatisticsHandler) GetProductsForDateRange(c *fiber.Ctx) error {
 		"to":   toDate,
 	})
 }
+
+func (h *StatisticsHandler) GetProductQtyForDateRange(c *fiber.Ctx) error {
+	const layout = time.RFC3339
+
+	now := time.Now()
+	fromDateString := c.Query("from", (now.AddDate(-1, 0, 0)).Format(layout))
+	toDateString := c.Query("to", now.Format(layout))
+
+	productID := c.Params("id")
+
+	fromDate, err := time.Parse(layout, fromDateString)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": fmt.Sprintf("cannot parse 'from' date: '%s'", fromDateString),
+		})
+	}
+
+	toDate, err := time.Parse(layout, toDateString)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": fmt.Sprintf("cannot parse 'to' date: '%s'", toDateString),
+		})
+	}
+
+	if fromDate.After(toDate) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": fmt.Sprintf("invalid date range: '%s' to '%s', 'from' must be before 'to'", fromDateString, toDateString),
+		})
+	}
+
+	x, err := h.statisticsService.GetProductQtyForDateRange(c.Context(), productID, fromDate, toDate)
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
+			"message": fmt.Sprintf("failed to get product quantities for date range: '%s' to '%s'", fromDateString, toDateString),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": x,
+		"from": fromDate,
+		"to":   toDate,
+	})
+}
+
+func (h *StatisticsHandler) GetPaymentOptionsForDateRange(c *fiber.Ctx) error {
+	const layout = time.RFC3339
+
+	now := time.Now()
+	fromDateString := c.Query("from", (now.AddDate(-1, 0, 0)).Format(layout))
+	toDateString := c.Query("to", now.Format(layout))
+
+	fromDate, err := time.Parse(layout, fromDateString)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": fmt.Sprintf("cannot parse 'from' date: '%s'", fromDateString),
+		})
+	}
+
+	toDate, err := time.Parse(layout, toDateString)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": fmt.Sprintf("cannot parse 'to' date: '%s'", toDateString),
+		})
+	}
+
+	if fromDate.After(toDate) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": fmt.Sprintf("invalid date range: '%s' to '%s', 'from' must be before 'to'", fromDateString, toDateString),
+		})
+	}
+
+	x, err := h.statisticsService.GetPaymentOptionsForDateRange(c.Context(), fromDate, toDate)
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
+			"message": fmt.Sprintf("failed to get payment options for date range: '%s' to '%s'", fromDateString, toDateString),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": x,
+		"from": fromDate,
+		"to":   toDate,
+	})
+}
