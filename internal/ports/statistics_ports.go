@@ -36,7 +36,7 @@ type ProductQtyForDateRange struct {
 type ProductQuantitiesForDateRange []*ProductQtyForDateRange
 
 type PaymentOptionForDateRange struct {
-	PaymentOption     string  `json:"payment_option"`
+	PaymentOption     uint    `json:"payment_option"`
 	Transactions      int32   `json:"transactions"`
 	TotalAmount       float64 `json:"total_amount"`
 	TotalCreditAmount float64 `json:"total_credit_amount"`
@@ -55,7 +55,7 @@ type IStatisticsService interface {
 	GetTransactionDays(ctx context.Context, year int) (TransactionDays, error)
 	GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
 	GetProductQtyForDateRange(ctx context.Context, productId string, startDate, endDate time.Time) (ProductQuantitiesForDateRange, error)
-	GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (PaymentOptionsForDateRange, error)
+	GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (map[int]*PaymentOptionForDateRange, error)
 }
 
 type IStatisticsHandlers interface {
