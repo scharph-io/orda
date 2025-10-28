@@ -52,8 +52,8 @@ const (
 	Q_products_for_date_range = `
 		SELECT
   			p.name AS product_name,
-  			SUM(ti.qty) AS total_units_sold,
-  			SUM(ti.qty * ti.price)/100 AS total_gross_sales
+  			COALESCE(SUM(ti.qty), 0) AS total_units_sold,
+  			COALESCE(SUM(ti.qty * ti.price)/100, 0) AS total_gross_sales
 		FROM transactions AS t
 		JOIN transaction_items AS ti ON ti.transaction_id = t.id
 		JOIN products AS p ON p.id = ti.product_id

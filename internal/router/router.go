@@ -166,4 +166,5 @@ func (s *Server) SetupRoutes(app *fiber.App) {
 	// Statistics
 	stats := api.Group("/stats")
 	stats.Get("/transactiondays", s.statisticsHandlers.GetTransactionDays)
+	stats.Get("/products/daterange", s.statisticsHandlers.GetProductsForDateRange)
 }
