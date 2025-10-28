@@ -21,6 +21,7 @@ type TransactionDays []*TransactionDay
 
 type ProductForDateRange struct {
 	Product     string  `json:"product"`
+	Desc        string  `json:"desc"`
 	TotalQty    int64   `json:"total_qty"`
 	TotalAmount float64 `json:"total_amount"`
 }

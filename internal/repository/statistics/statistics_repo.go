@@ -79,7 +79,7 @@ func (r *StatisticsRepo) GetProductsForDateRange(ctx context.Context, startDate,
 
 	for rows.Next() {
 		var row ports.ProductForDateRange
-		if err := rows.Scan(&row.Product, &row.TotalQty, &row.TotalAmount); err != nil {
+		if err := rows.Scan(&row.Product, &row.Desc, &row.TotalQty, &row.TotalAmount); err != nil {
 			log.Fatal(err)
 		}
 		results = append(results, &row)
