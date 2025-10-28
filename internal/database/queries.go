@@ -45,13 +45,14 @@ const (
 	`
 
 	/*
-	 * product_name      |total_units_sold|total_gross_sales|
-	 * ------------------+----------------+-----------------+
-	 * product     		|              45|         105.0000|
+	 * product_name | product_desc |total_units_sold|total_gross_sales|
+	 * -------------+--------------+----------------+-----------------+
+	 *      product |  description |              45|         105.0000|
 	 */
 	Q_products_for_date_range = `
 		SELECT
   			p.name AS product_name,
+     		p.desc AS product_desc,
   			COALESCE(SUM(ti.qty), 0) AS total_units_sold,
   			COALESCE(SUM(ti.qty * ti.price)/100, 0) AS total_gross_sales
 		FROM transactions AS t
@@ -61,8 +62,8 @@ const (
 		  AND p.deleted_at IS NULL
 		  AND t.created_at >= ?       -- start date
 		  AND t.created_at <  ?       -- end date (exclusive keeps year boundaries clean)
-		GROUP BY product_name
-		ORDER BY product_name;
+		GROUP BY product_name, product_desc
+		ORDER BY product_name, product_desc;
 	`
 
 	Q_transaction_history_date = `
