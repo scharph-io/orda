@@ -8,6 +8,7 @@ import (
 	"github.com/scharph/orda/internal/ports"
 	"github.com/scharph/orda/internal/repository/account"
 	"github.com/scharph/orda/internal/repository/assortment"
+	"github.com/scharph/orda/internal/repository/statistics"
 	"github.com/scharph/orda/internal/repository/transaction"
 	"github.com/scharph/orda/internal/repository/user"
 	"github.com/scharph/orda/internal/repository/view"
@@ -23,6 +24,7 @@ type Server struct {
 	viewHandlers        ports.IViewHandlers
 	transactionHandlers ports.ITransactionHandlers
 	orderHandlers       ports.IOrderHandlers
+	statisticsHandlers  ports.IStatisticsHandlers
 }
 
 func NewServer() *Server {
@@ -42,6 +44,12 @@ func NewServer() *Server {
 	transactionRepo := transaction.NewTransactionRepository(db)
 	transactionItemRepo := transaction.NewTransactionItemRepository(db)
 
+	rawDB, _ := db.DB()
+	statisticsRepo, err := statistics.NewStatisticsRepo(rawDB)
+	if err != nil {
+		panic(err)
+	}
+
 	// services
 	userService := service.NewUserService(userRepo, roleRepo)
 	roleService := service.NewRoleService(roleRepo)
@@ -50,6 +58,7 @@ func NewServer() *Server {
 	viewService := service.NewViewService(viewRepo, viewProductRepo)
 	transactionService := service.NewTransactionService(transactionRepo, transactionItemRepo, productRepo, accountService)
 	orderService := service.NewOrderService(viewRepo, viewProductRepo, transactionRepo, accountRepo, productRepo)
+	statisticsService := service.NewStatisticsService(statisticsRepo)
 
 	// handlers
 	userHandlers := handlers.NewUserHandlers(userService)
@@ -60,6 +69,7 @@ func NewServer() *Server {
 	viewHandlers := handlers.NewViewHandlers(viewService)
 	transactionHandlers := handlers.NewTransactionHandler(transactionService)
 	orderHandlers := handlers.NewOrderHandlers(orderService, *middleware.Store)
+	statisticsHandlers := handlers.NewStatisticsHandler(statisticsService)
 
 	return &Server{
 		userHandlers,
@@ -70,5 +80,6 @@ func NewServer() *Server {
 		viewHandlers,
 		transactionHandlers,
 		orderHandlers,
+		statisticsHandlers,
 	}
 }
