@@ -19,6 +19,7 @@ import { errorInterceptor } from '@orda.core/interceptors/error.interceptor';
 import { credentialInterceptor } from '@orda.core/interceptors/credential.interceptor';
 import localeDe from '@angular/common/locales/de';
 import { SessionService } from '@orda.core/services/session.service';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 registerLocaleData(localeDe, 'de');
 
@@ -45,5 +46,7 @@ export const appConfig: ApplicationConfig = {
 			useValue: { dateFormat: 'shortDate' },
 		},
 		{ provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+		// provideCharts({ registerables: [LineController, Legend, Colors ] }),
+		provideCharts(withDefaultRegisterables()),
 	],
 };
