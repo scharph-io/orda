@@ -29,6 +29,21 @@ func (s *StatisticsService) GetProductQtyForDateRange(ctx context.Context, produ
 	return s.repo.GetProductQtyForDateRange(ctx, productId, startDate, endDate)
 }
 
+func (s *StatisticsService) GetProductsQtyDatasets(ctx context.Context, startDate, endDate time.Time, productIds ...string) (ports.ProductQuantitiesDatasets, error) {
+	res := make(ports.ProductQuantitiesDatasets, 0)
+	for _, id := range productIds {
+		x, err := s.repo.GetProductQtyForDateRange(ctx, id, startDate, endDate)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, &ports.ProductQuantitiesDataset{
+			ProductId: id,
+			Dataset:   x,
+		})
+	}
+	return res, nil
+}
+
 func (s *StatisticsService) GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (map[int]*ports.PaymentOptionForDateRange, error) {
 	x, err := s.repo.GetPaymentOptionsForDateRange(ctx, startDate, endDate)
 	if err != nil {

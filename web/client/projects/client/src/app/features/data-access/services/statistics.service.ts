@@ -6,15 +6,18 @@ import { API_ENDPOINTS } from '@orda.core/constants';
 
 export interface ProductQuantitiesResponse {
 	data: {
-		reporting_day: Date
-		total_qty: number
+		product_id: string,
+		dataset: {
+			reporting_day: Date,
+			total_qty: number
+		}[]
 	}[],
 	from: Date,
 	to: Date,
 }
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class StatisticsService {
 	httpClient = inject(HttpClient);
@@ -22,15 +25,32 @@ export class StatisticsService {
 	logger = inject(OrdaLogger);
 
 	public getProductQuantitiesByDateRange(productId: string, from?: Date, to?: Date) {
-		const params = new HttpParams();
-		if(from) {
-			params.set('from', from.toUTCString())
-		}
-		if(to) {
-			params.set('to', to.toUTCString());
-		}
+		const params = new HttpParams({
+			fromObject: {
+				...(from ? { from: from.toUTCString() } : {}),
+				...(to ? { to: to.toUTCString() } : {}),
+			}
+
+		});
 		return this.httpClient.get<ProductQuantitiesResponse>(
 			`${this.HOST}${API_ENDPOINTS.STATISTICS}/products/${productId}/qty`,
+			{
+				params
+			}
+		)
+	}
+
+	public getProductsQuantitiesDataset(productIds: string[], from?: Date, to?: Date) {
+		const params = new HttpParams({
+			fromObject: {
+				...(from ? { from: from.toUTCString() } : {}),
+				...(to ? { to: to.toUTCString() } : {}),
+				ids: productIds.join(','),
+			}
+
+		});
+		return this.httpClient.get<ProductQuantitiesResponse>(
+			`${this.HOST}${API_ENDPOINTS.STATISTICS}/products/qty`,
 			{
 				params
 			}
