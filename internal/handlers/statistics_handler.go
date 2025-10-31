@@ -114,7 +114,7 @@ func (h *StatisticsHandler) GetProductQtyForDateRange(c *fiber.Ctx) error {
 		})
 	}
 
-	x, err := h.statisticsService.GetProductQtyForDateRange(c.Context(), productID, fromDate, toDate)
+	x, err := h.statisticsService.GetProductsQtyDatasets(c.Context(), fromDate, toDate, productID)
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"message": fmt.Sprintf("failed to get product quantities for date range: '%s' to '%s'", fromDateString, toDateString),

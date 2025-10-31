@@ -25,23 +25,28 @@ func (s *StatisticsService) GetProductsForDateRange(ctx context.Context, startDa
 	return s.repo.GetProductsForDateRange(ctx, startDate, endDate)
 }
 
-func (s *StatisticsService) GetProductQtyForDateRange(ctx context.Context, productId string, startDate, endDate time.Time) (ports.ProductQuantitiesForDateRange, error) {
-	return s.repo.GetProductQtyForDateRange(ctx, productId, startDate, endDate)
-}
+func (s *StatisticsService) GetProductsQtyDatasets(ctx context.Context, startDate, endDate time.Time, productIds ...string) (*ports.ProductQuantitiesDatasets, error) {
+	dates, err := s.repo.GetTransactionDates(ctx, startDate, endDate)
+	if err != nil {
+		return nil, err
+	}
 
-func (s *StatisticsService) GetProductsQtyDatasets(ctx context.Context, startDate, endDate time.Time, productIds ...string) (ports.ProductQuantitiesDatasets, error) {
-	res := make(ports.ProductQuantitiesDatasets, 0)
-	for _, id := range productIds {
-		x, err := s.repo.GetProductQtyForDateRange(ctx, id, startDate, endDate)
+	var datasets []*ports.ProductQuantitiesDataset
+	for _, p := range productIds {
+		dataset, err := s.repo.GetProductQtyForDateRange(ctx, startDate, endDate, p)
 		if err != nil {
 			return nil, err
 		}
-		res = append(res, &ports.ProductQuantitiesDataset{
-			ProductId: id,
-			Dataset:   x,
+		datasets = append(datasets, &ports.ProductQuantitiesDataset{
+			ProductId: p,
+			Dataset:   dataset,
 		})
 	}
-	return res, nil
+
+	return &ports.ProductQuantitiesDatasets{
+		Dates:    dates,
+		Datasets: datasets,
+	}, nil
 }
 
 func (s *StatisticsService) GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (map[int]*ports.PaymentOptionForDateRange, error) {

@@ -28,19 +28,15 @@ type ProductForDateRange struct {
 
 type ProductsForDateRange []*ProductForDateRange
 
-type ProductQtyForDateRange struct {
-	ReportingDay time.Time `json:"reporting_day"`
-	TotalQty     int64     `json:"total_qty"`
-}
-
-type ProductQuantitiesForDateRange []*ProductQtyForDateRange
-
 type ProductQuantitiesDataset struct {
-	ProductId string                    `json:"product_id"`
-	Dataset   []*ProductQtyForDateRange `json:"dataset"`
+	ProductId string   `json:"product_id"`
+	Dataset   []*int32 `json:"dataset"`
 }
 
-type ProductQuantitiesDatasets []*ProductQuantitiesDataset
+type ProductQuantitiesDatasets struct {
+	Dates    []*time.Time                `json:"dates"`
+	Datasets []*ProductQuantitiesDataset `json:"datasets"`
+}
 
 type PaymentOptionForDateRange struct {
 	PaymentOption     uint    `json:"payment_option"`
@@ -54,15 +50,19 @@ type PaymentOptionsForDateRange []*PaymentOptionForDateRange
 type IStatisticsRepository interface {
 	GetTransactionDays(ctx context.Context, year int) (TransactionDays, error)
 	GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
-	GetProductQtyForDateRange(ctx context.Context, productId string, startDate, endDate time.Time) (ProductQuantitiesForDateRange, error)
+
+	GetTransactionDates(ctx context.Context, startDate, endDate time.Time) ([]*time.Time, error)
+	GetProductQtyForDateRange(ctx context.Context, startDate, endDate time.Time, productId string) ([]*int32, error)
+
 	GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (PaymentOptionsForDateRange, error)
 }
 
 type IStatisticsService interface {
 	GetTransactionDays(ctx context.Context, year int) (TransactionDays, error)
 	GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
-	GetProductQtyForDateRange(ctx context.Context, productId string, startDate, endDate time.Time) (ProductQuantitiesForDateRange, error)
-	GetProductsQtyDatasets(ctx context.Context, startDate, endDate time.Time, productIds ...string) (ProductQuantitiesDatasets, error)
+
+	GetProductsQtyDatasets(ctx context.Context, startDate, endDate time.Time, productIds ...string) (*ProductQuantitiesDatasets, error)
+
 	GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (map[int]*PaymentOptionForDateRange, error)
 }
 
