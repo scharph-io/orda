@@ -37,6 +37,7 @@ func (r *StatisticsRepo) prepareStatements() error {
 		"getProductsForDateRange":        database.Q_products_for_date_range,
 		"getProductQuantityForDateRange": database.Q_get_product_quantity_for_date_range,
 		"getPaymentOptionsForDateRange":  database.Q_get_payment_options_for_date_range,
+		"getTransactionDates":            database.Q_get_transaction_dates,
 	}
 	for name, query := range statements {
 		stmt, err := r.db.Prepare(query)
@@ -89,18 +90,37 @@ func (r *StatisticsRepo) GetProductsForDateRange(ctx context.Context, startDate,
 
 }
 
-func (r *StatisticsRepo) GetProductQtyForDateRange(ctx context.Context, productId string, startDate, endDate time.Time) (ports.ProductQuantitiesForDateRange, error) {
-	rows, err := r.stmts["getProductQuantityForDateRange"].QueryContext(ctx, productId, startDate, endDate)
+func (r *StatisticsRepo) GetTransactionDates(ctx context.Context, startDate, endDate time.Time) ([]*time.Time, error) {
+	datesRows, err := r.stmts["getTransactionDates"].QueryContext(ctx, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query transaction dates for date range: %w", err)
+	}
+	defer datesRows.Close()
+
+	var dates []*time.Time
+	for datesRows.Next() {
+		var date time.Time
+		if err := datesRows.Scan(&date); err != nil {
+			return nil, fmt.Errorf("failed to scan transaction date: %w", err)
+		}
+		dates = append(dates, &date)
+	}
+
+	return dates, nil
+}
+
+func (r *StatisticsRepo) GetProductQtyForDateRange(ctx context.Context, startDate, endDate time.Time, productId string) ([]*int32, error) {
+
+	rows, err := r.stmts["getProductQuantityForDateRange"].QueryContext(ctx, startDate, endDate, productId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query product quantity for date range: %w", err)
 	}
 	defer rows.Close()
 
-	var result ports.ProductQuantitiesForDateRange
-
+	var result = make([]*int32, 0)
 	for rows.Next() {
-		var row ports.ProductQtyForDateRange
-		if err := rows.Scan(&row.ReportingDay, &row.TotalQty); err != nil {
+		var row int32
+		if err := rows.Scan(&row); err != nil {
 			log.Fatal(err)
 		}
 		result = append(result, &row)
