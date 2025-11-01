@@ -32,6 +32,10 @@
       <mat-icon>settings</mat-icon>
       <span>Verwalten</span>
 		</button>
+    <button mat-menu-item routerLink="manage/statistics">
+      <mat-icon>line_axis</mat-icon>
+      <span>Statistik</span>
+    </button>
 	}
 
 	@if (sessionService.isAuthenticated()) {
