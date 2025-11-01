@@ -53,7 +53,7 @@ type IStatisticsRepository interface {
 
 	GetTransactionDates(ctx context.Context, startDate, endDate time.Time) ([]*time.Time, error)
 	GetProductQtyForDateRange(ctx context.Context, startDate, endDate time.Time, productId string) ([]*int32, error)
-
+	ProductsExists(ctx context.Context, productIds []string) (bool, error)
 	GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (PaymentOptionsForDateRange, error)
 }
 

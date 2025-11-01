@@ -5,12 +5,10 @@ import { HOST } from '@orda.core/config/config';
 import { API_ENDPOINTS } from '@orda.core/constants';
 
 export interface ProductQuantitiesResponse {
-	data: {
+	dates: string[],
+	datasets: {
 		product_id: string,
-		dataset: {
-			reporting_day: Date,
-			total_qty: number
-		}[]
+		dataset: number[]
 	}[],
 	from: Date,
 	to: Date,

@@ -1,6 +1,12 @@
 package database
 
 const (
+	Q_products_exists = `
+		SELECT COUNT(*) = ? AS all_exist
+		FROM products
+		WHERE id IN (%s);
+	`
+
 	Q_get_payment_options_for_date_range = `
 		SELECT
   			t.payment_option,
@@ -16,36 +22,36 @@ const (
 	`
 
 	Q_get_product_quantity_for_date_range = `
-	WITH params AS (
-    SELECT
-        DATE(?) AS start_day,
-        DATE(?) AS end_day,
-        ? AS product_id
-    ),
-	transaction_days AS (
-	    SELECT DISTINCT DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS day
-	    FROM transactions AS t
-	    CROSS JOIN params p
-	    WHERE DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR))
-	          BETWEEN p.start_day AND p.end_day
-	),
-	product_totals AS (
+		WITH params AS (
 	    SELECT
-	        DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS day,
-	        SUM(ti.qty) AS qty
-	    FROM transactions AS t
-	    JOIN transaction_items AS ti ON ti.transaction_id = t.id
-	    CROSS JOIN params p
-	    WHERE ti.product_id = p.product_id
-	      AND DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR))
-	          BETWEEN p.start_day AND p.end_day
-	    GROUP BY DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR))
-	)
-	SELECT
-	    COALESCE(pt.qty, 0) AS total_qty
-	FROM transaction_days AS td
-	LEFT JOIN product_totals AS pt ON pt.day = td.day
-	ORDER BY td.day;
+	        DATE(?) AS start_day,
+	        DATE(?) AS end_day,
+	        ? AS product_id
+	    ),
+		transaction_days AS (
+		    SELECT DISTINCT DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS day
+		    FROM transactions AS t
+		    CROSS JOIN params p
+		    WHERE DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR))
+		          BETWEEN p.start_day AND p.end_day
+		),
+		product_totals AS (
+		    SELECT
+		        DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR)) AS day,
+		        SUM(ti.qty) AS qty
+		    FROM transactions AS t
+		    JOIN transaction_items AS ti ON ti.transaction_id = t.id
+		    CROSS JOIN params p
+		    WHERE ti.product_id = p.product_id
+		      AND DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR))
+		          BETWEEN p.start_day AND p.end_day
+		    GROUP BY DATE(DATE_SUB(t.created_at, INTERVAL 6 HOUR))
+		)
+		SELECT
+		    COALESCE(pt.qty, 0) AS total_qty
+		FROM transaction_days AS td
+		LEFT JOIN product_totals AS pt ON pt.day = td.day
+		ORDER BY td.day;
 	`
 
 	/*

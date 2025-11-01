@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/scharph/orda/internal/database"
@@ -127,6 +128,31 @@ func (r *StatisticsRepo) GetProductQtyForDateRange(ctx context.Context, startDat
 	}
 
 	return result, nil
+}
+
+func (r *StatisticsRepo) ProductsExists(ctx context.Context, ids []string) (bool, error) {
+	if len(ids) == 0 {
+		return false, nil
+	}
+
+	inClause := strings.Repeat("?,", len(ids))
+	inClause = inClause[:len(inClause)-1] // remove trailing comma
+	query := fmt.Sprintf(database.Q_products_exists, inClause)
+
+	// Build args slice: all ids + len(ids)
+	args := make([]any, 0, len(ids)+1)
+	args = append(args, len(ids)) // first param -> COUNT(*) = ?
+	for _, id := range ids {
+		args = append(args, id)
+	}
+
+	var allExist bool
+	err := r.db.QueryRowContext(ctx, query, args...).Scan(&allExist)
+	if err != nil {
+		return false, err
+	}
+
+	return allExist, nil
 }
 
 func (r *StatisticsRepo) GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (ports.PaymentOptionsForDateRange, error) {

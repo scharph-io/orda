@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/scharph/orda/internal/ports"
@@ -26,16 +27,26 @@ func (s *StatisticsService) GetProductsForDateRange(ctx context.Context, startDa
 }
 
 func (s *StatisticsService) GetProductsQtyDatasets(ctx context.Context, startDate, endDate time.Time, productIds ...string) (*ports.ProductQuantitiesDatasets, error) {
+
+	fmt.Println(productIds)
+	exists, err := s.repo.ProductsExists(ctx, productIds)
+	if err != nil || !exists {
+		if err != nil {
+			return nil, fmt.Errorf("failed to check product existence: %w", err)
+		}
+		return nil, fmt.Errorf("not all products found")
+	}
+
 	dates, err := s.repo.GetTransactionDates(ctx, startDate, endDate)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get transaction dates: %w", err)
 	}
 
 	var datasets []*ports.ProductQuantitiesDataset
 	for _, p := range productIds {
 		dataset, err := s.repo.GetProductQtyForDateRange(ctx, startDate, endDate, p)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to get dataset for product %s: %w", p, err)
 		}
 		datasets = append(datasets, &ports.ProductQuantitiesDataset{
 			ProductId: p,
