@@ -9,6 +9,7 @@ import { ChartDataset, Point } from 'chart.js';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 
 @Component({
@@ -19,8 +20,11 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 		MatSelectModule,
 		FormsModule,
 		ReactiveFormsModule,
+		DatePipe
 	],
 	template: `
+
+		{{ 1 | date : 'MMMM'}}
 
 		<mat-form-field>
 			<mat-label>Produkte</mat-label>
