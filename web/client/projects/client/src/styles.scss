@@ -143,3 +143,10 @@ mat-grid-tile {
 .spacer {
   flex: 1 1 auto;
 }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 20px;
+  justify-items: center;
+}

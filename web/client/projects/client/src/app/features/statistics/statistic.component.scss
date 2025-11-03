@@ -1,0 +1,43 @@
+/* Height of your top app bar (toolbar) */
+:root {
+  --appbar-h: 64px; /* adjust if your toolbar differs */
+}
+
+.page {
+  /* Fill viewport minus toolbar */
+  height: calc(100vh - var(--appbar-h));
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* allow children to shrink */
+
+}
+
+/* 1) Make the tab group stretch */
+.full-height {
+  flex: 1 1 auto;
+  min-height: 0; /* important to let the body wrapper grow */
+  display: flex;
+  flex-direction: column;
+}
+
+/* 2) Stretch the tab body area (MDC classes, Angular Material v15+) */
+.full-height .mat-mdc-tab-body-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Optional: also stretch the inner scrolling div */
+.full-height .mat-mdc-tab-body-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Your content container inside a tab */
+.tab-pane {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;              /* just for demo layout */
+  place-items: center;        /* center your cards if you want */
+  padding: 16px;
+}

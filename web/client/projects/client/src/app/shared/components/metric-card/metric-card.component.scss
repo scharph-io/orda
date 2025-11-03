@@ -1,0 +1,60 @@
+/* metric-card.component.scss */
+:host {
+  /* ✅ CSS Variables (customizable per instance or theme) */
+  --metric-card-bg: var(--metric-card-bg, #ffffff);
+  --metric-card-color: var(--metric-card-color, #1e293b);
+  --metric-card-color-muted: var(--metric-card-color-muted, #64748b);
+  --metric-card-radius: var(--metric-card-radius, 16px);
+  --metric-card-shadow: var(--metric-card-shadow, 0 4px 14px rgba(0, 0, 0, 0.08));
+  --metric-card-hover-shadow: var(--metric-card-hover-shadow, 0 8px 24px rgba(0, 0, 0, 0.12));
+  --metric-card-size: var(--metric-card-size, 180px);
+
+  display: block;
+  width: var(--metric-card-size);
+  height: var(--metric-card-size);
+}
+
+.metric-card {
+  background: var(--metric-card-bg);
+  color: var(--metric-card-color);
+  //border-radius: var(--metric-card-radius);
+  box-shadow: var(--metric-card-shadow);
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  //border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.metric-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--metric-card-hover-shadow);
+}
+
+/* label */
+.metric-card__label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--metric-card-color-muted);
+  margin-bottom: 8px;
+}
+
+/* value */
+.metric-card__value {
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 700;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+}
+
+.metric-card__unit {
+  font-size: 16px;
+  color: var(--metric-card-color-muted);
+}
