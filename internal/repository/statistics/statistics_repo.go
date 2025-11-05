@@ -38,7 +38,7 @@ func (r *StatisticsRepo) prepareStatements() error {
 		"getProductsForDateRange":        database.Q_products_for_date_range,
 		"getProductQuantityForDateRange": database.Q_get_product_quantity_for_date_range,
 		"getPaymentOptionsForDateRange":  database.Q_get_payment_options_for_date_range,
-		"getTransactionDates":            database.Q_get_transaction_dates,
+		"getTransactionDates":            database.Q_get_transaction_dates2,
 	}
 	for name, query := range statements {
 		stmt, err := r.db.Prepare(query)
@@ -50,24 +50,41 @@ func (r *StatisticsRepo) prepareStatements() error {
 	return nil
 }
 
-func (r *StatisticsRepo) GetTransactionDays(ctx context.Context, year int) (ports.TransactionDays, error) {
+func (r *StatisticsRepo) GetTransactionCntDates(ctx context.Context, year int) (ports.TransactionCntDates, error) {
 	rows, err := r.stmts["getTransactionDays"].QueryContext(ctx, year)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query transaction days: %w", err)
 	}
 	defer rows.Close()
-
-	var results ports.TransactionDays
-
+	var results ports.TransactionCntDates
 	for rows.Next() {
-		var row ports.TransactionDay
-		if err := rows.Scan(&row.Day, &row.Qty); err != nil {
+		var row ports.TransactionCntDate
+		if err := rows.Scan(&row.Date, &row.Qty); err != nil {
 			log.Fatal(err)
 		}
 		results = append(results, &row)
 	}
 
 	return results, nil
+}
+
+func (r *StatisticsRepo) GetTransactionDates(ctx context.Context, startDate, endDate *time.Time) ([]*time.Time, error) {
+	datesRows, err := r.stmts["getTransactionDates"].QueryContext(ctx, startDate, startDate, endDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query transaction dates for date range: %w", err)
+	}
+	defer datesRows.Close()
+
+	var dates []*time.Time
+	for datesRows.Next() {
+		var date time.Time
+		if err := datesRows.Scan(&date); err != nil {
+			return nil, fmt.Errorf("failed to scan transaction date: %w", err)
+		}
+		dates = append(dates, &date)
+	}
+
+	return dates, nil
 }
 
 func (r *StatisticsRepo) GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ports.ProductsForDateRange, error) {
@@ -89,25 +106,6 @@ func (r *StatisticsRepo) GetProductsForDateRange(ctx context.Context, startDate,
 
 	return results, nil
 
-}
-
-func (r *StatisticsRepo) GetTransactionDates(ctx context.Context, startDate, endDate time.Time) ([]*time.Time, error) {
-	datesRows, err := r.stmts["getTransactionDates"].QueryContext(ctx, startDate, endDate)
-	if err != nil {
-		return nil, fmt.Errorf("failed to query transaction dates for date range: %w", err)
-	}
-	defer datesRows.Close()
-
-	var dates []*time.Time
-	for datesRows.Next() {
-		var date time.Time
-		if err := datesRows.Scan(&date); err != nil {
-			return nil, fmt.Errorf("failed to scan transaction date: %w", err)
-		}
-		dates = append(dates, &date)
-	}
-
-	return dates, nil
 }
 
 func (r *StatisticsRepo) GetProductQtyForDateRange(ctx context.Context, startDate, endDate time.Time, productId string) ([]*int32, error) {

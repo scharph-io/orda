@@ -18,8 +18,12 @@ func NewStatisticsService(repo ports.IStatisticsRepository) *StatisticsService {
 	return &StatisticsService{repo: repo}
 }
 
-func (s *StatisticsService) GetTransactionDays(ctx context.Context, year int) (ports.TransactionDays, error) {
-	return s.repo.GetTransactionDays(ctx, year)
+func (s *StatisticsService) GetTransactionCntDates(ctx context.Context, year int) (ports.TransactionCntDates, error) {
+	return s.repo.GetTransactionCntDates(ctx, year)
+}
+
+func (s *StatisticsService) GetTransactionDates(ctx context.Context, startDate, endDate *time.Time) ([]*time.Time, error) {
+	return s.repo.GetTransactionDates(ctx, startDate, endDate)
 }
 
 func (s *StatisticsService) GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ports.ProductsForDateRange, error) {
@@ -37,7 +41,7 @@ func (s *StatisticsService) GetProductsQtyDatasets(ctx context.Context, startDat
 		return nil, fmt.Errorf("not all products found")
 	}
 
-	dates, err := s.repo.GetTransactionDates(ctx, startDate, endDate)
+	dates, err := s.repo.GetTransactionDates(ctx, &startDate, &endDate)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get transaction dates: %w", err)
 	}

@@ -9,7 +9,7 @@ import { ChartDataset, Point } from 'chart.js';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, JsonPipe } from '@angular/common';
 import {MatTabsModule} from '@angular/material/tabs';
 import { StatsCardComponent } from '@orda.shared/components/stats-card/stats-card.component';
 import { MetricCardComponent } from '@orda.shared/components/metric-card/metric-card.component';
@@ -28,12 +28,16 @@ import { RouterModule } from '@angular/router';
 		MatTabsModule,
 		StatsCardComponent,
 		MetricCardComponent,
-		RouterModule
+		RouterModule,
+		JsonPipe
 	],
 	template: `
 		<div class="page">
+
+<!--			<pre>{{quantities.value() | json}}</pre>-->
+
 			<nav mat-stretch-tabs="false" mat-tab-nav-bar [tabPanel]="panel" class="tabs-header" mat-align-tabs="center">
-				<a mat-tab-link [routerLink]="['current']" routerLinkActive #rla1="routerLinkActive" [active]="rla1.isActive">Current</a>
+				<a mat-tab-link [routerLink]="['day']" routerLinkActive #rla1="routerLinkActive" [active]="rla1.isActive">Day</a>
 				<a mat-tab-link [routerLink]="['month']"   routerLinkActive #rla2="routerLinkActive" [active]="rla2.isActive">Month</a>
 				<a mat-tab-link [routerLink]="['year']"    routerLinkActive #rla3="routerLinkActive" [active]="rla3.isActive">Year</a>
 			</nav>
@@ -42,6 +46,8 @@ import { RouterModule } from '@angular/router';
 				<router-outlet></router-outlet>
 			</mat-tab-nav-panel>
 		</div>
+
+
 
 <!--		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" dynamicHeight>-->
 <!--			<mat-tab label="Current">-->
@@ -127,4 +133,12 @@ export class StatisticComponent {
 		const stats = this.datasets.value();
 		return stats ? stats.dates.map((d) => new Date(d).toLocaleDateString()) : [];
 	});
+
+
+	quantities = rxResource({
+		stream: () => this.statisticsService.getTransactionsQuantities(),
+	})
+
+
+
 }

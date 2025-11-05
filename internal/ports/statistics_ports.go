@@ -12,12 +12,12 @@ var (
 	ErrInvalidYear = errors.New("invalid year")
 )
 
-type TransactionDay struct {
-	Day time.Time `json:"day"`
-	Qty int64     `json:"qty"`
+type TransactionCntDate struct {
+	Date time.Time `json:"date"`
+	Qty  int64     `json:"qty"`
 }
 
-type TransactionDays []*TransactionDay
+type TransactionCntDates []*TransactionCntDate
 
 type ProductForDateRange struct {
 	Product     string  `json:"product"`
@@ -48,26 +48,28 @@ type PaymentOptionForDateRange struct {
 type PaymentOptionsForDateRange []*PaymentOptionForDateRange
 
 type IStatisticsRepository interface {
-	GetTransactionDays(ctx context.Context, year int) (TransactionDays, error)
-	GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
+	GetTransactionCntDates(ctx context.Context, year int) (TransactionCntDates, error)
+	GetTransactionDates(ctx context.Context, startDate, endDate *time.Time) ([]*time.Time, error)
 
-	GetTransactionDates(ctx context.Context, startDate, endDate time.Time) ([]*time.Time, error)
+	GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
 	GetProductQtyForDateRange(ctx context.Context, startDate, endDate time.Time, productId string) ([]*int32, error)
 	ProductsExists(ctx context.Context, productIds []string) (bool, error)
 	GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (PaymentOptionsForDateRange, error)
 }
 
 type IStatisticsService interface {
-	GetTransactionDays(ctx context.Context, year int) (TransactionDays, error)
+	GetTransactionCntDates(ctx context.Context, year int) (TransactionCntDates, error)
+	GetTransactionDates(ctx context.Context, startDate, endDate *time.Time) ([]*time.Time, error)
+
 	GetProductsForDateRange(ctx context.Context, startDate, endDate time.Time) (ProductsForDateRange, error)
-
 	GetProductsQtyDatasets(ctx context.Context, startDate, endDate time.Time, productIds ...string) (*ProductQuantitiesDatasets, error)
-
 	GetPaymentOptionsForDateRange(ctx context.Context, startDate, endDate time.Time) (map[int]*PaymentOptionForDateRange, error)
 }
 
 type IStatisticsHandlers interface {
-	GetTransactionDays(c *fiber.Ctx) error
+	GetTransactionCntDates(c *fiber.Ctx) error
+	GetTransactionDates(c *fiber.Ctx) error
+
 	GetProductsForDateRange(c *fiber.Ctx) error
 	GetProductQtyForDateRange(c *fiber.Ctx) error
 	GetProductsQtyForDateRange(c *fiber.Ctx) error

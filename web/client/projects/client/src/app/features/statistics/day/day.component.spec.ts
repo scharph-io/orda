@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CurrentComponent } from './current.component';
+import { DayComponent } from './day.component';
 
-describe('CurrentComponent', () => {
-  let component: CurrentComponent;
-  let fixture: ComponentFixture<CurrentComponent>;
+describe('DayComponent', () => {
+  let component: DayComponent;
+  let fixture: ComponentFixture<DayComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CurrentComponent]
+      imports: [DayComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CurrentComponent);
+    fixture = TestBed.createComponent(DayComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

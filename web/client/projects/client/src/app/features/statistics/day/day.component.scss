@@ -1,0 +1,10 @@
+:host {
+  --appbar-h: 114px; /* adjust if your toolbar differs */
+
+  /* Fill viewport minus toolbar */
+  height: calc(100vh - var(--appbar-h));
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* allow children to shrink */
+  align-items: center
+}

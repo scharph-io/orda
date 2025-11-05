@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { HOST } from '@orda.core/config/config';
 import { API_ENDPOINTS } from '@orda.core/constants';
+import { map } from 'rxjs';
 
 export interface ProductQuantitiesResponse {
 	dates: string[],
@@ -12,6 +13,14 @@ export interface ProductQuantitiesResponse {
 	}[],
 	from: Date,
 	to: Date,
+}
+
+export interface TransactionQuantities {
+	year: number;
+	data: {
+		date: Date,
+		qty: number,
+	}
 }
 
 @Injectable({
@@ -53,5 +62,31 @@ export class StatisticsService {
 				params
 			}
 		)
+	}
+
+	public getTransactionsDates(from?: Date, to?: Date) {
+		const params = new HttpParams({
+			fromObject: {
+				...(from ? { from: from.toUTCString() } : {}),
+				...(to ? { to: to.toUTCString() } : {}),
+			}
+
+		});
+		return this.httpClient.get<string[]>(`${this.HOST}${API_ENDPOINTS.STATISTICS}/transactions/dates`, {
+			params
+		}).pipe(map(dates => dates.map(d => new Date(d))))
+	}
+
+	public getTransactionsQuantities(from?: Date, to?: Date) {
+		const params = new HttpParams({
+			fromObject: {
+				...(from ? { from: from.toUTCString() } : {}),
+				...(to ? { to: to.toUTCString() } : {}),
+			}
+
+		});
+		return this.httpClient.get<TransactionQuantities>(`${this.HOST}${API_ENDPOINTS.STATISTICS}/transactions/qty`, {
+			params
+		})
 	}
 }
