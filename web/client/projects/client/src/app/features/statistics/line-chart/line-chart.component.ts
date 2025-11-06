@@ -1,7 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartDataset, ChartOptions, Point } from "chart.js";
-
+import { ChartConfiguration, ChartDataset, ChartOptions, Point } from 'chart.js';
 
 @Component({
 	selector: 'orda-line-chart',
@@ -50,7 +49,6 @@ export class LineChartComponent {
 				type: 'linear',
 				display: true,
 				position: 'left',
-
 			},
 		},
 	};

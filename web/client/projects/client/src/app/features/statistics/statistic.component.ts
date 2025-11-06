@@ -10,11 +10,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatePipe, JsonPipe } from '@angular/common';
-import {MatTabsModule} from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { StatsCardComponent } from '@orda.shared/components/stats-card/stats-card.component';
 import { MetricCardComponent } from '@orda.shared/components/metric-card/metric-card.component';
 import { RouterModule } from '@angular/router';
-
 
 @Component({
 	selector: 'orda-statistic',
@@ -29,17 +28,43 @@ import { RouterModule } from '@angular/router';
 		StatsCardComponent,
 		MetricCardComponent,
 		RouterModule,
-		JsonPipe
+		JsonPipe,
 	],
 	template: `
 		<div class="page">
+			<!--			<pre>{{quantities.value() | json}}</pre>-->
 
-<!--			<pre>{{quantities.value() | json}}</pre>-->
-
-			<nav mat-stretch-tabs="false" mat-tab-nav-bar [tabPanel]="panel" class="tabs-header" mat-align-tabs="center">
-				<a mat-tab-link [routerLink]="['day']" routerLinkActive #rla1="routerLinkActive" [active]="rla1.isActive">Day</a>
-				<a mat-tab-link [routerLink]="['month']"   routerLinkActive #rla2="routerLinkActive" [active]="rla2.isActive">Month</a>
-				<a mat-tab-link [routerLink]="['year']"    routerLinkActive #rla3="routerLinkActive" [active]="rla3.isActive">Year</a>
+			<nav
+				mat-stretch-tabs="false"
+				mat-tab-nav-bar
+				[tabPanel]="panel"
+				class="tabs-header"
+				mat-align-tabs="center"
+			>
+				<a
+					mat-tab-link
+					[routerLink]="['day']"
+					routerLinkActive
+					#rla1="routerLinkActive"
+					[active]="rla1.isActive"
+					>Day</a
+				>
+				<a
+					mat-tab-link
+					[routerLink]="['month']"
+					routerLinkActive
+					#rla2="routerLinkActive"
+					[active]="rla2.isActive"
+					>Month</a
+				>
+				<a
+					mat-tab-link
+					[routerLink]="['year']"
+					routerLinkActive
+					#rla3="routerLinkActive"
+					[active]="rla3.isActive"
+					>Year</a
+				>
 			</nav>
 
 			<mat-tab-nav-panel #panel class="tabs-panel">
@@ -47,25 +72,22 @@ import { RouterModule } from '@angular/router';
 			</mat-tab-nav-panel>
 		</div>
 
-
-
-<!--		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" dynamicHeight>-->
-<!--			<mat-tab label="Current">-->
-<!--				&lt;!&ndash;				<h1>Test</h1>&ndash;&gt;-->
-<!--				&lt;!&ndash;				<orda-stats-card/>&ndash;&gt;-->
-<!--				<div class="dashboard-grid">-->
-<!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
-<!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
-<!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
-<!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
-<!--				</div>-->
-<!--			</mat-tab>-->
-<!--			<mat-tab label="Month">Content 2</mat-tab>-->
-<!--			<mat-tab label="Year">Content 3</mat-tab>-->
-<!--		</mat-tab-group>-->
+		<!--		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" dynamicHeight>-->
+		<!--			<mat-tab label="Current">-->
+		<!--				&lt;!&ndash;				<h1>Test</h1>&ndash;&gt;-->
+		<!--				&lt;!&ndash;				<orda-stats-card/>&ndash;&gt;-->
+		<!--				<div class="dashboard-grid">-->
+		<!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
+		<!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
+		<!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
+		<!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
+		<!--				</div>-->
+		<!--			</mat-tab>-->
+		<!--			<mat-tab label="Month">Content 2</mat-tab>-->
+		<!--			<mat-tab label="Year">Content 3</mat-tab>-->
+		<!--		</mat-tab-group>-->
 
 		<!--		<orda-stats-card/>-->
-
 
 		<!--		{{ 1 | date : 'MMMM'}}-->
 
@@ -99,7 +121,7 @@ export class StatisticComponent {
 	);
 
 	selectedProducts = toSignal(
-		this.selectedProductsControl.valueChanges.pipe(map(p => p !== null ? p : [])),
+		this.selectedProductsControl.valueChanges.pipe(map((p) => (p !== null ? p : []))),
 		{ initialValue: [] },
 	);
 	datasets = rxResource({
@@ -134,11 +156,7 @@ export class StatisticComponent {
 		return stats ? stats.dates.map((d) => new Date(d).toLocaleDateString()) : [];
 	});
 
-
 	quantities = rxResource({
 		stream: () => this.statisticsService.getTransactionsQuantities(),
-	})
-
-
-
+	});
 }

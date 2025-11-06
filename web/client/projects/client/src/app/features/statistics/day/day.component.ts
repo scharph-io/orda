@@ -14,13 +14,19 @@ import { FormsModule } from '@angular/forms';
 	template: `
 		<mat-form-field>
 			<mat-label>Choose a date</mat-label>
-			<input matInput [matDatepickerFilter]="filter" [matDatepicker]="picker" (ngModelChange)="currentDate.set($event)" [ngModel]="currentDate()" />
+			<input
+				matInput
+				[matDatepickerFilter]="filter"
+				[matDatepicker]="picker"
+				(ngModelChange)="currentDate.set($event)"
+				[ngModel]="currentDate()"
+			/>
 			<mat-hint>MM/DD/YYYY</mat-hint>
 			<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 			<mat-datepicker [dateClass]="dateClass" #picker></mat-datepicker>
 		</mat-form-field>
 
-		{{currentDate()}}
+		{{ currentDate() }}
 	`,
 	styleUrl: './day.component.scss',
 })
@@ -36,20 +42,21 @@ export class DayComponent {
 
 	protected dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
 		if (view === 'month') {
-			return this.validDate(cellDate)
-				? 'example-custom-date-class'
-				: '';
+			return this.validDate(cellDate) ? 'example-custom-date-class' : '';
 		}
 		return '';
 	};
 
 	filter = (d: Date | null): boolean => {
-		const day = (d || new Date())
+		const day = d || new Date();
 		// Prevent Saturday and Sunday from being selected.
-		return this.validDate(day)
+		return this.validDate(day);
 	};
 
 	private validDate(day: Date) {
-		return this.allDates.value().some((d) => d.getTime() === day.getTime()) || day.getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime();
+		return (
+			this.allDates.value().some((d) => d.getTime() === day.getTime()) ||
+			day.getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+		);
 	}
 }
