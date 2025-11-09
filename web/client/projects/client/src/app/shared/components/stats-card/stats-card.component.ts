@@ -1,27 +1,25 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'orda-stats-card',
-  imports: [],
-  template: `
+	selector: 'orda-stats-card',
+	imports: [],
+	template: `
 		<!-- stats-card.component.html -->
 		<section class="stats-card">
-			@for (s of stats;track s; let idx = $index){
+			@for (s of stats; track s; let idx = $index) {
 				<div class="stat" [class.has-divider]="idx !== 0">
 					<h3 class="stat__label">{{ s.label }}</h3>
 					<div class="stat__value">
 						<span class="stat__number">{{ s.value }}</span>
-						@if(s.unit){
+						@if (s.unit) {
 							<span class="stat__unit">{{ s.unit }}</span>
 						}
 					</div>
 				</div>
 			}
-
 		</section>
-
 	`,
-  styleUrl: './stats-card.component.scss',
+	styleUrl: './stats-card.component.scss',
 })
 export class StatsCardComponent {
 	stats = [

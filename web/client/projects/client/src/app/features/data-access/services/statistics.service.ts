@@ -6,25 +6,25 @@ import { API_ENDPOINTS } from '@orda.core/constants';
 import { map } from 'rxjs';
 
 export interface ProductQuantitiesResponse {
-	dates: string[],
+	dates: string[];
 	datasets: {
-		product_id: string,
-		dataset: number[]
-	}[],
-	from: Date,
-	to: Date,
+		product_id: string;
+		dataset: number[];
+	}[];
+	from: Date;
+	to: Date;
 }
 
 export interface TransactionQuantities {
 	year: number;
 	data: {
-		date: Date,
-		qty: number,
-	}
+		date: Date;
+		qty: number;
+	};
 }
 
 @Injectable({
-	providedIn: 'root'
+	providedIn: 'root',
 })
 export class StatisticsService {
 	httpClient = inject(HttpClient);
@@ -36,15 +36,14 @@ export class StatisticsService {
 			fromObject: {
 				...(from ? { from: from.toUTCString() } : {}),
 				...(to ? { to: to.toUTCString() } : {}),
-			}
-
+			},
 		});
 		return this.httpClient.get<ProductQuantitiesResponse>(
 			`${this.HOST}${API_ENDPOINTS.STATISTICS}/products/${productId}/qty`,
 			{
-				params
-			}
-		)
+				params,
+			},
+		);
 	}
 
 	public getProductsQuantitiesDataset(productIds: string[], from?: Date, to?: Date) {
@@ -53,15 +52,14 @@ export class StatisticsService {
 				...(from ? { from: from.toUTCString() } : {}),
 				...(to ? { to: to.toUTCString() } : {}),
 				ids: productIds.join(','),
-			}
-
+			},
 		});
 		return this.httpClient.get<ProductQuantitiesResponse>(
 			`${this.HOST}${API_ENDPOINTS.STATISTICS}/products/qty`,
 			{
-				params
-			}
-		)
+				params,
+			},
+		);
 	}
 
 	public getTransactionsDates(from?: Date, to?: Date) {
@@ -69,12 +67,13 @@ export class StatisticsService {
 			fromObject: {
 				...(from ? { from: from.toUTCString() } : {}),
 				...(to ? { to: to.toUTCString() } : {}),
-			}
-
+			},
 		});
-		return this.httpClient.get<string[]>(`${this.HOST}${API_ENDPOINTS.STATISTICS}/transactions/dates`, {
-			params
-		}).pipe(map(dates => dates.map(d => new Date(d))))
+		return this.httpClient
+			.get<string[]>(`${this.HOST}${API_ENDPOINTS.STATISTICS}/transactions/dates`, {
+				params,
+			})
+			.pipe(map((dates) => dates.map((d) => new Date(d))));
 	}
 
 	public getTransactionsQuantities(from?: Date, to?: Date) {
@@ -82,11 +81,13 @@ export class StatisticsService {
 			fromObject: {
 				...(from ? { from: from.toUTCString() } : {}),
 				...(to ? { to: to.toUTCString() } : {}),
-			}
-
+			},
 		});
-		return this.httpClient.get<TransactionQuantities>(`${this.HOST}${API_ENDPOINTS.STATISTICS}/transactions/qty`, {
-			params
-		})
+		return this.httpClient.get<TransactionQuantities>(
+			`${this.HOST}${API_ENDPOINTS.STATISTICS}/transactions/qty`,
+			{
+				params,
+			},
+		);
 	}
 }

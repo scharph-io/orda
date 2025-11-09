@@ -1,9 +1,11 @@
 @use '@angular/material' as mat;
 
 :host {
-  @include mat.table-overrides((
-    row-item-container-height: 1.5rem,
-    header-container-height: 2rem,
-    header-headline-weight: bold,
-  ));
+	@include mat.table-overrides(
+		(
+			row-item-container-height: 1.5rem,
+			header-container-height: 2rem,
+			header-headline-weight: bold,
+		)
+	);
 }
