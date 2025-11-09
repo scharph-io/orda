@@ -1,0 +1,93 @@
+import { Component, effect, input, linkedSignal, output } from '@angular/core';
+import {
+	MatCalendarCellClassFunction,
+	MatDatepicker,
+	MatDatepickerInput,
+	MatDatepickerToggle,
+} from '@angular/material/datepicker';
+import { MatInput, MatSuffix } from '@angular/material/input';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormField } from '@angular/material/form-field';
+
+export interface OrdaDateRange {
+	from: Date;
+	to: Date;
+}
+
+@Component({
+	selector: 'orda-day-picker',
+	imports: [
+		MatDatepicker,
+		MatDatepickerInput,
+		MatDatepickerToggle,
+		MatFormField,
+		MatInput,
+		MatSuffix,
+		ReactiveFormsModule,
+		FormsModule,
+	],
+	template: `
+		<mat-form-field>
+			<input
+				matInput
+				[matDatepickerFilter]="filter"
+				[matDatepicker]="dp"
+				(ngModelChange)="_from.set($event)"
+				[ngModel]="from()"
+				disabled
+			/>
+			<mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+			<mat-datepicker touchUi [dateClass]="dateClass" #dp disabled="false"></mat-datepicker>
+		</mat-form-field>
+		<button (click)="add(1)">Next</button>
+		<button (click)="add(-1)">Prev</button>
+	`,
+})
+export class OrdaDayPickerComponent {
+	from = input(new Date());
+	_from = linkedSignal(() => this.from());
+
+	datesAllowed = input<Date[]>([]);
+
+	datesChanged = output<OrdaDateRange>();
+
+	constructor() {
+		effect(() => {
+			this.datesChanged.emit({
+				from: this._from(),
+				to: new Date(
+					this._from().getFullYear(),
+					this._from().getMonth(),
+					this._from().getDate() + 1,
+				),
+			});
+		});
+	}
+
+	protected filter = (d: Date | null): boolean => {
+		const day = d || new Date();
+		return this.validDate(day);
+	};
+
+	protected dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
+		if (view === 'month') {
+			return this.validDate(cellDate) ? 'custom-date-class' : '';
+		}
+		return '';
+	};
+
+	protected add(days: number) {
+		this._from.update((d) => {
+			const curr = new Date(d);
+			curr.setDate(curr.getDate() + days);
+			return curr;
+		});
+	}
+
+	private validDate(day: Date) {
+		return (
+			this.datesAllowed().some((d) => d.getTime() === day.getTime()) ||
+			day.getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+		);
+	}
+}
