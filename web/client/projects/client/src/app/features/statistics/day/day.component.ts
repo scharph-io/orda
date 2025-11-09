@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatCalendarCellClassFunction, MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
@@ -12,22 +12,26 @@ import { FormsModule } from '@angular/forms';
 	imports: [MatDatepickerModule, MatFormFieldModule, MatInputModule, FormsModule],
 	providers: [provideNativeDateAdapter()],
 	template: `
-		<mat-form-field>
-			<mat-label>Choose a date</mat-label>
-			<input matInput [matDatepickerFilter]="filter" [matDatepicker]="picker" (ngModelChange)="currentDate.set($event)" [ngModel]="currentDate()" />
-			<mat-hint>MM/DD/YYYY</mat-hint>
-			<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-			<mat-datepicker [dateClass]="dateClass" #picker></mat-datepicker>
-		</mat-form-field>
+		<div class="orda-date-picker">
+			<mat-form-field>
+				<input matInput [matDatepickerFilter]="filter" [matDatepicker]="picker" (ngModelChange)="from.set($event)" [ngModel]="from()" disabled/>
+				<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+				<mat-datepicker touchUi [dateClass]="dateClass" #picker disabled="false"></mat-datepicker>
+			</mat-form-field>
+			{{from().toLocaleDateString()}}
 
-		{{currentDate()}}
+			{{to().toLocaleDateString()}}
+		</div>
+
+
 	`,
 	styleUrl: './day.component.scss',
 })
 export class DayComponent {
 	statisticsService = inject(StatisticsService);
 
-	currentDate = signal(new Date(Date.now()));
+	from = signal(new Date(Date.now()));
+	to = computed(() => new Date(this.from().getFullYear(), this.from().getMonth(), this.from().getDate()+1));
 
 	allDates = rxResource({
 		stream: () => this.statisticsService.getTransactionsDates(),
