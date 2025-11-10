@@ -8,14 +8,14 @@ import { OrdaDateRange } from '@orda.shared/components/date-pickers/day-picker/d
 	selector: 'orda-month',
 	imports: [MonthPickerComponent],
 	template: `
-		<orda-month-picker (datesChanged)="changed($event)" [year]="year()" [monthIndex]="monthIndex()"/>
-		<p>
+		<div class="orda-date-picker">
+			<orda-month-picker (datesChanged)="changed($event)" [year]="year()" [monthIndex]="monthIndex()"/>
 			{{ monthString() }}
 			{{ from().toLocaleDateString() }}
 			{{ to().toLocaleDateString() }}
-		</p>
+		</div>
 	`,
-	styleUrl: './month.component.scss',
+	styles: ``,
 })
 export class MonthComponent {
 	queryMap = toSignal(inject(ActivatedRoute).queryParamMap);
@@ -25,7 +25,7 @@ export class MonthComponent {
 	});
 	monthIndex = computed(() => {
 		const x = this.queryMap()?.get('m');
-		return x !== null && x !== undefined ? parseInt(x)-1 : new Date().getMonth();
+		return x !== null && x !== undefined ? parseInt(x) - 1 : new Date().getMonth();
 	});
 	monthString = computed(() =>
 		new Date(2000, this.from().getMonth(), 1).toLocaleString('de', { month: 'long' }),

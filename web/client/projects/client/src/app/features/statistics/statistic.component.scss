@@ -42,22 +42,19 @@
 }
 
 :host ::ng-deep {
-  .mdc-text-field--filled.mdc-text-field--disabled .mdc-text-field__input{
-    color: black !important;
-    text-align: center;
-  }
-  .orda-date-picker {
-    --appbar-h: 114px; /* adjust if your toolbar differs */
+	.mdc-text-field--filled.mdc-text-field--disabled .mdc-text-field__input {
+		color: black !important;
+		text-align: center;
+	}
 
-    /* Fill viewport minus toolbar */
-    height: calc(100vh - var(--appbar-h));
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* allow children to shrink */
-    align-items: center
+	.orda-date-picker {
+		--appbar-h: 114px; /* adjust if your toolbar differs */
 
-
-
-
-  }
+		/* Fill viewport minus toolbar */
+		height: calc(100vh - var(--appbar-h));
+		display: flex;
+		flex-direction: column;
+		min-height: 0; /* allow children to shrink */
+		align-items: center;
+	}
 }

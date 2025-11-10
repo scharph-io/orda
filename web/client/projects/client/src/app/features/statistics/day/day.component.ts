@@ -12,15 +12,16 @@ import {
 	imports: [OrdaDayPickerComponent],
 	providers: [provideNativeDateAdapter()],
 	template: `
-		<orda-day-picker [from]="currentDate()" [datesAllowed]="allDates.value()" (datesChanged)="changed($event)"></orda-day-picker>
-		{{from().toLocaleDateString()}}
-		{{to().toLocaleDateString()}}
+		<div class="orda-date-picker">
+			<orda-day-picker [from]="currentDate()" [datesAllowed]="allDates.value()" (datesChanged)="changed($event)"/>
+			{{from().toLocaleDateString()}}
+			{{to().toLocaleDateString()}}
+		</div>
 	`,
-	styleUrl: './day.component.scss',
+	styles: '',
 })
 export class DayComponent {
 	statisticsService = inject(StatisticsService);
-
 	currentDate = signal(new Date(Date.now()));
 
 	from = signal(new Date(Date.now()));
@@ -31,9 +32,8 @@ export class DayComponent {
 		defaultValue: [],
 	});
 
-	changed(range: OrdaDateRange) {
+	protected changed(range: OrdaDateRange) {
 		this.from.set(range.from)
 		this.to.set(range.to)
 	}
-
 }

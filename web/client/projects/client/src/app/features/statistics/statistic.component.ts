@@ -4,31 +4,27 @@ import { AssortmentService } from '@orda.features/data-access/services/assortmen
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { AssortmentProduct } from '@orda.core/models/assortment';
 import { EMPTY, map } from 'rxjs';
-import { LineChartComponent } from '@orda.features/statistics/line-chart/line-chart.component';
 import { ChartDataset, Point } from 'chart.js';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DatePipe, JsonPipe } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
-import { StatsCardComponent } from '@orda.shared/components/stats-card/stats-card.component';
-import { MetricCardComponent } from '@orda.shared/components/metric-card/metric-card.component';
 import { RouterModule } from '@angular/router';
 
 @Component({
 	selector: 'orda-statistic',
 	imports: [
-		LineChartComponent,
+		// LineChartComponent,
 		MatFormFieldModule,
 		MatSelectModule,
 		FormsModule,
 		ReactiveFormsModule,
-		DatePipe,
+		// DatePipe,
 		MatTabsModule,
-		StatsCardComponent,
-		MetricCardComponent,
+		// StatsCardComponent,
+		// MetricCardComponent,
 		RouterModule,
-		JsonPipe,
+		// JsonPipe,
 	],
 	template: `
 		<div class="page">

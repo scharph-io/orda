@@ -18,7 +18,11 @@ func main() {
 	serverC := config.GetConfig().Server
 
 	app := fiber.New(fiber.Config{
-		AppName: fmt.Sprintf("orda %s - %s", build.GetVersion(), build.GetTime()),
+		AppName:               fmt.Sprintf("orda %s - %s", build.GetVersion(), build.GetTime()),
+		DisableStartupMessage: true,
+		ReadTimeout:           5 * time.Second,
+		WriteTimeout:          5 * time.Second,
+		IdleTimeout:           30 * time.Second,
 	})
 
 	loc, _ := time.LoadLocation(serverC.TZ)
