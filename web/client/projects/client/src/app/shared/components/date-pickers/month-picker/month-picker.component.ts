@@ -65,13 +65,7 @@ export class CustomDateAdapter extends NativeDateAdapter {
 		</button>
 	`,
 	styles: `
-		// .picker .mat-calendar-period-button {
-		// 	pointer-events: none;
-		// }
 
-		// .picker .mat-calendar-arrow {
-		// 	display: none;
-		// }
 	`,
 	// encapsulation: ViewEncapsulation.None
 })

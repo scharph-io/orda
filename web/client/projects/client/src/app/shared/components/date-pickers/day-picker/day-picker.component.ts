@@ -8,6 +8,8 @@ import {
 import { MatInput, MatSuffix } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormField } from '@angular/material/form-field';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 export interface OrdaDateRange {
 	from: Date;
@@ -25,8 +27,14 @@ export interface OrdaDateRange {
 		MatSuffix,
 		ReactiveFormsModule,
 		FormsModule,
+		MatIcon,
+		MatIconButton,
+		MatButtonModule
 	],
 	template: `
+		<button [style.margin-top]="'0.5rem'" matIconButton aria-label="Prev" (click)="add(-1)">
+			<mat-icon>chevron_left</mat-icon>
+		</button>
 		<mat-form-field>
 			<input
 				matInput
@@ -39,8 +47,9 @@ export interface OrdaDateRange {
 			<mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
 			<mat-datepicker touchUi [dateClass]="dateClass" #dp disabled="false"></mat-datepicker>
 		</mat-form-field>
-		<button (click)="add(1)">Next</button>
-		<button (click)="add(-1)">Prev</button>
+		<button [style.margin-top]="'0.5rem'" matIconButton aria-label="Prev" (click)="add(1)">
+			<mat-icon>chevron_right</mat-icon>
+		</button>
 	`,
 })
 export class OrdaDayPickerComponent {
