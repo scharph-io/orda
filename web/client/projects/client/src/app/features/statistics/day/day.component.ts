@@ -19,8 +19,8 @@ import { MetricCardComponent } from '@orda.shared/components/metric-card/metric-
 				[datesAllowed]="transactionDates.value()"
 				(datesChanged)="changed($event)"
 			/>
-<!--			{{ from().toLocaleDateString() }}-->
-<!--			{{ to().toLocaleDateString() }}-->
+			<!--			{{ from().toLocaleDateString() }}-->
+			<!--			{{ to().toLocaleDateString() }}-->
 			<div class="dashboard-grid">
 				<orda-metric-card label="Success rate" value="98.5" unit="%" />
 				<orda-metric-card label="Success rate" value="98.5" unit="%" />
@@ -28,7 +28,6 @@ import { MetricCardComponent } from '@orda.shared/components/metric-card/metric-
 				<orda-metric-card label="Success rate" value="98.5" unit="%" />
 			</div>
 		</div>
-
 	`,
 	styles: '',
 })

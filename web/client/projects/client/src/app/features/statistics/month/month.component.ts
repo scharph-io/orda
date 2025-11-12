@@ -9,7 +9,11 @@ import { OrdaDateRange } from '@orda.shared/components/date-pickers/day-picker/d
 	imports: [MonthPickerComponent],
 	template: `
 		<div class="orda-date-picker">
-			<orda-month-picker (datesChanged)="changed($event)" [year]="year()" [monthIndex]="monthIndex()"/>
+			<orda-month-picker
+				(datesChanged)="changed($event)"
+				[year]="year()"
+				[monthIndex]="monthIndex()"
+			/>
 			{{ monthString() }}
 			{{ from().toLocaleDateString() }}
 			{{ to().toLocaleDateString() }}
@@ -35,7 +39,7 @@ export class MonthComponent {
 	to = signal(new Date());
 
 	public changed(range: OrdaDateRange) {
-		this.from.set(range.from)
-		this.to.set(range.to)
+		this.from.set(range.from);
+		this.to.set(range.to);
 	}
 }
