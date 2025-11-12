@@ -7,13 +7,14 @@ import {
 	OrdaDayPickerComponent,
 } from '@orda.shared/components/date-pickers/day-picker/day-picker.component';
 import { MetricCardComponent } from '@orda.shared/components/metric-card/metric-card.component';
+import { ContainerComponent } from '@orda.features/statistics/container/container.component';
 
 @Component({
 	selector: 'orda-day',
-	imports: [OrdaDayPickerComponent, MetricCardComponent],
+	imports: [OrdaDayPickerComponent, MetricCardComponent, ContainerComponent],
 	providers: [provideNativeDateAdapter()],
 	template: `
-		<div class="orda-date-picker">
+<!--		<div class="orda-date-picker">-->
 			<orda-day-picker
 				[from]="currentDate()"
 				[datesAllowed]="transactionDates.value()"
@@ -21,15 +22,17 @@ import { MetricCardComponent } from '@orda.shared/components/metric-card/metric-
 			/>
 			<!--			{{ from().toLocaleDateString() }}-->
 			<!--			{{ to().toLocaleDateString() }}-->
-			<div class="dashboard-grid">
-				<orda-metric-card label="Success rate" value="98.5" unit="%" />
-				<orda-metric-card label="Success rate" value="98.5" unit="%" />
-				<orda-metric-card label="Success rate" value="98.5" unit="%" />
-				<orda-metric-card label="Success rate" value="98.5" unit="%" />
-			</div>
-		</div>
+<!--			<div class="dashboard-grid">-->
+<!--				<orda-metric-card label="Success rate" value="98.5" unit="%" />-->
+<!--				<orda-metric-card label="Success rate" value="98.5" unit="%" />-->
+<!--				<orda-metric-card label="Success rate" value="98.5" unit="%" />-->
+<!--				<orda-metric-card label="Success rate" value="98.5" unit="%" />-->
+<!--			</div>-->
+<!--		</div>-->
+
+		<orda-container [msg]="currentDate().toLocaleDateString()" [from]="from()" [to]="to()" />
 	`,
-	styles: '',
+	styleUrls: ['./day.component.scss'],
 })
 export class DayComponent {
 	statisticsService = inject(StatisticsService);

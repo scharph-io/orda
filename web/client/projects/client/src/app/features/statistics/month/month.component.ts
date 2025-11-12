@@ -3,23 +3,22 @@ import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MonthPickerComponent } from '@orda.shared/components/date-pickers/month-picker/month-picker.component';
 import { OrdaDateRange } from '@orda.shared/components/date-pickers/day-picker/day-picker.component';
+import { ContainerComponent } from '@orda.features/statistics/container/container.component';
 
 @Component({
 	selector: 'orda-month',
-	imports: [MonthPickerComponent],
+	imports: [MonthPickerComponent, ContainerComponent],
 	template: `
-		<div class="orda-date-picker">
+<!--		<div class="orda-date-picker">-->
 			<orda-month-picker
 				(datesChanged)="changed($event)"
 				[year]="year()"
 				[monthIndex]="monthIndex()"
 			/>
-			{{ monthString() }}
-			{{ from().toLocaleDateString() }}
-			{{ to().toLocaleDateString() }}
-		</div>
+<!--		</div>-->
+		<orda-container [msg]="monthString().toString()" [from]="from()" [to]="to()" />
 	`,
-	styles: ``,
+	styleUrls: ['./month.component.scss'],
 })
 export class MonthComponent {
 	queryMap = toSignal(inject(ActivatedRoute).queryParamMap);

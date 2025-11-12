@@ -1,0 +1,36 @@
+
+// Basic grid mixin
+@mixin grid(
+  $columns: 12,
+  $gap: 1rem,
+  $min-width: null
+) {
+  display: grid;
+  gap: $gap;
+
+  @if $min-width == null {
+    grid-template-columns: repeat($columns, 1fr);
+  } @else {
+    grid-template-columns: repeat(auto-fill, minmax($min-width, 1fr));
+  }
+}
+
+// Optional helper for responsive grids
+@mixin responsive-grid(
+  $mobile-min: 200px,
+  $gap: 1rem
+) {
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat(auto-fill, minmax($mobile-min, 1fr));
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+@mixin dashboard-grid($min-width: 260px, $gap: 1.5rem) {
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat(auto-fill, minmax($min-width, 1fr));
+}

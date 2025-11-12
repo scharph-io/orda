@@ -1,6 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 
+/* styles.scss – global entry */
+@use 'styles/index';
+
 @forward '@fontsource/inter/500'; // Specify weight
 
 html,
@@ -156,3 +159,6 @@ button.custom-date-class {
 	border-radius: 100%;
 	border: 1px solid orange;
 }
+
+
+
