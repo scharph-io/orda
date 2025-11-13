@@ -16,51 +16,52 @@
       "prefix": "orda",
       "architect": {
         "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "outputPath": "dist/client",
-            "index": "projects/client/src/index.html",
-            "browser": "projects/client/src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
-            "tsConfig": "projects/client/tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "projects/client/public"
-              }
-            ],
-            "styles": [
-              "@angular/material/prebuilt-themes/azure-blue.css",
-              "projects/client/src/styles.scss"
-            ],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
+					"builder": "@angular/build:application",
+					"options": {
+						"outputPath": "dist/client",
+						"index": "projects/client/src/index.html",
+						"browser": "projects/client/src/main.ts",
+						"polyfills": ["zone.js"],
+						"tsConfig": "projects/client/tsconfig.app.json",
+						"assets": [
+							{
+								"glob": "**/*",
+								"input": "projects/client/public"
+							}
+						],
+						"styles": [
+							"@angular/material/prebuilt-themes/azure-blue.css",
+							"projects/client/src/styles.scss"
+						],
+						"stylePreprocessorOptions": {
+							"includePaths": ["projects/client/src"]
+						},
+						"scripts": []
+					},
+					"configurations": {
+						"production": {
+							"budgets": [
+								{
+									"type": "initial",
+									"maximumWarning": "500kB",
+									"maximumError": "1MB"
+								},
+								{
+									"type": "anyComponentStyle",
+									"maximumWarning": "4kB",
+									"maximumError": "8kB"
+								}
+							],
+							"outputHashing": "all"
+						},
+						"development": {
+							"optimization": false,
+							"extractLicenses": false,
+							"sourceMap": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {

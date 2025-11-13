@@ -87,7 +87,7 @@ export class CartItemComponent {
 
 	containerClass = computed(() => {
 		if (this.item().desc) {
-			return 'container-with-desc';
+			return 'dashboard-with-desc';
 		} else {
 			return 'container';
 		}

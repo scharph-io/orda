@@ -1,8 +1,7 @@
 
-// Basic grid mixin
 @mixin grid(
-  $columns: 12,
-  $gap: 1rem,
+  $columns: 6,
+  $gap: 0.5rem,
   $min-width: null
 ) {
   display: grid;
@@ -15,7 +14,6 @@
   }
 }
 
-// Optional helper for responsive grids
 @mixin responsive-grid(
   $mobile-min: 200px,
   $gap: 1rem
@@ -24,8 +22,12 @@
   gap: $gap;
   grid-template-columns: repeat(auto-fill, minmax($mobile-min, 1fr));
 
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
   @media (min-width: 768px) {
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(8, 1fr);
   }
 }
 
@@ -33,4 +35,30 @@
   display: grid;
   gap: $gap;
   grid-template-columns: repeat(auto-fill, minmax($min-width, 1fr));
+}
+
+// Usage: @include metrics-grid(); or tweak sizes/ratio
+@mixin metrics-grid(
+  $minW: 8rem,     // min tile width
+  $maxW: 12rem,     // soft max tile width
+  $gap: 1rem,       // gap between tiles
+  $ratio: 1         // 1 = square, 0.8 = a bit wider, 1.2 = a bit taller
+) {
+  display: grid;
+  gap: $gap;
+
+  // Let the grid create as many columns as fit,
+  // each tile between $minW and $maxW, but flexible up to 1fr.
+  grid-template-columns: repeat(
+    auto-fit,
+      minmax(clamp($minW, 25vw, $maxW), 1fr)
+  );
+}
+
+// Make tiles square/nearly square
+// Apply this to each grid item
+@mixin metric-tile($ratio: 1) {
+  aspect-ratio: 1 / $ratio; // 1 = perfect square
+  // Optional card styling:
+  // border-radius: .75rem; padding: 1rem; background: var(--surface);
 }

@@ -1,0 +1,28 @@
+@use 'styles/grid' as grid;
+
+:host {
+  @include grid.metrics-grid($minW: 8rem, $maxW: 12rem, $gap: 1.2rem, $ratio: 1);
+
+  margin: 1.5rem;
+  // Optional: tweak at wider containers
+  @media (min-width: 1200px) {
+    // widen max card width a bit on big screens
+    grid-template-columns: repeat(
+      auto-fit,
+        minmax(clamp(12rem, 20vw, 26rem), 1fr)
+    );
+  }
+
+  .tile {
+    @include grid.metric-tile(1); // perfectly square
+  }
+
+  // Optional variants for special tiles:
+  .tile--wide {
+    grid-column: span 2;
+  }
+
+  .tile--tall {
+    aspect-ratio: 1 / 1.3;
+  }
+}

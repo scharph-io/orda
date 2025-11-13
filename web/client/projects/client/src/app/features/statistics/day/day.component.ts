@@ -6,31 +6,19 @@ import {
 	OrdaDateRange,
 	OrdaDayPickerComponent,
 } from '@orda.shared/components/date-pickers/day-picker/day-picker.component';
-import { MetricCardComponent } from '@orda.shared/components/metric-card/metric-card.component';
-import { ContainerComponent } from '@orda.features/statistics/container/container.component';
+import { DashboardComponent } from '@orda.features/statistics/dashboard/dashboard.component';
 
 @Component({
 	selector: 'orda-day',
-	imports: [OrdaDayPickerComponent, MetricCardComponent, ContainerComponent],
+	imports: [OrdaDayPickerComponent, DashboardComponent],
 	providers: [provideNativeDateAdapter()],
 	template: `
-<!--		<div class="orda-date-picker">-->
-			<orda-day-picker
-				[from]="currentDate()"
-				[datesAllowed]="transactionDates.value()"
-				(datesChanged)="changed($event)"
-			/>
-			<!--			{{ from().toLocaleDateString() }}-->
-			<!--			{{ to().toLocaleDateString() }}-->
-<!--			<div class="dashboard-grid">-->
-<!--				<orda-metric-card label="Success rate" value="98.5" unit="%" />-->
-<!--				<orda-metric-card label="Success rate" value="98.5" unit="%" />-->
-<!--				<orda-metric-card label="Success rate" value="98.5" unit="%" />-->
-<!--				<orda-metric-card label="Success rate" value="98.5" unit="%" />-->
-<!--			</div>-->
-<!--		</div>-->
-
-		<orda-container [msg]="currentDate().toLocaleDateString()" [from]="from()" [to]="to()" />
+		<orda-day-picker
+			[from]="currentDate()"
+			[datesAllowed]="transactionDates.value()"
+			(datesChanged)="changed($event)"
+		/>
+		<orda-dashboard [msg]="currentDate().toLocaleDateString()" [from]="from()" [to]="to()" />
 	`,
 	styleUrls: ['./day.component.scss'],
 })

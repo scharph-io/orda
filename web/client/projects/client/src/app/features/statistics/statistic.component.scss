@@ -1,6 +1,8 @@
 /* Height of your top app bar (toolbar) */
 :root {
   --appbar-h: 64px; /* adjust if your toolbar differs */
+
+  --cols: 4;
 }
 
 .page {
@@ -32,7 +34,7 @@
   flex-direction: column;
 }
 
-/* Your content container inside a tab */
+/* Your content dashboard inside a tab */
 .tab-pane {
   flex: 1 1 auto;
   min-height: 0;

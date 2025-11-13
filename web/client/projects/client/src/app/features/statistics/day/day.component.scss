@@ -1,5 +1,5 @@
 @use 'styles/grid' as grid;
 
 :host {
-  @include grid.responsive-grid(260px, 1.5rem);
+  //@include grid.grid(260px, .5rem);
 }

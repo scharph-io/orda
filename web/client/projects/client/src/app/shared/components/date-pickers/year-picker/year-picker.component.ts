@@ -1,18 +1,9 @@
-import { Component, effect, inject, Injectable, input, linkedSignal, output, ViewEncapsulation } from '@angular/core';
-import {
-	MatDatepicker,
-	MatDatepickerInput,
-	MatDatepickerToggle,
-} from '@angular/material/datepicker';
+import { Component, effect, inject, Injectable, input, linkedSignal, output } from '@angular/core';
+import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle, } from '@angular/material/datepicker';
 import { MatFormField, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { OrdaDateRange } from '@orda.shared/components/date-pickers/day-picker/day-picker.component';
-import {
-	DateAdapter,
-	MAT_DATE_LOCALE,
-	NativeDateAdapter,
-	provideNativeDateAdapter,
-} from '@angular/material/core';
+import { DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter, provideNativeDateAdapter, } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -62,22 +53,8 @@ export class CustomDateAdapter extends NativeDateAdapter {
 		<button [style.margin-top]="'0.5rem'" matIconButton aria-label="Next" (click)="add(1)">
         	<mat-icon>chevron_right</mat-icon>
 		</button>
-		
 	`,
-	styles: `
-		// :host {
-		// 	display: flex;
-		// }
-
-		// .picker .mat-calendar-period-button {
-		// 	pointer-events: none;
-		// }
-
-		// .picker .mat-calendar-arrow {
-		// 	display: none;
-		// }
-	`,
-	encapsulation: ViewEncapsulation.Emulated
+	styleUrls: ['./year-picker.component.scss'],
 })
 export class YearPickerComponent {
 	year = input(new Date().getFullYear());

@@ -64,10 +64,7 @@ export class CustomDateAdapter extends NativeDateAdapter {
 			<mat-icon>chevron_right</mat-icon>
 		</button>
 	`,
-	styles: `
-
-	`,
-	// encapsulation: ViewEncapsulation.None
+	styleUrls: ['./month-picker.component.scss'],
 })
 export class MonthPickerComponent {
 	monthIndex = input(new Date().getMonth());

@@ -29,7 +29,7 @@ export interface OrdaDateRange {
 		FormsModule,
 		MatIcon,
 		MatIconButton,
-		MatButtonModule
+		MatButtonModule,
 	],
 	template: `
 		<button [style.margin-top]="'0.5rem'" matIconButton aria-label="Prev" (click)="add(-1)">
@@ -51,6 +51,7 @@ export interface OrdaDateRange {
 			<mat-icon>chevron_right</mat-icon>
 		</button>
 	`,
+	styleUrls: ['./day-picker.component.scss'],
 })
 export class OrdaDayPickerComponent {
 	from = input(new Date());

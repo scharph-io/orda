@@ -9,7 +9,6 @@
 html,
 body {
 	height: 100vh;
-	//overflow: hidden;
 }
 
 body {
@@ -67,7 +66,7 @@ h1 {
 
 	// @include mat.button-overrides(
 	// 	(
-	// 		tonal-container-color: green,
+  // 		tonal-dashboard-color: green,
 	// 		tonal-label-text-color: white,
 	// 	)
 	// );
@@ -159,6 +158,5 @@ button.custom-date-class {
 	border-radius: 100%;
 	border: 1px solid orange;
 }
-
 
 
