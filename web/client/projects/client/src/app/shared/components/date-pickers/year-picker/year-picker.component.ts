@@ -1,9 +1,18 @@
 import { Component, effect, inject, Injectable, input, linkedSignal, output } from '@angular/core';
-import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle, } from '@angular/material/datepicker';
+import {
+	MatDatepicker,
+	MatDatepickerInput,
+	MatDatepickerToggle,
+} from '@angular/material/datepicker';
 import { MatFormField, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { OrdaDateRange } from '@orda.shared/components/date-pickers/day-picker/day-picker.component';
-import { DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter, provideNativeDateAdapter, } from '@angular/material/core';
+import {
+	DateAdapter,
+	MAT_DATE_LOCALE,
+	NativeDateAdapter,
+	provideNativeDateAdapter,
+} from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
