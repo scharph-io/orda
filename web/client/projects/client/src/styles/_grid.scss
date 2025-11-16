@@ -39,8 +39,8 @@
 
 // Usage: @include metrics-grid(); or tweak sizes/ratio
 @mixin metrics-grid(
-  $minW: 8rem,     // min tile width
-  $maxW: 12rem,     // soft max tile width
+  $minW: 5rem,     // min tile width
+  $maxW: 9rem,     // soft max tile width
   $gap: 1rem,       // gap between tiles
   $ratio: 1         // 1 = square, 0.8 = a bit wider, 1.2 = a bit taller
 ) {
@@ -53,6 +53,15 @@
     auto-fit,
       minmax(clamp($minW, 25vw, $maxW), 1fr)
   );
+
+  @media (min-width: 1200px) {
+    // widen max card width a bit on big screens
+    grid-template-columns: repeat(
+      auto-fit,
+        minmax(clamp(9rem, 20vw, 16rem), 1fr)
+    );
+  }
+
 }
 
 // Make tiles square/nearly square

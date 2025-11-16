@@ -4,6 +4,7 @@ import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { HOST } from '@orda.core/config/config';
 import { API_ENDPOINTS } from '@orda.core/constants';
 import { map } from 'rxjs';
+import { formatISOWithOffset } from '@orda.shared/utils/helper';
 
 export interface ProductQuantitiesResponse {
 	dates: string[];
@@ -21,6 +22,21 @@ export interface TransactionQuantities {
 		date: Date;
 		qty: number;
 	};
+}
+
+export interface PaymentStats {
+	payment_option: number;
+	transactions: number;
+	total_amount: number;
+	total_credit_amount: number;
+}
+
+export type PaymentOptionsMap = Record<number, PaymentStats>
+
+export interface PaymentOptionsStatResponse {
+	data?: PaymentOptionsMap;
+	from: Date;
+	to: Date;
 }
 
 @Injectable({
@@ -85,6 +101,21 @@ export class StatisticsService {
 		});
 		return this.httpClient.get<TransactionQuantities>(
 			`${this.HOST}${API_ENDPOINTS.STATISTICS}/transactions/qty`,
+			{
+				params,
+			},
+		);
+	}
+
+	public getPaymentOptions(from?: Date, to?: Date) {
+		const params = new HttpParams({
+			fromObject: {
+				...(from ? { from: formatISOWithOffset(from) } : {}),
+				...(to ? { to: formatISOWithOffset(to) } : {}),
+			},
+		});
+		return this.httpClient.get<PaymentOptionsStatResponse>(
+			`${this.HOST}${API_ENDPOINTS.STATISTICS}/paymentoptions`,
 			{
 				params,
 			},

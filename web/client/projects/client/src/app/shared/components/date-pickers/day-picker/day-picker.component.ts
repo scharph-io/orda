@@ -55,10 +55,12 @@ export interface OrdaDateRange {
 })
 export class OrdaDayPickerComponent {
 	from = input(new Date());
-	_from = linkedSignal(() => this.from());
+	_from = linkedSignal(() => {
+		this.from().setHours(0,0,0,0)
+		return this.from()
+	});
 
 	datesAllowed = input<Date[]>([]);
-
 	datesChanged = output<OrdaDateRange>();
 
 	constructor() {

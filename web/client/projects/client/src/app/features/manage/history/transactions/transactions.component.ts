@@ -12,12 +12,13 @@ import {
 	MatTableModule,
 } from '@angular/material/table';
 import { TransactionService } from '@orda.features/data-access/services/transaction.service';
-import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/transaction';
+import { PaymentOptionKeys } from '@orda.features/order/utils/transaction';
 
 import { rxResource } from '@angular/core/rxjs-interop';
 import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
+import { keyToNumber } from '@orda.shared/utils/helper';
 
 @Component({
 	selector: 'orda-transactions',
@@ -105,7 +106,5 @@ export class TransactionsComponent {
 		return new MatTableDataSource(this.data.value()?.reverse());
 	});
 
-	keyToNumber = (key: string | number) => {
-		return Number(key) as PaymentOption;
-	};
+	protected keyToNumber = keyToNumber
 }

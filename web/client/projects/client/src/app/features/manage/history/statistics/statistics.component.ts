@@ -2,8 +2,9 @@ import { Component, inject, input } from '@angular/core';
 import { TransactionService } from '@orda.features/data-access/services/transaction.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { DatePipe, KeyValuePipe } from '@angular/common';
-import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/transaction';
+import { PaymentOptionKeys } from '@orda.features/order/utils/transaction';
 import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
+import { keyToNumber } from '@orda.shared/utils/helper';
 
 @Component({
 	selector: 'orda-statistics',
@@ -53,7 +54,5 @@ export class StatisticsComponent {
 	});
 	protected readonly PaymentOptionKeys = PaymentOptionKeys;
 
-	keyToNumber = (key: string | number) => {
-		return Number(key) as PaymentOption;
-	};
+	protected keyToNumber = keyToNumber
 }
