@@ -22,6 +22,3 @@ export const keyToNumber = (key: string | number) => {
 	return Number(key) as PaymentOption;
 };
 
-export function hasKey<T extends object>(obj: T, key: PropertyKey): key is keyof T {
-	return key in obj;
-}

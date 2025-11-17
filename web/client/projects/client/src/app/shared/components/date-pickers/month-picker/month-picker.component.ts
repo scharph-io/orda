@@ -1,8 +1,17 @@
 import { Component, inject, Injectable, model } from '@angular/core';
-import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle, } from '@angular/material/datepicker';
+import {
+	MatDatepicker,
+	MatDatepickerInput,
+	MatDatepickerToggle,
+} from '@angular/material/datepicker';
 import { MatFormField, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter, provideNativeDateAdapter, } from '@angular/material/core';
+import {
+	DateAdapter,
+	MAT_DATE_LOCALE,
+	NativeDateAdapter,
+	provideNativeDateAdapter,
+} from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 
@@ -44,7 +53,6 @@ export class CustomDateAdapter extends NativeDateAdapter {
 				#dp
 				startView="multi-year"
 				touchUi
-				(yearSelected)="chosenYearHandler($event)"
 				(monthSelected)="chosenMonthHandler($event, dp)"
 				disabled="false"
 				panelClass="picker"
@@ -57,14 +65,13 @@ export class CustomDateAdapter extends NativeDateAdapter {
 	styleUrls: ['./month-picker.component.scss'],
 })
 export class MonthPickerComponent {
+
 	from = model.required<Date>();
 	to = model.required<Date>();
 
-	chosenYearHandler(normalizedYear: Date) {
-		this.from.update((d) => new Date(normalizedYear.getFullYear(), d.getMonth(), 1));
-	}
 	chosenMonthHandler(normalizedMonth: Date, dp: MatDatepicker<Date>) {
-		this.from.update((d) => new Date(d.getFullYear(), normalizedMonth.getMonth(), 1));
+		this.from.set(new Date(normalizedMonth.getFullYear(), normalizedMonth.getMonth(), 1));
+		this.to.set(new Date(normalizedMonth.getFullYear(), normalizedMonth.getMonth() + 1, 0));
 		dp.close();
 	}
 

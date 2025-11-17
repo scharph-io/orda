@@ -1,4 +1,10 @@
-import { Component, effect, inject, Injectable, input, linkedSignal, output } from '@angular/core';
+import {
+	Component,
+	inject,
+	Injectable,
+	input,
+	model,
+} from '@angular/core';
 import {
 	MatDatepicker,
 	MatDatepickerInput,
@@ -6,7 +12,6 @@ import {
 } from '@angular/material/datepicker';
 import { MatFormField, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { OrdaDateRange } from '@orda.shared/components/date-pickers/day-picker/day-picker.component';
 import {
 	DateAdapter,
 	MAT_DATE_LOCALE,
@@ -68,26 +73,22 @@ export class CustomDateAdapter extends NativeDateAdapter {
 export class YearPickerComponent {
 	year = input(new Date().getFullYear());
 
-	datesChanged = output<OrdaDateRange>();
-
-	constructor() {
-		effect(() => {
-			this.datesChanged.emit({
-				from: this.from(),
-				to: new Date(this.from().getFullYear() + 1, 0, 0),
-			});
-		});
-	}
+	from = model.required<Date>();
+	to = model.required<Date>();
 
 	chosenYearHandler(normalizedYear: Date, dp: MatDatepicker<Date>) {
-		this.from.update(() => new Date(normalizedYear.getFullYear(), 0, 1));
+		this.from.set(new Date(normalizedYear.getFullYear(), 0, 1));
+		this.to.set(new Date(normalizedYear.getFullYear() + 1, 0, 0));
 		dp.close()
 	}
 
-	protected from = linkedSignal(() => new Date(this.year(), 0, 1));
-
 	protected add(years: number) {
 		this.from.update((d) => {
+			const curr = new Date(d);
+			curr.setFullYear(curr.getFullYear() + years);
+			return curr;
+		});
+		this.to.update((d) => {
 			const curr = new Date(d);
 			curr.setFullYear(curr.getFullYear() + years);
 			return curr;

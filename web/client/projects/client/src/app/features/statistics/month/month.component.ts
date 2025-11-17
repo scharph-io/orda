@@ -26,7 +26,7 @@ export class MonthComponent {
 	});
 	monthIndex = computed(() => {
 		const x = this.queryMap()?.get('m');
-		return x !== null && x !== undefined ? parseInt(x) - 1 : new Date().getMonth();
+		return x !== null && x !== undefined ? parseInt(x)-1 : new Date().getMonth();
 	});
 	monthString = computed(() =>
 		new Date(2000, this.monthIndex(), 1).toLocaleString('de', { month: 'long' }),

@@ -34,7 +34,7 @@ export interface PaymentStats {
 export type PaymentOptionsMap = Record<number, PaymentStats>
 
 export interface PaymentOptionsStatResponse {
-	data?: PaymentOptionsMap;
+	data: PaymentOptionsMap;
 	from: Date;
 	to: Date;
 }

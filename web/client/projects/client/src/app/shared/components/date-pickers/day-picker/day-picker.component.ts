@@ -1,4 +1,4 @@
-import { Component, effect, input, linkedSignal, output } from '@angular/core';
+import { Component, input, model } from '@angular/core';
 import {
 	MatCalendarCellClassFunction,
 	MatDatepicker,
@@ -40,7 +40,7 @@ export interface OrdaDateRange {
 				matInput
 				[matDatepickerFilter]="filter"
 				[matDatepicker]="dp"
-				(ngModelChange)="_from.set($event)"
+				(ngModelChange)="setNewDate($event)"
 				[ngModel]="from()"
 				disabled
 			/>
@@ -54,33 +54,14 @@ export interface OrdaDateRange {
 	styleUrls: ['./day-picker.component.scss'],
 })
 export class OrdaDayPickerComponent {
-	from = input(new Date());
-	_from = linkedSignal(() => {
-		this.from().setHours(0,0,0,0)
-		return this.from()
-	});
+	from = model.required<Date>();
+	to = model.required<Date>();
 
 	datesAllowed = input<Date[]>([]);
-	datesChanged = output<OrdaDateRange>();
-
-	constructor() {
-		effect(() => {
-			this.datesChanged.emit({
-				from: this._from(),
-				to: new Date(
-					this._from().getFullYear(),
-					this._from().getMonth(),
-					this._from().getDate() + 1,
-				),
-			});
-		});
-	}
-
 	protected filter = (d: Date | null): boolean => {
 		const day = d || new Date();
 		return this.validDate(day);
 	};
-
 	protected dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
 		if (view === 'month') {
 			return this.validDate(cellDate) ? 'custom-date-class' : '';
@@ -89,11 +70,16 @@ export class OrdaDayPickerComponent {
 	};
 
 	protected add(days: number) {
-		this._from.update((d) => {
+		this.from.update((d) => {
 			const curr = new Date(d);
 			curr.setDate(curr.getDate() + days);
 			return curr;
 		});
+		this.to.update(() => {
+			const next = new Date(this.from())
+			next.setDate(this.from().getDate())
+			return next;
+		})
 	}
 
 	private validDate(day: Date) {
@@ -101,5 +87,14 @@ export class OrdaDayPickerComponent {
 			this.datesAllowed().some((d) => d.getTime() === day.getTime()) ||
 			day.getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()
 		);
+	}
+
+	protected setNewDate(date: Date) {
+		this.from.set(date)
+		this.to.update(() => {
+			const next = new Date(this.from())
+			next.setDate(this.from().getDate())
+			return next;
+		})
 	}
 }
