@@ -49,7 +49,6 @@ export class DashboardComponent {
 
 	protected keyToNumber = keyToNumber;
 
-	protected hasDataKeys = (d: PaymentOptionsMap) => {
-			return Object.keys(d).length > 0
-	};
+	protected hasDataKeys = (d: PaymentOptionsMap | null) => d !== null ? Object.keys(d).length > 0 : false;
+
 }

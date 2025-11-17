@@ -31,10 +31,10 @@ export interface PaymentStats {
 	total_credit_amount: number;
 }
 
-export type PaymentOptionsMap = Record<number, PaymentStats>
+export type PaymentOptionsMap = Record<number, PaymentStats | undefined>
 
 export interface PaymentOptionsStatResponse {
-	data: PaymentOptionsMap;
+	data: PaymentOptionsMap | null;
 	from: Date;
 	to: Date;
 }
