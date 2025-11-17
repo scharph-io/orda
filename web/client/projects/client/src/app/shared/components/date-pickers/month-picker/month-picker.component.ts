@@ -1,18 +1,8 @@
-import { Component, effect, inject, Injectable, input, linkedSignal, output } from '@angular/core';
-import {
-	MatDatepicker,
-	MatDatepickerInput,
-	MatDatepickerToggle,
-} from '@angular/material/datepicker';
+import { Component, inject, Injectable, model } from '@angular/core';
+import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle, } from '@angular/material/datepicker';
 import { MatFormField, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { OrdaDateRange } from '@orda.shared/components/date-pickers/day-picker/day-picker.component';
-import {
-	DateAdapter,
-	MAT_DATE_LOCALE,
-	NativeDateAdapter,
-	provideNativeDateAdapter,
-} from '@angular/material/core';
+import { DateAdapter, MAT_DATE_LOCALE, NativeDateAdapter, provideNativeDateAdapter, } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 
@@ -34,17 +24,17 @@ export class CustomDateAdapter extends NativeDateAdapter {
 		MatInput,
 		MatSuffix,
 		MatButtonModule,
-		MatIcon
+		MatIcon,
 	],
 	providers: [
 		provideNativeDateAdapter(),
 		{
 			provide: DateAdapter,
 			useClass: CustomDateAdapter,
-		}
+		},
 	],
 	template: `
-		<button [style.margin-top]="'0.5rem'" matIconButton aria-label="Nex" (click)="add(-1)">
+		<button [style.margin-top]="'0.5rem'" matIconButton (click)="add(-1)">
 			<mat-icon>chevron_left</mat-icon>
 		</button>
 		<mat-form-field>
@@ -67,19 +57,8 @@ export class CustomDateAdapter extends NativeDateAdapter {
 	styleUrls: ['./month-picker.component.scss'],
 })
 export class MonthPickerComponent {
-	monthIndex = input(new Date().getMonth());
-	year = input(new Date().getFullYear());
-
-	datesChanged = output<OrdaDateRange>();
-
-	constructor() {
-		effect(() => {
-			this.datesChanged.emit({
-				from: this.from(),
-				to: new Date(this.from().getFullYear(), this.from().getMonth() + 1, 0),
-			});
-		});
-	}
+	from = model.required<Date>();
+	to = model.required<Date>();
 
 	chosenYearHandler(normalizedYear: Date) {
 		this.from.update((d) => new Date(normalizedYear.getFullYear(), d.getMonth(), 1));
@@ -89,10 +68,13 @@ export class MonthPickerComponent {
 		dp.close();
 	}
 
-	protected from = linkedSignal(() => new Date(this.year(), this.monthIndex(), 1));
-
 	protected add(months: number) {
 		this.from.update((d) => {
+			const curr = new Date(d);
+			curr.setMonth(curr.getMonth() + months);
+			return curr;
+		});
+		this.to.update((d) => {
 			const curr = new Date(d);
 			curr.setMonth(curr.getMonth() + months);
 			return curr;

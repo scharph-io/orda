@@ -2,7 +2,6 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MonthPickerComponent } from '@orda.shared/components/date-pickers/month-picker/month-picker.component';
-import { OrdaDateRange } from '@orda.shared/components/date-pickers/day-picker/day-picker.component';
 import { DashboardComponent } from '@orda.features/statistics/dashboard/dashboard.component';
 
 @Component({
@@ -10,11 +9,12 @@ import { DashboardComponent } from '@orda.features/statistics/dashboard/dashboar
 	imports: [MonthPickerComponent, DashboardComponent],
 	template: `
 		<orda-month-picker
-			(datesChanged)="changed($event)"
-			[year]="year()"
-			[monthIndex]="monthIndex()"
+			(fromChange)="from.set($event)"
+			[from]="from()"
+			(toChange)="to.set($event)"
+			[to]="to()"
 		/>
-		<orda-dashboard [msg]="monthString().toString()" [from]="from()" [to]="to()" />
+		<orda-dashboard [msg]="monthString()" [from]="from()" [to]="to()" />
 	`,
 	styleUrls: ['./month.component.scss'],
 })
@@ -28,14 +28,10 @@ export class MonthComponent {
 		const x = this.queryMap()?.get('m');
 		return x !== null && x !== undefined ? parseInt(x) - 1 : new Date().getMonth();
 	});
-	from = signal(new Date());
 	monthString = computed(() =>
-		new Date(2000, this.from().getMonth(), 1).toLocaleString('de', { month: 'long' }),
+		new Date(2000, this.monthIndex(), 1).toLocaleString('de', { month: 'long' }),
 	);
-	to = signal(new Date());
 
-	public changed(range: OrdaDateRange) {
-		this.from.set(range.from);
-		this.to.set(range.to);
-	}
+	from = signal(new Date(this.year(), this.monthIndex(), 1));
+	to = signal(new Date(this.year(), this.monthIndex() + 1, 0));
 }
