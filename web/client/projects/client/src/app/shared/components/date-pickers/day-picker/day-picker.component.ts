@@ -77,7 +77,7 @@ export class OrdaDayPickerComponent {
 		});
 		this.to.update(() => {
 			const next = new Date(this.from())
-			next.setDate(this.from().getDate())
+			next.setDate(this.from().getDate() +1)
 			return next;
 		})
 	}
@@ -93,7 +93,7 @@ export class OrdaDayPickerComponent {
 		this.from.set(date)
 		this.to.update(() => {
 			const next = new Date(this.from())
-			next.setDate(this.from().getDate())
+			next.setDate(this.from().getDate() + 1)
 			return next;
 		})
 	}

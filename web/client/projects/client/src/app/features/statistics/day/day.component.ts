@@ -28,7 +28,7 @@ export class DayComponent {
 
 	current = signal(new Date());
 	from = signal(new Date(this.current().getFullYear(), this.current().getMonth(), this.current().getDate()));
-	to = signal(new Date(this.current().getFullYear(), this.current().getMonth(), this.current().getDate()));
+	to = signal(new Date(this.current().getFullYear(), this.current().getMonth(), this.current().getDate() +1 ));
 
 	transactionDates = rxResource({
 		stream: () => this.statisticsService.getTransactionsDates(),

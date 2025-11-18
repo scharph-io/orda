@@ -6,7 +6,7 @@
     @for (opt of PaymentOptionsArr; track opt) {
       @if (opt in d) {
         <orda-metric-card
-          [value]="d[opt]!.total_amount.toString()"
+          [value]="d[opt]!.total_amount | number: '1.2-2'"
           [loading]="!paymentStat.hasValue()"
           [label]="PaymentOptionsKeys[keyToNumber(opt)]"
           [unit]="'€'"
