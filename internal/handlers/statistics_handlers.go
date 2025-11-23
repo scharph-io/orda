@@ -21,7 +21,7 @@ func NewStatisticsHandler(statisticsService ports.IStatisticsService) *Statistic
 	}
 }
 
-func (h *StatisticsHandler) GetTransactionDays(c *fiber.Ctx) error {
+func (h *StatisticsHandler) GetTransactionCntDates(c *fiber.Ctx) error {
 	current := time.Now().Year()
 	year := c.QueryInt("year", current)
 	if year > time.Now().Year() {
@@ -30,7 +30,7 @@ func (h *StatisticsHandler) GetTransactionDays(c *fiber.Ctx) error {
 			"error":   "year cannot be in the future",
 		})
 	}
-	transactionDays, err := h.statisticsService.GetTransactionDays(c.Context(), year)
+	transactionDays, err := h.statisticsService.GetTransactionCntDates(c.Context(), year)
 	if err != nil {
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"message": "failed to get transaction days",
@@ -42,6 +42,55 @@ func (h *StatisticsHandler) GetTransactionDays(c *fiber.Ctx) error {
 		"data": transactionDays,
 		"year": year,
 	})
+}
+
+func (h *StatisticsHandler) GetTransactionDates(c *fiber.Ctx) error {
+
+	const layout = time.RFC3339
+
+	// now := time.Now()
+	// fromDateString := c.Query("from", (now.AddDate(-1, 0, 0)).Format(layout))
+	// toDateString := c.Query("to", now.Format(layout))
+
+	fromDateString := c.Query("from")
+	toDateString := c.Query("to")
+
+	var transactionDays []*time.Time
+	var err error
+
+	if fromDateString == "" && toDateString == "" {
+		transactionDays, err = h.statisticsService.GetTransactionDates(c.Context(), nil, nil)
+	} else {
+		fromDate, err := time.Parse(layout, fromDateString)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": fmt.Sprintf("cannot parse 'from' date: '%s'", fromDateString),
+			})
+		}
+
+		toDate, err := time.Parse(layout, toDateString)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": fmt.Sprintf("cannot parse 'to' date: '%s'", toDateString),
+			})
+		}
+
+		if fromDate.After(toDate) {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"message": fmt.Sprintf("invalid date range: '%s' to '%s', 'from' must be before 'to'", fromDateString, toDateString),
+			})
+		}
+		transactionDays, err = h.statisticsService.GetTransactionDates(c.Context(), &fromDate, &toDate)
+	}
+
+	if err != nil {
+		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
+			"message": "failed to get transaction days",
+			"error":   err,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(transactionDays)
 }
 
 func (h *StatisticsHandler) GetProductsForDateRange(c *fiber.Ctx) error {

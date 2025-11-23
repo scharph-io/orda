@@ -79,6 +79,15 @@ const (
 		ORDER BY transaction_day;
 	`
 
+	Q_get_transaction_dates2 = `
+		SELECT DISTINCT DATE(DATE_SUB(created_at, INTERVAL 6 HOUR)) AS transaction_day
+  		FROM transactions
+		WHERE created_at IS NOT NULL
+			AND ((? IS NULL OR DATE(created_at) >= ?)
+		     AND (? IS NULL OR DATE(created_at) <= ?))
+		ORDER BY transaction_day;
+	`
+
 	/*
 	 * product_name | product_desc |total_units_sold|total_gross_sales|
 	 * -------------+--------------+----------------+-----------------+
@@ -206,3 +215,24 @@ const (
 		(t.created_at BETWEEN ? AND ?)
 	`
 )
+
+/*
+SELECT DISTINCT YEAR(created_at) AS transaction_year
+ FROM transactions
+ WHERE created_at IS NOT NULL
+ ORDER BY transaction_year;
+
+ SELECT DISTINCT DATE_FORMAT(created_at, '%Y-%m') AS transaction_month
+ FROM transactions
+ WHERE created_at IS NOT NULL
+ ORDER BY transaction_month;
+
+ SELECT
+   YEAR(created_at) AS transaction_year,
+   MONTH(created_at) AS transaction_month,      -- 1 = January, …, 12 = December
+   COUNT(*) AS transactions
+ FROM transactions
+ WHERE created_at IS NOT NULL
+ GROUP BY transaction_year, transaction_month
+ ORDER BY transaction_year, transaction_month;
+*/

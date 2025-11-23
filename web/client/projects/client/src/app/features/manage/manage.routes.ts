@@ -29,8 +29,4 @@ export default [
 		path: 'accounts',
 		loadChildren: () => import('./account/account.routes'),
 	},
-	{
-		path: 'statistics',
-		loadChildren: () => import('./statistic/statistic.routes'),
-	},
 ] satisfies Routes;

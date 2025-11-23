@@ -64,8 +64,63 @@ import { DepositDialogComponent } from './deposit-dialog.component';
 				</span>
 			</div>
 
-			<div class="container">
+			<!--			<div class="container">-->
+			<!--				<table mat-table [dataSource]="dataSource()" matSort>-->
+			<!--					<ng-container matColumnDef="name">-->
+			<!--						<th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>-->
+			<!--						<td mat-cell *matCellDef="let row">{{ row.name }}</td>-->
+			<!--					</ng-container>-->
+
+			<!--					<ng-container matColumnDef="desc">-->
+			<!--						<th mat-header-cell *matHeaderCellDef mat-sort-header>Beschreibung</th>-->
+			<!--						<td mat-cell *matCellDef="let row">{{ row.desc }}</td>-->
+			<!--					</ng-container>-->
+
+			<!--					<ng-container matColumnDef="price">-->
+			<!--						<th mat-header-cell *matHeaderCellDef mat-sort-header>Preis</th>-->
+			<!--						<td mat-cell *matCellDef="let row">{{ row.price | currency }}</td>-->
+			<!--					</ng-container>-->
+			<!--					<ng-container matColumnDef="active">-->
+			<!--						<th mat-header-cell *matHeaderCellDef mat-sort-header>Aktiv</th>-->
+			<!--						<td mat-cell *matCellDef="let row">-->
+			<!--							<mat-slide-toggle [(ngModel)]="row.active" (change)="toggleProduct(row.id)" />-->
+			<!--						</td>-->
+			<!--					</ng-container>-->
+
+			<!--					<ng-container matColumnDef="actions">-->
+			<!--						<th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>-->
+			<!--						<td mat-cell *matCellDef="let row">-->
+			<!--							<button mat-icon-button class="delete-btn" (click)="delete(row)">-->
+			<!--								<mat-icon>delete</mat-icon>-->
+			<!--							</button>-->
+			<!--							<button mat-icon-button (click)="edit(row)">-->
+			<!--								<mat-icon>edit</mat-icon>-->
+			<!--							</button>-->
+			<!--							<button mat-icon-button (click)="duplicate(row)">-->
+			<!--								<mat-icon>control_point_duplicate</mat-icon>-->
+			<!--							</button>-->
+			<!--							&lt;!&ndash;						<button mat-icon-button (click)="deposit(row)">&ndash;&gt;-->
+			<!--							&lt;!&ndash;							<mat-icon>add_business</mat-icon>&ndash;&gt;-->
+			<!--							&lt;!&ndash;						</button>&ndash;&gt;-->
+			<!--							&lt;!&ndash;						<button mat-icon-button (click)="info(row)">&ndash;&gt;-->
+			<!--							&lt;!&ndash;							<mat-icon>info</mat-icon>&ndash;&gt;-->
+			<!--							&lt;!&ndash;						</button>&ndash;&gt;-->
+			<!--						</td>-->
+			<!--					</ng-container>-->
+
+			<!--					<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
+			<!--					<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>-->
+
+			<!--					&lt;!&ndash; Row shown when there is no matching data. &ndash;&gt;-->
+			<!--					<tr class="mat-row" *matNoDataRow>-->
+			<!--						<td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>-->
+			<!--					</tr>-->
+			<!--				</table>-->
+			<!--			</div>-->
+
+			<div style="border: 1px solid red; margin: 0.5rem 1rem;">
 				<table mat-table [dataSource]="dataSource()" matSort>
+					-->
 					<ng-container matColumnDef="name">
 						<th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
 						<td mat-cell *matCellDef="let row">{{ row.name }}</td>
@@ -108,7 +163,7 @@ import { DepositDialogComponent } from './deposit-dialog.component';
 						</td>
 					</ng-container>
 
-					<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+					<tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
 					<tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
 
 					<!-- Row shown when there is no matching data. -->
@@ -135,9 +190,15 @@ import { DepositDialogComponent } from './deposit-dialog.component';
 		FormsModule,
 	],
 	styles: `
-		.container {
-			margin: 0.5rem;
+
+		:host {
+			border: 1px solid red;
 		}
+		/*.container {*/
+		/*	margin: 0.5rem;*/
+		/*	height: 100%;*/
+		/*	overflow: scroll;*/
+		/*}*/
 
 		.toolbar {
 			display: flex;

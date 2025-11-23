@@ -1,0 +1,69 @@
+@if (paymentStat.hasValue()) {
+
+  <!--  @for (opt of PaymentOptionsArr; track opt) {-->
+  @if (hasDataKeys(data())) {
+    @let d = data()!;
+    @for (opt of PaymentOptionsArr; track opt) {
+      @if (opt in d) {
+        <orda-metric-card
+          [value]="d[opt]!.total_amount | number: '1.2-2'"
+          [loading]="!paymentStat.hasValue()"
+          [label]="PaymentOptionsKeys[keyToNumber(opt)]"
+          [unit]="'€'"
+        />
+      } @else {
+        <orda-metric-card
+          [label]="PaymentOptionsKeys[keyToNumber(opt)]"
+          [unit]="'€'"
+        />
+      }
+    }
+
+  } @else {
+  Nothing found
+
+
+
+    <!--    {{ data()![1]!.total_amount.toString() }}-->
+      <!--    {{ data()![2]!.total_amount.toString() }}-->
+      <!--    {{ data()![3]!.total_amount.toString() }}-->
+
+      <!--      <orda-metric-card-->
+      <!--        [value]="data()[opt].total_amount.toString()"-->
+      <!--        [loading]="!paymentStat.hasValue()"-->
+      <!--        [label]="PaymentOptionsKeys[keyToNumber(opt)]"-->
+      <!--        [unit]="'€'"-->
+      <!--      />-->
+  }
+  <!--  }-->
+
+    <!--  {{data()[1].total_amount.toString()}}-->
+    <!--  {{data()[2].total_amount.toString()}}-->
+    <!--  {{data()[3].total_amount.toString()}}-->
+}
+<!--@for (opt of PaymentOptionsArr; track opt) {-->
+<!--			{{ hasKey(d.data, o) }}-->
+<!--  @if(d.data && hasDataValue(d.data)){-->
+<!--  {{ d.data[opt] | json }}-->
+<!--  } @else {-->
+<!--  NOPE-->
+
+<!--}-->
+
+<!--  @if (hasDataValue(d.data)) {-->
+
+<!--    &lt;!&ndash;				@let amount = d.data[o].total_amount;&ndash;&gt;-->
+<!--      &lt;!&ndash;				<orda-metric-card&ndash;&gt;-->
+<!--      &lt;!&ndash;					[loading]="!data.hasValue()"&ndash;&gt;-->
+<!--      &lt;!&ndash;					[value]="amount | number: '1.2-2'"&ndash;&gt;-->
+<!--      &lt;!&ndash;					[label]="PaymentOptionsKeys[keyToNumber(o)]"&ndash;&gt;-->
+<!--      &lt;!&ndash;					[unit]="'€'"&ndash;&gt;-->
+<!--      &lt;!&ndash;				/>&ndash;&gt;-->
+<!--  } @else {-->
+<!--    <orda-metric-card-->
+<!--      [loading]="!data.hasValue()"-->
+<!--      [label]="PaymentOptionsKeys[keyToNumber(o)]"-->
+<!--      [unit]="'€'"-->
+<!--    />-->
+<!--  }-->
+<!--}-->

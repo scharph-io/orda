@@ -20,6 +20,11 @@ export const routes: Routes = [
 		loadChildren: () => import('@orda.features/manage/manage.routes'),
 	},
 	{
+		path: 'stats',
+		canActivate: [authGuard, manageGuard],
+		loadChildren: () => import('@orda.features/statistics/statistic.routes'),
+	},
+	{
 		path: 'order',
 		canActivate: [authGuard],
 		loadChildren: () => import('@orda.features/order/order.routes'),

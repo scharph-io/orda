@@ -84,7 +84,7 @@ export class OrderDesktopComponent {
 
 	gridCols = inject(GridColSizeService).size;
 	cartSize = signal<string>('18.5em');
-	viewClass = signal<string>('desktop-container');
+	viewClass = signal<string>('desktop-dashboard');
 	isMobilePortrait = signal<boolean>(false);
 
 	viewBreakpoints = toSignal(inject(ViewBreakpointService).getBreakpoint());

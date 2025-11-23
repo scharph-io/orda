@@ -32,7 +32,7 @@ export class ViewBreakpointService {
 			}),
 			tap((breakpoint) => {
 				console.debug('Current breakpoint:', breakpoint);
-			}), // Log the current breakpoint
+			}), // Log the day breakpoint
 		);
 	}
 }

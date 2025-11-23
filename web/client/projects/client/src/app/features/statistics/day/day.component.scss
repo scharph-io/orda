@@ -1,0 +1,5 @@
+@use 'styles/grid' as grid;
+
+:host {
+  //@include grid.grid(260px, .5rem);
+}
