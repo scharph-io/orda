@@ -8,6 +8,6 @@ import { AssortmentGroupsComponent } from '@orda.features/manage/assortment/grou
 	selector: 'orda-assortment',
 	imports: [MatButtonModule, MatListModule, RouterModule, AssortmentGroupsComponent],
 	template: ` <orda-assortment-groups /> `,
-	styles: ``,
+	styleUrls: ['./assortment.component.scss'],
 })
 export class AssortmentComponent {}
