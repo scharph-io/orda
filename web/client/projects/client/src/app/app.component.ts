@@ -14,14 +14,24 @@ import { rxResource } from '@angular/core/rxjs-interop';
 	imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, RouterModule],
 	styles: [
 		`
+			/*:host {*/
+			/*	display: flex;*/
+			/*	flex-direction: column;*/
+			/*	min-height: 100vh;*/
+			/*}*/
+
 			.header {
-				position: sticky;
-				top: 0;
-				z-index: 1000;
+				display: flex;
+				height: auto;
+				flex: 0 0 auto;
+				align-items: center;
+				z-index: 10;
 			}
+
 			.content {
-				height: calc(100dvh - 64px);
-				overflow-y: hidden;
+				justify-content: center; /* horizontal center */
+				align-items: center; /* vertical center */
+				min-height: 0;
 			}
 		`,
 	],

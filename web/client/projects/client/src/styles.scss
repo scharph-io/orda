@@ -6,13 +6,13 @@
 
 @forward '@fontsource/inter/500'; // Specify weight
 
-html,
-body {
-	height: 100vh;
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
+
 body {
-	margin: 0;
 
 	font-family: Inter, 'Helvetica Neue', sans-serif;
 
