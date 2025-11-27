@@ -6,8 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Router } from '@angular/router';
+// import { Router } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'orda-login',
@@ -22,8 +23,11 @@ import { SessionService } from '@orda.core/services/session.service';
 	],
 	template: `
 		<mat-card>
+			<mat-card-header>
+				<h2 class="title">Welcome to orda</h2>
+			</mat-card-header>
 			<mat-card-content>
-				<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+				<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="container">
 					<mat-form-field appearance="fill">
 						<mat-label>Username</mat-label>
 						<input
@@ -54,13 +58,18 @@ import { SessionService } from '@orda.core/services/session.service';
 							<mat-error>required</mat-error>
 						}
 					</mat-form-field>
-					<mat-checkbox formControlName="saveLogin">Save Login?</mat-checkbox>
+					<!--						<mat-checkbox formControlName="saveLogin">Save Login?</mat-checkbox>-->
 					@if (errorMsg() !== '') {
 						<mat-error>{{ errorMsg() }}</mat-error>
 					}
-					<div class="container">
+					<div>
 						@if (!isLoading) {
-							<button mat-button color="primary" [disabled]="loginForm.invalid" type="submit">
+							<button
+								matButton="outlined"
+								color="primary"
+								[disabled]="loginForm.invalid"
+								type="submit"
+							>
 								Login
 							</button>
 						} @else {
@@ -72,40 +81,50 @@ import { SessionService } from '@orda.core/services/session.service';
 		</mat-card>
 	`,
 	styles: `
+		:host {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			height: 35rem;
+		}
+
 		.container {
 			display: flex;
+			flex-direction: column;
 			justify-content: center;
+			align-items: center;
+			gap: 0.5rem;
 		}
 
-		section {
-			margin: 12px 0;
-		}
+		/*section {*/
+		/*	margin: 12px 0;*/
+		/*}*/
 
 		mat-card {
-			width: 400px;
-			padding: 1rem;
-			margin: 4rem auto auto;
+			height: 18rem;
+			width: 22rem;
+			/*height: 17rem;*/
+		}
+
+		.mat-mdc-card-header {
+			justify-content: center;
 		}
 
 		mat-form-field {
 			width: 100%;
 		}
 
-		button {
-			width: 100%;
-			margin-top: 20px;
-			border: 1px solid;
-		}
+		/*button {*/
+		/*	width: 100%;*/
+		/*	margin-top: 20px;*/
+		/*	border: 1px solid;*/
+		/*}*/
 	`,
 })
 export class LoginComponent {
-	private sessionService = inject(SessionService);
-	private router = inject(Router);
-
-	protected isLoading = false;
-
 	errorMsg = signal('');
-
+	protected isLoading = false;
 	protected loginForm = new FormGroup({
 		username: new FormControl(isDevMode() ? 'admin' : '', [
 			Validators.required,
@@ -114,6 +133,8 @@ export class LoginComponent {
 		password: new FormControl(isDevMode() ? 'admin' : '', [Validators.required]),
 		saveLogin: new FormControl({ value: true, disabled: true }, {}),
 	});
+	private sessionService = inject(SessionService);
+	private router = inject(Router);
 
 	onSubmit() {
 		this.isLoading = true;

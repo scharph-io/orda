@@ -1,162 +1,57 @@
 /* You can add global styles to this file, and also import other style files */
-@use '@angular/material' as mat;
+
 
 /* styles.scss – global entry */
-@use 'styles/index';
+@use 'index';
 
-@forward '@fontsource/inter/500'; // Specify weight
+//h1 {
+//	margin: 1.5rem 1rem;
+//	color: #343a40;
+//}
+//
+//// Customize the entire app. Change :root to your selector if you want to scope the styles.
+//:root {
 
-html,
-body {
-	height: 100vh;
-}
+//
+//.dialog-flex {
+//	display: flex;
+//	flex-direction: column;
+//	gap: 0.25rem;
+//}
+//
+//.mat-mdc-tab-body-content {
+//	scrollbar-width: thin;
+//}
+//
+//mat-grid-tile {
+//	border: 1px solid #e3d5ca;
+//	border-radius: 0.5rem;
+//	background-color: #edede9;
+//}
+//
+//.manage-list {
+//	margin: 1rem;
+//}
+//
+//.form-container {
+//	display: flex;
+//	flex-direction: column;
+//	align-items: center;
+//	gap: 0.5rem;
+//}
+//
 
-body {
-	margin: 0;
-
-	font-family: Inter, 'Helvetica Neue', sans-serif;
-
-	color-scheme: light dark;
-	@include mat.theme(
-		(
-			// color: mat.$violet-palette,
-			typography: Inter,
-			density: 0
-		)
-	);
-
-	::-webkit-scrollbar {
-		width: 9px;
-	}
-
-	::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	::-webkit-scrollbar-thumb {
-		background-color: rgba(155, 155, 155, 0.5);
-		border-radius: 20px;
-		border: transparent;
-	}
-}
-
-h1 {
-	margin: 1.5rem 1rem;
-	color: #343a40;
-}
-
-// Customize the entire app. Change :root to your selector if you want to scope the styles.
-:root {
-	@include mat.progress-spinner-overrides(
-		(
-			active-indicator-color: blue,
-		)
-	);
-	@include mat.table-overrides(
-		(
-			row-item-container-height: '2rem',
-		)
-	);
-
-	@include mat.toolbar-overrides(
-		(
-			container-background-color: #f5ebe0,
-		)
-	);
-
-	// @include mat.button-overrides(
-	// 	(
-  // 		tonal-dashboard-color: green,
-	// 		tonal-label-text-color: white,
-	// 	)
-	// );
-}
-
-.content {
-	margin: 0.25rem;
-}
-
-.delete-btn {
-	@include mat.icon-button-overrides(
-		(
-			icon-color: #da2525,
-		)
-	);
-}
-
-.active-btn {
-	@include mat.button-overrides(
-		(
-			filled-label-text-color: white,
-			filled-container-color: green,
-		)
-	);
-}
-
-.inactive-btn {
-	@include mat.button-overrides(
-		(
-			filled-label-text-color: black,
-			filled-container-color: #f4d160,
-		)
-	);
-}
-
-.dialog-flex {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-}
-
-.mat-mdc-tab-body-content {
-	scrollbar-width: thin;
-}
-
-mat-grid-tile {
-	border: 1px solid #e3d5ca;
-	border-radius: 0.5rem;
-	background-color: #edede9;
-}
-
-.manage-list {
-	margin: 1rem;
-}
-
-.form-container {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.orda-toolbar {
-	@include mat.toolbar-overrides(
-		(
-			container-background-color: white,
-		)
-	);
-
-	& .toolbar-input {
-		.mat-mdc-form-field-subscript-wrapper {
-			display: none;
-		}
-	}
-}
-
-.spacer {
-	flex: 1 1 auto;
-}
-
-.dashboard-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-	gap: 20px;
-	justify-items: center;
-}
-
-button.custom-date-class {
-	border-radius: 100%;
-	border: 1px solid orange;
-}
-
-
+//
+//.dashboard-grid {
+//	display: grid;
+//	grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+//	gap: 20px;
+//	justify-items: center;
+//}
+//
+//button.custom-date-class {
+//	border-radius: 100%;
+//	border: 1px solid orange;
+//}
+//
+//

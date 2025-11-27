@@ -1,0 +1,31 @@
+@use '@angular/material' as mat;
+@forward '@fontsource/inter/500';
+
+body {
+  font-family: Inter, 'Helvetica Neue', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  height: 100%;
+
+  @include mat.theme(
+      (
+        //color: mat.$violet-palette,
+        typography: Inter,
+        density: 0
+      )
+  );
+
+  ::-webkit-scrollbar {
+    width: 9px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 20px;
+    border: transparent;
+  }
+}

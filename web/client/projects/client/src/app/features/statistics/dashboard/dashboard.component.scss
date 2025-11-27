@@ -1,4 +1,4 @@
-@use 'styles/grid' as grid;
+@use 'grid';
 
 :host {
   @include grid.metrics-grid($minW: 8rem, $maxW: 12rem, $gap: 1.2rem, $ratio: 1);
