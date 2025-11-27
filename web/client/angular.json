@@ -34,7 +34,7 @@
 							"projects/client/src/styles.scss"
 						],
 						"stylePreprocessorOptions": {
-							"includePaths": ["projects/client/src"]
+							"includePaths": ["projects/client/src/styles"]
 						},
 						"scripts": []
 					},

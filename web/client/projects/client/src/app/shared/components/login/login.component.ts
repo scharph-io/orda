@@ -8,6 +8,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 // import { Router } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'orda-login',
@@ -133,7 +134,7 @@ export class LoginComponent {
 		saveLogin: new FormControl({ value: true, disabled: true }, {}),
 	});
 	private sessionService = inject(SessionService);
-	// private router = inject(Router);
+	private router = inject(Router);
 
 	onSubmit() {
 		this.isLoading = true;
@@ -149,7 +150,7 @@ export class LoginComponent {
 				.subscribe({
 					next: () => {
 						this.isLoading = false;
-						// this.router.navigate(['/home']).catch(() => undefined);
+						this.router.navigate(['/home']).catch(() => undefined);
 					},
 					error: () => {
 						this.isLoading = false;
