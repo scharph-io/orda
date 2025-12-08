@@ -1,8 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 
+@use "tailwindcss";
 
 /* styles.scss – global entry */
 @use 'index';
+
+:root {
+  @layer theme, base, components, utilities;
+  @import "tailwindcss/theme.css" layer(theme);
+  @import "tailwindcss/preflight.css" layer(base);
+  @import "tailwindcss/utilities.css" layer(utilities);
+}
 
 //h1 {
 //	margin: 1.5rem 1rem;
