@@ -7,95 +7,95 @@ import { CartItem, OrderStoreService } from '@orda.features/order/services/order
 import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 
 @Component({
-	selector: 'orda-cart-item',
-	imports: [MatButtonModule, MatIconModule, MatDividerModule, OrdaCurrencyPipe],
-	template: `
-		<div
-			[class]="{
-				container: true,
-				'container-with-desc': item().desc !== undefined,
-			}"
-		>
-			<div class="title">{{ item().name }}</div>
-			@if (item().desc) {
-				<div class="desc">{{ item().desc }}</div>
-			}
-			<div class="quantity">{{ item().quantity }}</div>
-			<div class="sum">{{ item().price * item().quantity | currency: 'EUR' }}</div>
-			<div class="rm">
-				<mat-icon (click)="removeItem(item())" [style]="{ color: 'grey' }">delete</mat-icon>
-			</div>
-		</div>
-		<mat-divider></mat-divider>
-	`,
-	styles: `
-		.container {
-			display: grid;
-			grid-auto-flow: row;
-			grid-template: 'title quantity sum rm' 1fr / auto 1fr 5.5rem 2rem;
-			width: auto;
-		}
+  selector: 'orda-cart-item',
+  imports: [MatButtonModule, MatIconModule, MatDividerModule, OrdaCurrencyPipe],
+  template: `
+    <div
+      [class]="{
+        container: true,
+        'container-with-desc': item().desc !== undefined,
+      }"
+    >
+      <div class="title">{{ item().name }}</div>
+      @if (item().desc) {
+        <div class="desc">{{ item().desc }}</div>
+      }
+      <div class="quantity">{{ item().quantity }}</div>
+      <div class="sum">{{ item().price * item().quantity | currency: 'EUR' }}</div>
+      <div class="rm">
+        <mat-icon (click)="removeItem(item())" [style]="{ color: 'grey' }">delete</mat-icon>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+  `,
+  styles: `
+    .container {
+      display: grid;
+      grid-auto-flow: row;
+      grid-template: 'title quantity sum rm' 1fr / auto 1fr 5.5rem 2rem;
+      width: auto;
+    }
 
-		.container-with-desc {
-			grid-template:
-				'title quantity sum rm' 1fr
-				'desc quantity sum rm' 1fr / auto 0.15fr 5.5rem 2rem;
-		}
+    .container-with-desc {
+      grid-template:
+        'title quantity sum rm' 1fr
+        'desc quantity sum rm' 1fr / auto 0.15fr 5.5rem 2rem;
+    }
 
-		.title {
-			grid-area: title;
-			display: flex;
-			align-items: center;
-		}
+    .title {
+      grid-area: title;
+      display: flex;
+      align-items: center;
+    }
 
-		.desc {
-			grid-area: desc;
-			font-size: 0.75rem;
-			text-overflow: ellipsis;
-			line-height: 1.5em;
-			overflow: hidden;
-			white-space: nowrap;
-			width: 100%;
-		}
+    .desc {
+      grid-area: desc;
+      font-size: 0.75rem;
+      text-overflow: ellipsis;
+      line-height: 1.5em;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+    }
 
-		.quantity {
-			grid-area: quantity;
-			display: flex;
-			justify-content: right;
-			align-items: center;
-			font-variant-numeric: tabular-nums;
-		}
+    .quantity {
+      grid-area: quantity;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+      font-variant-numeric: tabular-nums;
+    }
 
-		.sum {
-			grid-area: sum;
-			display: flex;
-			justify-content: right;
-			align-items: center;
-			font-variant-numeric: tabular-nums;
-		}
+    .sum {
+      grid-area: sum;
+      display: flex;
+      justify-content: right;
+      align-items: center;
+      font-variant-numeric: tabular-nums;
+    }
 
-		.rm {
-			grid-area: rm;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-	`,
+    .rm {
+      grid-area: rm;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  `,
 })
 export class CartItemComponent {
-	item = input.required<CartItem>();
+  item = input.required<CartItem>();
 
-	containerClass = computed(() => {
-		if (this.item().desc) {
-			return 'dashboard-with-desc';
-		} else {
-			return 'container';
-		}
-	});
+  containerClass = computed(() => {
+    if (this.item().desc) {
+      return 'dashboard-with-desc';
+    } else {
+      return 'container';
+    }
+  });
 
-	cartStore = inject(OrderStoreService);
+  cartStore = inject(OrderStoreService);
 
-	removeItem(item: CartItem): void {
-		this.cartStore.removeItem(item);
-	}
+  removeItem(item: CartItem): void {
+    this.cartStore.removeItem(item);
+  }
 }

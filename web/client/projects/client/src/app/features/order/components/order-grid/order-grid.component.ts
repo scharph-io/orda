@@ -10,76 +10,76 @@ import { PlusMinusTileComponent } from '@orda.features/order/components/plus-min
 import { OrdaColorService } from '@orda.shared/utils/color';
 
 @Component({
-	selector: 'orda-order-grid',
-	imports: [
-		MatGridListModule,
-		ScrollingModule,
-		LayoutModule,
-		MatRippleModule,
-		ProductTileComponent,
-		PlusMinusTileComponent,
-	],
-	template: `
-		<mat-grid-list class="order-grid" [cols]="gridCols()" gutterSize="0.5rem">
-			@if (deposit(); as deposit) {
-				<mat-grid-tile
-					matRipple
-					[matRippleCentered]="false"
-					[matRippleDisabled]="false"
-					[matRippleUnbounded]="false"
-					[colspan]="2"
-				>
-					<orda-plus-minus-tile [deposit]="deposit" />
-				</mat-grid-tile>
-			}
+  selector: 'orda-order-grid',
+  imports: [
+    MatGridListModule,
+    ScrollingModule,
+    LayoutModule,
+    MatRippleModule,
+    ProductTileComponent,
+    PlusMinusTileComponent,
+  ],
+  template: `
+    <mat-grid-list class="order-grid" [cols]="gridCols()" gutterSize="0.5rem">
+      @if (deposit(); as deposit) {
+        <mat-grid-tile
+          matRipple
+          [matRippleCentered]="false"
+          [matRippleDisabled]="false"
+          [matRippleUnbounded]="false"
+          [colspan]="2"
+        >
+          <orda-plus-minus-tile [deposit]="deposit" />
+        </mat-grid-tile>
+      }
 
-			@for (vp of products(); track vp.id) {
-				@let color = vp.color ?? '';
-				<mat-grid-tile
-					[style]="{
-						'background-color': color.startsWith('#')
-							? colorService.hexToHSLString(color, 0.33)
-							: color,
-					}"
-					matRipple
-					[matRippleCentered]="false"
-					[matRippleDisabled]="false"
-					[matRippleUnbounded]="false"
-					(click)="addProduct(vp)"
-				>
-					<orda-product-tile [product]="vp" />
-				</mat-grid-tile>
-			}
-		</mat-grid-list>
-	`,
-	styles: `
-		mat-grid-tile {
-			cursor: pointer;
-			border-radius: 0.5em;
-			background-color: #edede9;
-			border: 1px solid #e3d5ca;
-		}
+      @for (vp of products(); track vp.id) {
+        @let color = vp.color ?? '';
+        <mat-grid-tile
+          [style]="{
+            'background-color': color.startsWith('#')
+              ? colorService.hexToHSLString(color, 0.33)
+              : color,
+          }"
+          matRipple
+          [matRippleCentered]="false"
+          [matRippleDisabled]="false"
+          [matRippleUnbounded]="false"
+          (click)="addProduct(vp)"
+        >
+          <orda-product-tile [product]="vp" />
+        </mat-grid-tile>
+      }
+    </mat-grid-list>
+  `,
+  styles: `
+    mat-grid-tile {
+      cursor: pointer;
+      border-radius: 0.5em;
+      background-color: #edede9;
+      border: 1px solid #e3d5ca;
+    }
 
-		.order-grid {
-			margin: 0 0.5rem;
-		}
-	`,
+    .order-grid {
+      margin: 0 0.5rem;
+    }
+  `,
 })
 export class OrderGridComponent {
-	colorService = inject(OrdaColorService);
-	products = input.required<Partial<ViewProduct>[]>();
-	deposit = input<Partial<ViewProduct>>();
-	gridCols = input<number>(2);
+  colorService = inject(OrdaColorService);
+  products = input.required<Partial<ViewProduct>[]>();
+  deposit = input<Partial<ViewProduct>>();
+  gridCols = input<number>(2);
 
-	cart = inject(OrderStoreService);
+  cart = inject(OrderStoreService);
 
-	addProduct(p: Partial<ViewProduct>): void {
-		this.cart.addItem({
-			id: p.id ?? '',
-			name: p.name ?? '',
-			price: p.price ?? 0,
-			quantity: 1,
-			desc: p.desc,
-		});
-	}
+  addProduct(p: Partial<ViewProduct>): void {
+    this.cart.addItem({
+      id: p.id ?? '',
+      name: p.name ?? '',
+      price: p.price ?? 0,
+      quantity: 1,
+      desc: p.desc,
+    });
+  }
 }

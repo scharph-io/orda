@@ -7,27 +7,27 @@ import { API_ENDPOINTS } from '@orda.core/constants';
 import { HOST } from '@orda.core/config/config';
 
 interface OrderData {
-	products: Record<string, Partial<ViewProduct>[]>;
-	deposits: Record<string, Partial<ViewProduct>>;
+  products: Record<string, Partial<ViewProduct>[]>;
+  deposits: Record<string, Partial<ViewProduct>>;
 }
 
 @Injectable({
-	providedIn: 'root',
+  providedIn: 'root',
 })
 export class OrderService {
-	httpClient = inject(HttpClient);
-	HOST = inject(HOST);
-	logger = inject(OrdaLogger);
+  httpClient = inject(HttpClient);
+  HOST = inject(HOST);
+  logger = inject(OrdaLogger);
 
-	public views = rxResource({
-		stream: () => this.getViews(),
-	});
+  public views = rxResource({
+    stream: () => this.getViews(),
+  });
 
-	public getViews() {
-		return this.httpClient.get<Partial<View>[]>(`${this.HOST}${API_ENDPOINTS.ORDER}/views`);
-	}
+  public getViews() {
+    return this.httpClient.get<Partial<View>[]>(`${this.HOST}${API_ENDPOINTS.ORDER}/views`);
+  }
 
-	public getViewProducts(viewId: string) {
-		return this.httpClient.get<OrderData>(`${this.HOST}${API_ENDPOINTS.ORDER}/views/${viewId}`);
-	}
+  public getViewProducts(viewId: string) {
+    return this.httpClient.get<OrderData>(`${this.HOST}${API_ENDPOINTS.ORDER}/views/${viewId}`);
+  }
 }

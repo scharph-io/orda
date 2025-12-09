@@ -1,9 +1,4 @@
-
-@mixin grid(
-  $columns: 6,
-  $gap: 0.5rem,
-  $min-width: null
-) {
+@mixin grid($columns: 6, $gap: 0.5rem, $min-width: null) {
   display: grid;
   gap: $gap;
 
@@ -14,10 +9,7 @@
   }
 }
 
-@mixin responsive-grid(
-  $mobile-min: 200px,
-  $gap: 1rem
-) {
+@mixin responsive-grid($mobile-min: 200px, $gap: 1rem) {
   display: grid;
   gap: $gap;
   grid-template-columns: repeat(auto-fill, minmax($mobile-min, 1fr));
@@ -39,29 +31,25 @@
 
 // Usage: @include metrics-grid(); or tweak sizes/ratio
 @mixin metrics-grid(
-  $minW: 5rem,     // min tile width
-  $maxW: 9rem,     // soft max tile width
-  $gap: 1rem,       // gap between tiles
-  $ratio: 1         // 1 = square, 0.8 = a bit wider, 1.2 = a bit taller
+  $minW: 5rem,
+  // min tile width
+  $maxW: 9rem,
+  // soft max tile width
+  $gap: 1rem,
+  // gap between tiles
+  $ratio: 1 // 1 = square, 0.8 = a bit wider, 1.2 = a bit taller
 ) {
   display: grid;
   gap: $gap;
 
   // Let the grid create as many columns as fit,
   // each tile between $minW and $maxW, but flexible up to 1fr.
-  grid-template-columns: repeat(
-    auto-fit,
-      minmax(clamp($minW, 25vw, $maxW), 1fr)
-  );
+  grid-template-columns: repeat(auto-fit, minmax(clamp($minW, 25vw, $maxW), 1fr));
 
   @media (min-width: 1200px) {
     // widen max card width a bit on big screens
-    grid-template-columns: repeat(
-      auto-fit,
-        minmax(clamp(9rem, 20vw, 16rem), 1fr)
-    );
+    grid-template-columns: repeat(auto-fit, minmax(clamp(9rem, 20vw, 16rem), 1fr));
   }
-
 }
 
 // Make tiles square/nearly square

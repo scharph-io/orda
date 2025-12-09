@@ -1,5 +1,5 @@
 @use 'flex';
 
 :host {
-  @include flex.picker-header
+  @include flex.picker-header;
 }

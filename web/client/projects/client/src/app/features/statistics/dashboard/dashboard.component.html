@@ -1,5 +1,4 @@
 @if (paymentStat.hasValue()) {
-
   <!--  @for (opt of PaymentOptionsArr; track opt) {-->
   @if (hasDataKeys(data())) {
     @let d = data()!;
@@ -12,34 +11,28 @@
           [unit]="'€'"
         />
       } @else {
-        <orda-metric-card
-          [label]="PaymentOptionsKeys[keyToNumber(opt)]"
-          [unit]="'€'"
-        />
+        <orda-metric-card [label]="PaymentOptionsKeys[keyToNumber(opt)]" [unit]="'€'" />
       }
     }
-
   } @else {
-  Nothing found
-
-
+    Nothing found
 
     <!--    {{ data()![1]!.total_amount.toString() }}-->
-      <!--    {{ data()![2]!.total_amount.toString() }}-->
-      <!--    {{ data()![3]!.total_amount.toString() }}-->
+    <!--    {{ data()![2]!.total_amount.toString() }}-->
+    <!--    {{ data()![3]!.total_amount.toString() }}-->
 
-      <!--      <orda-metric-card-->
-      <!--        [value]="data()[opt].total_amount.toString()"-->
-      <!--        [loading]="!paymentStat.hasValue()"-->
-      <!--        [label]="PaymentOptionsKeys[keyToNumber(opt)]"-->
-      <!--        [unit]="'€'"-->
-      <!--      />-->
+    <!--      <orda-metric-card-->
+    <!--        [value]="data()[opt].total_amount.toString()"-->
+    <!--        [loading]="!paymentStat.hasValue()"-->
+    <!--        [label]="PaymentOptionsKeys[keyToNumber(opt)]"-->
+    <!--        [unit]="'€'"-->
+    <!--      />-->
   }
   <!--  }-->
 
-    <!--  {{data()[1].total_amount.toString()}}-->
-    <!--  {{data()[2].total_amount.toString()}}-->
-    <!--  {{data()[3].total_amount.toString()}}-->
+  <!--  {{data()[1].total_amount.toString()}}-->
+  <!--  {{data()[2].total_amount.toString()}}-->
+  <!--  {{data()[3].total_amount.toString()}}-->
 }
 <!--@for (opt of PaymentOptionsArr; track opt) {-->
 <!--			{{ hasKey(d.data, o) }}-->

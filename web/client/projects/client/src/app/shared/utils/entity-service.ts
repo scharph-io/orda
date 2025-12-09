@@ -6,26 +6,26 @@ import { EMPTY, Observable } from 'rxjs';
 import { rxResource } from '@angular/core/rxjs-interop';
 
 export abstract class EntityService<T> {
-	httpClient = inject(HttpClient);
-	HOST = inject(HOST);
-	logger = inject(OrdaLogger);
+  httpClient = inject(HttpClient);
+  HOST = inject(HOST);
+  logger = inject(OrdaLogger);
 
-	public entityResource = rxResource({
-		stream: () => this.read(),
-	});
+  public entityResource = rxResource({
+    stream: () => this.read(),
+  });
 
-	public abstract create(t: Partial<T>): Observable<T>;
+  public abstract create(t: Partial<T>): Observable<T>;
 
-	public abstract read(): Observable<T[]>;
+  public abstract read(): Observable<T[]>;
 
-	public abstract readById(id: string): Observable<T>;
+  public abstract readById(id: string): Observable<T>;
 
-	public abstract update(id: string, t: Partial<T>): Observable<T>;
+  public abstract update(id: string, t: Partial<T>): Observable<T>;
 
-	public abstract delete(id: string): Observable<unknown>;
+  public abstract delete(id: string): Observable<unknown>;
 
-	protected handleError(error: unknown): Observable<never> {
-		this.logger.error('An error occurred', error);
-		return EMPTY;
-	}
+  protected handleError(error: unknown): Observable<never> {
+    this.logger.error('An error occurred', error);
+    return EMPTY;
+  }
 }

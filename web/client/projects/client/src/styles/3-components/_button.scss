@@ -11,26 +11,26 @@
 
 .delete-btn {
   @include mat.icon-button-overrides(
-      (
-        icon-color: #da2525,
-      )
+    (
+      icon-color: #da2525,
+    )
   );
 }
 
 .active-btn {
   @include mat.button-overrides(
-      (
-        filled-label-text-color: white,
-        filled-container-color: green,
-      )
+    (
+      filled-label-text-color: white,
+      filled-container-color: green,
+    )
   );
 }
 
 .inactive-btn {
   @include mat.button-overrides(
-      (
-        filled-label-text-color: black,
-        filled-container-color: #f4d160,
-      )
+    (
+      filled-label-text-color: black,
+      filled-container-color: #f4d160,
+    )
   );
 }

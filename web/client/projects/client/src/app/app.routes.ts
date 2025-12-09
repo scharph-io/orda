@@ -5,30 +5,30 @@ import { authGuard } from '@orda.core/guards/auth.guard';
 import { manageGuard } from '@orda.core/guards/manage.guard';
 
 export const routes: Routes = [
-	{
-		path: 'login',
-		loadComponent: () => LoginComponent,
-	},
-	{
-		path: 'home',
-		canActivate: [authGuard],
-		loadComponent: () => HomeComponent,
-	},
-	{
-		path: 'manage',
-		canActivate: [authGuard, manageGuard],
-		loadChildren: () => import('@orda.features/manage/manage.routes'),
-	},
-	{
-		path: 'stats',
-		canActivate: [authGuard, manageGuard],
-		loadChildren: () => import('@orda.features/statistics/statistic.routes'),
-	},
-	{
-		path: 'order',
-		canActivate: [authGuard],
-		loadChildren: () => import('@orda.features/order/order.routes'),
-	},
-	{ path: '', redirectTo: 'home', pathMatch: 'full' },
-	{ path: '**', redirectTo: 'home' },
+  {
+    path: 'login',
+    loadComponent: () => LoginComponent,
+  },
+  {
+    path: 'home',
+    canActivate: [authGuard],
+    loadComponent: () => HomeComponent,
+  },
+  {
+    path: 'manage',
+    canActivate: [authGuard, manageGuard],
+    loadChildren: () => import('@orda.features/manage/manage.routes'),
+  },
+  {
+    path: 'stats',
+    canActivate: [authGuard, manageGuard],
+    loadChildren: () => import('@orda.features/statistics/statistic.routes'),
+  },
+  {
+    path: 'order',
+    canActivate: [authGuard],
+    loadChildren: () => import('@orda.features/order/order.routes'),
+  },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '**', redirectTo: 'home' },
 ];

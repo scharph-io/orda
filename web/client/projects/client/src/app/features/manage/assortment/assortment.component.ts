@@ -5,9 +5,9 @@ import { RouterModule } from '@angular/router';
 import { AssortmentGroupsComponent } from '@orda.features/manage/assortment/groups/assortment-groups.component';
 
 @Component({
-	selector: 'orda-assortment',
-	imports: [MatButtonModule, MatListModule, RouterModule, AssortmentGroupsComponent],
-	template: ` <orda-assortment-groups /> `,
-	styleUrls: ['./assortment.component.scss'],
+  selector: 'orda-assortment',
+  imports: [MatButtonModule, MatListModule, RouterModule, AssortmentGroupsComponent],
+  template: ` <orda-assortment-groups /> `,
+  styleUrls: ['./assortment.component.scss'],
 })
 export class AssortmentComponent {}

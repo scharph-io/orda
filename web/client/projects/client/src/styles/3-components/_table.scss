@@ -2,8 +2,8 @@
 
 :root {
   @include mat.table-overrides(
-      (
-        row-item-container-height: '2rem',
-      )
-  )
+    (
+      row-item-container-height: '2rem',
+    )
+  );
 }

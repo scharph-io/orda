@@ -5,27 +5,27 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 const DEFAULT = 4;
 const FORMATS: Record<B, number> = {
-	XSmall: 2,
-	Small: 4,
-	Medium: 5,
-	Large: 6,
+  XSmall: 2,
+  Small: 4,
+  Medium: 5,
+  Large: 6,
 };
 
 @Injectable({
-	providedIn: 'root',
+  providedIn: 'root',
 })
 export class GridColSizeService {
-	private breakpoint = inject(ViewBreakpointService);
+  private breakpoint = inject(ViewBreakpointService);
 
-	public size = toSignal(this.getSize(), {
-		initialValue: 4,
-	});
+  public size = toSignal(this.getSize(), {
+    initialValue: 4,
+  });
 
-	private getSize(): Observable<number> {
-		return this.breakpoint.getBreakpoint().pipe(
-			map((size) => {
-				return FORMATS[size] ?? DEFAULT;
-			}),
-		);
-	}
+  private getSize(): Observable<number> {
+    return this.breakpoint.getBreakpoint().pipe(
+      map((size) => {
+        return FORMATS[size] ?? DEFAULT;
+      }),
+    );
+  }
 }

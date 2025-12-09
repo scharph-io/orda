@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 
 @Injectable({
-	providedIn: 'root',
+  providedIn: 'root',
 })
 export class ToolbarTitleService {
-	title = signal('');
+  title = signal('');
 }
