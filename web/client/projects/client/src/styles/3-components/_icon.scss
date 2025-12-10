@@ -1,0 +1,15 @@
+@mixin icon-size($size) {
+  width: $size !important;
+  height: $size !important;
+  font-size: $size !important;
+  line-height: $size !important;
+}
+
+// component.scss
+.icon-small {
+  @include icon-size(1rem);
+}
+
+.icon-large {
+  @include icon-size(3rem);
+}
