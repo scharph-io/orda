@@ -8,6 +8,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTab, MatTabGroup } from '@angular/material/tabs';
 import { TransactionsComponent } from '@orda.features/manage/history/transactions/transactions.component';
 import { StatisticsComponent } from '@orda.features/manage/history/statistics/statistics.component';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
   selector: 'orda-history',
@@ -21,8 +22,11 @@ import { StatisticsComponent } from '@orda.features/manage/history/statistics/st
     MatTab,
     TransactionsComponent,
     StatisticsComponent,
+    NavSubHeaderComponent,
   ],
   template: `
+    <orda-nav-sub-header title="Statistik" [showBackButton]="true" />
+
     <mat-form-field style="margin: 0.5rem">
       <mat-label>Datum auswählen</mat-label>
       <input matInput [matDatepicker]="picker" [formControl]="date" />

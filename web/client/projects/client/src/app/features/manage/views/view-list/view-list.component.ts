@@ -28,6 +28,7 @@ import { MatOption } from '@angular/material/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
   selector: 'orda-view-list',
@@ -38,9 +39,11 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
     RouterModule,
     MatGridListModule,
     MatTableModule,
+    NavSubHeaderComponent,
   ],
   template: `
-    <h1>Bestellseiten</h1>
+    <orda-nav-sub-header title="Bestellseiten" [showBackButton]="true" />
+
     <div class="title-toolbar">
       <button mat-button (click)="create()">Neu</button>
     </div>

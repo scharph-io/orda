@@ -24,11 +24,14 @@ import { switchMap } from 'rxjs';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RolesComponent } from '../roles/roles.component';
 import { StrongPasswordRegx } from '@orda.core/constants';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
   selector: 'orda-users',
-  imports: [MatButtonModule, MatTabsModule, RolesComponent],
+  imports: [MatButtonModule, MatTabsModule, RolesComponent, NavSubHeaderComponent],
   template: `
+    <orda-nav-sub-header title="Benutzer" [showBackButton]="true" />
+
     <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
       <mat-tab label="Users">
         <ng-template matTabContent>

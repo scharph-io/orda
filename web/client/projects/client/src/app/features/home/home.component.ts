@@ -3,7 +3,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
-import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 export interface Tile {
   title: string;
@@ -14,18 +14,10 @@ export interface Tile {
 
 @Component({
   selector: 'orda-home',
-  imports: [MatGridListModule, MatIcon],
+  imports: [MatGridListModule, MatIcon, NavSubHeaderComponent],
   template: `
     <div class="min-h-full">
-      <header
-        class="relative after:pointer-events-none after:absolute after:inset-x-0 after:inset-y-0 after:border-y after:border-white/10"
-      >
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 class="text-center text-4xl font-bold">
-            Wilkommen, {{ sessionService.user().username }}
-          </h1>
-        </div>
-      </header>
+      <orda-nav-sub-header [title]="'Wilkommen, ' + sessionService.user().username" />
       <main>
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -39,7 +31,7 @@ export interface Tile {
                       {{ tile.icon }}
                     </mat-icon></span
                   >
-                  <span class="text-lg font-bold">{{ tile.title }}</span>
+                  <span class="text-2xl font-bold">{{ tile.title }}</span>
                 </a>
               </li>
             }
@@ -54,7 +46,7 @@ export class HomeComponent {
   sessionService = inject(SessionService);
   private readonly router = inject(Router);
 
-  gridCol = inject(GridColSizeService);
+  // gridCol = inject(GridColSizeService);
 
   primaryTiles = signal<Tile[]>([
     {

@@ -43,6 +43,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 export enum HistoryAction {
   Debit = 0,
@@ -73,8 +74,11 @@ export enum DepositType {
     MatMenuModule,
     MatCheckboxModule,
     MatToolbarModule,
+    NavSubHeaderComponent,
   ],
   template: `
+    <orda-nav-sub-header title="Konten" [showBackButton]="true" />
+
     <mat-tab-group
       mat-stretch-tabs="false"
       mat-align-tabs="start"

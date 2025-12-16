@@ -4,26 +4,20 @@ import { OrderService } from '@orda.features/data-access/services/order.service'
 import { MatRipple } from '@angular/material/core';
 import { RouterModule } from '@angular/router';
 import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.service';
-import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
-import { Location } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
   selector: 'orda-order',
-  imports: [MatGridListModule, MatRipple, RouterModule, MatIcon],
+  imports: [MatGridListModule, MatRipple, RouterModule, MatIcon, NavSubHeaderComponent],
   template: `
-    <h1>Bestellseiten</h1>
+    <orda-nav-sub-header title="Bestellseiten" [showBackButton]="true" />
+
     @let views = viewService.views.value() ?? [];
     @if (views.length === 0) {
       <p>No views available</p>
     } @else {
-      <mat-grid-list [cols]="gridCols()" rowHeight="1:1" gutterSize="0.5rem">
-        <mat-grid-tile mat-ripple (click)="navigateBack()" [colspan]="1" [rowspan]="1">
-          <div class="tile-content">
-            <mat-icon aria-hidden="false"> arrow_back </mat-icon>
-            <span class="tile-text">Zurück</span>
-          </div>
-        </mat-grid-tile>
+      <mat-grid-list [cols]="4" rowHeight="1:1" gutterSize="0.5rem">
         @for (v of viewService.views.value(); track v.id) {
           <mat-grid-tile mat-ripple [routerLink]="['view', v.id]">
             <div class="container">
@@ -85,13 +79,7 @@ export class OrderComponent {
   viewService = inject(OrderService); // refactor naming
   breakpointService = inject(ViewBreakpointService);
 
-  gridCols = inject(GridColSizeService).size;
-
-  constructor(private _location: Location) {
+  constructor() {
     this.viewService.views.reload();
-  }
-
-  navigateBack() {
-    this._location.back();
   }
 }

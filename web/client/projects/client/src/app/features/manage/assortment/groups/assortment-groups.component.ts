@@ -23,12 +23,21 @@ import {
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
 import { RouterModule } from '@angular/router';
 import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
   selector: 'orda-assortment-groups',
-  imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe, RouterModule],
+  imports: [
+    MatButtonModule,
+    MatListModule,
+    MatIcon,
+    TitleCasePipe,
+    RouterModule,
+    NavSubHeaderComponent,
+  ],
   template: `
-    <h1>Sortiment</h1>
+    <orda-nav-sub-header title="Sortiment" [showBackButton]="true" />
+
     <div class="title-toolbar">
       <button mat-button (click)="create()">New</button>
     </div>
