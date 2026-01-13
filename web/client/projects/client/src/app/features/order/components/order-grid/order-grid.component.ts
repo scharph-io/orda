@@ -3,7 +3,6 @@ import { OrderStoreService } from '@orda.features/order/services/order-store.ser
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { LayoutModule } from '@angular/cdk/layout';
 import { MatRippleModule } from '@angular/material/core';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { ViewProduct } from '@orda.core/models/view';
 import { ProductTileComponent } from '@orda.features/order/components/product-tile/product-tile.component';
 import { PlusMinusTileComponent } from '@orda.features/order/components/plus-minus-tile/plus-minus-tile.component';
@@ -12,7 +11,6 @@ import { OrdaColorService } from '@orda.shared/utils/color';
 @Component({
   selector: 'orda-order-grid',
   imports: [
-    MatGridListModule,
     ScrollingModule,
     LayoutModule,
     MatRippleModule,
@@ -20,27 +18,29 @@ import { OrdaColorService } from '@orda.shared/utils/color';
     PlusMinusTileComponent,
   ],
   template: `
-    <mat-grid-list class="order-grid" [cols]="gridCols()" gutterSize="0.5rem">
+    <div
+      class="mx-2 grid gap-2"
+      [style.gridTemplateColumns]="'repeat(' + gridCols() + ', minmax(0, 1fr))'"
+    >
       @if (deposit(); as deposit) {
-        <mat-grid-tile
+        <div
+          class="col-span-2 cursor-pointer rounded-lg border border-[#e3d5ca] bg-[#edede9]"
           matRipple
           [matRippleCentered]="false"
           [matRippleDisabled]="false"
           [matRippleUnbounded]="false"
-          [colspan]="2"
         >
           <orda-plus-minus-tile [deposit]="deposit" />
-        </mat-grid-tile>
+        </div>
       }
 
       @for (vp of products(); track vp.id) {
         @let color = vp.color ?? '';
-        <mat-grid-tile
-          [style]="{
-            'background-color': color.startsWith('#')
-              ? colorService.hexToHSLString(color, 0.33)
-              : color,
-          }"
+        <div
+          class="cursor-pointer rounded-lg border border-[#e3d5ca] bg-[#edede9]"
+          [style.backgroundColor]="
+            color.startsWith('#') ? colorService.hexToHSLString(color, 0.33) : color
+          "
           matRipple
           [matRippleCentered]="false"
           [matRippleDisabled]="false"
@@ -48,21 +48,9 @@ import { OrdaColorService } from '@orda.shared/utils/color';
           (click)="addProduct(vp)"
         >
           <orda-product-tile [product]="vp" />
-        </mat-grid-tile>
+        </div>
       }
-    </mat-grid-list>
-  `,
-  styles: `
-    mat-grid-tile {
-      cursor: pointer;
-      border-radius: 0.5em;
-      background-color: #edede9;
-      border: 1px solid #e3d5ca;
-    }
-
-    .order-grid {
-      margin: 0 0.5rem;
-    }
+    </div>
   `,
 })
 export class OrderGridComponent {
