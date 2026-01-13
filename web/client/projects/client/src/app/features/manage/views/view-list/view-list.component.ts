@@ -45,58 +45,57 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
     <orda-nav-sub-header title="Bestellseiten" [showBackButton]="true" />
     <main>
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="title-toolbar">
+          <button mat-button (click)="create()">Neu</button>
+        </div>
 
-      <div class="title-toolbar">
-        <button mat-button (click)="create()">Neu</button>
+        @let views = viewService.entityResource.value() ?? [];
+
+        @if (views.length === 0) {
+          <p>No views available. Add <button mat-button (click)="create()">Neu</button></p>
+        } @else {
+          <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 demo-table">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="desc">
+              <th mat-header-cell *matHeaderCellDef>Beschreibung</th>
+              <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let element">
+                <button
+                  title="delete view"
+                  class="delete-btn"
+                  mat-icon-button
+                  (click)="delete(element)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button title="edit view" mat-icon-button (click)="edit(element)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  title="view settings"
+                  mat-icon-button
+                  [routerLink]="[element.id]"
+                  [state]="{ name: element.name }"
+                  routerLinkActive="router-link-active"
+                >
+                  <mat-icon>settings</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
+          </table>
+        }
       </div>
-
-      @let views = viewService.entityResource.value() ?? [];
-
-      @if (views.length === 0) {
-        <p>No views available. Add <button mat-button (click)="create()">Neu</button></p>
-      } @else {
-        <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 demo-table">
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="desc">
-            <th mat-header-cell *matHeaderCellDef>Beschreibung</th>
-            <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element">
-              <button
-                title="delete view"
-                class="delete-btn"
-                mat-icon-button
-                (click)="delete(element)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-              <button title="edit view" mat-icon-button (click)="edit(element)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button
-                title="view settings"
-                mat-icon-button
-                [routerLink]="[element.id]"
-                [state]="{ name: element.name }"
-                routerLinkActive="router-link-active"
-              >
-                <mat-icon>settings</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
-        </table>
-    }
-    </div>
     </main>
   `,
   styles: `

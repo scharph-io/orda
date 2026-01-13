@@ -12,25 +12,26 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
     <orda-nav-sub-header title="Bestellseiten" [showBackButton]="true" />
     <main>
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-
-    <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-      @for (v of viewService.views.value(); track v.id) {
-        @let id = v.id ?? '';
-        <li (click)="navigateTo(['order', 'view', id])" (keydown)="navigateTo(['order', 'view', id])" tabindex="0">
-          <a
-            class="flex flex-col items-center justify-center rounded-xl border border-gray-200 px-4 py-6 shadow-sm hover:shadow-md hover:bg-gray-50 transition"
-          >
-            <span class="text-2xl font-bold">{{ v.name }}</span>
-            <span class="text">{{ v.products_count }} Produkte</span>
-          </a>
-        </li>
-      } @empty {
-        <p>No views available</p>
-      }
-    </ul>
-
-    
-    </div>
+        <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          @for (v of viewService.views.value(); track v.id) {
+            @let id = v.id ?? '';
+            <li
+              (click)="navigateTo(['order', 'view', id])"
+              (keydown)="navigateTo(['order', 'view', id])"
+              tabindex="0"
+            >
+              <a
+                class="flex flex-col items-center justify-center rounded-xl border border-gray-200 px-4 py-6 shadow-sm hover:shadow-md hover:bg-gray-50 transition"
+              >
+                <span class="text-2xl font-bold">{{ v.name }}</span>
+                <span class="text">{{ v.products_count }} Produkte</span>
+              </a>
+            </li>
+          } @empty {
+            <p>No views available</p>
+          }
+        </ul>
+      </div>
     </main>
   `,
   styles: `
@@ -83,7 +84,6 @@ export class OrderComponent {
   viewService = inject(OrderService); // refactor naming
   breakpointService = inject(ViewBreakpointService);
   private readonly router = inject(Router);
-
 
   constructor() {
     this.viewService.views.reload();

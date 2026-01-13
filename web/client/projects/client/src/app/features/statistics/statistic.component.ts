@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
-import { NavSubHeaderComponent } from "@orda.shared/components/nav-sub-header/nav-sub-header";
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
   selector: 'orda-statistic',
@@ -25,10 +25,10 @@ import { NavSubHeaderComponent } from "@orda.shared/components/nav-sub-header/na
     // StatsCardComponent,
     // MetricCardComponent,
     RouterModule,
-    NavSubHeaderComponent
-],
+    NavSubHeaderComponent,
+  ],
   template: `
-  <orda-nav-sub-header title="Statistik V2" [showBackButton]="true" />
+    <orda-nav-sub-header title="Statistik V2" [showBackButton]="true" />
     <main>
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div class="page">
@@ -72,40 +72,40 @@ import { NavSubHeaderComponent } from "@orda.shared/components/nav-sub-header/na
           </mat-tab-nav-panel>
         </div>
 
-    <!--		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" dynamicHeight>-->
-    <!--			<mat-tab label="Current">-->
-    <!--				&lt;!&ndash;				<h1>Test</h1>&ndash;&gt;-->
-    <!--				&lt;!&ndash;				<orda-stats-card/>&ndash;&gt;-->
-    <!--				<div class="dashboard-grid">-->
-    <!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
-    <!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
-    <!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
-    <!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
-    <!--				</div>-->
-    <!--			</mat-tab>-->
-    <!--			<mat-tab label="Month">Content 2</mat-tab>-->
-    <!--			<mat-tab label="Year">Content 3</mat-tab>-->
-    <!--		</mat-tab-group>-->
+        <!--		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" dynamicHeight>-->
+        <!--			<mat-tab label="Current">-->
+        <!--				&lt;!&ndash;				<h1>Test</h1>&ndash;&gt;-->
+        <!--				&lt;!&ndash;				<orda-stats-card/>&ndash;&gt;-->
+        <!--				<div class="dashboard-grid">-->
+        <!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
+        <!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
+        <!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
+        <!--					<orda-metric-card label="Success rate" value="98.5" unit="%"/>-->
+        <!--				</div>-->
+        <!--			</mat-tab>-->
+        <!--			<mat-tab label="Month">Content 2</mat-tab>-->
+        <!--			<mat-tab label="Year">Content 3</mat-tab>-->
+        <!--		</mat-tab-group>-->
 
-    <!--		<orda-stats-card/>-->
+        <!--		<orda-stats-card/>-->
 
-    <!--		{{ 1 | date : 'MMMM'}}-->
+        <!--		{{ 1 | date : 'MMMM'}}-->
 
-    <!--		<mat-form-field>-->
-    <!--			<mat-label>Produkte</mat-label>-->
-    <!--			<mat-select [formControl]="selectedProductsControl" multiple>-->
-    <!--				@for (p of products(); track p.id) {-->
-    <!--						@let desc = p.desc ? '('+p.desc+')' : '';-->
-    <!--						<mat-option [value]="p">{{p.name}} {{desc}}</mat-option>-->
-    <!--				}-->
-    <!--			</mat-select>-->
-    <!--		</mat-form-field>-->
+        <!--		<mat-form-field>-->
+        <!--			<mat-label>Produkte</mat-label>-->
+        <!--			<mat-select [formControl]="selectedProductsControl" multiple>-->
+        <!--				@for (p of products(); track p.id) {-->
+        <!--						@let desc = p.desc ? '('+p.desc+')' : '';-->
+        <!--						<mat-option [value]="p">{{p.name}} {{desc}}</mat-option>-->
+        <!--				}-->
+        <!--			</mat-select>-->
+        <!--		</mat-form-field>-->
 
-    <!--		<button type="reset" (click)="selectedProductsControl.reset()">Reset</button>-->
+        <!--		<button type="reset" (click)="selectedProductsControl.reset()">Reset</button>-->
 
-    <!--		@if (selectedProducts().length > 0) {-->
-    <!--			<orda-line-chart [datasets]="datasetsLineChart()" [labels]="labels()" [chartTitle]="'Verkäufe nach Datum'"></orda-line-chart>-->
-    <!--		}-->
+        <!--		@if (selectedProducts().length > 0) {-->
+        <!--			<orda-line-chart [datasets]="datasetsLineChart()" [labels]="labels()" [chartTitle]="'Verkäufe nach Datum'"></orda-line-chart>-->
+        <!--		}-->
       </div>
     </main>
   `,

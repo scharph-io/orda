@@ -215,7 +215,9 @@ export enum DepositType {
 
                 <!-- Row shown when there is no matching data. -->
                 <tr class="mat-row" *matNoDataRow>
-                  <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+                  <td class="mat-cell" colspan="4">
+                    No data matching the filter "{{ input.value }}"
+                  </td>
                 </tr>
               </table>
             </div>

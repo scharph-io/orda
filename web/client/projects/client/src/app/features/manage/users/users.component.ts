@@ -33,7 +33,6 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
     <orda-nav-sub-header title="Benutzer" [showBackButton]="true" />
     <main>
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-
         <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
           <mat-tab label="Users">
             <ng-template matTabContent>
