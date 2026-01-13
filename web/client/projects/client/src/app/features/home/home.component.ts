@@ -3,96 +3,66 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
-import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 export interface Tile {
-	title: string;
-	path: string;
-	icon: string;
-	canActivate?: () => boolean;
+  title: string;
+  path: string;
+  icon: string;
+  canActivate?: () => boolean;
 }
 
 @Component({
-	selector: 'orda-home',
-	imports: [MatGridListModule, MatIcon],
-	template: `
-		<h1>
-			Wilkommen,
-			{{ sessionService.user().username }}
-		</h1>
-
-		<mat-grid-list class="manage-list" [cols]="gridCol.size()" [gutterSize]="'0.5rem'">
-			@for (tile of primaryTiles(); track tile) {
-				@if (tile.canActivate ? tile.canActivate() : true) {
-					<mat-grid-tile (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1">
-						<div class="tile-content">
-							<mat-icon aria-hidden="false">
-								{{ tile.icon }}
-							</mat-icon>
-							<span class="tile-text">{{ tile.title }}</span>
-						</div>
-					</mat-grid-tile>
-				}
-			}
-		</mat-grid-list>
-
-		<!-- <h2>TODOs for v0.2.1</h2>
-		<ul>
-			<li>Colors</li>
-			<li>Order UI settings set grid cols to auto, 2-5</li>
-			<li>Manual deposit</li>
-		</ul> -->
-
-		<!--		https://lucide.dev/guide/packages/lucide-angular-->
-		<!--		https://sebastianviereck.de/httponly-und-secure-cookies-in-angular/-->
-		<!-- https://taiga-ui.dev/utils/tokens -->
-	`,
-	styles: `
-		h1 {
-			margin-top: 5vh;
-		}
-
-		mat-icon {
-			height: 3rem;
-			width: 3rem;
-			font-size: 3rem;
-		}
-
-		.tile-content {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			height: 100%;
-		}
-
-		.tile-text {
-			margin-top: 0.25rem;
-			font-size: 1.5rem;
-		}
-	`,
+  selector: 'orda-home',
+  imports: [MatGridListModule, MatIcon, NavSubHeaderComponent],
+  template: `
+    <div class="min-h-full">
+      <orda-nav-sub-header [title]="'Wilkommen, ' + sessionService.user().username" />
+      <main>
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            @for (tile of primaryTiles(); track tile) {
+              <li (click)="navigateTo(tile.path)" (keydown)="navigateTo(tile.path)" tabindex="0">
+                <a
+                  class="flex flex-col items-center justify-center rounded-xl border border-gray-200 px-4 py-6 shadow-sm hover:shadow-md hover:bg-gray-50 transition"
+                >
+                  <span class="text-2xl mb-2"
+                    ><mat-icon class="icon-large">
+                      {{ tile.icon }}
+                    </mat-icon></span
+                  >
+                  <span class="text-2xl font-bold">{{ tile.title }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      </main>
+    </div>
+  `,
+  styles: ``,
 })
 export class HomeComponent {
-	sessionService = inject(SessionService);
-	private readonly router = inject(Router);
+  sessionService = inject(SessionService);
+  private readonly router = inject(Router);
 
-	gridCol = inject(GridColSizeService);
+  // gridCol = inject(GridColSizeService);
 
-	primaryTiles = signal<Tile[]>([
-		{
-			title: 'Verwalten',
-			path: '/manage',
-			icon: 'settings',
-			canActivate: () => this.sessionService.hasAdminRole(),
-		},
-		{
-			title: 'Geschäft',
-			path: '/order',
-			icon: 'storefront',
-		},
-	]);
+  primaryTiles = signal<Tile[]>([
+    {
+      title: 'Verwalten',
+      path: '/manage',
+      icon: 'settings',
+      canActivate: () => this.sessionService.hasAdminRole(),
+    },
+    {
+      title: 'Geschäft',
+      path: '/order',
+      icon: 'storefront',
+    },
+  ]);
 
-	navigateTo(path: string) {
-		return this.router.navigate([path]);
-	}
+  navigateTo(path: string) {
+    return this.router.navigate([path]);
+  }
 }

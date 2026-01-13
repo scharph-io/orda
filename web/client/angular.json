@@ -8,7 +8,8 @@
       "schematics": {
         "@schematics/angular:component": {
           "inlineTemplate": true,
-          "style": "scss"
+          "style": "scss",
+          "changeDetection": "OnPush"
         }
       },
       "root": "projects/client",
@@ -16,52 +17,51 @@
       "prefix": "orda",
       "architect": {
         "build": {
-					"builder": "@angular/build:application",
-					"options": {
-						"outputPath": "dist/client",
-						"index": "projects/client/src/index.html",
-						"browser": "projects/client/src/main.ts",
-						"polyfills": ["zone.js"],
-						"tsConfig": "projects/client/tsconfig.app.json",
-						"assets": [
-							{
-								"glob": "**/*",
-								"input": "projects/client/public"
-							}
-						],
-						"styles": [
-							"@angular/material/prebuilt-themes/azure-blue.css",
-							"projects/client/src/styles.scss"
-						],
-						"stylePreprocessorOptions": {
-							"includePaths": ["projects/client/src/styles"]
-						},
-						"scripts": []
-					},
-					"configurations": {
-						"production": {
-							"budgets": [
-								{
-									"type": "initial",
-									"maximumWarning": "500kB",
-									"maximumError": "1MB"
-								},
-								{
-									"type": "anyComponentStyle",
-									"maximumWarning": "4kB",
-									"maximumError": "8kB"
-								}
-							],
-							"outputHashing": "all"
-						},
-						"development": {
-							"optimization": false,
-							"extractLicenses": false,
-							"sourceMap": true
-						}
-					},
-					"defaultConfiguration": "production"
-				},
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/client",
+            "index": "projects/client/src/index.html",
+            "browser": "projects/client/src/main.ts",
+            "tsConfig": "projects/client/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/client/public"
+              }
+            ],
+            "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
+              "projects/client/src/styles.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["projects/client/src/styles"]
+            },
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
@@ -78,33 +78,12 @@
           "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular/build:karma",
-          "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "projects/client/tsconfig.spec.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "projects/client/public"
-              }
-            ],
-            "styles": [
-              "@angular/material/prebuilt-themes/azure-blue.css",
-              "projects/client/src/styles.scss"
-            ],
-            "scripts": []
-          }
+          "builder": "@angular/build:unit-test"
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "projects/client/**/*.ts",
-              "projects/client/**/*.html"
-            ],
+            "lintFilePatterns": ["projects/client/**/*.ts", "projects/client/**/*.html"],
             "eslintConfig": "projects/client/eslint.config.js"
           }
         }
@@ -112,9 +91,7 @@
     }
   },
   "cli": {
-    "schematicCollections": [
-      "angular-eslint"
-    ],
+    "schematicCollections": ["angular-eslint"],
     "analytics": false
   },
   "schematics": {
@@ -131,9 +108,6 @@
       "typeSeparator": "."
     },
     "@schematics/angular:interceptor": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:module": {
       "typeSeparator": "."
     },
     "@schematics/angular:pipe": {

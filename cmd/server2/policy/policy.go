@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/casbin/casbin/v2"
+	"github.com/casbin/casbin/v3"
 	"github.com/gofiber/fiber/v2"
 )
 

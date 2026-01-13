@@ -3,7 +3,7 @@ package accesscontrol
 import (
 	"fmt"
 
-	"github.com/casbin/casbin/v2"
+	"github.com/casbin/casbin/v3"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2/log"
@@ -32,9 +32,7 @@ func enforcer() (*casbin.Enforcer, error) {
 		return nil, err
 	}
 
-	if err := e.LoadPolicy(); err != nil {
-		return nil, err
-	}
+	e.LoadPolicy()
 
 	if err := initPolicies(e); err != nil {
 		return nil, err

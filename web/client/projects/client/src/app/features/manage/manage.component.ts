@@ -2,73 +2,57 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { MatRipple } from '@angular/material/core';
-import { GridColSizeService } from '@orda.shared/services/gridcolsize.service';
 import { MatIcon } from '@angular/material/icon';
 import { Tile } from '@orda.features/home/home.component';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
-	selector: 'orda-manage',
-	imports: [RouterModule, MatButtonModule, MatGridListModule, MatRipple, MatIcon],
-	template: `
-		<h1>Verwalten</h1>
-		<mat-grid-list class="manage-list" [cols]="gridColumns()" [gutterSize]="'0.5rem'">
-			@for (tile of primaryTiles(); track tile) {
-				<mat-grid-tile mat-ripple (click)="navigateTo(tile.path)" [colspan]="1" [rowspan]="1"
-					><div class="tile-content">
-						<mat-icon aria-hidden="false">
-							{{ tile.icon }}
-						</mat-icon>
-						<span class="tile-text">{{ tile.title }}</span>
-					</div>
-				</mat-grid-tile>
-			}
-		</mat-grid-list>
-	`,
-	styles: `
-		h1 {
-			margin-top: 5vh;
-		}
-
-		mat-icon {
-			height: 3rem;
-			width: 3rem;
-			font-size: 3rem;
-		}
-
-		.tile-content {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			height: 100%;
-		}
-
-		.tile-text {
-			margin-top: 0.25rem;
-			font-size: 1.25rem;
-		}
-	`,
+  selector: 'orda-manage',
+  imports: [RouterModule, MatButtonModule, MatGridListModule, MatIcon, NavSubHeaderComponent],
+  template: `
+    <div class="min-h-full">
+      <orda-nav-sub-header title="Verwalten" [showBackButton]="true" />
+      <main>
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            @for (tile of primaryTiles(); track tile) {
+              <li (click)="navigateTo(tile.path)" (keydown)="navigateTo(tile.path)" tabindex="0">
+                <a
+                  class="flex flex-col items-center justify-center rounded-xl border border-gray-200 px-4 py-6 shadow-sm hover:shadow-md hover:bg-gray-50 transition"
+                >
+                  <span class="text-2xl mb-2"
+                    ><mat-icon class="icon-large">
+                      {{ tile.icon }}
+                    </mat-icon></span
+                  >
+                  <span class="text-2xl font-bold">{{ tile.title }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      </main>
+    </div>
+  `,
+  styles: ``,
 })
 export class ManageComponent {
-	private readonly router = inject(Router);
-	gridColumns = inject(GridColSizeService).size;
+  private readonly router = inject(Router);
 
-	primaryTiles = signal<Tile[]>([
-		{ title: 'Zurück', path: '/home', icon: 'arrow_back' },
-		{ title: 'Bestellseiten', path: '/manage/views', icon: 'view_list' },
-		{
-			title: 'Sortiment',
-			path: '/manage/assortment',
-			icon: 'inventory_2',
-		},
-		{ title: 'Konten', path: '/manage/accounts', icon: 'account_balance' },
+  primaryTiles = signal<Tile[]>([
+    { title: 'Bestellseiten', path: '/manage/views', icon: 'view_list' },
+    {
+      title: 'Sortiment',
+      path: '/manage/assortment',
+      icon: 'inventory_2',
+    },
+    { title: 'Konten', path: '/manage/accounts', icon: 'account_balance' },
 
-		{ title: 'Benutzer', path: '/manage/users', icon: 'people' },
-		{ title: 'Statistik', path: '/manage/history', icon: 'analytics' },
-	]);
+    { title: 'Benutzer', path: '/manage/users', icon: 'people' },
+    { title: 'Statistik', path: '/manage/history', icon: 'analytics' },
+  ]);
 
-	navigateTo(path: string) {
-		this.router.navigate([path]).catch(console.error);
-	}
+  navigateTo(path: string) {
+    this.router.navigate([path]).catch(console.error);
+  }
 }

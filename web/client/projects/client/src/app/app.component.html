@@ -1,57 +1,54 @@
-<header class="header">
-  <mat-toolbar>
-    <button mat-icon-button [matMenuTriggerFor]="menu">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <span>{{ title }}</span>
+<div class="h-screen flex flex-col">
+  <header class="flex-none sticky top-0 z-20 bg-slate-800 text-white shadow">
+    <mat-toolbar>
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>{{ title }}</span>
 
-    @if (toolbarTitleService.title()) {
+      @if (toolbarTitleService.title()) {
+        <span class="spacer"></span>
+        <span class="toolbar-title">{{ toolbarTitleService.title() }}</span>
+      }
       <span class="spacer"></span>
-      <span class="toolbar-title">{{ toolbarTitleService.title() }}</span>
-    }
-    <span class="spacer"></span>
 
-    @if (sessionService.isAuthenticated()) {
-      {{ sessionService.user().username }}
-      <!--    <span [title]="`${info.value()?.build} ${info.value()?.time}`" class="version">{{-->
-        <!--			info.value()?.version ? info.value()?.version : 'DEV'-->
-        <!--		}}</span>-->
-        <!--		<button mat-icon-button (click)="logout()">-->
-        <!--			<mat-icon>logout</mat-icon>-->
-        <!--		</button>-->
-    }
-  </mat-toolbar>
+      @if (sessionService.isAuthenticated()) {
+        {{ sessionService.user().username }}
+      }
+    </mat-toolbar>
 
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item routerLink="home">
+        <mat-icon>home</mat-icon>
+        <span>Startseite</span>
+      </button>
 
-<mat-menu #menu="matMenu">
-	<button mat-menu-item routerLink="home">
-		<mat-icon>home</mat-icon>
-		<span>Startseite</span>
-	</button>
+      @if (sessionService.hasAdminRole()) {
+        <button mat-menu-item routerLink="manage">
+          <mat-icon>settings</mat-icon>
+          <span>Verwalten</span>
+        </button>
+        <button mat-menu-item routerLink="stats">
+          <mat-icon>line_axis</mat-icon>
+          <span>Statistik</span>
+        </button>
+      }
 
-	@if (sessionService.hasAdminRole()) {
-		<button mat-menu-item routerLink="manage">
-			<mat-icon>settings</mat-icon>
-			<span>Verwalten</span>
-		</button>
-		<button mat-menu-item routerLink="stats">
-			<mat-icon>line_axis</mat-icon>
-			<span>Statistik</span>
-		</button>
-	}
+      @if (sessionService.isAuthenticated()) {
+        <button mat-menu-item routerLink="order">
+          <mat-icon>storefront</mat-icon>
+          <span>Geschäft</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Ausloggen</span>
+        </button>
+      }
+    </mat-menu>
+  </header>
 
-	@if (sessionService.isAuthenticated()) {
-		<button mat-menu-item routerLink="order">
-			<mat-icon>storefront</mat-icon>
-			<span>Geschäft</span>
-		</button>
-		<button mat-menu-item (click)="logout()">
-			<mat-icon>logout</mat-icon>
-			<span>Ausloggen</span>
-		</button>
-	}
-</mat-menu>
-</header>
-<div class="content">
-  <router-outlet />
+  <!-- Scrollable content area -->
+  <main class="flex-1 overflow-y-auto bg-slate-50">
+    <router-outlet />
+  </main>
 </div>

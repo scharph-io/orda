@@ -1,18 +1,20 @@
 @use '@angular/material' as mat;
-@forward '@fontsource/inter/500';
 
 body {
-  font-family: Inter, 'Helvetica Neue', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
   background-color: var(--color-bg);
   color: var(--color-fg);
   height: 100%;
 
   @include mat.theme(
-      (
-        //color: mat.$violet-palette,
-        typography: Inter,
-        density: 0
-      )
+    (
+      //color: mat.$violet-palette,
+      typography: 'Plus Jakarta Sans',
+      density: 0
+    )
   );
 
   ::-webkit-scrollbar {

@@ -2,17 +2,17 @@
 
 :root {
   @include mat.toolbar-overrides(
-      (
-        container-background-color: #f5ebe0,
-      )
+    (
+      container-background-color: #f5ebe0,
+    )
   );
 }
 
 .orda-toolbar {
   @include mat.toolbar-overrides(
-      (
-        container-background-color: white,
-      )
+    (
+      container-background-color: white,
+    )
   );
 
   & .toolbar-input {
@@ -21,4 +21,3 @@
     }
   }
 }
-

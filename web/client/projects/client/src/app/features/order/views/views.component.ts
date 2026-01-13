@@ -7,33 +7,33 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { View } from '@orda.core/models/view';
 
 @Component({
-	selector: 'orda-views',
-	imports: [OrderDesktopComponent],
-	template: ` <orda-order-desktop [view]="view_id()"></orda-order-desktop>`,
-	styleUrl: './views.component.scss',
+  selector: 'orda-views',
+  imports: [OrderDesktopComponent],
+  template: ` <orda-order-desktop [view]="view_id()"></orda-order-desktop>`,
+  styleUrl: './views.component.scss',
 })
 export class ViewsComponent implements OnInit {
-	toolbarTitleService = inject(ToolbarTitleService);
-	router = inject(Router);
-	viewService = inject(ViewService);
+  toolbarTitleService = inject(ToolbarTitleService);
+  router = inject(Router);
+  viewService = inject(ViewService);
 
-	view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
-	view = rxResource<View, string>({
-		params: () => this.view_id(),
-		stream: ({ params }) => this.viewService.readById(params),
-	});
+  view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
+  view = rxResource<View, string>({
+    params: () => this.view_id(),
+    stream: ({ params }) => this.viewService.readById(params),
+  });
 
-	ngOnInit() {
-		this.viewService.readById(this.view_id()).subscribe({
-			next: (data) => {
-				this.toolbarTitleService.title.set(data.name);
-			},
-		});
+  ngOnInit() {
+    this.viewService.readById(this.view_id()).subscribe({
+      next: (data) => {
+        this.toolbarTitleService.title.set(data.name);
+      },
+    });
 
-		this.router.events.subscribe((event) => {
-			if (event instanceof NavigationStart) {
-				this.toolbarTitleService.title.set('');
-			}
-		});
-	}
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.toolbarTitleService.title.set('');
+      }
+    });
+  }
 }

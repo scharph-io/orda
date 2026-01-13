@@ -3,20 +3,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { StatsCardComponent } from './stats-card.component';
 
 describe('StatsCardComponent', () => {
-	let component: StatsCardComponent;
-	let fixture: ComponentFixture<StatsCardComponent>;
+  let component: StatsCardComponent;
+  let fixture: ComponentFixture<StatsCardComponent>;
 
-	beforeEach(async () => {
-		await TestBed.configureTestingModule({
-			imports: [StatsCardComponent],
-		}).compileComponents();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [StatsCardComponent],
+    }).compileComponents();
 
-		fixture = TestBed.createComponent(StatsCardComponent);
-		component = fixture.componentInstance;
-		fixture.detectChanges();
-	});
+    fixture = TestBed.createComponent(StatsCardComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-	it('should create', () => {
-		expect(component).toBeTruthy();
-	});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

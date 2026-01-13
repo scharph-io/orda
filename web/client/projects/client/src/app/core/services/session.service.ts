@@ -7,81 +7,81 @@ import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { Router } from '@angular/router';
 
 @Injectable({
-	providedIn: 'root',
+  providedIn: 'root',
 })
 export class SessionService {
-	private readonly host = inject<string>(HOST);
-	private readonly httpClient = inject(HttpClient);
-	private readonly logger = inject(OrdaLogger);
-	private readonly router = inject(Router);
+  private readonly host = inject<string>(HOST);
+  private readonly httpClient = inject(HttpClient);
+  private readonly logger = inject(OrdaLogger);
+  private readonly router = inject(Router);
 
-	user = signal<SessionInfo>({});
+  user = signal<SessionInfo>({});
 
-	isAuthenticated = computed(() => !!this.user().username);
+  isAuthenticated = computed(() => !!this.user().username);
 
-	constructor() {
-		this.logger.debug('Init SessionService');
-		if (localStorage.getItem('user')) {
-			this.checkSession().subscribe({
-				next: (res) => {
-					this.user.set(res);
-					localStorage.setItem('user', JSON.stringify(res));
-					this.logger.debug('SessionService restored');
-				},
-				error: () => {
-					this.logout().subscribe({
-						next: () => {
-							this.logger.debug('SessionService logout');
-							this.router.navigate(['/login']);
-						},
-					});
-				},
-			});
-		}
-	}
+  constructor() {
+    this.logger.debug('Init SessionService');
+    if (localStorage.getItem('user')) {
+      this.checkSession().subscribe({
+        next: (res) => {
+          this.user.set(res);
+          localStorage.setItem('user', JSON.stringify(res));
+          this.logger.debug('SessionService restored');
+        },
+        error: () => {
+          this.logout().subscribe({
+            next: () => {
+              this.logger.debug('SessionService logout');
+              this.router.navigate(['/login']);
+            },
+          });
+        },
+      });
+    }
+  }
 
-	checkSession() {
-		const storedUser = localStorage.getItem('user');
-		if (storedUser) {
-			this.user.set(JSON.parse(storedUser));
-		}
-		return this.httpClient.get<SessionInfo>(`${this.host}/auth/session`);
-	}
+  checkSession() {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      this.user.set(JSON.parse(storedUser));
+    }
+    return this.httpClient.get<SessionInfo>(`${this.host}/auth/session`);
+  }
 
-	public logout() {
-		this.logger.debug('logout');
-		localStorage.removeItem('user');
-		this.user.set({});
-		return this.httpClient.post<void>(`${this.host}/auth/logout`, {}).pipe(
-			tap(() => {
-				this.logger.debug('logout success');
-			}),
-		);
-	}
+  public logout() {
+    this.logger.debug('logout');
+    localStorage.removeItem('user');
+    this.user.set({});
+    return this.httpClient.post<void>(`${this.host}/auth/logout`, {}).pipe(
+      tap(() => {
+        this.logger.debug('logout success');
+      }),
+    );
+  }
 
-	public login(username: string, password: string) {
-		this.logger.debug('login');
-		return this.httpClient
-			.post<LoginResponse<SessionInfo>>(`${this.host}/auth/login`, {
-				username,
-				password,
-			})
-			.pipe(
-				tap((res) => {
-					this.logger.debug('login success');
-					this.user.set(res.data);
-					localStorage.setItem('user', JSON.stringify(res.data));
-				}),
-			);
-	}
+  public login(username: string, password: string) {
+    this.logger.debug('login');
+    return this.httpClient
+      .post<LoginResponse<SessionInfo>>(`${this.host}/auth/login`, {
+        username,
+        password,
+      })
+      .pipe(
+        tap((res) => {
+          this.logger.debug('login success');
+          this.user.set(res.data);
+          localStorage.setItem('user', JSON.stringify(res.data));
+        }),
+      );
+  }
 
-	public hasAdminRole() {
-		return this.user().role === 'admin';
-	}
+  public hasAdminRole() {
+    return this.user().role === 'admin';
+  }
 
-	public info() {
-		return this.httpClient.get<{ version: string; build: string; time: string }>(
-			`${this.host}/api/v1/version`,
-		);
-	}
+  //   public info() {
+  //     return this.httpClient.get<{ version: string; build: string; time: string }>(
+  //       `${this.host}/api/v1/version`,
+  //     );
+  //   }
 }

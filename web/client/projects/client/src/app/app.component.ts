@@ -6,54 +6,47 @@ import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterModule } from '@angular/router';
 import { SessionService } from '@orda.core/services/session.service';
 import { ToolbarTitleService } from '@orda.shared/services/toolbar-title.service';
-import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
-	selector: 'orda-root',
-	templateUrl: './app.component.html',
-	imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, RouterModule],
-	styles: [
-		`
-			/*:host {*/
-			/*	display: flex;*/
-			/*	flex-direction: column;*/
-			/*	min-height: 100vh;*/
-			/*}*/
+  selector: 'orda-root',
+  templateUrl: './app.component.html',
+  imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, RouterModule],
+  styles: [
+    `
+      .header {
+        display: flex;
+        height: auto;
+        flex: 0 0 auto;
+        align-items: center;
+        z-index: 10;
+      }
 
-			.header {
-				display: flex;
-				height: auto;
-				flex: 0 0 auto;
-				align-items: center;
-				z-index: 10;
-			}
-
-			.content {
-				justify-content: center; /* horizontal center */
-				align-items: center; /* vertical center */
-				min-height: 0;
-			}
-		`,
-	],
+      .content {
+        justify-content: center; /* horizontal center */
+        align-items: center; /* vertical center */
+        min-height: 0;
+      }
+    `,
+  ],
 })
 export class AppComponent {
-	title = 'orda';
-	sessionService = inject(SessionService);
-	router = inject(Router);
-	toolbarTitleService = inject(ToolbarTitleService);
+  title = 'orda';
+  sessionService = inject(SessionService);
+  router = inject(Router);
+  toolbarTitleService = inject(ToolbarTitleService);
 
-	info = rxResource({
-		stream: () => this.sessionService.info(),
-	});
+  //   info = rxResource({
+  //     stream: () => this.sessionService.info(),
+  //   });
 
-	logout() {
-		this.sessionService.logout().subscribe({
-			next: () => {
-				return this.router.navigate(['/login']);
-			},
-			error: (err) => {
-				console.error(err);
-			},
-		});
-	}
+  logout() {
+    this.sessionService.logout().subscribe({
+      next: () => {
+        return this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
 }
