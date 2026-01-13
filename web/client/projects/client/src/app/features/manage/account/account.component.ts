@@ -78,153 +78,156 @@ export enum DepositType {
   ],
   template: `
     <orda-nav-sub-header title="Konten" [showBackButton]="true" />
-
-    <mat-tab-group
-      mat-stretch-tabs="false"
-      mat-align-tabs="start"
-      animationDuration="0ms"
-      style="margin: 0 0.5rem"
-    >
-      <mat-tab label="Konten">
-        <mat-toolbar class="orda-toolbar">
-          <span
-            ><button
-              mat-icon-button
-              (click)="selection.selected.length > 0 ? selectionDeposit() : groupDeposit()"
-            >
-              @if (selection.selected.length > 0) {
-                <mat-icon>add_card</mat-icon>
-              } @else {
-                <mat-icon>group_3</mat-icon>
-              }
-            </button>
-          </span>
-          <span class="spacer"></span>
-          <span>
-            <button mat-icon-button (click)="create()"><mat-icon>add</mat-icon></button>
-          </span>
-
-          <span>
-            <mat-form-field class="toolbar-input" appearance="outline" [floatLabel]="'auto'">
-              <!--							<mat-label>Filter</mat-label>-->
-              <input matInput (keyup)="applyFilter($event)" #input />
-              <mat-icon matSuffix>search</mat-icon>
-            </mat-form-field>
-          </span>
-        </mat-toolbar>
-
-        <div class="mat-elevation-z8">
-          <table mat-table [dataSource]="dataSource()" matSort>
-            <ng-container matColumnDef="select">
-              <th mat-header-cell *matHeaderCellDef>
-                <mat-checkbox
-                  (change)="$event ? toggleAllRows() : null"
-                  [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()"
-                  [aria-label]="checkboxLabel()"
-                >
-                </mat-checkbox>
-              </th>
-              <td mat-cell *matCellDef="let row">
-                <mat-checkbox
-                  (click)="$event.stopPropagation()"
-                  (change)="$event ? selection.toggle(row) : null"
-                  [checked]="selection.isSelected(row)"
-                  [aria-label]="checkboxLabel(row)"
-                >
-                </mat-checkbox>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-              <td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="group">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Gruppe</th>
-              <td mat-cell *matCellDef="let row">{{ row.group }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="main-balance">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Geldbetrag</th>
-              <td mat-cell *matCellDef="let row">{{ row.main_balance | currency }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="credit-balance">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Kontostand</th>
-              <td mat-cell *matCellDef="let row">{{ row.credit_balance | currency }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 2rem"></th>
-              <td mat-cell *matCellDef="let row" [id]="row.id" style="width: 2rem">
-                <button
-                  style="float: right"
+    <main>
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <mat-tab-group
+          mat-stretch-tabs="false"
+          mat-align-tabs="start"
+          animationDuration="0ms"
+          style="margin: 0 0.5rem"
+        >
+          <mat-tab label="Konten">
+            <mat-toolbar class="orda-toolbar">
+              <span
+                ><button
                   mat-icon-button
-                  [matMenuTriggerFor]="menu"
-                  aria-label="Account menu actions"
-                  [disabled]="selection.selected.length !== 0"
+                  (click)="selection.selected.length > 0 ? selectionDeposit() : groupDeposit()"
                 >
-                  <mat-icon>more_vert</mat-icon>
+                  @if (selection.selected.length > 0) {
+                    <mat-icon>add_card</mat-icon>
+                  } @else {
+                    <mat-icon>group_3</mat-icon>
+                  }
                 </button>
-                <mat-menu #menu="matMenu">
-                  <button mat-menu-item [matMenuTriggerFor]="creditMenu">
-                    <mat-icon>price_change</mat-icon>
-                    <span>Guthaben</span>
-                  </button>
-                  <button mat-menu-item (click)="info(row)">
-                    <mat-icon>info</mat-icon>
-                    <span>Info</span>
-                  </button>
-                  <button mat-menu-item (click)="edit(row)">
-                    <mat-icon>edit</mat-icon>
-                    <span>Bearbeiten</span>
-                  </button>
-                  <button
-                    class="delete-btn"
-                    mat-menu-item
-                    (click)="delete(row)"
-                    [disabled]="hasMainBalance(row)"
+              </span>
+              <span class="spacer"></span>
+              <span>
+                <button mat-icon-button (click)="create()"><mat-icon>add</mat-icon></button>
+              </span>
+
+              <span>
+                <mat-form-field class="toolbar-input" appearance="outline" [floatLabel]="'auto'">
+                  <!--							<mat-label>Filter</mat-label>-->
+                  <input matInput (keyup)="applyFilter($event)" #input />
+                  <mat-icon matSuffix>search</mat-icon>
+                </mat-form-field>
+              </span>
+            </mat-toolbar>
+
+            <div class="mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource()" matSort>
+                <ng-container matColumnDef="select">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox
+                      (change)="$event ? toggleAllRows() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()"
+                      [aria-label]="checkboxLabel()"
+                    >
+                    </mat-checkbox>
+                  </th>
+                  <td mat-cell *matCellDef="let row">
+                    <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)"
+                      [aria-label]="checkboxLabel(row)"
+                    >
+                    </mat-checkbox>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                  <td mat-cell *matCellDef="let row">{{ row.lastname }} {{ row.firstname }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="group">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Gruppe</th>
+                  <td mat-cell *matCellDef="let row">{{ row.group }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="main-balance">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Geldbetrag</th>
+                  <td mat-cell *matCellDef="let row">{{ row.main_balance | currency }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="credit-balance">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Kontostand</th>
+                  <td mat-cell *matCellDef="let row">{{ row.credit_balance | currency }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 2rem"></th>
+                  <td mat-cell *matCellDef="let row" [id]="row.id" style="width: 2rem">
+                    <button
+                      style="float: right"
+                      mat-icon-button
+                      [matMenuTriggerFor]="menu"
+                      aria-label="Account menu actions"
+                      [disabled]="selection.selected.length !== 0"
+                    >
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                      <button mat-menu-item [matMenuTriggerFor]="creditMenu">
+                        <mat-icon>price_change</mat-icon>
+                        <span>Guthaben</span>
+                      </button>
+                      <button mat-menu-item (click)="info(row)">
+                        <mat-icon>info</mat-icon>
+                        <span>Info</span>
+                      </button>
+                      <button mat-menu-item (click)="edit(row)">
+                        <mat-icon>edit</mat-icon>
+                        <span>Bearbeiten</span>
+                      </button>
+                      <button
+                        class="delete-btn"
+                        mat-menu-item
+                        (click)="delete(row)"
+                        [disabled]="hasMainBalance(row)"
+                      >
+                        <mat-icon>delete</mat-icon>
+                        <span>Löschen</span>
+                      </button>
+                    </mat-menu>
+                    <mat-menu #creditMenu="matMenu">
+                      <button mat-menu-item (click)="deposit(row)">
+                        <mat-icon>add_circle</mat-icon>
+                        <span>Aufbuchen</span>
+                      </button>
+                      <button mat-menu-item (click)="correction(row)">
+                        <mat-icon>edit_note</mat-icon>
+                        <span>Korrektur</span>
+                      </button>
+                      <button mat-menu-item (click)="openDepositHistory(row)">
+                        <mat-icon>history</mat-icon>
+                        <span>Verlauf</span>
+                      </button>
+                    </mat-menu>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id">
                   >
-                    <mat-icon>delete</mat-icon>
-                    <span>Löschen</span>
-                  </button>
-                </mat-menu>
-                <mat-menu #creditMenu="matMenu">
-                  <button mat-menu-item (click)="deposit(row)">
-                    <mat-icon>add_circle</mat-icon>
-                    <span>Aufbuchen</span>
-                  </button>
-                  <button mat-menu-item (click)="correction(row)">
-                    <mat-icon>edit_note</mat-icon>
-                    <span>Korrektur</span>
-                  </button>
-                  <button mat-menu-item (click)="openDepositHistory(row)">
-                    <mat-icon>history</mat-icon>
-                    <span>Verlauf</span>
-                  </button>
-                </mat-menu>
-              </td>
-            </ng-container>
+                </tr>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id">
-              >
-            </tr>
-
-            <!-- Row shown when there is no matching data. -->
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-            </tr>
-          </table>
-        </div>
-      </mat-tab>
-      <mat-tab label="Gruppen">
-        <ng-template matTabContent>
-          <orda-account-groups />
-        </ng-template>
-      </mat-tab>
-    </mat-tab-group>
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+                </tr>
+              </table>
+            </div>
+          </mat-tab>
+          <mat-tab label="Gruppen">
+            <ng-template matTabContent>
+              <orda-account-groups />
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </main>
   `,
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,

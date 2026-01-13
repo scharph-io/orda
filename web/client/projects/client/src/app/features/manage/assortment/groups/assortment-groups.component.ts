@@ -37,35 +37,39 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
   ],
   template: `
     <orda-nav-sub-header title="Sortiment" [showBackButton]="true" />
+    <main>
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
-    <div class="title-toolbar">
-      <button mat-button (click)="create()">New</button>
-    </div>
+      <div class="title-toolbar">
+        <button mat-button (click)="create()">New</button>
+      </div>
 
-    <mat-list role="list">
-      @for (assortmentGroup of assortmentService.groups.value(); track assortmentGroup.id) {
-        <mat-list-item role="listitem">
-          <div class="item">
-            <p [routerLink]="[assortmentGroup.id]" routerLinkActive="router-link-active">
-              {{ assortmentGroup.name | titlecase }}
-            </p>
-            <div>
-              <button
-                title="delete assortment group"
-                class="delete-btn"
-                mat-icon-button
-                (click)="delete(assortmentGroup)"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-              <button title="edit assortment group" mat-icon-button (click)="edit(assortmentGroup)">
-                <mat-icon>edit</mat-icon>
-              </button>
+      <mat-list role="list">
+        @for (assortmentGroup of assortmentService.groups.value(); track assortmentGroup.id) {
+          <mat-list-item role="listitem">
+            <div class="item">
+              <p [routerLink]="[assortmentGroup.id]" routerLinkActive="router-link-active">
+                {{ assortmentGroup.name | titlecase }}
+              </p>
+              <div>
+                <button
+                  title="delete assortment group"
+                  class="delete-btn"
+                  mat-icon-button
+                  (click)="delete(assortmentGroup)"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button title="edit assortment group" mat-icon-button (click)="edit(assortmentGroup)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
             </div>
-          </div>
-        </mat-list-item>
-      }
-    </mat-list>
+          </mat-list-item>
+        }
+      </mat-list>
+    </div>
+    </main>
   `,
   styles: `
     .item {

@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
+import { NavSubHeaderComponent } from "@orda.shared/components/nav-sub-header/nav-sub-header";
 
 @Component({
   selector: 'orda-statistic',
@@ -24,49 +25,52 @@ import { RouterModule } from '@angular/router';
     // StatsCardComponent,
     // MetricCardComponent,
     RouterModule,
-    // JsonPipe,
-  ],
+    NavSubHeaderComponent
+],
   template: `
-    <div class="page">
-      <!--			<pre>{{quantities.value() | json}}</pre>-->
+  <orda-nav-sub-header title="Statistik V2" [showBackButton]="true" />
+    <main>
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="page">
+          <!--			<pre>{{quantities.value() | json}}</pre>-->
 
-      <nav
-        mat-stretch-tabs="false"
-        mat-tab-nav-bar
-        [tabPanel]="panel"
-        class="tabs-header"
-        mat-align-tabs="center"
-      >
-        <a
-          mat-tab-link
-          [routerLink]="['day']"
-          routerLinkActive
-          #rla1="routerLinkActive"
-          [active]="rla1.isActive"
-          >Day</a
-        >
-        <a
-          mat-tab-link
-          [routerLink]="['month']"
-          routerLinkActive
-          #rla2="routerLinkActive"
-          [active]="rla2.isActive"
-          >Month</a
-        >
-        <a
-          mat-tab-link
-          [routerLink]="['year']"
-          routerLinkActive
-          #rla3="routerLinkActive"
-          [active]="rla3.isActive"
-          >Year</a
-        >
-      </nav>
+          <nav
+            mat-stretch-tabs="false"
+            mat-tab-nav-bar
+            [tabPanel]="panel"
+            class="tabs-header"
+            mat-align-tabs="center"
+          >
+            <a
+              mat-tab-link
+              [routerLink]="['day']"
+              routerLinkActive
+              #rla1="routerLinkActive"
+              [active]="rla1.isActive"
+              >Day</a
+            >
+            <a
+              mat-tab-link
+              [routerLink]="['month']"
+              routerLinkActive
+              #rla2="routerLinkActive"
+              [active]="rla2.isActive"
+              >Month</a
+            >
+            <a
+              mat-tab-link
+              [routerLink]="['year']"
+              routerLinkActive
+              #rla3="routerLinkActive"
+              [active]="rla3.isActive"
+              >Year</a
+            >
+          </nav>
 
-      <mat-tab-nav-panel #panel class="tabs-panel">
-        <router-outlet></router-outlet>
-      </mat-tab-nav-panel>
-    </div>
+          <mat-tab-nav-panel #panel class="tabs-panel">
+            <router-outlet></router-outlet>
+          </mat-tab-nav-panel>
+        </div>
 
     <!--		<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" dynamicHeight>-->
     <!--			<mat-tab label="Current">-->
@@ -102,6 +106,8 @@ import { RouterModule } from '@angular/router';
     <!--		@if (selectedProducts().length > 0) {-->
     <!--			<orda-line-chart [datasets]="datasetsLineChart()" [labels]="labels()" [chartTitle]="'Verkäufe nach Datum'"></orda-line-chart>-->
     <!--		}-->
+      </div>
+    </main>
   `,
   styleUrls: ['./statistic.component.scss'],
 })

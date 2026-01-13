@@ -31,28 +31,32 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
   imports: [MatButtonModule, MatTabsModule, RolesComponent, NavSubHeaderComponent],
   template: `
     <orda-nav-sub-header title="Benutzer" [showBackButton]="true" />
+    <main>
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
-    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
-      <mat-tab label="Users">
-        <ng-template matTabContent>
-          <div style="height: 80vh; overflow: auto;">
-            <button mat-button (click)="create()">New</button>
-            <br />
-            @for (user of userService.entityResource.value(); track user.id) {
-              {{ user.username }} ({{ user.role }})
-              <button mat-button (click)="edit(user)">Edit</button>
-              <button mat-flat-button class="delete-btn" (click)="delete(user)">Delete</button>
-              <br />
-            }
-          </div>
-        </ng-template>
-      </mat-tab>
-      <mat-tab label="Roles">
-        <ng-template matTabContent>
-          <orda-roles />
-        </ng-template>
-      </mat-tab>
-    </mat-tab-group>
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
+          <mat-tab label="Users">
+            <ng-template matTabContent>
+              <div style="height: 80vh; overflow: auto;">
+                <button mat-button (click)="create()">New</button>
+                <br />
+                @for (user of userService.entityResource.value(); track user.id) {
+                  {{ user.username }} ({{ user.role }})
+                  <button mat-button (click)="edit(user)">Edit</button>
+                  <button mat-flat-button class="delete-btn" (click)="delete(user)">Delete</button>
+                  <br />
+                }
+              </div>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Roles">
+            <ng-template matTabContent>
+              <orda-roles />
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </main>
   `,
   styles: `
     mat-tab-group {
