@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { AssortmentGroup } from '@orda.core/models/assortment';
-import { MatListModule } from '@angular/material/list';
 import { EntityManager } from '@orda.shared/utils/entity-manager';
 import {
   FormControl,
@@ -27,65 +26,92 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
 
 @Component({
   selector: 'orda-assortment-groups',
-  imports: [
-    MatButtonModule,
-    MatListModule,
-    MatIcon,
-    TitleCasePipe,
-    RouterModule,
-    NavSubHeaderComponent,
-  ],
+  imports: [MatButtonModule, MatIcon, TitleCasePipe, RouterModule, NavSubHeaderComponent],
   template: `
     <orda-nav-sub-header title="Sortiment" [showBackButton]="true" />
-    <main>
-      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-        <div class="title-toolbar">
-          <button mat-button (click)="create()">New</button>
-        </div>
 
-        <mat-list role="list">
-          @for (assortmentGroup of assortmentService.groups.value(); track assortmentGroup.id) {
-            <mat-list-item role="listitem">
-              <div class="item">
-                <p [routerLink]="[assortmentGroup.id]" routerLinkActive="router-link-active">
-                  {{ assortmentGroup.name | titlecase }}
-                </p>
-                <div>
-                  <button
-                    title="delete assortment group"
-                    class="delete-btn"
-                    mat-icon-button
-                    (click)="delete(assortmentGroup)"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                  <button
-                    title="edit assortment group"
-                    mat-icon-button
-                    (click)="edit(assortmentGroup)"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                </div>
-              </div>
-            </mat-list-item>
-          }
-        </mat-list>
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mb-6">
+        <button
+          mat-button
+          color="primary"
+          class="!font-bold !text-blue-600 !px-0 hover:!bg-transparent hover:underline"
+          (click)="create()"
+        >
+          Neu
+        </button>
       </div>
+
+      @let groups = assortmentService.groups.value() ?? [];
+
+      @if (groups.length === 0) {
+        <div class="text-center py-10 text-gray-500">
+          Noch keine Gruppen vorhanden.
+          <button mat-button color="primary" (click)="create()">Jetzt anlegen</button>
+        </div>
+      } @else {
+        <div class="overflow-hidden bg-white rounded-lg border border-gray-100 shadow-sm">
+          <table class="min-w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-gray-50 border-b border-gray-200 text-gray-900">
+              <tr>
+                <th scope="col" class="px-4 py-3 font-semibold">Name</th>
+                <th scope="col" class="px-4 py-3 font-semibold">Beschreibung</th>
+                <th scope="col" class="px-4 py-3 font-semibold text-right w-24"></th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-100">
+              @for (group of groups; track group.id) {
+                <tr class="hover:bg-gray-50 transition-colors group">
+                  <td class="px-4 py-3 font-medium text-gray-900">
+                    <a
+                      [routerLink]="[group.id]"
+                      routerLinkActive="text-blue-800 font-bold"
+                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer block w-full h-full"
+                    >
+                      {{ group.name | titlecase }}
+                    </a>
+                  </td>
+
+                  <td class="px-4 py-3 text-gray-500">
+                    {{ group.desc }}
+                  </td>
+
+                  <td class="px-4 py-3 text-right">
+                    <div
+                      class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <button
+                        mat-icon-button
+                        (click)="delete(group)"
+                        class="!text-red-600 hover:bg-red-50 !w-8 !h-8 leading-none"
+                        title="Löschen"
+                      >
+                        <mat-icon class="!text-[1.25rem]">delete</mat-icon>
+                      </button>
+
+                      <button
+                        mat-icon-button
+                        (click)="edit(group)"
+                        class="!text-gray-600 hover:bg-gray-100 !w-8 !h-8 leading-none"
+                        title="Bearbeiten"
+                      >
+                        <mat-icon class="!text-[1.25rem]">edit</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     </main>
   `,
   styles: `
-    .item {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .title-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    :host {
+      display: block;
+      height: 100%;
     }
   `,
 })
@@ -119,7 +145,7 @@ export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
           this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
             ConfirmDialogComponent,
             {
-              message: assortmentGroup.name,
+              message: `Soll "${assortmentGroup.name}" wirklich gelöscht werden?`,
             },
           ),
         ),
@@ -153,22 +179,29 @@ export class AssortmentGroupsComponent extends EntityManager<AssortmentGroup> {
       [form]="formGroup"
       (submitClick)="submit()"
     ></orda-dialog-template>
+
     <ng-template #template>
-      <form [formGroup]="formGroup">
-        <div class="dialog-flex">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Description</mat-label>
-            <input matInput formControlName="desc" />
-          </mat-form-field>
-        </div>
+      <form [formGroup]="formGroup" class="flex flex-col gap-4 min-w-[350px]">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="z.B. Getränke" />
+          @if (formGroup.get('name')?.hasError('required')) {
+            <mat-error>Name ist erforderlich</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Beschreibung</mat-label>
+          <input matInput formControlName="desc" placeholder="Optionale Beschreibung" />
+        </mat-form-field>
       </form>
     </ng-template>
   `,
-  styles: ``,
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
 })
 class AssortmentGroupDialogComponent extends DialogTemplateComponent<AssortmentGroup> {
   assortmentService = inject(AssortmentService);

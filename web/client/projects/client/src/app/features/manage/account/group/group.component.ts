@@ -164,14 +164,6 @@ class AccountGroupDialogComponent extends DialogTemplateComponent<AccountGroup> 
     this.formGroup.patchValue({
       name: this.inputData?.name,
     });
-
-    // this.formGroup.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-    // 	this.canSubmit.set(
-    // 		!(this.roleService.resource.value() ?? []).some(
-    // 			(group) => group.name === this.formGroup.value.name,
-    // 		),
-    // 	);
-    // });
   }
 
   public submit = () => {

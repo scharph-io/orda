@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { User } from '@orda.core/models/user';
 import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
@@ -25,41 +25,115 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { RolesComponent } from '../roles/roles.component';
 import { StrongPasswordRegx } from '@orda.core/constants';
 import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'orda-users',
-  imports: [MatButtonModule, MatTabsModule, RolesComponent, NavSubHeaderComponent],
+  imports: [
+    MatButtonModule,
+    MatTabsModule,
+    MatIconModule,
+    RolesComponent,
+    NavSubHeaderComponent,
+    TitleCasePipe,
+  ],
   template: `
-    <orda-nav-sub-header title="Benutzer" [showBackButton]="true" />
-    <main>
-      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
-          <mat-tab label="Users">
-            <ng-template matTabContent>
-              <div style="height: 80vh; overflow: auto;">
-                <button mat-button (click)="create()">New</button>
-                <br />
-                @for (user of userService.entityResource.value(); track user.id) {
-                  {{ user.username }} ({{ user.role }})
-                  <button mat-button (click)="edit(user)">Edit</button>
-                  <button mat-flat-button class="delete-btn" (click)="delete(user)">Delete</button>
-                  <br />
-                }
+    <orda-nav-sub-header title="Benutzerverwaltung" [showBackButton]="true" />
+
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <mat-tab-group
+        mat-stretch-tabs="false"
+        mat-align-tabs="start"
+        animationDuration="0ms"
+        class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden min-h-[600px]"
+      >
+        <mat-tab label="Benutzer">
+          <ng-template matTabContent>
+            <div class="p-6">
+              <div class="mb-6">
+                <button
+                  mat-button
+                  color="primary"
+                  class="!font-bold !text-blue-600 !px-0 hover:!bg-transparent hover:underline"
+                  (click)="create()"
+                >
+                  Neu
+                </button>
               </div>
-            </ng-template>
-          </mat-tab>
-          <mat-tab label="Roles">
-            <ng-template matTabContent>
+
+              @let users = userService.entityResource.value() ?? [];
+
+              <div class="overflow-hidden rounded-lg border border-gray-100">
+                <table class="min-w-full text-left text-sm whitespace-nowrap">
+                  <thead class="bg-gray-50 border-b border-gray-200 text-gray-900">
+                    <tr>
+                      <th scope="col" class="px-4 py-3 font-semibold">Benutzername</th>
+                      <th scope="col" class="px-4 py-3 font-semibold">Rolle</th>
+                      <th scope="col" class="px-4 py-3 font-semibold text-right w-24"></th>
+                    </tr>
+                  </thead>
+
+                  <tbody class="divide-y divide-gray-100 bg-white">
+                    @for (user of users; track user.id) {
+                      <tr class="hover:bg-gray-50 transition-colors group">
+                        <td class="px-4 py-3 font-medium text-gray-900">
+                          {{ user.username }}
+                        </td>
+
+                        <td class="px-4 py-3 text-gray-500">
+                          <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700"
+                          >
+                            {{ user.role | titlecase }}
+                          </span>
+                        </td>
+
+                        <td class="px-4 py-3 text-right">
+                          <div
+                            class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <button
+                              mat-icon-button
+                              (click)="edit(user)"
+                              class="!text-gray-600 hover:bg-gray-100 !w-8 !h-8 leading-none"
+                              title="Bearbeiten"
+                            >
+                              <mat-icon class="!text-[1.25rem]">edit</mat-icon>
+                            </button>
+
+                            <button
+                              mat-icon-button
+                              (click)="delete(user)"
+                              class="!text-red-600 hover:bg-red-50 !w-8 !h-8 leading-none"
+                              title="Löschen"
+                            >
+                              <mat-icon class="!text-[1.25rem]">delete</mat-icon>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+
+        <mat-tab label="Rollen">
+          <ng-template matTabContent>
+            <div class="p-6">
               <orda-roles />
-            </ng-template>
-          </mat-tab>
-        </mat-tab-group>
-      </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
     </main>
   `,
   styles: `
-    mat-tab-group {
-      overflow: auto;
+    :host {
+      display: block;
+      height: 100%;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -87,7 +161,7 @@ export class UsersComponent extends EntityManager<User> {
 
   delete(u: User): void {
     this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(ConfirmDialogComponent, {
-      message: u.username,
+      message: `Soll der Benutzer "${u.username}" wirklich gelöscht werden?`,
     })
       .pipe(switchMap(() => this.userService.delete(u.id ?? '')))
       .subscribe(() => this.userService.entityResource.reload());
@@ -101,28 +175,38 @@ export class UsersComponent extends EntityManager<User> {
       [form]="formGroup"
       (submitClick)="submit()"
     ></orda-dialog-template>
+
     <ng-template #template>
-      <form [formGroup]="formGroup">
-        <div class="dialog-flex">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
+      <form [formGroup]="formGroup" class="flex flex-col gap-4 min-w-[350px]">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="Benutzername" />
+          @if (formGroup.get('name')?.hasError('required')) {
+            <mat-error>Name ist erforderlich</mat-error>
+          }
+        </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Password</mat-label>
-            <input type="password" matInput formControlName="password" />
-          </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Passwort</mat-label>
+          <input type="password" matInput formControlName="password" placeholder="********" />
+          @if (formGroup.get('password')?.hasError('required')) {
+            <mat-error>Passwort ist erforderlich</mat-error>
+          } @else if (formGroup.get('password')?.hasError('pattern')) {
+            <mat-error>Passwort ist zu schwach</mat-error>
+          }
+        </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Role</mat-label>
-            <mat-select formControlName="role">
-              @for (role of roleService.entityResource.value(); track role.id) {
-                <mat-option [value]="role.id">{{ role.name | titlecase }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Rolle</mat-label>
+          <mat-select formControlName="role">
+            @for (role of roleService.entityResource.value(); track role.id) {
+              <mat-option [value]="role.id">{{ role.name | titlecase }}</mat-option>
+            }
+          </mat-select>
+          @if (formGroup.get('role')?.hasError('required')) {
+            <mat-error>Rolle ist erforderlich</mat-error>
+          }
+        </mat-form-field>
       </form>
     </ng-template>
   `,
@@ -132,12 +216,11 @@ export class UsersComponent extends EntityManager<User> {
     FormsModule,
     ReactiveFormsModule,
     MatLabel,
-    MatFormField,
+    MatFormFieldModule,
     MatInput,
     MatSelectModule,
     TitleCasePipe,
   ],
-  providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 class UserDialogComponent extends DialogTemplateComponent<User> {
@@ -151,12 +234,10 @@ class UserDialogComponent extends DialogTemplateComponent<User> {
       Validators.maxLength(15),
     ]),
     password: new FormControl<string>('', [
-      Validators.required,
       Validators.minLength(3),
       Validators.maxLength(25),
       Validators.pattern(StrongPasswordRegx),
     ]),
-
     role: new FormControl<string>('', Validators.required),
   });
 
@@ -166,15 +247,21 @@ class UserDialogComponent extends DialogTemplateComponent<User> {
       name: this.inputData?.username,
       role: this.inputData?.roleid,
     });
+
+    // If creating a NEW user, password is required
+    if (!this.inputData) {
+      this.formGroup.controls.password.addValidators(Validators.required);
+    }
   }
 
-  public validPassword = (pw1: string, pw2: string): boolean => pw1 === pw2;
   public submit = () => {
     if (this.inputData) {
       this.userService
         .update(this.inputData.id ?? '', {
           username: this.formGroup.value.name ?? '',
           roleid: this.formGroup.value.role ?? '',
+          // Only send password if it was changed/entered
+          ...(this.formGroup.value.password ? { password: this.formGroup.value.password } : {}),
         })
         .subscribe(this.closeObserver);
     } else {

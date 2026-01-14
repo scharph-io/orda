@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIcon } from '@angular/material/icon';
@@ -26,96 +26,104 @@ import { MatSelect } from '@angular/material/select';
 import { RoleService } from '@orda.features/data-access/services/role.service';
 import { MatOption } from '@angular/material/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
   selector: 'orda-view-list',
-  imports: [
-    MatButtonModule,
-    MatListModule,
-    MatIcon,
-    RouterModule,
-    MatGridListModule,
-    MatTableModule,
-    NavSubHeaderComponent,
-  ],
+  imports: [MatButtonModule, MatListModule, MatIcon, RouterModule, NavSubHeaderComponent],
   template: `
     <orda-nav-sub-header title="Bestellseiten" [showBackButton]="true" />
-    <main>
-      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-        <div class="title-toolbar">
-          <button mat-button (click)="create()">Neu</button>
-        </div>
 
-        @let views = viewService.entityResource.value() ?? [];
-
-        @if (views.length === 0) {
-          <p>No views available. Add <button mat-button (click)="create()">Neu</button></p>
-        } @else {
-          <table mat-table [dataSource]="dataSource()" class="mat-elevation-z8 demo-table">
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
-              <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="desc">
-              <th mat-header-cell *matHeaderCellDef>Beschreibung</th>
-              <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let element">
-                <button
-                  title="delete view"
-                  class="delete-btn"
-                  mat-icon-button
-                  (click)="delete(element)"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-                <button title="edit view" mat-icon-button (click)="edit(element)">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  title="view settings"
-                  mat-icon-button
-                  [routerLink]="[element.id]"
-                  [state]="{ name: element.name }"
-                  routerLinkActive="router-link-active"
-                >
-                  <mat-icon>settings</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
-          </table>
-        }
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mb-6">
+        <button
+          mat-button
+          color="primary"
+          class="!font-bold !text-blue-600 !px-0 hover:!bg-transparent hover:underline"
+          (click)="create()"
+        >
+          Neu
+        </button>
       </div>
+
+      @let views = viewService.entityResource.value() ?? [];
+
+      @if (views.length === 0) {
+        <div class="text-center py-10 text-gray-500">
+          Noch keine Bestellseiten vorhanden.
+          <button mat-button color="primary" (click)="create()">Jetzt anlegen</button>
+        </div>
+      } @else {
+        <div class="overflow-hidden bg-white">
+          <table class="min-w-full text-left text-sm whitespace-nowrap">
+            <thead class="border-b border-gray-900 text-gray-900">
+              <tr>
+                <th scope="col" class="px-3 py-3 font-semibold">Name</th>
+                <th scope="col" class="px-3 py-3 font-semibold">Beschreibung</th>
+                <th scope="col" class="px-3 py-3 font-semibold text-right w-32"></th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-gray-200">
+              @for (view of views; track view.id) {
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-3 py-4 font-medium text-gray-900">
+                    {{ view.name }}
+                  </td>
+
+                  <td class="px-3 py-4 text-gray-500">
+                    {{ view.desc }}
+                  </td>
+
+                  <td class="px-3 py-4 text-right">
+                    <div class="flex items-center justify-end gap-1">
+                      <button
+                        mat-icon-button
+                        (click)="delete(view)"
+                        class="!text-red-600 hover:bg-red-50"
+                        title="Löschen"
+                      >
+                        <mat-icon>delete</mat-icon>
+                      </button>
+
+                      <button
+                        mat-icon-button
+                        (click)="edit(view)"
+                        class="!text-gray-600 hover:bg-gray-100"
+                        title="Bearbeiten"
+                      >
+                        <mat-icon>edit</mat-icon>
+                      </button>
+
+                      <button
+                        mat-icon-button
+                        [routerLink]="[view.id]"
+                        [state]="{ name: view.name }"
+                        class="!text-gray-600 hover:bg-gray-100"
+                        title="Einstellungen"
+                      >
+                        <mat-icon>settings</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     </main>
   `,
   styles: `
-    .title-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 0.5rem;
+    :host {
+      display: block;
+      height: 100%;
     }
   `,
 })
 export class ViewListComponent extends EntityManager<View> {
   viewService = inject(ViewService);
   logger = inject(OrdaLogger);
-
-  displayedColumns: string[] = ['name', 'desc', 'actions'];
-
-  dataSource = computed(
-    () => new MatTableDataSource(this.viewService.entityResource.value() ?? []),
-  );
 
   constructor() {
     super();
@@ -142,7 +150,7 @@ export class ViewListComponent extends EntityManager<View> {
           this.dialogClosed<ConfirmDialogComponent, ConfirmDialogData, boolean>(
             ConfirmDialogComponent,
             {
-              message: view.name,
+              message: `Soll "${view.name}" wirklich gelöscht werden?`,
             },
           ),
         ),
@@ -178,33 +186,36 @@ export class ViewListComponent extends EntityManager<View> {
       [form]="formGroup"
       (submitClick)="submit()"
     ></orda-dialog-template>
+
     <ng-template #template>
-      <form [formGroup]="formGroup">
-        <div class="dialog-flex">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Description</mat-label>
-            <input matInput formControlName="desc" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Roles</mat-label>
-            <mat-select formControlName="roles" multiple [value]="viewDetails.value()">
-              @for (role of roleService.entityResource.value(); track role.id) {
-                <mat-option [value]="role.id">{{ role.name }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
+      <form [formGroup]="formGroup" class="flex flex-col gap-4 min-w-[350px]">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="z.B. Kantine" />
+          @if (formGroup.get('name')?.hasError('required')) {
+            <mat-error>Name ist erforderlich</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Beschreibung</mat-label>
+          <input matInput formControlName="desc" placeholder="z.B. Heimspiel" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rollen</mat-label>
+          <mat-select formControlName="roles" multiple [value]="viewDetails.value()">
+            @for (role of roleService.entityResource.value(); track role.id) {
+              <mat-option [value]="role.id">{{ role.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
       </form>
     </ng-template>
   `,
   styles: `
-    form {
-      display: flex;
-      flex-direction: column;
+    :host {
+      display: block;
     }
   `,
 })
@@ -239,29 +250,28 @@ class ViewListDialogComponent extends DialogTemplateComponent<View> {
   }
 
   public submit = () => {
+    const commonData = {
+      name: this.formGroup.value.name ?? '',
+      desc: this.formGroup.value.desc ?? '',
+    };
+
+    const roles = this.formGroup.value.roles ?? [];
+
+    let obs$;
     if (this.inputData) {
-      this.viewService
-        .update(this.inputData?.id ?? '', {
-          name: this.formGroup.value.name ?? '',
-          desc: this.formGroup.value.desc ?? '',
-        })
-        .pipe(
-          switchMap(() =>
-            this.viewService.setRoles(this.inputData.id, this.formGroup.value.roles ?? []),
-          ),
-        )
-        .subscribe(this.closeObserver);
+      obs$ = this.viewService.update(this.inputData.id ?? '', commonData);
     } else {
-      this.viewService
-        .create({
-          name: this.formGroup.value.name ?? '',
-          deposit: 100,
-          desc: this.formGroup.value.desc ?? '',
-        })
-        .pipe(
-          switchMap((view) => this.viewService.setRoles(view.id, this.formGroup.value.roles ?? [])),
-        )
-        .subscribe(this.closeObserver);
+      obs$ = this.viewService.create({ ...commonData, deposit: 100 });
     }
+
+    obs$
+      .pipe(
+        // SwitchMap passes the View ID (either from input or created view) to setRoles
+        switchMap((res) => {
+          const id = this.inputData ? this.inputData.id : res.id;
+          return this.viewService.setRoles(id, roles);
+        }),
+      )
+      .subscribe(this.closeObserver);
   };
 }
