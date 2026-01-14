@@ -13,7 +13,7 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
     <div class="min-h-full">
       <orda-nav-sub-header title="Verwalten" [showBackButton]="true" />
       <main>
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
           <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             @for (tile of primaryTiles(); track tile) {
               <li (click)="navigateTo(tile.path)" (keydown)="navigateTo(tile.path)" tabindex="0">
@@ -50,6 +50,7 @@ export class ManageComponent {
 
     { title: 'Benutzer', path: '/manage/users', icon: 'people' },
     { title: 'Statistik', path: '/manage/history', icon: 'analytics' },
+    { title: 'StatistikV2', path: '/stats', icon: 'analytics' },
   ]);
 
   navigateTo(path: string) {

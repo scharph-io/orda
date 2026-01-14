@@ -19,7 +19,7 @@ export interface Tile {
     <div class="min-h-full">
       <orda-nav-sub-header [title]="'Wilkommen, ' + sessionService.user().username" />
       <main>
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
           <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             @for (tile of primaryTiles(); track tile) {
               <li (click)="navigateTo(tile.path)" (keydown)="navigateTo(tile.path)" tabindex="0">

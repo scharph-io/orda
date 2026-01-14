@@ -79,7 +79,7 @@ export enum DepositType {
   template: `
     <orda-nav-sub-header title="Konten" [showBackButton]="true" />
     <main>
-      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <mat-tab-group
           mat-stretch-tabs="false"
           mat-align-tabs="start"
@@ -87,7 +87,7 @@ export enum DepositType {
           style="margin: 0 0.5rem"
         >
           <mat-tab label="Konten">
-            <mat-toolbar class="orda-toolbar">
+            <mat-toolbar class="action-toolbar">
               <span
                 ><button
                   mat-icon-button

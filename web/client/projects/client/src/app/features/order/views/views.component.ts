@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { OrderDesktopComponent } from '@orda.features/order/views/desktop/desktop.component';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { ToolbarTitleService } from '@orda.shared/services/toolbar-title.service';
@@ -12,9 +12,8 @@ import { View } from '@orda.core/models/view';
   template: ` <orda-order-desktop [view]="view_id()"></orda-order-desktop>`,
   styleUrl: './views.component.scss',
 })
-export class ViewsComponent implements OnInit {
+export class ViewsComponent {
   toolbarTitleService = inject(ToolbarTitleService);
-  router = inject(Router);
   viewService = inject(ViewService);
 
   view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
@@ -23,14 +22,14 @@ export class ViewsComponent implements OnInit {
     stream: ({ params }) => this.viewService.readById(params),
   });
 
-  ngOnInit() {
-    this.viewService.readById(this.view_id()).subscribe({
-      next: (data) => {
-        this.toolbarTitleService.title.set(data.name);
-      },
+  constructor() {
+    effect(() => {
+      if (this.view.hasValue()) {
+        this.toolbarTitleService.title.set(this.view.value().name);
+      }
     });
 
-    this.router.events.subscribe((event) => {
+    inject(Router).events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.toolbarTitleService.title.set('');
       }

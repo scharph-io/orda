@@ -36,9 +36,9 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
   template: `
     <orda-nav-sub-header [title]="group.value()?.name ?? ''" [showBackButton]="true" />
     <main>
-      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         @if (group.value(); as g) {
-          <div class="toolbar orda-toolbar">
+          <div class="toolbar action-toolbar">
             <span>
               <button
                 mat-flat-button

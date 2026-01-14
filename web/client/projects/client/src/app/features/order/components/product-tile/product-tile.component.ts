@@ -8,49 +8,36 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
   standalone: true,
   imports: [OrdaCurrencyPipe, MatDividerModule, OrdaCurrencyPipe],
   template: `
-    <div class="item-0">{{ product().name }}</div>
-    @if (product().desc) {
-      <div class="item-1">{{ product().desc }}</div>
-    }
-    <div class="item-2"><mat-divider></mat-divider></div>
-    <div class="item-3">{{ product().price | currency }}</div>
+    <div class="h-full w-full flex flex-col justify-between p-3 select-none text-slate-800">
+      <div class="flex-1 flex flex-col justify-center items-center gap-1">
+        <div class="font-bold text-center leading-tight text-lg break-words w-full px-1">
+          {{ product().name }}
+        </div>
+
+        @if (product().desc; as desc) {
+          <div class="text-xs font-medium uppercase tracking-wide opacity-60">
+            {{ desc }}
+          </div>
+        }
+      </div>
+
+      <div
+        class="w-1/2 h-px bg-gradient-to-r from-transparent via-slate-400/50 to-transparent mx-auto my-2"
+      ></div>
+
+      <div class="text-2xl font-extrabold text-center tracking-tight">
+        {{ product().price | currency }}
+      </div>
+    </div>
+
+    
   `,
   styles: [
     `
       :host {
-        display: flex;
-        gap: 0.25rem;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        align-content: flex-end;
-        width: 90%;
-      }
-
-      .item-0 {
-        flex-grow: 2;
-        font-size: 1.2rem;
-        font-weight: bold;
-        text-align: center;
-      }
-
-      .item-1 {
-        flex-grow: 1;
-        min-height: 1rem;
-        font-size: 0.9rem;
-        text-align: center;
-      }
-
-      .item-2 {
-        flex-grow: 1;
+        display: block;
         height: 100%;
-        width: 80%;
-      }
-
-      .item-3 {
-        flex-grow: 2;
-        font-size: 1.1rem;
-        font-weight: bold;
+        width: 100%;
       }
     `,
   ],

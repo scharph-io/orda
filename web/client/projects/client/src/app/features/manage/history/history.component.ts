@@ -27,7 +27,7 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
   template: `
     <orda-nav-sub-header title="Statistik" [showBackButton]="true" />
     <main>
-      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <mat-form-field style="margin: 0.5rem">
           <mat-label>Datum auswählen</mat-label>
           <input matInput [matDatepicker]="picker" [formControl]="date" />
