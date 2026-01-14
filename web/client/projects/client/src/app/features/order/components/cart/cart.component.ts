@@ -9,47 +9,32 @@ import { CartItemComponent } from '@orda.features/order/components/cart/cart-ite
   selector: 'orda-cart',
   imports: [CartActionsComponent, CartSubtotalComponent, CartItemComponent],
   template: `
-    <div class="cart-items">
-      @for (item of items(); track $index) {
-        <orda-cart-item [item]="item"></orda-cart-item>
-      }
-      @if (items()?.length === 0) {
-        <span class="cartEmpty">{{ 'Warenkorb leer' }}</span>
-      }
-    </div>
+    <div class="flex flex-col h-full w-full rounded-lg">
+      
+      <div class="flex-1 overflow-y-auto p-1">
+        
+        @for (item of items(); track $index) {
+          <orda-cart-item [item]="item"></orda-cart-item>
+        }
+        
+        @if (items()?.length === 0) {
+          <div class="h-full flex flex-col items-center justify-center text-gray-400 font-medium">
+            <span>{{ 'Warenkorb leer' }}</span>
+          </div>
+        }
+      </div>
 
-    <orda-cart-subtotal class="subtotal" [subtotal]="subtotal() ?? 0" />
-    <orda-cart-actions class="actions" [view_id]="view_id()" />
+      <div class="flex-none bg-gray-50 p-2">
+        <orda-cart-subtotal class="block mb-4" [subtotal]="subtotal() ?? 0" />
+        <orda-cart-actions class="block w-full" [view_id]="view_id()" />
+      </div>
+
+    </div>
   `,
   styles: `
     :host {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-content: center;
-    }
-
-    .cart-items {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding: 0.5rem;
-    }
-
-    .actions {
-      justify-self: center;
-      align-self: center;
-      height: 4em;
-    }
-
-    .subtotal {
-      justify-self: center;
-      align-self: center;
-      height: 3em;
-    }
-
-    .cartEmpty {
-      display: flex;
-      justify-content: center;
+      display: block;
+      height: 100%;
     }
   `,
 })

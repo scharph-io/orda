@@ -48,41 +48,38 @@ import { rxResource } from '@angular/core/rxjs-interop';
           />
         }
       </main>
-      <aside class="bg-gray-100 p-2 rounded-lg min-h-0">
-        <orda-cart class="cart" [view_id]="view()" />
+      <aside class="bg-gray-100 p-1 rounded-lg min-h-0">
+        <orda-cart class="cart" [view_id]="viewid()" />
       </aside>
     </div>
 
     <!-- @if (!isMobilePortrait()) {
-        <orda-cart class="cart" [style.flex-basis]="cartSize()" [view_id]="view()" />
+        <orda-cart class="cart" [style.flex-basis]="cartSize()" [view_id]="viewid()" />
       } @else {
-        <orda-cart-mobile class="cart" [view_id]="view()" />
+        <orda-cart-mobile class="cart" [view_id]="viewid()" />
       } -->
   `,
   styles: `
-    /* Target the class you added: .products */
     .products {
-      /* Make the group a flex container */
       display: flex;
       flex-direction: column;
-      height: 100%; /* Fill the main container */
+      height: 100%;
     }
 
-    /* Force the internal wrapper to fill remaining space under the header */
     .products ::ng-deep .mat-mdc-tab-body-wrapper {
       flex-grow: 1;
-      overflow: hidden; /* Stop the wrapper itself from scrolling */
+      overflow: hidden;
     }
   `,
 })
 export class OrderDesktopComponent {
-  view = input.required<string>();
+  viewid = input.required<string>();
 
   orderService = inject(OrderService);
   assortmentService = inject(AssortmentService);
 
   data = rxResource({
-    params: () => this.view(),
+    params: () => this.viewid(),
     stream: ({ params }) => this.orderService.getViewProducts(params),
   });
 

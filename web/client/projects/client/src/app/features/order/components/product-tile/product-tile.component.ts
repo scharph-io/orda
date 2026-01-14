@@ -15,7 +15,7 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
         </div>
 
         @if (product().desc; as desc) {
-          <div class="text-xs font-medium uppercase tracking-wide opacity-60">
+          <div class="text-xs font-medium uppercase tracking-wide opacity-60 text-center px-1 break-words">
             {{ desc }}
           </div>
         }

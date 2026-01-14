@@ -9,8 +9,7 @@ import { View } from '@orda.core/models/view';
 @Component({
   selector: 'orda-views',
   imports: [OrderDesktopComponent],
-  template: ` <orda-order-desktop [view]="view_id()"></orda-order-desktop>`,
-  styleUrl: './views.component.scss',
+  template: ` <orda-order-desktop [viewid]="view_id()"></orda-order-desktop>`,
 })
 export class ViewsComponent {
   toolbarTitleService = inject(ToolbarTitleService);

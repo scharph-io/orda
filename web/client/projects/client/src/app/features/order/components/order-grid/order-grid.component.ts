@@ -18,7 +18,7 @@ import { OrdaColorService } from '@orda.shared/utils/color';
     DepositTileComponent,
   ],
   template: `
-    <div class="mx-2 grid gap-2 grid-cols-[repeat(auto-fill,minmax(10rem,1fr))]">
+    <div class="mx-2 grid gap-2 grid-cols-[repeat(auto-fill,minmax(9rem,1fr))]">
       @if (deposit(); as deposit) {
         <div
           class="col-span-2 cursor-pointer rounded-lg border border-[#e3d5ca] bg-[#edede9]"
