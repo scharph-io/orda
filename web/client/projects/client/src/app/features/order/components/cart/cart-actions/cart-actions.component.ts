@@ -1,5 +1,4 @@
 import { Component, inject, input } from '@angular/core';
-
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,39 +14,45 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
   providers: [OrdaCurrencyPipe],
   template: `
     @let items = cartItems() ?? [];
-    @if (items.length > 0) {
-      <button class="item-0" mat-icon-button color="warn" (click)="clearCart()">
-        <mat-icon>delete_forever</mat-icon>
-      </button>
-    }
-    <button
-      class="item-1"
-      mat-flat-button
-      [disabled]="items.length === 0"
-      (click)="openCheckoutDialog()"
-    >
-      <mat-icon>shopping_cart_checkout</mat-icon>
-      <!--			{{ 'cart.checkout' }}-->
-      Abrechnen
-    </button>
-  `,
-  styles: `
-    :host {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      gap: 0.5em;
-    }
 
-    button {
-      &.item-1 {
-        height: 3.5rem;
-        width: 70%;
-        font-size: 1.25rem;
+    <div class="flex items-center gap-3 w-full">
+      @if (items.length > 0) {
+        <button
+          mat-icon-button
+          (click)="clearCart()"
+          class="!text-gray-500 hover:!text-red-600 hover:bg-red-50 transition-colors"
+          title="Warenkorb leeren"
+        >
+          <mat-icon>delete_forever</mat-icon>
+        </button>
       }
-    }
+
+      <button
+        mat-flat-button
+        [disabled]="items.length === 0"
+        (click)="openCheckoutDialog()"
+        class="flex-1 !h-14 !rounded-xl !text-lg !font-bold transition-all shadow-sm"
+        [class]="
+          items.length === 0
+            ? '!bg-gray-100 !text-gray-400'
+            : '!bg-blue-700 !text-white hover:!bg-blue-800'
+        "
+      >
+        <div class="flex items-center justify-center gap-2">
+          <mat-icon class="scale-110">shopping_cart_checkout</mat-icon>
+          <span>Abrechnen</span>
+        </div>
+      </button>
+    </div>
   `,
+  styles: [
+    `
+      :host {
+        display: block;
+        width: 100%;
+      }
+    `,
+  ],
 })
 export class CartActionsComponent {
   cart = inject(OrderStoreService);
@@ -73,6 +78,9 @@ export class CartActionsComponent {
           view_id: this.view_id(),
         },
         disableClose: true,
+        // Optional: Ensure the dialog looks nice on mobile
+        panelClass: 'responsive-dialog-container',
+        minWidth: '350px',
       },
     );
 
@@ -88,10 +96,7 @@ export class CartActionsComponent {
           politeness: 'assertive',
         });
       } else {
-        this.snackBar.open('Bezahlung abgebrochen', undefined, {
-          duration: 3000,
-          politeness: 'assertive',
-        });
+        // Handle error or other states
       }
     });
   }
