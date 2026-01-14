@@ -69,8 +69,6 @@ export class CartActionsComponent {
     const dialogRef = this.dialog.open<CartCheckoutDialogComponent, { view_id: string }, number>(
       CartCheckoutDialogComponent,
       {
-        width: '75%',
-        height: '30rem',
         data: {
           view_id: this.view_id(),
         },
