@@ -86,9 +86,7 @@ export class CartMobileComponent {
     const dialogRef = this.dialog.open<CartCheckoutDialogComponent, { view_id: string }, number>(
       CartCheckoutDialogComponent,
       {
-        width: '95%',
         minWidth: '25rem',
-        height: '25rem',
         data: {
           view_id: this.view_id(),
         },
@@ -120,9 +118,6 @@ export class CartMobileComponent {
       Signal<CartItem[] | undefined>,
       undefined
     >(CartMobileOverviewComponent, {
-      width: 'auto',
-      minWidth: '20rem',
-      height: '25rem',
       data: this.items,
     });
 

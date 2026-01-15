@@ -50,8 +50,6 @@ export class OrderGridComponent {
   colorService = inject(OrdaColorService);
   products = input.required<Partial<ViewProduct>[]>();
   deposit = input<Partial<ViewProduct>>();
-  // gridCols = input<number>(2);
-
   cart = inject(OrderStoreService);
 
   addProduct(p: Partial<ViewProduct>): void {
