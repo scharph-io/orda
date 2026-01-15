@@ -17,7 +17,7 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { KeyValuePipe, NgClass } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 
 export interface CheckoutDialogData {
   message: string;
@@ -37,7 +37,6 @@ export interface CheckoutDialogData {
     MatButtonModule,
     MatSelectModule,
     KeyValuePipe,
-    NgClass,
   ],
   template: `
     <div class="flex flex-col gap-6 p-6 min-w-[350px] sm:min-w-[450px]">
@@ -160,11 +159,7 @@ export interface CheckoutDialogData {
           <button
             mat-flat-button
             class="col-span-2 !h-14 !text-lg !rounded-xl transition-colors"
-            [ngClass]="{
-              '!bg-amber-500 !text-white': diff() < 0 && balance > 0,
-              '!bg-emerald-600 !text-white': diff() >= 0 && balance > 0,
-              '!bg-gray-300 text-gray-500': !accountControl.value || balance === 0,
-            }"
+            [class]="badgeClass()"
             [disabled]="!accountControl.value || balance === 0"
             (click)="checkout(data.view_id, PaymentOption.ACCOUNT, selectedAccount()?.id)"
           >
@@ -291,4 +286,15 @@ export class CartCheckoutDialogComponent {
 
     return sortedResult;
   }
+
+  badgeClass = computed(() => {
+    const balance = this.selectedAccount()?.credit_balance ?? 0;
+    if (!this.accountControl.value || balance === 0) {
+      return '!bg-gray-300 text-gray-500';
+    }
+    if (balance > 0 && this.diff() < 0) {
+      return '!bg-amber-500 !text-white';
+    }
+    return '!bg-emerald-600 !text-white';
+  });
 }
