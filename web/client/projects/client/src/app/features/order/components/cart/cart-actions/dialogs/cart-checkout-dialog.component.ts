@@ -39,7 +39,7 @@ export interface CheckoutDialogData {
     KeyValuePipe,
   ],
   template: `
-    <div class="flex flex-col gap-6 p-6 min-w-[350px] sm:min-w-[450px]">
+    <div class="flex flex-col gap-6 p-6 min-w-[300px] sm:min-w-[450px]">
       <div class="flex flex-col items-center justify-center space-y-1">
         <span class="text-xl text-gray-500 font-medium">{{ 'Summe' }}:</span>
         <span class="text-6xl font-black text-gray-900 tracking-tight">

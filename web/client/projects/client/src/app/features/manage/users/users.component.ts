@@ -7,10 +7,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { User } from '@orda.core/models/user';
-import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
 import { EntityManager } from '@orda.shared/utils/entity-manager';
 import { UserService } from '@orda.features/data-access/services/user.service';
 import { RoleService } from '@orda.features/data-access/services/role.service';
@@ -26,6 +24,15 @@ import { RolesComponent } from '../roles/roles.component';
 import { StrongPasswordRegx } from '@orda.core/constants';
 import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 import { MatIconModule } from '@angular/material/icon';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'orda-users',
@@ -168,30 +175,56 @@ export class UsersComponent extends EntityManager<User> {
   }
 }
 
-@Component({
-  template: `
-    <orda-dialog-template
-      [customTemplate]="template"
-      [form]="formGroup"
-      (submitClick)="submit()"
-    ></orda-dialog-template>
+interface UserForm {
+  name: FormControl<string>;
+  password: FormControl<string | null>;
+  role: FormControl<string>;
+}
 
-    <ng-template #template>
-      <form [formGroup]="formGroup" class="flex flex-col gap-4 min-w-[350px]">
+@Component({
+  selector: 'orda-user-dialog',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    TitleCasePipe,
+  ],
+  template: `
+    <h2 mat-dialog-title>
+      {{ isEditMode ? 'Benutzer bearbeiten' : 'Neuer Benutzer' }}
+    </h2>
+
+    <mat-dialog-content>
+      <form [formGroup]="form" class="user-form">
         <mat-form-field appearance="outline">
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" placeholder="Benutzername" />
-          @if (formGroup.get('name')?.hasError('required')) {
+          @if (form.controls.name.hasError('required')) {
             <mat-error>Name ist erforderlich</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Passwort</mat-label>
-          <input type="password" matInput formControlName="password" placeholder="********" />
-          @if (formGroup.get('password')?.hasError('required')) {
+          <input
+            type="password"
+            matInput
+            formControlName="password"
+            [placeholder]="isEditMode ? 'Leer lassen um beizubehalten' : '********'"
+          />
+          @if (form.controls.password.hasError('required')) {
             <mat-error>Passwort ist erforderlich</mat-error>
-          } @else if (formGroup.get('password')?.hasError('pattern')) {
+          }
+          @if (form.controls.password.hasError('pattern')) {
             <mat-error>Passwort ist zu schwach</mat-error>
           }
         </mat-form-field>
@@ -203,75 +236,109 @@ export class UsersComponent extends EntityManager<User> {
               <mat-option [value]="role.id">{{ role.name | titlecase }}</mat-option>
             }
           </mat-select>
-          @if (formGroup.get('role')?.hasError('required')) {
+          @if (form.controls.role.hasError('required')) {
             <mat-error>Rolle ist erforderlich</mat-error>
           }
         </mat-form-field>
       </form>
-    </ng-template>
-  `,
-  imports: [
-    DialogTemplateComponent,
-    MatButtonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatLabel,
-    MatFormFieldModule,
-    MatInput,
-    MatSelectModule,
-    TitleCasePipe,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-class UserDialogComponent extends DialogTemplateComponent<User> {
-  roleService = inject(RoleService);
-  userService = inject(UserService);
+    </mat-dialog-content>
 
-  formGroup = new FormGroup({
-    name: new FormControl<string>('', [
-      Validators.required,
-      Validators.minLength(3),
-      Validators.maxLength(15),
-    ]),
-    password: new FormControl<string>('', [
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Abbrechen</button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="submit()"
+        [disabled]="form.invalid || form.pristine"
+      >
+        Speichern
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [
+    `
+      .user-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding-top: 0.5rem;
+        min-width: 300px;
+      }
+    `,
+  ],
+})
+export class UserDialogComponent {
+  public roleService = inject(RoleService); // Public for template
+  private userService = inject(UserService);
+  private dialogRef = inject(MatDialogRef<UserDialogComponent>);
+
+  protected form = new FormGroup<UserForm>({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)],
+    }),
+    password: new FormControl(null, [
       Validators.minLength(3),
       Validators.maxLength(25),
       Validators.pattern(StrongPasswordRegx),
     ]),
-    role: new FormControl<string>('', Validators.required),
+    role: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
   });
 
-  constructor() {
-    super();
-    this.formGroup.patchValue({
-      name: this.inputData?.username,
-      role: this.inputData?.roleid,
-    });
+  data = inject<User | undefined>(MAT_DIALOG_DATA);
 
-    // If creating a NEW user, password is required
-    if (!this.inputData) {
-      this.formGroup.controls.password.addValidators(Validators.required);
+  constructor() {
+    if (this.isEditMode) {
+      // Edit Mode: Pre-fill data
+      this.form.patchValue({
+        name: this.data!.username,
+        role: this.data!.roleid,
+      });
+      // Password is optional in Edit mode (only validated if entered)
+    } else {
+      // Create Mode: Password is required
+      this.form.controls.password.addValidators(Validators.required);
     }
   }
 
-  public submit = () => {
-    if (this.inputData) {
-      this.userService
-        .update(this.inputData.id ?? '', {
-          username: this.formGroup.value.name ?? '',
-          roleid: this.formGroup.value.role ?? '',
-          // Only send password if it was changed/entered
-          ...(this.formGroup.value.password ? { password: this.formGroup.value.password } : {}),
-        })
-        .subscribe(this.closeObserver);
+  get isEditMode(): boolean {
+    return !!this.data?.id;
+  }
+
+  submit() {
+    if (this.form.invalid) return;
+
+    const { name, role, password } = this.form.getRawValue();
+
+    if (this.isEditMode) {
+      // UPDATE: Only include password if the user typed something
+      const payload: User = {
+        username: name,
+        roleid: role,
+      };
+
+      if (password) {
+        payload.password = password;
+      }
+
+      this.userService.update(this.data?.id ?? '', payload).subscribe(this.handleResponse);
     } else {
+      // CREATE: Password is mandatory
       this.userService
         .create({
-          username: this.formGroup.value.name ?? '',
-          roleid: this.formGroup.value.role ?? '',
-          password: this.formGroup.value.password ?? '',
+          username: name,
+          roleid: role,
+          password: password ?? '',
         })
-        .subscribe(this.closeObserver);
+        .subscribe(this.handleResponse);
     }
+  }
+
+  private handleResponse = {
+    next: (res: unknown) => this.dialogRef.close(res),
+    error: (err: unknown) => console.error('Error saving user', err),
   };
 }

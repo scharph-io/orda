@@ -40,15 +40,15 @@ export class ManageComponent {
   private readonly router = inject(Router);
 
   primaryTiles = signal<Tile[]>([
-    { title: 'Bestellseiten', path: '/manage/views', icon: 'view_list' },
+    { title: 'Ansichten', path: '/manage/views', icon: 'grid_view' },
     {
       title: 'Sortiment',
       path: '/manage/assortment',
-      icon: 'inventory_2',
+      icon: 'shelves',
     },
-    { title: 'Konten', path: '/manage/accounts', icon: 'account_balance' },
+    { title: 'Konten', path: '/manage/accounts', icon: 'account_box' },
 
-    { title: 'Benutzer', path: '/manage/users', icon: 'people' },
+    { title: 'Benutzer', path: '/manage/users', icon: 'badge' },
     { title: 'Statistik', path: '/manage/history', icon: 'analytics' },
     { title: 'StatistikV2', path: '/stats', icon: 'analytics' },
   ]);

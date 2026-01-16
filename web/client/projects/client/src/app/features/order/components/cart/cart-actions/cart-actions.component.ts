@@ -80,7 +80,7 @@ export class CartActionsComponent {
         disableClose: true,
         // Optional: Ensure the dialog looks nice on mobile
         panelClass: 'responsive-dialog-container',
-        minWidth: '350px',
+        minWidth: '300px',
       },
     );
 

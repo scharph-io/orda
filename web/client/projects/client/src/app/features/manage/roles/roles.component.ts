@@ -10,17 +10,24 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { TitleCasePipe } from '@angular/common';
-import { MatInput } from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { filter, switchMap } from 'rxjs';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
+import {
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 
 @Component({
   selector: 'orda-roles',
@@ -147,76 +154,108 @@ export class RolesComponent extends EntityManager<Role> {
   }
 }
 
+// 1. Strict Form Interface
+interface RoleForm {
+  name: FormControl<string>;
+}
+
 @Component({
   selector: 'orda-role-dialog',
+  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    DialogTemplateComponent,
-    MatLabel,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+    MatButtonModule,
     MatFormFieldModule,
-    MatInput,
+    MatInputModule,
   ],
   template: `
-    <orda-dialog-template
-      [customTemplate]="template"
-      [form]="formGroup"
-      (submitClick)="submit()"
-    ></orda-dialog-template>
+    <h2 mat-dialog-title>
+      {{ isEditMode ? 'Rolle bearbeiten' : 'Neue Rolle' }}
+    </h2>
 
-    <ng-template #template>
-      <form [formGroup]="formGroup" class="flex flex-col gap-4 min-w-[350px]">
+    <mat-dialog-content>
+      <form [formGroup]="form" class="role-form">
         <mat-form-field appearance="outline">
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" placeholder="z.B. Kellner" />
-          @if (formGroup.get('name')?.hasError('required')) {
+
+          @if (form.controls.name.hasError('required')) {
             <mat-error>Name ist erforderlich</mat-error>
-          } @else if (formGroup.get('name')?.hasError('minlength')) {
+          }
+          @if (form.controls.name.hasError('minlength')) {
             <mat-error>Mindestens 3 Zeichen</mat-error>
-          } @else if (formGroup.get('name')?.hasError('maxlength')) {
+          }
+          @if (form.controls.name.hasError('maxlength')) {
             <mat-error>Maximal 10 Zeichen</mat-error>
           }
         </mat-form-field>
       </form>
-    </ng-template>
-  `,
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
-})
-class RoleDialogComponent extends DialogTemplateComponent<Role> {
-  roleService = inject(RoleService);
+    </mat-dialog-content>
 
-  formGroup = new FormGroup({
-    name: new FormControl('', [
-      Validators.required,
-      Validators.maxLength(10),
-      Validators.minLength(3),
-    ]),
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Abbrechen</button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="submit()"
+        [disabled]="form.invalid || form.pristine"
+      >
+        Speichern
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [
+    `
+      .role-form {
+        display: flex;
+        flex-direction: column;
+        padding-top: 0.5rem;
+        min-width: 300px;
+      }
+    `,
+  ],
+})
+export class RoleDialogComponent {
+  private roleService = inject(RoleService);
+  private dialogRef = inject(MatDialogRef<RoleDialogComponent>);
+
+  // 2. Typed Form
+  protected form = new FormGroup<RoleForm>({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(10)],
+    }),
   });
 
+  data = inject<Role | undefined>(MAT_DIALOG_DATA);
+
   constructor() {
-    super();
-    this.formGroup.patchValue({
-      name: this.inputData?.name,
-    });
+    if (this.data) {
+      this.form.patchValue({ name: this.data.name });
+    }
   }
 
-  public submit = () => {
-    if (this.inputData) {
-      this.roleService
-        .update(this.inputData?.id ?? '', {
-          name: this.formGroup.value.name ?? '',
-        })
-        .subscribe(this.closeObserver);
-    } else {
-      this.roleService
-        .create({
-          name: this.formGroup.value.name ?? '',
-        })
-        .subscribe(this.closeObserver);
-    }
-  };
+  get isEditMode(): boolean {
+    return !!this.data?.id;
+  }
+
+  submit() {
+    if (this.form.invalid) return;
+
+    const name = this.form.getRawValue().name.trim();
+
+    const action$ = this.isEditMode
+      ? this.roleService.update(this.data!.id, { name })
+      : this.roleService.create({ name });
+
+    action$.subscribe({
+      next: (res) => this.dialogRef.close(res),
+      error: (err) => console.error('Error saving role', err),
+    });
+  }
 }

@@ -16,7 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
               <mat-icon class="tile">arrow_back</mat-icon>
             </button>
           }
-          <h1 class="text-center text-4xl font-bold">{{ title() }}</h1>
+          <h1 class="text-center text-3xl font-bold">{{ title() }}</h1>
         </div>
       </div>
     </header>

@@ -2,14 +2,13 @@ import { Component, inject } from '@angular/core';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { OrderService } from '@orda.features/data-access/services/order.service';
 import { Router, RouterModule } from '@angular/router';
-import { ViewBreakpointService } from '@orda.shared/services/view-breakpoint.service';
 import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
   selector: 'orda-order',
   imports: [MatGridListModule, RouterModule, NavSubHeaderComponent],
   template: `
-    <orda-nav-sub-header title="Bestellseiten" [showBackButton]="true" />
+    <orda-nav-sub-header title="Ansichten" [showBackButton]="true" />
     <main>
       <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -82,7 +81,6 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
 })
 export class OrderComponent {
   viewService = inject(OrderService); // refactor naming
-  breakpointService = inject(ViewBreakpointService);
   private readonly router = inject(Router);
 
   constructor() {
