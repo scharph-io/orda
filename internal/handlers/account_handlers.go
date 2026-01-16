@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/scharph/orda/internal/ports"
 )
@@ -61,12 +63,15 @@ func (h *AccountHandlers) CreateMany(c *fiber.Ctx) error {
 
 func (h *AccountHandlers) GetAll(c *fiber.Ctx) error {
 	res, err := h.service.GetAll(c.Context())
+	fmt.Println(res)
+	fmt.Println("sd")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get accounts"})
 	}
 	if res == nil {
-		return c.Status(fiber.StatusNoContent).JSON([]string{})
+		return c.Status(fiber.StatusOK).JSON([]string{})
 	}
+
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 

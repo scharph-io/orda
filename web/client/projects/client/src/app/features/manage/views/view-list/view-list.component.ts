@@ -204,7 +204,11 @@ export class ViewListComponent extends EntityManager<View> {
 
         <mat-form-field appearance="outline">
           <mat-label>Rollen</mat-label>
-          <mat-select formControlName="roles" multiple [value]="viewDetails.value()">
+          <mat-select
+            formControlName="roles"
+            multiple
+            [value]="!viewDetails.hasValue() ? [] : viewDetails.value()"
+          >
             @for (role of roleService.entityResource.value(); track role.id) {
               <mat-option [value]="role.id">{{ role.name }}</mat-option>
             }
@@ -213,17 +217,14 @@ export class ViewListComponent extends EntityManager<View> {
       </form>
     </ng-template>
   `,
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
+  styles: ``,
 })
 class ViewListDialogComponent extends DialogTemplateComponent<View> {
   viewService = inject(ViewService);
   roleService = inject(RoleService);
 
   viewDetails = rxResource({
+    defaultValue: [] as string[],
     stream: () =>
       this.viewService.readById(this.inputData.id).pipe(map((view) => view.roles.map((r) => r.id))),
   });
