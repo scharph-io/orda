@@ -96,9 +96,7 @@ import { MatInputModule } from '@angular/material/input';
                         </td>
 
                         <td class="px-4 py-3 text-right">
-                          <div
-                            class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
+                          <div class="flex items-center justify-end gap-1  transition-opacity">
                             <button
                               mat-icon-button
                               (click)="edit(user)"

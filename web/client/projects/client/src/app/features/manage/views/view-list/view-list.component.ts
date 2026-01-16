@@ -138,9 +138,7 @@ import { LayoutService } from '@orda.shared/services/layout.service';
                     </td>
 
                     <td class="px-6 py-4 text-right">
-                      <div
-                        class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
+                      <div class="flex items-center justify-end gap-2 transition-opacity">
                         <button
                           mat-icon-button
                           (click)="edit(view)"

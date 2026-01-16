@@ -203,7 +203,7 @@ import { LayoutService } from '@orda.shared/services/layout.service';
 
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef></th>
-                  <td mat-cell *matCellDef="let row" class="text-right">
+                  <td mat-cell *matCellDef="let row" style="text-align: right;">
                     <button mat-icon-button (click)="duplicate(row)" matTooltip="Duplizieren">
                       <mat-icon class="text-gray-500">content_copy</mat-icon>
                     </button>
@@ -509,7 +509,7 @@ export class AssortmentProductDialogComponent implements OnInit {
     return {
       name: raw.name.trim(),
       desc: raw.desc.trim(),
-      price: Math.round(raw.price ?? 0 * 100), // Ensure integer Cents
+      price: Math.round((raw.price ?? 0) * 100), // Ensure integer Cents
       active: raw.active,
     };
   }
