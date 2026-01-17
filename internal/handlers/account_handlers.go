@@ -65,8 +65,9 @@ func (h *AccountHandlers) GetAll(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get accounts"})
 	}
 	if res == nil {
-		return c.Status(fiber.StatusNoContent).JSON([]string{})
+		return c.Status(fiber.StatusOK).JSON([]string{})
 	}
+
 	return c.Status(fiber.StatusOK).JSON(res)
 }
 

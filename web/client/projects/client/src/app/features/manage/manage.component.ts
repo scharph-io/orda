@@ -13,7 +13,7 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
     <div class="min-h-full">
       <orda-nav-sub-header title="Verwalten" [showBackButton]="true" />
       <main>
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
           <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             @for (tile of primaryTiles(); track tile) {
               <li (click)="navigateTo(tile.path)" (keydown)="navigateTo(tile.path)" tabindex="0">
@@ -40,16 +40,17 @@ export class ManageComponent {
   private readonly router = inject(Router);
 
   primaryTiles = signal<Tile[]>([
-    { title: 'Bestellseiten', path: '/manage/views', icon: 'view_list' },
+    { title: 'Ansichten', path: '/manage/views', icon: 'grid_view' },
     {
       title: 'Sortiment',
       path: '/manage/assortment',
-      icon: 'inventory_2',
+      icon: 'shelves',
     },
-    { title: 'Konten', path: '/manage/accounts', icon: 'account_balance' },
+    { title: 'Konten', path: '/manage/accounts', icon: 'account_box' },
 
-    { title: 'Benutzer', path: '/manage/users', icon: 'people' },
-    { title: 'Statistik', path: '/manage/history', icon: 'analytics' },
+    { title: 'Benutzer', path: '/manage/users', icon: 'badge' },
+    { title: 'Verlauf', path: '/manage/history', icon: 'history' },
+    { title: 'Statistik', path: '/stats', icon: 'analytics' },
   ]);
 
   navigateTo(path: string) {

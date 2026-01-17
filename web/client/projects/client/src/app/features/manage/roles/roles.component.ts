@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { Role } from '@orda.core/models/role';
-import { MatListModule } from '@angular/material/list';
 import { RoleService } from '@orda.features/data-access/services/role.service';
 import { EntityManager } from '@orda.shared/utils/entity-manager';
 import {
@@ -11,63 +10,88 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { DialogTemplateComponent } from '@orda.shared/components/dialog/dialog-template.component';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
-import { MatIcon } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { TitleCasePipe } from '@angular/common';
-import { MatInput } from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
 import { filter, switchMap } from 'rxjs';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
 } from '@orda.shared/components/confirm-dialog/confirm-dialog.component';
+import {
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 
 @Component({
   selector: 'orda-roles',
-  imports: [MatButtonModule, MatListModule, MatIcon, TitleCasePipe],
+  imports: [MatButtonModule, MatIconModule, TitleCasePipe],
   template: `
-    <div class="title-toolbar">
-      <button mat-button (click)="create()">New</button>
+    <div class="mb-6">
+      <button mat-flat-button color="primary" class="h-[56px] !rounded-lg" (click)="create()">
+        <mat-icon>add</mat-icon> Rolle
+      </button>
     </div>
 
-    <mat-list role="list">
-      @for (role of roleService.entityResource.value(); track role.id) {
-        <mat-list-item role="listitem">
-          <div class="item">
-            <p>{{ role.name | titlecase }}</p>
-            <div>
-              <button title="delete role" class="delete-btn" mat-icon-button (click)="delete(role)">
-                <mat-icon>delete</mat-icon>
-              </button>
-              <button title="edit role" mat-icon-button (click)="edit(role)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <!-- <button title="update role policy" mat-icon-button (click)="updatePolicy(role)">
-                <mat-icon>policy</mat-icon>
-              </button> -->
-            </div>
-          </div>
-        </mat-list-item>
-      }
-    </mat-list>
+    @let roles = roleService.entityResource.value() ?? [];
+
+    @if (roles.length === 0) {
+      <div class="text-center py-10 text-gray-500">Noch keine Rollen vorhanden.</div>
+    } @else {
+      <div class="overflow-hidden rounded-lg border border-gray-100">
+        <table class="min-w-full text-left text-sm whitespace-nowrap">
+          <thead class="bg-gray-50 border-b border-gray-200 text-gray-900">
+            <tr>
+              <th scope="col" class="px-4 py-3 font-semibold">Name</th>
+              <th scope="col" class="px-4 py-3 font-semibold text-right w-24"></th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-100 bg-white">
+            @for (role of roles; track role.id) {
+              <tr class="hover:bg-gray-50 transition-colors group">
+                <td class="px-4 py-3 font-medium text-gray-900">
+                  {{ role.name | titlecase }}
+                </td>
+
+                <td class="px-4 py-3 text-right">
+                  <div class="flex items-center justify-end gap-1  transition-opacity">
+                    <button
+                      mat-icon-button
+                      (click)="edit(role)"
+                      class="!text-gray-600 hover:bg-gray-100 !w-8 !h-8 leading-none"
+                      title="Bearbeiten"
+                    >
+                      <mat-icon class="!text-[1.25rem]">edit</mat-icon>
+                    </button>
+
+                    <button
+                      mat-icon-button
+                      (click)="delete(role)"
+                      class="!text-red-600 hover:bg-red-50 !w-8 !h-8 leading-none"
+                      title="Löschen"
+                    >
+                      <mat-icon class="!text-[1.25rem]">delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   `,
   styles: `
-    .item {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /*mat-list {*/
-    /*	width: 50%;*/
-    /*}*/
-
-    .title-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    :host {
+      display: block;
+      width: 100%;
     }
   `,
 })
@@ -103,8 +127,8 @@ export class RolesComponent extends EntityManager<Role> {
             {
               message:
                 (role.users ?? []).length === 0
-                  ? role.name
-                  : `Role '${role.name}' is in use by ${(role.users ?? []).length} users`,
+                  ? `Soll die Rolle "${role.name}" gelöscht werden?`
+                  : `Rolle '${role.name}' wird noch von ${(role.users ?? []).length} Benutzern verwendet.`,
               disableSubmit: (role.users ?? []).length !== 0,
             },
           ),
@@ -121,81 +145,110 @@ export class RolesComponent extends EntityManager<Role> {
         error: (err) => this.logger.error(err),
       });
   }
+}
 
-  // updatePolicy(role: Role) {
-  // 	console.log('update policy for ' + role.name);
-  // }
+// 1. Strict Form Interface
+interface RoleForm {
+  name: FormControl<string>;
 }
 
 @Component({
   selector: 'orda-role-dialog',
+  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    DialogTemplateComponent,
-    MatLabel,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+    MatButtonModule,
     MatFormFieldModule,
-    MatInput,
+    MatInputModule,
   ],
   template: `
-    <orda-dialog-template
-      [customTemplate]="template"
-      [form]="formGroup"
-      (submitClick)="submit()"
-    ></orda-dialog-template>
-    <ng-template #template>
-      <form [formGroup]="formGroup">
-        <div class="dialog-flex">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-        </div>
-      </form>
-      <!-- can save {{ canSubmit() }} -->
-    </ng-template>
-  `,
-  styles: ``,
-})
-class RoleDialogComponent extends DialogTemplateComponent<Role> {
-  roleService = inject(RoleService);
+    <h2 mat-dialog-title>
+      {{ isEditMode ? 'Rolle bearbeiten' : 'Neue Rolle' }}
+    </h2>
 
-  formGroup = new FormGroup({
-    name: new FormControl('', [
-      Validators.required,
-      Validators.maxLength(10),
-      Validators.minLength(3),
-    ]),
+    <mat-dialog-content>
+      <form [formGroup]="form" class="role-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="z.B. Kellner" />
+
+          @if (form.controls.name.hasError('required')) {
+            <mat-error>Name ist erforderlich</mat-error>
+          }
+          @if (form.controls.name.hasError('minlength')) {
+            <mat-error>Mindestens 3 Zeichen</mat-error>
+          }
+          @if (form.controls.name.hasError('maxlength')) {
+            <mat-error>Maximal 10 Zeichen</mat-error>
+          }
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Abbrechen</button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="submit()"
+        [disabled]="form.invalid || form.pristine"
+      >
+        Speichern
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [
+    `
+      .role-form {
+        display: flex;
+        flex-direction: column;
+        padding-top: 0.5rem;
+        min-width: 300px;
+      }
+    `,
+  ],
+})
+export class RoleDialogComponent {
+  private roleService = inject(RoleService);
+  private dialogRef = inject(MatDialogRef<RoleDialogComponent>);
+
+  // 2. Typed Form
+  protected form = new FormGroup<RoleForm>({
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(10)],
+    }),
   });
 
-  constructor() {
-    super();
-    this.formGroup.patchValue({
-      name: this.inputData?.name,
-    });
+  data = inject<Role | undefined>(MAT_DIALOG_DATA);
 
-    // this.formGroup.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-    // 	this.canSubmit.set(
-    // 		!(this.roleService.resource.value() ?? []).some(
-    // 			(role) => role.name === this.formGroup.value.name,
-    // 		),
-    // 	);
-    // });
+  constructor() {
+    if (this.data) {
+      this.form.patchValue({ name: this.data.name });
+    }
   }
 
-  public submit = () => {
-    if (this.inputData) {
-      this.roleService
-        .update(this.inputData?.id ?? '', {
-          name: this.formGroup.value.name ?? '',
-        })
-        .subscribe(this.closeObserver);
-    } else {
-      this.roleService
-        .create({
-          name: this.formGroup.value.name ?? '',
-        })
-        .subscribe(this.closeObserver);
-    }
-  };
+  get isEditMode(): boolean {
+    return !!this.data?.id;
+  }
+
+  submit() {
+    if (this.form.invalid) return;
+
+    const name = this.form.getRawValue().name.trim();
+
+    const action$ = this.isEditMode
+      ? this.roleService.update(this.data!.id, { name })
+      : this.roleService.create({ name });
+
+    action$.subscribe({
+      next: (res) => this.dialogRef.close(res),
+      error: (err) => console.error('Error saving role', err),
+    });
+  }
 }

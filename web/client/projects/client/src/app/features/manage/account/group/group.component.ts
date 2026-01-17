@@ -27,9 +27,9 @@ import { AccountService } from '@orda.features/data-access/services/account/acco
   selector: 'orda-account-groups',
   imports: [MatButtonModule, MatListModule, MatIcon],
   template: `
-    <div class="title-toolbar">
-      <button mat-button (click)="create()">New</button>
-    </div>
+    <button mat-flat-button color="primary" class="h-[56px] !rounded-lg" (click)="create()">
+      <mat-icon>add</mat-icon> Gruppe
+    </button>
 
     <mat-list group="list">
       @for (ag of accountGroupService.entityResource.value(); track ag.id) {
@@ -164,14 +164,6 @@ class AccountGroupDialogComponent extends DialogTemplateComponent<AccountGroup> 
     this.formGroup.patchValue({
       name: this.inputData?.name,
     });
-
-    // this.formGroup.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-    // 	this.canSubmit.set(
-    // 		!(this.roleService.resource.value() ?? []).some(
-    // 			(group) => group.name === this.formGroup.value.name,
-    // 		),
-    // 	);
-    // });
   }
 
   public submit = () => {

@@ -8,10 +8,11 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { DecimalPipe } from '@angular/common';
 import { PaymentOption, PaymentOptionKeys } from '@orda.features/order/utils/transaction';
 import { keyToNumber } from '@orda.shared/utils/helper';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'orda-dashboard',
-  imports: [MetricCardComponent, DecimalPipe],
+  imports: [MetricCardComponent, DecimalPipe, MatIcon],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

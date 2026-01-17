@@ -4,11 +4,13 @@
   @include mat.toolbar-overrides(
     (
       container-background-color: #f5ebe0,
+      standard-height: 3rem,
+      mobile-height: 3rem,
     )
   );
 }
 
-.orda-toolbar {
+.action-toolbar {
   @include mat.toolbar-overrides(
     (
       container-background-color: white,

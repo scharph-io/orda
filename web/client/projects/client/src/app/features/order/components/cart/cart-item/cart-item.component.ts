@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -11,88 +11,47 @@ import { OrdaCurrencyPipe } from '@orda.shared/pipes/currency.pipe';
   imports: [MatButtonModule, MatIconModule, MatDividerModule, OrdaCurrencyPipe],
   template: `
     <div
-      [class]="{
-        container: true,
-        'container-with-desc': item().desc !== undefined,
-      }"
+      class="flex items-center w-full py-1 px-1 border-b border-gray-100 hover:bg-gray-50 transition-colors select-none group"
     >
-      <div class="title">{{ item().name }}</div>
-      @if (item().desc) {
-        <div class="desc">{{ item().desc }}</div>
-      }
-      <div class="quantity">{{ item().quantity }}</div>
-      <div class="sum">{{ item().price * item().quantity | currency: 'EUR' }}</div>
-      <div class="rm">
-        <mat-icon (click)="removeItem(item())" [style]="{ color: 'grey' }">delete</mat-icon>
+      <div class="flex-1 flex flex-col overflow-hidden pr-1">
+        <span class="font-bold text-gray-900 leading-tight truncate text-[0.95rem]">
+          {{ item().name }}
+        </span>
+        @if (item().desc; as desc) {
+          <span class="text-xs text-gray-500 font-medium truncate mt-0.5">
+            {{ desc }}
+          </span>
+        }
+      </div>
+
+      <div class="w-10 text-center font-semibold text-gray-800 text-[0.95rem] tabular-nums">
+        {{ item().quantity }}
+      </div>
+
+      <div class="w-20 text-right font-bold text-gray-900 text-[0.95rem] tabular-nums">
+        {{ item().price * item().quantity | currency: 'EUR' }}
+      </div>
+
+      <div
+        role="button"
+        tabindex="0"
+        (click)="removeItem(item())"
+        class="ml-1 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full cursor-pointer transition-all"
+        title="Entfernen"
+      >
+        <mat-icon class="!w-5 !h-5 !text-[1.25rem] leading-none">delete</mat-icon>
       </div>
     </div>
-    <mat-divider></mat-divider>
   `,
   styles: `
-    .container {
-      display: grid;
-      grid-auto-flow: row;
-      grid-template: 'title quantity sum rm' 1fr / auto 1fr 5.5rem 2rem;
-      width: auto;
-    }
-
-    .container-with-desc {
-      grid-template:
-        'title quantity sum rm' 1fr
-        'desc quantity sum rm' 1fr / auto 0.15fr 5.5rem 2rem;
-    }
-
-    .title {
-      grid-area: title;
-      display: flex;
-      align-items: center;
-    }
-
-    .desc {
-      grid-area: desc;
-      font-size: 0.75rem;
-      text-overflow: ellipsis;
-      line-height: 1.5em;
-      overflow: hidden;
-      white-space: nowrap;
+    :host {
+      display: block;
       width: 100%;
-    }
-
-    .quantity {
-      grid-area: quantity;
-      display: flex;
-      justify-content: right;
-      align-items: center;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .sum {
-      grid-area: sum;
-      display: flex;
-      justify-content: right;
-      align-items: center;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .rm {
-      grid-area: rm;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
   `,
 })
 export class CartItemComponent {
   item = input.required<CartItem>();
-
-  containerClass = computed(() => {
-    if (this.item().desc) {
-      return 'dashboard-with-desc';
-    } else {
-      return 'container';
-    }
-  });
-
   cartStore = inject(OrderStoreService);
 
   removeItem(item: CartItem): void {

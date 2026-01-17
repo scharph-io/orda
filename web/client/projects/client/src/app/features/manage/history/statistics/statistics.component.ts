@@ -30,7 +30,7 @@ import { keyToNumber } from '@orda.shared/utils/helper';
       }
 
       @if (stats.summary.views && stats.summary.views.length > 0) {
-        <h3>Bestellansichten</h3>
+        <h3>Ansichten</h3>
         @let views = stats.summary.views;
 
         @for (x of views; track $index) {

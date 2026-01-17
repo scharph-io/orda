@@ -37,7 +37,7 @@ func (h *ViewHandlers) ReadMany(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get views"})
 	}
 	if res == nil {
-		return c.Status(fiber.StatusNoContent).JSON([]string{})
+		return c.Status(fiber.StatusOK).JSON([]string{})
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
 }
@@ -49,7 +49,7 @@ func (h *ViewHandlers) ReadOne(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to get view"})
 	}
 	if res == nil {
-		return c.Status(fiber.StatusNoContent).JSON([]string{})
+		return c.Status(fiber.StatusOK).JSON([]string{})
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
 }

@@ -1,113 +1,227 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatButton } from '@angular/material/button';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+
+// Material Imports
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+
+// Services / Models
+import { AssortmentService } from '@orda.features/data-access/services/assortment/assortment.service';
 import { ViewService } from '@orda.features/data-access/services/view/view.service';
 import { ViewProduct } from '@orda.core/models/view';
 import { OrdaLogger } from '@orda.shared/services/logger.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
+import { AssortmentProduct } from '@orda.core/models/assortment';
+import { LayoutService } from '@orda.shared/services/layout.service';
 
 @Component({
   selector: 'orda-view-details',
-  imports: [MatTableModule, MatCheckboxModule, MatButton, MatFormField, MatInput, MatLabel],
+  imports: [
+    MatTableModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCardModule,
+    MatIconModule,
+    MatChipsModule,
+    NavSubHeaderComponent,
+  ],
   template: `
-    <div class="title">
-      <h1>{{ view.value()?.name }}</h1>
-      <p>{{ view.value()?.desc }}</p>
+    <orda-nav-sub-header [title]="view.value()?.name ?? 'Loading...'" [showBackButton]="true" />
+
+    <div class="mx-auto max-w-7xl top-0  p-4 flex gap-4 items-center">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 density-compact">
+        <mat-label>Suchen...</mat-label>
+        <mat-icon matPrefix class="text-gray-400 mr-2">search</mat-icon>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Produkte filtern" #input />
+        @if (input.value) {
+          <button matSuffix mat-icon-button (click)="input.value = ''; applyFilter($event)">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+      @if (!layoutService.isHandset()) {
+        <button
+          mat-flat-button
+          color="primary"
+          class="!h-[50px] !rounded-lg"
+          (click)="save()"
+          [disabled]="isSaving()"
+        >
+          <mat-icon>save</mat-icon>
+          {{ isSaving() ? 'Saving...' : 'Speichern' }}
+        </button>
+      }
     </div>
 
-    <mat-form-field style="margin: 0 0.5rem">
-      <mat-label>Filter</mat-label>
-      <input matInput (keyup)="applyFilter($event)" #input />
-    </mat-form-field>
-    <button mat-button (click)="save()">Save</button>
-    <div class="mat-elevation-z8 table-container">
-      <table
-        mat-table
-        [dataSource]="availableProductsDataSource()"
-        [style]="{ 'max-height': '20vh', overflow: 'auto' }"
-      >
-        <ng-container matColumnDef="select">
-          <th mat-header-cell *matHeaderCellDef>
-            <mat-checkbox
-              (change)="$event ? toggleAllRows() : null"
-              [checked]="selection().hasValue() && isAllSelected()"
-              [indeterminate]="selection().hasValue() && !isAllSelected()"
+    <div class="mx-auto max-w-7xl px-3 py-1 sm:px-6 lg:px-8">
+      @if (layoutService.isHandset()) {
+        <div class="flex flex-col gap-3 pb-20">
+          <div class="flex justify-between items-center px-2 py-1">
+            <span class="text-sm text-gray-500">{{ selection.selected.length }} ausgewählt</span>
+            <button mat-button (click)="toggleAllRows()">
+              {{ isAllSelected() ? 'Auswahl aufheben' : 'Alle auswählen' }}
+            </button>
+          </div>
+
+          @for (product of dataSource.filteredData; track product.id) {
+            <mat-card
+              class="card-interactive"
+              [class.selected-card]="selection.isSelected(product.id)"
+              (click)="selection.toggle(product.id)"
             >
-            </mat-checkbox>
-          </th>
-          <td mat-cell *matCellDef="let row">
-            <mat-checkbox
-              (click)="$event.stopPropagation()"
-              (change)="$event ? selection().toggle(row.id) : null"
-              [checked]="selection().isSelected(row.id)"
-            >
-            </mat-checkbox>
-          </td>
-        </ng-container>
-        <!-- Position Column -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-        </ng-container>
+              <div class="flex items-start p-4 gap-3">
+                <div class="pt-1">
+                  <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(product.id) : null"
+                    [checked]="selection.isSelected(product.id)"
+                    color="primary"
+                  >
+                  </mat-checkbox>
+                </div>
 
-        <!-- Name Column -->
-        <ng-container matColumnDef="desc">
-          <th mat-header-cell *matHeaderCellDef>Desc</th>
-          <td mat-cell *matCellDef="let element">{{ element.desc }}</td>
-        </ng-container>
+                <div class="flex-1 min-w-0">
+                  <div class="flex justify-between items-start">
+                    <h3 class="font-bold text-gray-900 truncate pr-2">{{ product.name }}</h3>
+                    <span
+                      class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full whitespace-nowrap"
+                    >
+                      {{ getGroupName(product.group_id) }}
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-500 line-clamp-2 mt-1">
+                    {{ product.desc || 'Keine Beschreibung' }}
+                  </p>
+                </div>
+              </div>
+            </mat-card>
+          }
+          @if (dataSource.filteredData.length === 0) {
+            <div class="text-center p-8 text-gray-400">Keine Produkte gefunden.</div>
+          }
+        </div>
 
-        <!-- Weight Column -->
-        <ng-container matColumnDef="group">
-          <th mat-header-cell *matHeaderCellDef>Group</th>
-          <td mat-cell *matCellDef="let element">{{ getGroupName(element.group_id) }}</td>
-        </ng-container>
+        <button
+          mat-fab
+          color="primary"
+          class="fab-bottom-right"
+          (click)="save()"
+          [disabled]="isSaving()"
+        >
+          <mat-icon>save</mat-icon>
+        </button>
+      } @else {
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+          <table mat-table [dataSource]="dataSource" class="w-full">
+            <ng-container matColumnDef="select">
+              <th mat-header-cell *matHeaderCellDef class="w-16 text-center">
+                <mat-checkbox
+                  (change)="$event ? toggleAllRows() : null"
+                  [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()"
+                  color="primary"
+                >
+                </mat-checkbox>
+              </th>
+              <td mat-cell *matCellDef="let row" class="text-center">
+                <mat-checkbox
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? selection.toggle(row.id) : null"
+                  [checked]="selection.isSelected(row.id)"
+                  color="primary"
+                >
+                </mat-checkbox>
+              </td>
+            </ng-container>
 
-        <ng-container matColumnDef="color">
-          <th mat-header-cell *matHeaderCellDef>Color</th>
-          <td mat-cell *matCellDef="let element" [id]="element.id">{{ element.color }}</td>
-        </ng-container>
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let element" class="font-medium">{{ element.name }}</td>
+            </ng-container>
 
-        <!--			&lt;!&ndash; Symbol Column &ndash;&gt;-->
-        <!--			<ng-container matColumnDef="actions">-->
-        <!--				<th mat-header-cell *matHeaderCellDef>Actions</th>-->
-        <!--				<td mat-cell *matCellDef="let element">{{ element.active }}</td>-->
-        <!--			</ng-container>-->
+            <ng-container matColumnDef="desc">
+              <th mat-header-cell *matHeaderCellDef>Beschreibung</th>
+              <td mat-cell *matCellDef="let element" class="text-gray-500">{{ element.desc }}</td>
+            </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns" [id]="row.id"></tr>
+            <ng-container matColumnDef="group">
+              <th mat-header-cell *matHeaderCellDef>Gruppe</th>
+              <td mat-cell *matCellDef="let element">
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800"
+                >
+                  {{ getGroupName(element.group_id) }}
+                </span>
+              </td>
+            </ng-container>
 
-        <!-- Row shown when there is no matching data. -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
-        </tr>
-      </table>
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns; sticky: true"
+              class="bg-gray-50 border-b"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              (click)="selection.toggle(row.id)"
+              class="hover:bg-blue-50/50 cursor-pointer transition-colors border-b last:border-0"
+              [class.bg-blue-50]="selection.isSelected(row.id)"
+            ></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell p-8 text-center text-gray-500" colspan="4">
+                Keine Ergebnisse für "{{ input.value }}"
+              </td>
+            </tr>
+          </table>
+        </div>
+      }
     </div>
   `,
-  styles: `
-    /* app.component.scss */
-    .title {
-      display: flex;
-      flex-direction: row;
-      align-items: baseline;
-      gap: 0.5rem;
-    }
+  styles: [
+    `
+      /* Material Density Override */
+      ::ng-deep .density-compact .mat-mdc-form-field-flex {
+        height: 50px !important;
+        align-items: center !important;
+      }
 
-    .table-container {
-      /*--mat-table-row-item-container-height: 2rem;*/
+      /* Mobile specific styles */
+      .fab-bottom-right {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 50;
+      }
 
-      height: 75vh; /* Set your desired fixed height here */
-      overflow: auto;
-      width: 100%;
-      margin: 0 0.5rem;
-    }
-  `,
+      .card-interactive {
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+      }
+
+      .selected-card {
+        background-color: #eff6ff; /* blue-50 */
+        border-color: #3b82f6; /* blue-500 */
+      }
+
+      :host {
+        display: block;
+        height: 100%;
+      }
+    `,
+  ],
 })
 export class ViewDetailsComponent {
   displayedColumns: string[] = ['select', 'name', 'desc', 'group'];
@@ -115,11 +229,13 @@ export class ViewDetailsComponent {
   private logger = inject(OrdaLogger);
   private viewService = inject(ViewService);
   private assortmentService = inject(AssortmentService);
-
-  private readonly snackBar = inject(MatSnackBar);
+  private snackBar = inject(MatSnackBar);
+  protected layoutService = inject(LayoutService);
 
   view_id = signal<string>(inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '');
+  isSaving = signal(false);
 
+  // Resources
   view = rxResource({
     params: () => this.view_id(),
     stream: ({ params }) => this.viewService.readById(params),
@@ -128,75 +244,86 @@ export class ViewDetailsComponent {
   availableProducts = rxResource({
     stream: () => this.assortmentService.readProducts(),
   });
-  availableProductsDataSource = computed(
-    () => new MatTableDataSource(this.availableProducts.value() ?? []),
-  );
 
   viewProducts = rxResource({
     stream: () => this.viewService.getProducts(this.view_id()),
   });
 
-  selection = computed(
-    () =>
-      new SelectionModel<string>(
-        true,
-        (this.viewProducts.value() ?? []).map((p) => p.id),
-      ),
-  );
+  private groupsMap = computed(() => {
+    const groups = this.assortmentService.groups.value() ?? [];
+    return new Map(groups.map((g) => [g.id, g.name]));
+  });
+
+  dataSource = new MatTableDataSource<AssortmentProduct>([]);
+  selection = new SelectionModel<string>(true, []);
+
+  constructor() {
+    effect(() => {
+      const products = this.availableProducts.value();
+      if (products) {
+        this.dataSource.data = products;
+        if (this.dataSource.filter) this.dataSource._updateChangeSubscription();
+      }
+    });
+
+    effect(() => {
+      const existing = this.viewProducts.value();
+      if (existing) {
+        this.selection.clear();
+        this.selection.select(...existing.map((p) => p.id));
+      }
+    });
+
+    this.dataSource.filterPredicate = (data: AssortmentProduct, filter: string) => {
+      const groupName = this.getGroupName(data.group_id ?? '').toLowerCase();
+      const dataStr = (data.name + (data.desc ?? '') + groupName).toLowerCase();
+      return dataStr.includes(filter);
+    };
+  }
 
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.availableProductsDataSource().filter = filterValue.trim().toLowerCase();
-    this.availableProductsDataSource().filterPredicate = (data, filter) =>
-      data.name.toLowerCase().includes(filter) ||
-      data.desc?.toLowerCase().includes(filter) ||
-      this.getGroupName(data.group_id ?? '')
-        .toLowerCase()
-        .includes(filter);
+    const filterValue = (event.target as HTMLInputElement).value || '';
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
-    const numSelected = this.selection().selected.length;
-    const numRows = this.availableProductsDataSource().data.length;
-    return numSelected === numRows;
+    const numSelected = this.selection.selected.length;
+    // Important: Use filteredData so 'Select All' respects the search filter
+    const numRows = this.dataSource.filteredData.length;
+    return numSelected === numRows && numRows > 0;
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
   toggleAllRows() {
     if (this.isAllSelected()) {
-      this.selection().clear();
+      this.selection.clear();
       return;
     }
-    this.selection().select(...this.availableProductsDataSource().data.map((s) => s.id));
+    // Select all currently visible (filtered) items
+    this.selection.select(...this.dataSource.filteredData.map((s) => s.id));
+  }
+
+  getGroupName(id: string | undefined): string {
+    if (!id) return '';
+    return this.groupsMap().get(id) ?? 'Unknown';
   }
 
   save() {
-    const viewProductsToSave = this.selection().selected.map(
-      (p) =>
-        ({
-          product_id: p,
-        }) as Partial<ViewProduct>,
+    this.isSaving.set(true);
+    const viewProductsToSave = this.selection.selected.map(
+      (id) => ({ product_id: id }) as Partial<ViewProduct>,
     );
 
     this.viewService.setProducts(this.view_id(), viewProductsToSave).subscribe({
       next: () => {
-        this.logger.debug(
-          `successfully saved ${viewProductsToSave.length} products to view ${this.view_id()}`,
-        );
-        this.snackBar.open('Successfully saved products to view', 'Close', {
-          duration: 3000,
-        });
+        this.logger.debug(`Saved ${viewProductsToSave.length} products`);
+        this.snackBar.open('Gespeichert!', undefined, { duration: 2000 });
+        this.isSaving.set(false);
       },
       error: (err) => {
-        this.logger.error(
-          `failed saving ${viewProductsToSave.length} products to view ${this.view_id()}, ${err}`,
-        );
+        this.logger.error(`Failed saving: ${err}`);
+        this.snackBar.open('Fehler beim Speichern', 'OK', { panelClass: 'error-snack' });
+        this.isSaving.set(false);
       },
     });
-  }
-
-  getGroupName(group_id: string): string {
-    return this.assortmentService.groups.value()?.find((g) => g.id === group_id)?.name ?? '';
   }
 }

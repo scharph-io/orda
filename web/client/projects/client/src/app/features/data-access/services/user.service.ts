@@ -26,7 +26,7 @@ export class UserService extends EntityService<User> {
       .pipe(catchError(this.handleError));
   }
 
-  public update(id: string, u: User) {
+  public update(id: string, u: Partial<User>) {
     this.logger.debug(`Update ${id} to`, u, this.constructor.name);
     return this.httpClient
       .put<User>(`${this.HOST}${API_ENDPOINTS.USER}/${id}`, u)

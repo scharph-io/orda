@@ -16,6 +16,7 @@ export abstract class EntityManager<T> {
     return this.dialog
       .open<T, D, R>(c, {
         data,
+        minHeight: '18rem',
       })
       .afterClosed()
       .pipe(filter((r) => r !== undefined));
