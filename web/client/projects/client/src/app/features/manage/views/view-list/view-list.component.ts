@@ -309,7 +309,7 @@ export class ViewListDialogComponent {
   protected form = new FormGroup<ViewForm>({
     name: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(25)],
+      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(20)],
     }),
     desc: new FormControl('', { validators: [Validators.maxLength(40)] }),
     roles: new FormControl([], { nonNullable: true }),

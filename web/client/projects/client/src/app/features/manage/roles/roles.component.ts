@@ -34,13 +34,8 @@ import {
   imports: [MatButtonModule, MatIconModule, TitleCasePipe],
   template: `
     <div class="mb-6">
-      <button
-        mat-button
-        color="primary"
-        class="!font-bold !text-blue-600 !px-0 hover:!bg-transparent hover:underline"
-        (click)="create()"
-      >
-        Neu
+      <button mat-flat-button color="primary" class="h-[56px] !rounded-lg" (click)="create()">
+        <mat-icon>add</mat-icon> Rolle
       </button>
     </div>
 

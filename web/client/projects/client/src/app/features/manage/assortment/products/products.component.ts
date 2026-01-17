@@ -63,7 +63,7 @@ import { LayoutService } from '@orda.shared/services/layout.service';
   template: `
     <orda-nav-sub-header [title]="group.value()?.name ?? ''" [showBackButton]="true" />
 
-    <main class="mx-auto max-w-7xl px-3 py-1 sm:px-6 lg:px-8">
+    <main class="mx-auto max-w-7xl px-3 py-2 sm:px-6 lg:px-8">
       @if (group.value(); as g) {
         <div
           class="flex flex-col sm:flex-row gap-4 mb-6 items-stretch sm:items-center justify-between"

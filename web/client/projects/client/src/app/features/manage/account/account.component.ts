@@ -96,7 +96,7 @@ export enum DepositType {
   template: `
     <orda-nav-sub-header title="Kontenverwaltung" [showBackButton]="true" />
 
-    <main class="h-full flex flex-col">
+    <main class="flex flex-col">
       <div class="mx-auto w-full max-w-7xl px-2 sm:px-6 lg:px-8 py-2">
         <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms">
           <mat-tab label="Konten">

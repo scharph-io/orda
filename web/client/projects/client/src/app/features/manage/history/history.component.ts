@@ -5,9 +5,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatTab, MatTabGroup } from '@angular/material/tabs';
 import { TransactionsComponent } from '@orda.features/manage/history/transactions/transactions.component';
-import { StatisticsComponent } from '@orda.features/manage/history/statistics/statistics.component';
 import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/nav-sub-header';
 
 @Component({
@@ -18,14 +16,11 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
     MatInputModule,
     MatDatepickerModule,
     ReactiveFormsModule,
-    MatTabGroup,
-    MatTab,
     TransactionsComponent,
-    StatisticsComponent,
     NavSubHeaderComponent,
   ],
   template: `
-    <orda-nav-sub-header title="Statistik" [showBackButton]="true" />
+    <orda-nav-sub-header title="Verlauf" [showBackButton]="true" />
     <main>
       <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
         <mat-form-field style="margin: 0.5rem">
@@ -34,14 +29,15 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
-        <mat-tab-group animationDuration="0ms" style="margin: 0 0.5rem">
+        <!-- <mat-tab-group animationDuration="0ms" style="margin: 0 0.5rem">
           <mat-tab label="Transaktionen">
-            <orda-transactions [date]="dateChanged() ?? ''" />
+            
           </mat-tab>
           <mat-tab label="Statistik">
             <orda-statistics [date]="dateChanged() ?? ''" />
           </mat-tab>
-        </mat-tab-group>
+        </mat-tab-group> -->
+        <orda-transactions [date]="dateChanged() ?? ''" />
       </div>
     </main>
   `,

@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
+  AbstractControl,
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -59,12 +62,12 @@ import { MatInputModule } from '@angular/material/input';
             <div class="p-6">
               <div class="mb-6">
                 <button
-                  mat-button
+                  mat-flat-button
                   color="primary"
-                  class="!font-bold !text-blue-600 !px-0 hover:!bg-transparent hover:underline"
+                  class="h-[56px] !rounded-lg"
                   (click)="create()"
                 >
-                  Neu
+                  <mat-icon>add</mat-icon> Benutzer
                 </button>
               </div>
 
@@ -172,10 +175,10 @@ export class UsersComponent extends EntityManager<User> {
       .subscribe(() => this.userService.entityResource.reload());
   }
 }
-
 interface UserForm {
   name: FormControl<string>;
   password: FormControl<string | null>;
+  passwordConfirm: FormControl<string | null>; // 1. Added field
   role: FormControl<string>;
 }
 
@@ -212,22 +215,6 @@ interface UserForm {
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Passwort</mat-label>
-          <input
-            type="password"
-            matInput
-            formControlName="password"
-            [placeholder]="isEditMode ? 'Leer lassen um beizubehalten' : '********'"
-          />
-          @if (form.controls.password.hasError('required')) {
-            <mat-error>Passwort ist erforderlich</mat-error>
-          }
-          @if (form.controls.password.hasError('pattern')) {
-            <mat-error>Passwort ist zu schwach</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
           <mat-label>Rolle</mat-label>
           <mat-select formControlName="role">
             @for (role of roleService.entityResource.value(); track role.id) {
@@ -238,6 +225,43 @@ interface UserForm {
             <mat-error>Rolle ist erforderlich</mat-error>
           }
         </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Passwort</mat-label>
+          <input
+            type="password"
+            matInput
+            formControlName="password"
+            [placeholder]="isEditMode ? 'Leer lassen um beizubehalten' : '********'"
+            autocomplete="new-password"
+          />
+          @if (form.controls.password.hasError('required')) {
+            <mat-error>Passwort ist erforderlich</mat-error>
+          }
+          @if (form.controls.password.hasError('pattern')) {
+            <mat-error>Passwort ist zu schwach</mat-error>
+          }
+        </mat-form-field>
+
+        @if (!isEditMode || form.controls.password.value) {
+          <mat-form-field appearance="outline">
+            <mat-label>Passwort bestätigen</mat-label>
+            <input
+              type="password"
+              matInput
+              formControlName="passwordConfirm"
+              placeholder="********"
+              autocomplete="new-password"
+            />
+
+            @if (form.controls.passwordConfirm.hasError('required')) {
+              <mat-error>Bestätigung ist erforderlich</mat-error>
+            }
+            @if (form.hasError('mismatch') && !form.controls.passwordConfirm.hasError('required')) {
+              <mat-error>Passwörter stimmen nicht überein</mat-error>
+            }
+          </mat-form-field>
+        }
       </form>
     </mat-dialog-content>
 
@@ -266,39 +290,55 @@ interface UserForm {
   ],
 })
 export class UserDialogComponent {
-  public roleService = inject(RoleService); // Public for template
+  public roleService = inject(RoleService);
   private userService = inject(UserService);
   private dialogRef = inject(MatDialogRef<UserDialogComponent>);
 
-  protected form = new FormGroup<UserForm>({
-    name: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)],
-    }),
-    password: new FormControl(null, [
-      Validators.minLength(3),
-      Validators.maxLength(25),
-      Validators.pattern(StrongPasswordRegx),
-    ]),
-    role: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
-  });
-
   data = inject<User | undefined>(MAT_DIALOG_DATA);
+
+  // 2. Define Validator for the Group
+  private passwordMatchValidator: ValidatorFn = (
+    control: AbstractControl,
+  ): ValidationErrors | null => {
+    const password = control.get('password')?.value;
+    const confirm = control.get('passwordConfirm')?.value;
+
+    // If both are empty (edit mode default), it's valid
+    if (!password && !confirm) return null;
+
+    return password === confirm ? null : { mismatch: true };
+  };
+
+  protected form = new FormGroup<UserForm>(
+    {
+      name: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(3), Validators.maxLength(15)],
+      }),
+      password: new FormControl(null, [
+        Validators.minLength(3),
+        Validators.maxLength(25),
+        Validators.pattern(StrongPasswordRegx),
+      ]),
+      passwordConfirm: new FormControl(null),
+      role: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
+    },
+    { validators: this.passwordMatchValidator },
+  ); // Apply group validator
 
   constructor() {
     if (this.isEditMode) {
-      // Edit Mode: Pre-fill data
       this.form.patchValue({
         name: this.data!.username,
         role: this.data!.roleid,
       });
-      // Password is optional in Edit mode (only validated if entered)
     } else {
-      // Create Mode: Password is required
+      // Create Mode: Both fields are mandatory
       this.form.controls.password.addValidators(Validators.required);
+      this.form.controls.passwordConfirm.addValidators(Validators.required);
     }
   }
 
@@ -309,22 +349,21 @@ export class UserDialogComponent {
   submit() {
     if (this.form.invalid) return;
 
+    // Destructure to separate passwordConfirm (which we don't send to backend)
     const { name, role, password } = this.form.getRawValue();
 
-    if (this.isEditMode) {
-      // UPDATE: Only include password if the user typed something
-      const payload: User = {
-        username: name,
-        roleid: role,
-      };
+    const payload: Partial<User> = {
+      username: name,
+      roleid: role,
+    };
 
+    if (this.isEditMode) {
       if (password) {
         payload.password = password;
       }
-
-      this.userService.update(this.data?.id ?? '', payload).subscribe(this.handleResponse);
+      this.userService.update(this.data!.id!, payload).subscribe(this.handleResponse);
     } else {
-      // CREATE: Password is mandatory
+      // CREATE
       this.userService
         .create({
           username: name,

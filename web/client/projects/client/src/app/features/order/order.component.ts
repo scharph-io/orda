@@ -10,7 +10,7 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
   template: `
     <orda-nav-sub-header title="Ansichten" [showBackButton]="true" />
     <main>
-      <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl px-3 py-3 sm:px-6 lg:px-8">
         <ul class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           @for (v of viewService.views.value(); track v.id) {
             @let id = v.id ?? '';
@@ -20,9 +20,9 @@ import { NavSubHeaderComponent } from '@orda.shared/components/nav-sub-header/na
               tabindex="0"
             >
               <a
-                class="flex flex-col items-center justify-center rounded-xl border border-gray-200 px-4 py-6 shadow-sm hover:shadow-md hover:bg-gray-50 transition"
+                class="aspect-square flex flex-col items-center justify-center rounded-xl border border-gray-200 px-4 py-6 shadow-sm hover:shadow-md hover:bg-gray-50 transition"
               >
-                <span class="text-2xl font-bold">{{ v.name }}</span>
+                <span class="text-2xl font-bold break-all line-clamp-2">{{ v.name }}</span>
                 <span class="text">{{ v.products_count }} Produkte</span>
               </a>
             </li>

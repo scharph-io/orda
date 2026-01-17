@@ -49,8 +49,8 @@ export class ManageComponent {
     { title: 'Konten', path: '/manage/accounts', icon: 'account_box' },
 
     { title: 'Benutzer', path: '/manage/users', icon: 'badge' },
-    { title: 'Statistik', path: '/manage/history', icon: 'analytics' },
-    { title: 'StatistikV2', path: '/stats', icon: 'analytics' },
+    { title: 'Verlauf', path: '/manage/history', icon: 'history' },
+    { title: 'Statistik', path: '/stats', icon: 'analytics' },
   ]);
 
   navigateTo(path: string) {

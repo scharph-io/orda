@@ -47,7 +47,7 @@ import { LayoutService } from '@orda.shared/services/layout.service';
   template: `
     <orda-nav-sub-header title="Sortiment" [showBackButton]="true" />
 
-    <main class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto px-3 py-3 sm:px-4 lg:px-8">
       <div class="mb-6 flex justify-between items-center">
         @if (!layoutService.isHandset()) {
           <button mat-flat-button color="primary" class="h-[56px] !rounded-lg" (click)="create()">

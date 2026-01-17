@@ -32,6 +32,10 @@
           <mat-icon>line_axis</mat-icon>
           <span>Statistik</span>
         </button>
+        <button mat-menu-item routerLink="manage/history">
+          <mat-icon>history</mat-icon>
+          <span>Verlauf</span>
+        </button>
       }
 
       @if (sessionService.isAuthenticated()) {
